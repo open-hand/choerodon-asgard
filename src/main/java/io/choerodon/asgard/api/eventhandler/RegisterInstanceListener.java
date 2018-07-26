@@ -25,6 +25,9 @@ public class RegisterInstanceListener {
     private static final String STATUS_DOWN = "DOWN";
     private final ObjectMapper mapper = new ObjectMapper();
 
+    @Value("${choerodon.asgard.fetch.time:20}")
+    private Integer sagaFetchTime;
+
     private RegisterInstanceService registerInstanceService;
 
 
@@ -61,9 +64,9 @@ public class RegisterInstanceListener {
                         }
                         return t;
                     })
-                    .retryWhen(x -> x.zipWith(Observable.range(1, 20),
+                    .retryWhen(x -> x.zipWith(Observable.range(1, sagaFetchTime),
                             (t, retryCount) -> {
-                                if (retryCount >= 20) {
+                                if (retryCount >= sagaFetchTime) {
                                     if (t instanceof RemoteAccessException) {
                                         LOGGER.warn("error.registerConsumer.fetchDataError, payload {}", payload);
                                     } else {
