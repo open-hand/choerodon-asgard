@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.asgard.infra.mapper.SagaInstanceMapper">
+
+    <select id="fulltextSearch" resultType="io.choerodon.asgard.api.dto.SagaInstanceDTO">
+        SELECT
+        id,
+        saga_code,
+        status,
+        start_time,
+        end_time,
+        ref_type,
+        ref_id
+        FROM asgard_saga_instance
+        WHERE 1 = 1
+        <if test="sagaCode != null">
+            AND saga_code LIKE concat('%',#{sagaCode},'%')
+        </if>
+        <if test="status != null">
+            AND status LIKE concat('%',#{status},'%')
+        </if>
+        <if test="refType != null">
+            AND ref_type LIKE concat('%',#{refType},'%')
+        </if>
+        <if test="refId != null">
+            AND ref_id LIKE concat('%',#{refId},'%')
+        </if>
+        <if test="params != null">
+            AND(
+            saga_code LIKE concat('%',#{params},'%') OR
+            status LIKE concat('%',#{params},'%') OR
+            ref_type LIKE concat('%',#{params},'%') OR
+            ref_id LIKE concat('%',#{params},'%')
+            )
+        </if>
+    </select>
+
+</mapper>

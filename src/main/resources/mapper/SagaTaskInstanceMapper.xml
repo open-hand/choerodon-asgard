@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper">
+
+    <select id="pollBatchNoneLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+        SELECT
+        asti.id, asti.saga_instance_id,
+        asti.task_code, asti.status,
+        asti.seq, asti.saga_code,
+        asti.instance_lock, jd.data AS input
+        FROM asgard_saga_task_instance asti
+        LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
+        WHERE asti.task_code = #{taskCode}
+        AND asti.saga_code = #{sagaCode}
+        AND (asti.instance_lock IS null OR asti.instance_lock = #{instance})
+        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'NONE'
+    </select>
+
+    <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+        SELECT
+        asti.id, asti.saga_instance_id,
+        asti.task_code, asti.status,
+        asti.seq, asti.saga_code,
+        asti.instance_lock, jd.data AS input,
+        asti.ref_type, asti.ref_id,
+        asti.creation_date, asti.concurrent_limit_num
+        FROM asgard_saga_task_instance asti
+        LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
+        WHERE asti.task_code = #{taskCode}
+        AND asti.saga_code = #{sagaCode}
+        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'TYPE_AND_ID'
+        ORDER BY asti.creation_date
+    </select>
+
+    <select id="pollBatchTypeLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+        SELECT
+        asti.id, asti.saga_instance_id,
+        asti.task_code, asti.status,
+        asti.seq, asti.saga_code,
+        asti.instance_lock, jd.data AS input,
+        asti.ref_type, asti.creation_date,
+        asti.concurrent_limit_num
+        FROM asgard_saga_task_instance asti
+        LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
+        WHERE asti.task_code = #{taskCode}
+        AND asti.saga_code = #{sagaCode}
+        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'TYPE'
+        ORDER BY asti.creation_date
+    </select>
+
+    <update id="lockByInstanceBatch" parameterType="java.util.List">
+        UPDATE asgard_saga_task_instance
+        SET instance_lock = #{instance}, object_version_number = object_version_number + 1
+        WHERE id IN
+        <foreach collection="list" index="index" item="item"
+                 separator="," open="(" close=")">
+            #{item,jdbcType=BIGINT}
+        </foreach>
+    </update>
+
+    <update id="lockByInstance">
+        UPDATE asgard_saga_task_instance
+        SET instance_lock = #{instance}, object_version_number = object_version_number + 1
+        WHERE id = #{id} AND instance_lock IS NULL
+    </update>
+
+    <update id="increaseRetriedCount">
+        UPDATE asgard_saga_task_instance
+        SET retried_count = retried_count + 1, object_version_number = object_version_number + 1
+        WHERE id = #{id}
+    </update>
+
+    <update id="unlockByInstance" parameterType="java.lang.String">
+        UPDATE asgard_saga_task_instance
+        SET  instance_lock = NULL, object_version_number = object_version_number + 1
+        WHERE instance_lock = #{instance}
+    </update>
+
+    <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+        SELECT
+        asti.id, asti.saga_instance_id,
+        asti.task_code, asti.status,
+        asti.seq, asti.saga_code,
+        asti.ref_type, asti.ref_id,
+        asti.creation_date, asti.concurrent_limit_num,
+        asti.instance_lock, asti.concurrent_limit_policy,
+        asti.max_retry_count, asti.retried_count,
+        asti.timeout_seconds, asti.timeout_policy,
+        asti.exception_message, ojd.data AS output,
+        ijd.data AS input
+        FROM asgard_saga_task_instance asti
+        LEFT JOIN asgard_orch_json_data ijd ON asti.input_data_id = ijd.id
+        LEFT JOIN asgard_orch_json_data ojd ON asti.output_data_id = ojd.id
+        WHERE asti.saga_instance_id = #{sagaInstanceId}
+    </select>
+
+</mapper>
