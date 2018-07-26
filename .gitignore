@@ -27,6 +27,8 @@ app.jar
 .DS_Store
 Thumbs.db
 
+/choerodon_temp
+
 gitlabci/.generated
 
 /bin
