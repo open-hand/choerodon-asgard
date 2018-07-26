@@ -14,6 +14,7 @@ import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.infra.utils.StringLockProvider;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.saga.SagaDefinition;
 import org.slf4j.Logger;
@@ -30,6 +31,8 @@ import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
+
+    private static final String ERROR_CODE_TASK_INSTANCE_NOT_EXIST = "error.sagaTaskInstance.notExist";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaTaskInstanceService.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -97,7 +100,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     public void updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (taskInstance == null) {
-            throw new FeignException("error.sagaTaskInstance.notExist");
+            throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
         }
         SagaInstance instance = instanceMapper.selectByPrimaryKey(taskInstance.getSagaInstanceId());
         if (instance == null) {
@@ -199,5 +202,25 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         } catch (Exception e) {
             LOGGER.warn("error.unlockByInstance {}", instance);
         }
+    }
+
+    @Override
+    public void retry(Long id) {
+        SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(id);
+        if (taskInstance == null) {
+            throw new CommonException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
+        }
+        taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name());
+        taskInstanceMapper.updateByPrimaryKeySelective(taskInstance);
+    }
+
+    @Override
+    public void unlockById(Long id) {
+        SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(id);
+        if (taskInstance == null) {
+            throw new CommonException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
+        }
+        taskInstance.setInstanceLock(null);
+        taskInstanceMapper.updateByPrimaryKey(taskInstance);
     }
 }

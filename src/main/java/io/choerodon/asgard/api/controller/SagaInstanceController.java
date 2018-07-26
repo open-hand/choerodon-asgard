@@ -33,7 +33,7 @@ public class SagaInstanceController {
      * 开始执行一个saga
      */
     @PostMapping("/{code:.*}")
-    @ApiOperation(value = "开始一个saga")
+    @ApiOperation(value = "内部接口。开始一个saga")
     public ResponseEntity<SagaInstanceDTO> start(@PathVariable("code") String code,
                                                  @RequestBody @Valid StartInstanceDTO dto) {
         dto.setSagaCode(code);
