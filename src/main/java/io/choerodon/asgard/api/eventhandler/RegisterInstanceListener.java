@@ -55,10 +55,14 @@ public class RegisterInstanceListener {
                     .delay(2, TimeUnit.SECONDS)
                     .subscribeOn(Schedulers.io())
                     .subscribe((RegisterInstancePayloadDTO payloadDTO) -> {
-                        if (STATUS_UP.equals(payload.getStatus())) {
-                            registerInstanceService.msgConsumer(payload, true);
-                        } else if (STATUS_DOWN.equals(payload.getStatus())) {
-                            registerInstanceService.msgConsumer(payload, false);
+                        try {
+                            if (STATUS_UP.equals(payload.getStatus())) {
+                                registerInstanceService.msgConsumer(payload, true);
+                            } else if (STATUS_DOWN.equals(payload.getStatus())) {
+                                registerInstanceService.msgConsumer(payload, false);
+                            }
+                        } catch (Exception e) {
+                            LOGGER.warn("error happened when registerInstanceService.msgConsumer, {} cause {}", message, e.getCause());
                         }
                     });
         } catch (Exception e) {

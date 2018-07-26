@@ -14,4 +14,8 @@ public interface SagaTaskInstanceService {
 
     void unlockByInstance(String instance);
 
+    void retry(Long id);
+
+    void unlockById(Long id);
+
 }

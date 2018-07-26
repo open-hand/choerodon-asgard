@@ -73,7 +73,7 @@
     <update id="unlockByInstance" parameterType="java.lang.String">
         UPDATE asgard_saga_task_instance
         SET  instance_lock = NULL, object_version_number = object_version_number + 1
-        WHERE instance_lock = #{instance}
+        WHERE instance_lock = #{instance} AND (status = 'RUNNING' OR status = 'FAILED')
     </update>
 
     <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">

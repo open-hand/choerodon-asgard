@@ -22,28 +22,36 @@ public class SagaTaskInstanceController {
         this.sagaTaskInstanceService = sagaTaskInstanceService;
     }
 
-    /**
-     * 内部接口
-     * SagaTask向该接口拉取消息
-     */
     @PostMapping("/poll/batch")
-    @ApiOperation(value = "拉取指定code的任务列表，并更新instance的值")
+    @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
     public ResponseEntity<List<SagaTaskInstanceDTO>> pollBatch(@RequestBody @Valid PollBatchDTO pollBatchDTO) {
         return new ResponseEntity<>(sagaTaskInstanceService.pollBatch(pollBatchDTO), HttpStatus.OK);
     }
 
-    /**
-     * 内部接口
-     * 更新任务执行的状态
-     */
     @PutMapping("/{id}/status")
-    @ApiOperation(value = "更新任务的执行状态")
+    @ApiOperation(value = "内部接口。更新任务的执行状态")
     public void updateStatus(@PathVariable Long id, @RequestBody @Valid SagaTaskInstanceStatusDTO statusDTO) {
         statusDTO.setId(id);
         sagaTaskInstanceService.updateStatus(statusDTO);
     }
 
+    @ApiOperation(value = "去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
+    @PutMapping("/{id}/unlock")
+    public void unlockById(@PathVariable Long id) {
+        sagaTaskInstanceService.unlockById(id);
+    }
 
+    @ApiOperation(value = "根据服务实例批量去除消息的服务实例锁")
+    @PutMapping("/unlock_by_instance")
+    public void unlockByInstance(@RequestParam("instance") String instance) {
+         sagaTaskInstanceService.unlockByInstance(instance);
+    }
+
+    @ApiOperation(value = "手动重试消息")
+    @PutMapping("/{id}/retry")
+    public void retry(@PathVariable Long id) {
+        sagaTaskInstanceService.retry(id);
+    }
 
 
 }
