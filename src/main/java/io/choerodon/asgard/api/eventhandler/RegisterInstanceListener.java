@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Component;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RegisterInstanceListener {
 
-    public static final String REGISTER_TOPIC = "register-server";
+    private static final String REGISTER_TOPIC = "register-server";
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterInstanceListener.class);
     private static final String STATUS_UP = "UP";
     private static final String STATUS_DOWN = "DOWN";
@@ -52,18 +53,27 @@ public class RegisterInstanceListener {
                 return;
             }
             Observable.just(payload)
-                    .delay(2, TimeUnit.SECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .subscribe((RegisterInstancePayloadDTO payloadDTO) -> {
-                        try {
-                            if (STATUS_UP.equals(payload.getStatus())) {
-                                registerInstanceService.msgConsumer(payload, true);
-                            } else if (STATUS_DOWN.equals(payload.getStatus())) {
-                                registerInstanceService.msgConsumer(payload, false);
-                            }
-                        } catch (Exception e) {
-                            LOGGER.warn("error happened when registerInstanceService.msgConsumer, {} cause {}", message, e.getCause());
+                    .map(t -> {
+                        if (STATUS_UP.equals(payload.getStatus())) {
+                            registerInstanceService.instanceUpConsumer(payload);
+                        } else if (STATUS_DOWN.equals(payload.getStatus())) {
+                            registerInstanceService.instanceDownConsumer(payload);
                         }
+                        return t;
+                    })
+                    .retryWhen(x -> x.zipWith(Observable.range(1, 20),
+                            (t, retryCount) -> {
+                                if (retryCount >= 20) {
+                                    if (t instanceof RemoteAccessException) {
+                                        LOGGER.warn("error.registerConsumer.fetchDataError, payload {}", payload);
+                                    } else {
+                                        LOGGER.warn("error.registerConsumer.msgConsumerError, payload {}", payload);
+                                    }
+                                }
+                                return retryCount;
+                            }).flatMap(y -> Observable.timer(2, TimeUnit.SECONDS)))
+                    .subscribeOn(Schedulers.io())
+                    .subscribe((RegisterInstancePayloadDTO registerInstancePayload) -> {
                     });
         } catch (Exception e) {
             LOGGER.warn("error happened when handle message， {} cause {}", message, e.getCause());

@@ -4,6 +4,8 @@ import io.choerodon.asgard.api.dto.RegisterInstancePayloadDTO;
 
 public interface RegisterInstanceService {
 
-    void msgConsumer(final RegisterInstancePayloadDTO payload, final boolean up);
+    void instanceDownConsumer(final RegisterInstancePayloadDTO payload);
+
+    void instanceUpConsumer(final RegisterInstancePayloadDTO payload);
 
 }
