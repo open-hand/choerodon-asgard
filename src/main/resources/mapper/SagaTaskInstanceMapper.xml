@@ -77,7 +77,7 @@
     </update>
 
     <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
-        SELECT
+                SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
         asti.seq, asti.saga_code,
@@ -87,10 +87,12 @@
         asti.max_retry_count, asti.retried_count,
         asti.timeout_seconds, asti.timeout_policy,
         asti.exception_message, ojd.data AS output,
+        st.description, st.service,
         ijd.data AS input
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data ijd ON asti.input_data_id = ijd.id
         LEFT JOIN asgard_orch_json_data ojd ON asti.output_data_id = ojd.id
+        LEFT JOIN asgard_orch_saga_task st ON asti.task_code = st.code AND asti.saga_code = st.saga_code
         WHERE asti.saga_instance_id = #{sagaInstanceId}
     </select>
 

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -67,7 +68,7 @@ public class RegisterInstanceListener {
                     .retryWhen(x -> x.zipWith(Observable.range(1, sagaFetchTime),
                             (t, retryCount) -> {
                                 if (retryCount >= sagaFetchTime) {
-                                    if (t instanceof RemoteAccessException) {
+                                    if (t instanceof RemoteAccessException || t instanceof RestClientException) {
                                         LOGGER.warn("error.registerConsumer.fetchDataError, payload {}", payload);
                                     } else {
                                         LOGGER.warn("error.registerConsumer.msgConsumerError, payload {}", payload);
