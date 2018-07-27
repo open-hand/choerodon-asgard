@@ -13,7 +13,7 @@
         WHERE asti.task_code = #{taskCode}
         AND asti.saga_code = #{sagaCode}
         AND (asti.instance_lock IS null OR asti.instance_lock = #{instance})
-        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'NONE'
+        AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'NONE'
     </select>
 
     <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
@@ -28,7 +28,7 @@
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE asti.task_code = #{taskCode}
         AND asti.saga_code = #{sagaCode}
-        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'TYPE_AND_ID'
+        AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'TYPE_AND_ID'
         ORDER BY asti.creation_date
     </select>
 
@@ -44,7 +44,7 @@
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE asti.task_code = #{taskCode}
         AND asti.saga_code = #{sagaCode}
-        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'TYPE'
+        AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'TYPE'
         ORDER BY asti.creation_date
     </select>
 
