@@ -40,6 +40,10 @@ public class SagaTaskInstanceDTO {
 
     private String creationDate;
 
+    private String description;
+
+    private String service;
+
     public Long getId() {
         return id;
     }
@@ -190,5 +194,21 @@ public class SagaTaskInstanceDTO {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
     }
 }

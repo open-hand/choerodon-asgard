@@ -17,7 +17,7 @@ spring:
     producer:
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
     consumer:
-      group-id: asgard-service
+      group-id: asgard-service-consumer
       auto-offset-reset: latest
     listener:
       ack-mode: record
