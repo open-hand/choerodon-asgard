@@ -119,7 +119,8 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         if (taskInstance.getRetriedCount() >= taskInstance.getMaxRetryCount()) {
             taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.FAILED.name());
             taskInstance.setExceptionMessage(exeMsg);
-            if (taskInstanceMapper.updateByPrimaryKeySelective(taskInstance) != 1) {
+            taskInstance.setInstanceLock(null);
+            if (taskInstanceMapper.updateByPrimaryKey(taskInstance) != 1) {
                 throw new FeignException(DB_ERROR);
             }
             instance.setStatus(SagaDefinition.InstanceStatus.FAILED.name());
