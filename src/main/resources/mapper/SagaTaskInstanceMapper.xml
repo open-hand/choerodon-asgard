@@ -14,6 +14,7 @@
         AND asti.saga_code = #{sagaCode}
         AND (asti.instance_lock IS null OR asti.instance_lock = #{instance})
         AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'NONE'
+        ORDER BY asti.creation_date
     </select>
 
     <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">

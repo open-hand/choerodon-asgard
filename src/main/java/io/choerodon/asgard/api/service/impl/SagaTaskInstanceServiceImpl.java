@@ -17,6 +17,7 @@ import io.choerodon.asgard.infra.utils.StringLockProvider;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.saga.SagaDefinition;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private static final String ERROR_CODE_TASK_INSTANCE_NOT_EXIST = "error.sagaTaskInstance.notExist";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaTaskInstanceService.class);
+    private final ModelMapper modelMapper = new ModelMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private SagaTaskInstanceMapper taskInstanceMapper;
     private StringLockProvider stringLockProvider;
@@ -52,52 +54,71 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
     }
 
-    //todo 拉取存在死锁？
+    //todo 拉取存在死锁
     @Override
-    public List<SagaTaskInstanceDTO> pollBatch(final PollBatchDTO pollBatchDTO) {
-        final List<SagaTaskInstanceDTO> returnList = new ArrayList<>();
+    public Set<SagaTaskInstanceDTO> pollBatch(final PollBatchDTO pollBatchDTO) {
+        final Set<SagaTaskInstanceDTO> returnList = new LinkedHashSet<>();
         pollBatchDTO.getCodes().forEach(code -> {
             StringLockProvider.Mutex mutex = stringLockProvider.getMutex(code.getSagaCode() + ":" + code.getTaskCode());
             synchronized (mutex) {
                 //并发策略为NONE的消息拉取。
-                List<SagaTaskInstanceDTO> noneLimit = taskInstanceMapper.pollBatchNoneLimit(
-                        code.getSagaCode(), code.getTaskCode(), pollBatchDTO.getInstance());
-                noneLimit.forEach(t -> {
-                    if (t.getInstanceLock() != null ||
-                            taskInstanceMapper.lockByInstance(t.getId(), pollBatchDTO.getInstance()) == 1) {
-                        returnList.add(t);
+                taskInstanceMapper.pollBatchNoneLimit(
+                        code.getSagaCode(), code.getTaskCode(), pollBatchDTO.getInstance()).forEach(t -> {
+                    if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
+                        return;
                     }
+                    addReturnSet(returnList, pollBatchDTO.getInstance(), t);
                 });
+
                 //并发策略为TYPE_AND_ID的消息拉取。
-                 taskInstanceMapper.pollBatchTypeAndIdLimit(
+                taskInstanceMapper.pollBatchTypeAndIdLimit(
                         code.getSagaCode(), code.getTaskCode()).stream()
                         .collect(groupingBy(t -> t.getRefType() + ":" + t.getRefId())).values()
-                         .forEach(i -> addLimit(returnList, i, pollBatchDTO.getInstance()));
+                        .forEach(i -> {
+                            if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
+                                return;
+                            }
+                            addLimit(returnList, i, pollBatchDTO.getInstance());
+                        });
                 //并发策略为TYPE的消息拉取。
                 taskInstanceMapper.pollBatchTypeLimit(
                         code.getSagaCode(), code.getTaskCode()).stream()
                         .collect(groupingBy(SagaTaskInstanceDTO::getRefType)).values()
-                        .forEach(i -> addLimit(returnList, i, pollBatchDTO.getInstance()));
+                        .forEach(i -> {
+                            if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
+                                return;
+                            }
+                            addLimit(returnList, i, pollBatchDTO.getInstance());
+                        });
             }
         });
         return returnList;
     }
 
-    private void addLimit(final List<SagaTaskInstanceDTO> returnList, final List<SagaTaskInstanceDTO> list, final String instance) {
+    private void addLimit(final Set<SagaTaskInstanceDTO> returnList,
+                          final List<SagaTaskInstanceDTO> list,
+                          final String instance) {
         int currentLimitNum = list.get(0).getConcurrentLimitNum();
-        list.stream().sorted(Comparator.comparing(SagaTaskInstanceDTO::getCreationDate)).limit(currentLimitNum).forEach(j -> {
-            if (j.getInstanceLock() == null) {
-                if (taskInstanceMapper.lockByInstance(j.getId(), instance) == 1) {
-                    returnList.add(j);
-                }
-            } else if (j.getInstanceLock().equals(instance)) {
+        list.stream().sorted(Comparator.comparing(SagaTaskInstanceDTO::getCreationDate)).limit(currentLimitNum).forEach(j ->
+            addReturnSet(returnList, instance, j)
+        );
+    }
+
+    private void addReturnSet(final Set<SagaTaskInstanceDTO> returnList,
+                              final String instance,
+                              final SagaTaskInstanceDTO j) {
+        if (j.getInstanceLock() == null) {
+            if (taskInstanceMapper.lockByInstance(j.getId(), instance) == 1) {
                 returnList.add(j);
             }
-        });
+        } else if (j.getInstanceLock().equals(instance)) {
+            returnList.add(j);
+        }
     }
 
     @Override
-    public void updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
+    @Transactional
+    public SagaTaskInstanceDTO updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (taskInstance == null) {
             throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
@@ -106,16 +127,15 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         if (instance == null) {
             throw new FeignException("error.sagaInstance.notExist");
         }
-
         if (SagaDefinition.TaskInstanceStatus.COMPLETED.name().equalsIgnoreCase(statusDTO.getStatus())) {
             updateStatusCompleted(taskInstance, statusDTO.getOutput(), instance);
         } else if (SagaDefinition.TaskInstanceStatus.FAILED.name().equalsIgnoreCase(statusDTO.getStatus())) {
             updateStatusFailed(taskInstance, instance, statusDTO.getExceptionMessage());
         }
+        return modelMapper.map(taskInstanceMapper.selectByPrimaryKey(statusDTO.getId()), SagaTaskInstanceDTO.class);
     }
 
-    @Transactional
-    public void updateStatusFailed(final SagaTaskInstance taskInstance, final SagaInstance instance, final String exeMsg) {
+    private void updateStatusFailed(final SagaTaskInstance taskInstance, final SagaInstance instance, final String exeMsg) {
         if (taskInstance.getRetriedCount() >= taskInstance.getMaxRetryCount()) {
             taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.FAILED.name());
             taskInstance.setExceptionMessage(exeMsg);
@@ -131,8 +151,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         }
     }
 
-    @Transactional
-    public void updateStatusCompleted(final SagaTaskInstance taskInstance, final String outputData, final SagaInstance instance) {
+    private void updateStatusCompleted(final SagaTaskInstance taskInstance, final String outputData, final SagaInstance instance) {
         taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name());
         if (!StringUtils.isEmpty(outputData)) {
             JsonData data = new JsonData(outputData);
@@ -171,6 +190,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             List<SagaTaskInstance> nextTaskInstances = getNextTaskInstances(integerListMap, taskInstance.getSeq());
             if (nextTaskInstances.isEmpty()) {
                 instance.setStatus(SagaDefinition.InstanceStatus.COMPLETED.name());
+                instance.setEndTime(new Date());
                 instance.setOutputDataId(temp.getId());
                 instanceMapper.updateByPrimaryKeySelective(instance);
                 return;

@@ -17,6 +17,16 @@ public class PollBatchDTO {
     @NotNull(message = "error.pollBatch.codesNull")
     private List<PollCodeDTO> codes;
 
+    private Integer maxPollSize;
+
+    public Integer getMaxPollSize() {
+        return maxPollSize;
+    }
+
+    public void setMaxPollSize(Integer maxPollSize) {
+        this.maxPollSize = maxPollSize;
+    }
+
     public String getInstance() {
         return instance;
     }
@@ -31,5 +41,14 @@ public class PollBatchDTO {
 
     public void setCodes(List<PollCodeDTO> codes) {
         this.codes = codes;
+    }
+
+    @Override
+    public String toString() {
+        return "PollBatchDTO{" +
+                "instance='" + instance + '\'' +
+                ", codes=" + codes +
+                ", maxPollSize=" + maxPollSize +
+                '}';
     }
 }

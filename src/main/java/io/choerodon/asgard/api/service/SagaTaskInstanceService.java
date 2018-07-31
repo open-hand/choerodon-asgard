@@ -4,13 +4,13 @@ import io.choerodon.asgard.api.dto.PollBatchDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 
-import java.util.List;
+import java.util.Set;
 
 public interface SagaTaskInstanceService {
 
-    List<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO);
+    Set<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO);
 
-    void updateStatus(SagaTaskInstanceStatusDTO statusDTO);
+    SagaTaskInstanceDTO updateStatus(SagaTaskInstanceStatusDTO statusDTO);
 
     void unlockByInstance(String instance);
 
