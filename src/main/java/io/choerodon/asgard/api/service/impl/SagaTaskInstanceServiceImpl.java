@@ -20,8 +20,10 @@ import io.choerodon.core.saga.SagaDefinition;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -42,22 +44,24 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private StringLockProvider stringLockProvider;
     private SagaInstanceMapper instanceMapper;
     private JsonDataMapper jsonDataMapper;
+    private DataSourceTransactionManager transactionManager;
 
     public SagaTaskInstanceServiceImpl(SagaTaskInstanceMapper taskInstanceMapper,
                                        StringLockProvider stringLockProvider,
                                        SagaInstanceMapper instanceMapper,
-                                       JsonDataMapper jsonDataMapper) {
+                                       JsonDataMapper jsonDataMapper,
+                                       DataSourceTransactionManager transactionManager) {
         this.taskInstanceMapper = taskInstanceMapper;
         this.stringLockProvider = stringLockProvider;
         this.instanceMapper = instanceMapper;
         this.jsonDataMapper = jsonDataMapper;
+        this.transactionManager = transactionManager;
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
     }
 
-    //todo 拉取存在死锁
     @Override
     public Set<SagaTaskInstanceDTO> pollBatch(final PollBatchDTO pollBatchDTO) {
-        final Set<SagaTaskInstanceDTO> returnList = new LinkedHashSet<>();
+        final Set<SagaTaskInstanceDTO> returnList = new HashSet<>();
         pollBatchDTO.getCodes().forEach(code -> {
             StringLockProvider.Mutex mutex = stringLockProvider.getMutex(code.getSagaCode() + ":" + code.getTaskCode());
             synchronized (mutex) {
@@ -67,7 +71,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                     if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
                         return;
                     }
-                    addReturnSet(returnList, pollBatchDTO.getInstance(), t);
+                    addReturnList(returnList, pollBatchDTO.getInstance(), t);
                 });
 
                 //并发策略为TYPE_AND_ID的消息拉取。
@@ -100,13 +104,13 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                           final String instance) {
         int currentLimitNum = list.get(0).getConcurrentLimitNum();
         list.stream().sorted(Comparator.comparing(SagaTaskInstanceDTO::getCreationDate)).limit(currentLimitNum).forEach(j ->
-            addReturnSet(returnList, instance, j)
+                addReturnList(returnList, instance, j)
         );
     }
 
-    private void addReturnSet(final Set<SagaTaskInstanceDTO> returnList,
-                              final String instance,
-                              final SagaTaskInstanceDTO j) {
+    private void addReturnList(final Set<SagaTaskInstanceDTO> returnList,
+                               final String instance,
+                               final SagaTaskInstanceDTO j) {
         if (j.getInstanceLock() == null) {
             if (taskInstanceMapper.lockByInstance(j.getId(), instance) == 1) {
                 returnList.add(j);
@@ -117,7 +121,6 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    @Transactional
     public SagaTaskInstanceDTO updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (taskInstance == null) {
@@ -127,10 +130,18 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         if (instance == null) {
             throw new FeignException("error.sagaInstance.notExist");
         }
-        if (SagaDefinition.TaskInstanceStatus.COMPLETED.name().equalsIgnoreCase(statusDTO.getStatus())) {
-            updateStatusCompleted(taskInstance, statusDTO.getOutput(), instance);
-        } else if (SagaDefinition.TaskInstanceStatus.FAILED.name().equalsIgnoreCase(statusDTO.getStatus())) {
-            updateStatusFailed(taskInstance, instance, statusDTO.getExceptionMessage());
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try {
+            if (SagaDefinition.TaskInstanceStatus.COMPLETED.name().equalsIgnoreCase(statusDTO.getStatus())) {
+                updateStatusCompleted(taskInstance, statusDTO.getOutput(), instance);
+            } else if (SagaDefinition.TaskInstanceStatus.FAILED.name().equalsIgnoreCase(statusDTO.getStatus())) {
+                updateStatusFailed(taskInstance, instance, statusDTO.getExceptionMessage());
+            }
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
         }
         return modelMapper.map(taskInstanceMapper.selectByPrimaryKey(statusDTO.getId()), SagaTaskInstanceDTO.class);
     }

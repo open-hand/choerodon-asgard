@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper">
 
-    <select id="pollBatchNoneLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+    <select id="pollBatchNoneLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
         SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
@@ -10,14 +10,16 @@
         asti.instance_lock, jd.data AS input
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
-        WHERE asti.task_code = #{taskCode}
+        WHERE
+        asti.status = 'RUNNING'
         AND asti.saga_code = #{sagaCode}
+        AND asti.concurrent_limit_policy = 'NONE'
         AND (asti.instance_lock IS null OR asti.instance_lock = #{instance})
-        AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'NONE'
+        AND asti.task_code = #{taskCode}
         ORDER BY asti.creation_date
     </select>
 
-    <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+    <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
         SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
@@ -33,7 +35,7 @@
         ORDER BY asti.creation_date
     </select>
 
-    <select id="pollBatchTypeLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+    <select id="pollBatchTypeLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
         SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,

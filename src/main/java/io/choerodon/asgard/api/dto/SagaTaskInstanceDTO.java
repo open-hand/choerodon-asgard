@@ -231,26 +231,7 @@ public class SagaTaskInstanceDTO {
     public String toString() {
         return "SagaTaskInstanceDTO{" +
                 "id=" + id +
-                ", sagaInstanceId=" + sagaInstanceId +
-                ", taskCode='" + taskCode + '\'' +
-                ", sagaCode='" + sagaCode + '\'' +
-                ", instanceLock='" + instanceLock + '\'' +
                 ", status='" + status + '\'' +
-                ", seq=" + seq +
-                ", maxRetryCount=" + maxRetryCount +
-                ", retriedCount=" + retriedCount +
-                ", timeoutSeconds=" + timeoutSeconds +
-                ", timeoutPolicy='" + timeoutPolicy + '\'' +
-                ", exceptionMessage='" + exceptionMessage + '\'' +
-                ", refType='" + refType + '\'' +
-                ", refId='" + refId + '\'' +
-                ", concurrentLimitNum=" + concurrentLimitNum +
-                ", concurrentLimitPolicy='" + concurrentLimitPolicy + '\'' +
-                ", input='" + input + '\'' +
-                ", output='" + output + '\'' +
-                ", creationDate='" + creationDate + '\'' +
-                ", description='" + description + '\'' +
-                ", service='" + service + '\'' +
                 '}';
     }
 }

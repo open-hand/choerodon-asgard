@@ -210,4 +210,12 @@ public class SagaTaskInstance extends AuditDomain {
     public void setConcurrentLimitNum(Integer concurrentLimitNum) {
         this.concurrentLimitNum = concurrentLimitNum;
     }
+
+    @Override
+    public String toString() {
+        return "SagaTaskInstance{" +
+                "id=" + id +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }
