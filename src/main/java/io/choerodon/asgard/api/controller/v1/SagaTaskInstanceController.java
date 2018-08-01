@@ -4,6 +4,8 @@ import io.choerodon.asgard.api.dto.PollBatchDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
+import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,18 +40,21 @@ public class SagaTaskInstanceController {
         return sagaTaskInstanceService.updateStatus(statusDTO);
     }
 
+    @Permission(level = ResourceLevel.SITE)
     @ApiOperation(value = "去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
     public void unlockById(@PathVariable Long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
+    @Permission(level = ResourceLevel.SITE)
     @ApiOperation(value = "根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
     public void unlockByInstance(@RequestParam("instance") String instance) {
         sagaTaskInstanceService.unlockByInstance(instance);
     }
 
+    @Permission(level = ResourceLevel.SITE)
     @ApiOperation(value = "手动重试消息")
     @PutMapping("/{id}/retry")
     public void retry(@PathVariable Long id) {

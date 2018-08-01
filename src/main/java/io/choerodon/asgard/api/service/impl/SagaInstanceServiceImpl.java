@@ -130,6 +130,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         sagaTaskList.forEach(t -> {
             SagaTaskInstance sagaTaskInstance = modelMapper.map(t, SagaTaskInstance.class);
             sagaTaskInstance.setSagaInstanceId(instanceId);
+            sagaTaskInstance.setPlannedStartTime(new Date());
             sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name());
             sagaTaskInstance.setRefId(dto.getRefId());
             sagaTaskInstance.setRefType(dto.getRefType());

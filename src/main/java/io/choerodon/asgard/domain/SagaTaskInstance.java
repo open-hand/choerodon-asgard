@@ -7,6 +7,7 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 @ModifyAudit
 @VersionAudit
@@ -50,6 +51,12 @@ public class SagaTaskInstance extends AuditDomain {
     private String concurrentLimitPolicy;
 
     private Integer concurrentLimitNum;
+
+    private Date plannedStartTime;
+
+    private Date actualStartTime;
+
+    private Date actualEndTime;
 
     public SagaTaskInstance(String taskCode, Long outputDataId) {
         this.taskCode = taskCode;
@@ -209,6 +216,30 @@ public class SagaTaskInstance extends AuditDomain {
 
     public void setConcurrentLimitNum(Integer concurrentLimitNum) {
         this.concurrentLimitNum = concurrentLimitNum;
+    }
+
+    public Date getPlannedStartTime() {
+        return plannedStartTime;
+    }
+
+    public void setPlannedStartTime(Date plannedStartTime) {
+        this.plannedStartTime = plannedStartTime;
+    }
+
+    public Date getActualStartTime() {
+        return actualStartTime;
+    }
+
+    public void setActualStartTime(Date actualStartTime) {
+        this.actualStartTime = actualStartTime;
+    }
+
+    public Date getActualEndTime() {
+        return actualEndTime;
+    }
+
+    public void setActualEndTime(Date actualEndTime) {
+        this.actualEndTime = actualEndTime;
     }
 
     @Override

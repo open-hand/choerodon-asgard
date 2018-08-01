@@ -5,6 +5,7 @@ import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +22,9 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
                                                  @Param("taskCode") String taskCode);
 
 
-    int lockByInstance(@Param("id") long id, @Param("instance") String instance);
+    int lockByInstanceAndUpdateStartTime(@Param("id") long id,
+                                         @Param("instance") String instance,
+                                         @Param("time") Date date);
 
     void increaseRetriedCount(@Param("id") long id);
 
