@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.dto;
 
+import java.util.Date;
 import java.util.Objects;
 
 public class SagaTaskInstanceDTO {
@@ -45,6 +46,12 @@ public class SagaTaskInstanceDTO {
     private String description;
 
     private String service;
+
+    private Date plannedStartTime;
+
+    private Date actualStartTime;
+
+    private Date actualEndTime;
 
     public Long getId() {
         return id;
@@ -212,6 +219,30 @@ public class SagaTaskInstanceDTO {
 
     public void setService(String service) {
         this.service = service;
+    }
+
+    public Date getPlannedStartTime() {
+        return plannedStartTime;
+    }
+
+    public void setPlannedStartTime(Date plannedStartTime) {
+        this.plannedStartTime = plannedStartTime;
+    }
+
+    public Date getActualStartTime() {
+        return actualStartTime;
+    }
+
+    public void setActualStartTime(Date actualStartTime) {
+        this.actualStartTime = actualStartTime;
+    }
+
+    public Date getActualEndTime() {
+        return actualEndTime;
+    }
+
+    public void setActualEndTime(Date actualEndTime) {
+        this.actualEndTime = actualEndTime;
     }
 
     @Override

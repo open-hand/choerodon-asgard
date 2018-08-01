@@ -7,7 +7,8 @@
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
         asti.seq, asti.saga_code,
-        asti.instance_lock, jd.data AS input
+        asti.instance_lock, jd.data AS input,
+        asti.actual_start_time
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE
@@ -16,7 +17,7 @@
         AND asti.concurrent_limit_policy = 'NONE'
         AND (asti.instance_lock IS null OR asti.instance_lock = #{instance})
         AND asti.task_code = #{taskCode}
-        ORDER BY asti.creation_date
+        ORDER BY asti.id
     </select>
 
     <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
@@ -26,13 +27,14 @@
         asti.seq, asti.saga_code,
         asti.instance_lock, jd.data AS input,
         asti.ref_type, asti.ref_id,
-        asti.creation_date, asti.concurrent_limit_num
+        asti.creation_date, asti.concurrent_limit_num,
+        asti.actual_start_time
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE asti.task_code = #{taskCode}
         AND asti.saga_code = #{sagaCode}
         AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'TYPE_AND_ID'
-        ORDER BY asti.creation_date
+        ORDER BY asti.id
     </select>
 
     <select id="pollBatchTypeLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
@@ -42,13 +44,14 @@
         asti.seq, asti.saga_code,
         asti.instance_lock, jd.data AS input,
         asti.ref_type, asti.creation_date,
-        asti.concurrent_limit_num
+        asti.concurrent_limit_num,
+        asti.actual_start_time
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE asti.task_code = #{taskCode}
         AND asti.saga_code = #{sagaCode}
         AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'TYPE'
-        ORDER BY asti.creation_date
+        ORDER BY asti.id
     </select>
 
     <update id="lockByInstanceBatch" parameterType="java.util.List">
@@ -61,9 +64,12 @@
         </foreach>
     </update>
 
-    <update id="lockByInstance">
+    <update id="lockByInstanceAndUpdateStartTime">
         UPDATE asgard_saga_task_instance
         SET instance_lock = #{instance}, object_version_number = object_version_number + 1
+        <if test="time != null">
+            , actual_start_time = #{time}
+        </if>
         WHERE id = #{id} AND instance_lock IS NULL
     </update>
 

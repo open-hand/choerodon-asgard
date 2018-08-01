@@ -58,4 +58,11 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
             column(name: "LAST_UPDATE_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+    changeSet(id: '2018-08-01-add-time', author: 'jcalaz@163.com') {
+        addColumn(tableName: 'asgard_saga_task_instance') {
+            column(name: "planned_start_time", type: "DATETIME", remarks: '计划开始执行时间')
+            column(name: "actual_start_time", type: "DATETIME", remarks: '实际开始执行时间')
+            column(name: "actual_end_time", type: "DATETIME", remarks: '实际执行结束时间')
+        }
+    }
 }

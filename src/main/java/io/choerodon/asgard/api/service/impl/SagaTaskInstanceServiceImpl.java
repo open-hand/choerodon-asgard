@@ -111,8 +111,12 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private void addReturnList(final Set<SagaTaskInstanceDTO> returnList,
                                final String instance,
                                final SagaTaskInstanceDTO j) {
+        Date time = null;
+        if (j.getActualStartTime() == null) {
+            time = new Date();
+        }
         if (j.getInstanceLock() == null) {
-            if (taskInstanceMapper.lockByInstance(j.getId(), instance) == 1) {
+            if (taskInstanceMapper.lockByInstanceAndUpdateStartTime(j.getId(), instance, time) == 1) {
                 returnList.add(j);
             }
         } else if (j.getInstanceLock().equals(instance)) {
@@ -151,6 +155,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.FAILED.name());
             taskInstance.setExceptionMessage(exeMsg);
             taskInstance.setInstanceLock(null);
+            taskInstance.setActualEndTime(new Date());
             if (taskInstanceMapper.updateByPrimaryKey(taskInstance) != 1) {
                 throw new FeignException(DB_ERROR);
             }
@@ -171,6 +176,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             }
             taskInstance.setOutputDataId(data.getId());
         }
+        taskInstance.setActualEndTime(new Date());
         if (taskInstanceMapper.updateByPrimaryKeySelective(taskInstance) != 1) {
             throw new FeignException(DB_ERROR);
         }
