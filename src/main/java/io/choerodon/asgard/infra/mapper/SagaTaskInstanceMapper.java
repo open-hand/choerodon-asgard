@@ -6,19 +6,19 @@ import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
 
-    List<SagaTaskInstanceDTO> pollBatchNoneLimit(@Param("sagaCode") String sagaCode,
-                                        @Param("taskCode") String taskCode,
-                                        @Param("instance") String instance);
-
+    Set<SagaTaskInstanceDTO> pollBatchNoneLimit(@Param("sagaCode") String sagaCode,
+                                                @Param("taskCode") String taskCode,
+                                                @Param("instance") String instance);
 
     List<SagaTaskInstanceDTO> pollBatchTypeAndIdLimit(@Param("sagaCode") String sagaCode,
-                                                 @Param("taskCode") String taskCode);
+                                                      @Param("taskCode") String taskCode);
 
     List<SagaTaskInstanceDTO> pollBatchTypeLimit(@Param("sagaCode") String sagaCode,
-                                                      @Param("taskCode") String taskCode);
+                                                 @Param("taskCode") String taskCode);
 
 
     int lockByInstance(@Param("id") long id, @Param("instance") String instance);
