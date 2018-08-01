@@ -1,4 +1,4 @@
-package io.choerodon.asgard.api.controller;
+package io.choerodon.asgard.api.controller.v1;
 
 import io.choerodon.asgard.api.dto.SagaInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaWithTaskInstanceDTO;
