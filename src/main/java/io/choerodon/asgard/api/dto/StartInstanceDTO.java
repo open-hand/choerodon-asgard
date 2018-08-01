@@ -14,8 +14,6 @@ public class StartInstanceDTO {
     @NotNull(message = "error.startSaga.refTIdNull")
     private String refId;
 
-    private Long userId;
-
     public String getSagaCode() {
         return sagaCode;
     }
@@ -47,14 +45,5 @@ public class StartInstanceDTO {
     public void setRefId(String refId) {
         this.refId = refId;
     }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
 
 }

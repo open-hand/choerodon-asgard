@@ -15,7 +15,6 @@ import io.choerodon.asgard.infra.mapper.*;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
-import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.core.saga.SagaDefinition;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -75,9 +74,6 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public ResponseEntity<SagaInstanceDTO> start(final StartInstanceDTO dto) {
-        if (dto.getUserId() != null) {
-            DetailsHelper.getUserDetails().setUserId(dto.getUserId());
-        }
         final String code = dto.getSagaCode();
         if (!sagaMapper.existByCode(code)) {
             throw new FeignException("error.saga.notExist");
