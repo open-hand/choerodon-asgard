@@ -69,7 +69,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     private void propertyDataConsume(final PropertyData propertyData) {
         propertyData.getSagas().stream()
                 .map(t -> ConvertUtils.convertSaga(t, propertyData.getService()))
-                .forEach(sagaService::createSaga);
+                .forEach(sagaService::create);
         sagaTaskService.createSagaTaskList(propertyData.getSagaTasks().stream()
                 .map(t -> ConvertUtils.convertSagaTask(t, propertyData.getService()))
                 .collect(Collectors.toList()), propertyData.getService());

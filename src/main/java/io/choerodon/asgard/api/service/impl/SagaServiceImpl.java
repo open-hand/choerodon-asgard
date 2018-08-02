@@ -10,6 +10,7 @@ import io.choerodon.asgard.infra.mapper.SagaMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
@@ -42,7 +43,7 @@ public class SagaServiceImpl implements SagaService {
     }
 
     @Override
-    public void createSaga(Saga saga) {
+    public void create(Saga saga) {
         if (StringUtils.isEmpty(saga.getCode()) || StringUtils.isEmpty(saga.getService())) {
             LOGGER.warn("error.createSaga.valid, saga : {}", saga);
             return;
@@ -74,6 +75,7 @@ public class SagaServiceImpl implements SagaService {
         SagaWithTaskDTO dto = new SagaWithTaskDTO(saga.getId(), saga.getCode(), saga.getDescription(), saga.getInputSchema(), saga.getService());
         SagaTask query = new SagaTask();
         query.setSagaCode(saga.getCode());
+        query.setIsEnabled(true);
         List<List<SagaTaskDTO>> list = new ArrayList<>(
                 sagaTaskMapper.select(query).stream()
                         .map(t -> modelMapper.map(t, SagaTaskDTO.class))
@@ -82,5 +84,19 @@ public class SagaServiceImpl implements SagaService {
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-
+    @Override
+    public void delete(Long id) {
+        Saga saga = sagaMapper.selectByPrimaryKey(id);
+        if (saga == null) {
+            throw new FeignException("error.saga.notExist");
+        }
+        SagaTask sagaTask = new SagaTask();
+        sagaTask.setIsEnabled(true);
+        sagaTask.setSagaCode(saga.getCode());
+        List<SagaTask> sagaTasks = sagaTaskMapper.select(sagaTask);
+        if (!sagaTasks.isEmpty()) {
+            throw new FeignException("error.saga.deleteWhenTaskExist");
+        }
+        sagaMapper.deleteByPrimaryKey(id);
+    }
 }
