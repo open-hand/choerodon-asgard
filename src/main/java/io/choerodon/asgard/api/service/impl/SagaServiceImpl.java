@@ -93,6 +93,7 @@ public class SagaServiceImpl implements SagaService {
                     list.get(0).forEach(t -> t.setInputSchema(saga.getInputSchema()));
                 } else {
                     List<JsonMergeDTO> mergeDTOS = list.get(i - 1).stream()
+                            .filter(t -> !StringUtils.isEmpty(t.getCode()) && !StringUtils.isEmpty(t.getOutputSchema()))
                             .map(t -> new JsonMergeDTO(t.getCode(), t.getOutputSchema())).collect(Collectors.toList());
                     String inputSchema = ConvertUtils.jsonMerge(mergeDTOS, objectMapper);
                     list.get(i).forEach(t -> t.setInputSchema(inputSchema));
