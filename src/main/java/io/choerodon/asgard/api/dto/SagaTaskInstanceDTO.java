@@ -1,5 +1,7 @@
 package io.choerodon.asgard.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 import java.util.Objects;
 
@@ -47,10 +49,13 @@ public class SagaTaskInstanceDTO {
 
     private String service;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date plannedStartTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date actualStartTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date actualEndTime;
 
     public Long getId() {
