@@ -50,7 +50,7 @@ public class SagaController {
 
     @Permission(level = ResourceLevel.SITE)
     @DeleteMapping("/{id}")
-    @ApiOperation(value = "查询某个事务的定义详情")
+    @ApiOperation(value = "删除事务")
     public void delete(@PathVariable("id") Long id) {
         sagaService.delete(id);
     }
