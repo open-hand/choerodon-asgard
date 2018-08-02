@@ -1,5 +1,7 @@
 package io.choerodon.asgard.api.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.asgard.api.dto.JsonMergeDTO;
 import io.choerodon.asgard.api.dto.SagaDTO;
 import io.choerodon.asgard.api.dto.SagaTaskDTO;
 import io.choerodon.asgard.api.dto.SagaWithTaskDTO;
@@ -8,6 +10,7 @@ import io.choerodon.asgard.domain.Saga;
 import io.choerodon.asgard.domain.SagaTask;
 import io.choerodon.asgard.infra.mapper.SagaMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
+import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
@@ -21,8 +24,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -36,6 +41,8 @@ public class SagaServiceImpl implements SagaService {
     private SagaTaskMapper sagaTaskMapper;
 
     private final ModelMapper modelMapper = new ModelMapper();
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public SagaServiceImpl(SagaMapper sagaMapper, SagaTaskMapper sagaTaskMapper) {
         this.sagaMapper = sagaMapper;
@@ -80,6 +87,20 @@ public class SagaServiceImpl implements SagaService {
                 sagaTaskMapper.select(query).stream()
                         .map(t -> modelMapper.map(t, SagaTaskDTO.class))
                         .collect(groupingBy(SagaTaskDTO::getSeq)).values());
+        try {
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 0) {
+                    list.get(0).forEach(t -> t.setInputSchema(saga.getInputSchema()));
+                } else {
+                    List<JsonMergeDTO> mergeDTOS = list.get(i - 1).stream()
+                            .map(t -> new JsonMergeDTO(t.getCode(), t.getOutputSchema())).collect(Collectors.toList());
+                    String inputSchema = ConvertUtils.jsonMerge(mergeDTOS, objectMapper);
+                    list.get(i).forEach(t -> t.setInputSchema(inputSchema));
+                }
+            }
+        } catch (IOException e) {
+            LOGGER.warn("error.SagaService.query.IOException {}", e.getCause());
+        }
         dto.setTasks(list);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
