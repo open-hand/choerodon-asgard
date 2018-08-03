@@ -30,6 +30,8 @@ public class SagaTaskDTO {
 
     private String inputSchema;
 
+    private String outputSchemaSource;
+
     public Long getId() {
         return id;
     }
@@ -140,5 +142,13 @@ public class SagaTaskDTO {
 
     public void setInputSchema(String inputSchema) {
         this.inputSchema = inputSchema;
+    }
+
+    public String getOutputSchemaSource() {
+        return outputSchemaSource;
+    }
+
+    public void setOutputSchemaSource(String outputSchemaSource) {
+        this.outputSchemaSource = outputSchemaSource;
     }
 }
