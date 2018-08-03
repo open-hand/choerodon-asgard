@@ -41,6 +41,8 @@ public class SagaTask extends AuditDomain {
 
     private String outputSchema;
 
+    private String outputSchemaSource;
+
     public SagaTask(String code) {
         this.code = code;
     }
@@ -166,6 +168,14 @@ public class SagaTask extends AuditDomain {
         this.concurrentLimitPolicy = concurrentLimitPolicy;
     }
 
+    public String getOutputSchemaSource() {
+        return outputSchemaSource;
+    }
+
+    public void setOutputSchemaSource(String outputSchemaSource) {
+        this.outputSchemaSource = outputSchemaSource;
+    }
+
     @Override
     public String toString() {
         return "SagaTask{" +
@@ -182,6 +192,7 @@ public class SagaTask extends AuditDomain {
                 ", isEnabled=" + isEnabled +
                 ", service='" + service + '\'' +
                 ", outputSchema='" + outputSchema + '\'' +
+                ", outputSchemaSource='" + outputSchemaSource + '\'' +
                 '}';
     }
 }

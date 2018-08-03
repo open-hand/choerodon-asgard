@@ -12,7 +12,7 @@ import io.choerodon.asgard.domain.SagaTask;
 import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.choerodon.asgard.infra.mapper.JsonDataMapper;
 import io.choerodon.swagger.property.PropertyData;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,18 +23,14 @@ public class ConvertUtils {
     private ConvertUtils() {
     }
 
-    public static Saga convertSaga(final PropertyData.Saga saga, final String service) {
-        Saga sagaDO = new Saga();
-        sagaDO.setCode(saga.getCode());
-        sagaDO.setDescription(saga.getDescription());
+    public static Saga convertSaga(final ModelMapper mapper, final PropertyData.Saga saga, final String service) {
+        Saga sagaDO = mapper.map(saga, Saga.class);
         sagaDO.setService(service);
-        sagaDO.setInputSchema(saga.getInputSchema());
         return sagaDO;
     }
 
-    public static SagaTask convertSagaTask(final PropertyData.SagaTask sagaTask, final String service) {
-        SagaTask sagaTaskDO = new SagaTask();
-        BeanUtils.copyProperties(sagaTask, sagaTaskDO);
+    public static SagaTask convertSagaTask(final ModelMapper mapper, final PropertyData.SagaTask sagaTask, final String service) {
+        SagaTask sagaTaskDO = mapper.map(sagaTask, SagaTask.class);
         sagaTaskDO.setService(service);
         return sagaTaskDO;
     }
