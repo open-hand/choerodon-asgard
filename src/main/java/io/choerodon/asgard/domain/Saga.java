@@ -25,6 +25,8 @@ public class Saga extends AuditDomain {
 
     private String service;
 
+    private String inputSchemaSource;
+
     public Saga(String code) {
         this.code = code;
     }
@@ -73,6 +75,14 @@ public class Saga extends AuditDomain {
         this.service = service;
     }
 
+    public String getInputSchemaSource() {
+        return inputSchemaSource;
+    }
+
+    public void setInputSchemaSource(String inputSchemaSource) {
+        this.inputSchemaSource = inputSchemaSource;
+    }
+
     @Override
     public String toString() {
         return "Saga{" +
@@ -81,6 +91,7 @@ public class Saga extends AuditDomain {
                 ", description='" + description + '\'' +
                 ", inputSchema='" + inputSchema + '\'' +
                 ", service='" + service + '\'' +
+                ", inputSchemaSource='" + inputSchemaSource + '\'' +
                 '}';
     }
 }

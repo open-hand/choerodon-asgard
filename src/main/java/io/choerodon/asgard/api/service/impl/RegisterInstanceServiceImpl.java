@@ -7,6 +7,7 @@ import io.choerodon.asgard.api.service.SagaTaskInstanceService;
 import io.choerodon.asgard.api.service.SagaTaskService;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.swagger.property.PropertyData;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,8 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     private SagaTaskService sagaTaskService;
 
     private SagaTaskInstanceService sagaTaskInstanceService;
+
+    private final ModelMapper modelMapper = new ModelMapper();
 
     public RegisterInstanceServiceImpl(SagaService sagaService,
                                        SagaTaskService sagaTaskService, SagaTaskInstanceService sagaTaskInstanceService) {
@@ -68,10 +71,10 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
 
     private void propertyDataConsume(final PropertyData propertyData) {
         propertyData.getSagas().stream()
-                .map(t -> ConvertUtils.convertSaga(t, propertyData.getService()))
+                .map(t -> ConvertUtils.convertSaga(modelMapper, t, propertyData.getService()))
                 .forEach(sagaService::create);
         sagaTaskService.createSagaTaskList(propertyData.getSagaTasks().stream()
-                .map(t -> ConvertUtils.convertSagaTask(t, propertyData.getService()))
+                .map(t -> ConvertUtils.convertSagaTask(modelMapper, t, propertyData.getService()))
                 .collect(Collectors.toList()), propertyData.getService());
     }
 
