@@ -1,6 +1,7 @@
 package io.choerodon.asgard.api.service.impl;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.api.dto.SagaInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
@@ -20,11 +21,14 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +39,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SagaInstanceService.class);
 
     public static final String DB_ERROR = "error.db.insertOrUpdate";
 
@@ -58,6 +63,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         this.instanceMapper = instanceMapper;
         this.taskInstanceMapper = taskInstanceMapper;
         this.jsonDataMapper = jsonDataMapper;
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         modelMapper.addMappings(new PropertyMap<SagaTask, SagaTaskInstance>() {
             @Override
@@ -156,7 +162,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public ResponseEntity<SagaWithTaskInstanceDTO> query(Long id) {
+    public ResponseEntity<String> query(Long id) {
         SagaInstance sagaInstance = instanceMapper.selectByPrimaryKey(id);
         if (sagaInstance == null) {
             throw new CommonException("error.sagaInstance.notExist");
@@ -173,6 +179,12 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                         .stream()
                         .collect(groupingBy(SagaTaskInstanceDTO::getSeq)).values());
         dto.setTasks(list);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        String response = null;
+        try {
+            response = objectMapper.writeValueAsString(dto);
+        } catch (JsonProcessingException e) {
+            LOGGER.warn("error.SagaInstanceService.query.JsonProcessingException {}", e);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

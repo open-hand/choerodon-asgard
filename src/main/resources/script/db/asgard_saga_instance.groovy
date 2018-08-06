@@ -2,6 +2,7 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
     changeSet(id: '2018-07-04-create-table-asgard_saga_instance', author: 'jcalaz@163.com') {
+        validCheckSum '7:d4acc43d89c6f99bca2a1b4de5b8e003'
         createTable(tableName: "asgard_saga_instance") {
             column(name: 'id', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true)
@@ -16,8 +17,8 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
             column(name: 'ref_id', type: 'VARCHAR(128)', remarks: '关联id')
             column(name: 'input_data_id', type: 'BIGINT UNSIGNED', remarks: '输入参数的json data id')
             column(name: 'output_data_id', type: 'BIGINT UNSIGNED', remarks: '输出参数的json data id')
-            column(name: "start_time", type: "DATETIME", remarks: 'saga开始执行的时间')
-            column(name: "end_time", type: "DATETIME", remarks: 'saga执行结束的时间')
+            column(name: "start_time", type: "DATETIME(3)", remarks: 'saga开始执行的时间')
+            column(name: "end_time", type: "DATETIME(3)", remarks: 'saga执行结束的时间')
 
 
             column(name: "OBJECT_VERSION_NUMBER", type: "BIGINT", defaultValue: "1")
