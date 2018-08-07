@@ -8,14 +8,14 @@ import java.util.Set;
 
 public interface SagaTaskInstanceService {
 
-    Set<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO);
+    Set<SagaTaskInstanceDTO>  pollBatch(PollBatchDTO pollBatchDTO);
 
     SagaTaskInstanceDTO updateStatus(SagaTaskInstanceStatusDTO statusDTO);
 
     void unlockByInstance(String instance);
 
-    void retry(Long id);
+    void retry(long id);
 
-    void unlockById(Long id);
+    void unlockById(long id);
 
 }

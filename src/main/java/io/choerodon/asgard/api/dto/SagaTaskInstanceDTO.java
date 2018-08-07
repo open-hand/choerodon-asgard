@@ -53,6 +53,8 @@ public class SagaTaskInstanceDTO {
 
     private Date actualEndTime;
 
+    private Long objectVersionNumber;
+
     public Long getId() {
         return id;
     }
@@ -245,6 +247,14 @@ public class SagaTaskInstanceDTO {
         this.actualEndTime = actualEndTime;
     }
 
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -263,6 +273,7 @@ public class SagaTaskInstanceDTO {
         return "SagaTaskInstanceDTO{" +
                 "id=" + id +
                 ", status='" + status + '\'' +
+                ", objectVersionNumber=" + objectVersionNumber +
                 '}';
     }
 }

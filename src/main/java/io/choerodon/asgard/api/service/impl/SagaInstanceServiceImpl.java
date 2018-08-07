@@ -13,10 +13,10 @@ import io.choerodon.asgard.domain.SagaInstance;
 import io.choerodon.asgard.domain.SagaTask;
 import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.choerodon.asgard.infra.mapper.*;
+import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
-import io.choerodon.core.saga.SagaDefinition;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
@@ -104,8 +104,9 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Transactional
     public SagaInstanceDTO startInstanceAndTask(final StartInstanceDTO dto, final List<SagaTask> sagaTasks) {
+        final Date startTime = new Date(System.currentTimeMillis());
         SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
-                SagaDefinition.TaskInstanceStatus.RUNNING.name(), new Date());
+                SagaDefinition.TaskInstanceStatus.RUNNING.name(), startTime);
         Long inputDataId = null;
         if (dto.getInput() != null) {
             JsonData jsonData = new JsonData(dto.getInput());
@@ -123,20 +124,21 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         for (Map.Entry<Integer, List<SagaTask>> entry : taskMap.entrySet()) {
             if (i < 1) {
                 i++;
-                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, true);
+                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, startTime,true);
             } else {
-                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, false);
+                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, startTime,false);
             }
         }
         return modelMapper.map(instanceMapper.selectByPrimaryKey(instance.getId()), SagaInstanceDTO.class);
     }
 
     private void addRunningTask(final List<SagaTask> sagaTaskList, final StartInstanceDTO dto,
-                                final Long instanceId, final Long inputDataId, boolean running) {
+                                final Long instanceId, final Long inputDataId,
+                                final Date startTime, boolean running) {
         sagaTaskList.forEach(t -> {
             SagaTaskInstance sagaTaskInstance = modelMapper.map(t, SagaTaskInstance.class);
             sagaTaskInstance.setSagaInstanceId(instanceId);
-            sagaTaskInstance.setPlannedStartTime(new Date());
+            sagaTaskInstance.setPlannedStartTime(startTime);
             sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name());
             sagaTaskInstance.setRefId(dto.getRefId());
             sagaTaskInstance.setRefType(dto.getRefType());
@@ -162,6 +164,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<String> query(Long id) {
         SagaInstance sagaInstance = instanceMapper.selectByPrimaryKey(id);
         if (sagaInstance == null) {

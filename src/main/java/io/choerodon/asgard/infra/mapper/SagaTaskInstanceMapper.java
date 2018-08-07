@@ -24,6 +24,7 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
 
     int lockByInstanceAndUpdateStartTime(@Param("id") long id,
                                          @Param("instance") String instance,
+                                         @Param("number") Long objectVersionNumber,
                                          @Param("time") Date date);
 
     void increaseRetriedCount(@Param("id") long id);

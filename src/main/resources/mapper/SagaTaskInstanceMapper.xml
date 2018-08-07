@@ -8,7 +8,7 @@
         asti.task_code, asti.status,
         asti.seq, asti.saga_code,
         asti.instance_lock, jd.data AS input,
-        asti.actual_start_time
+        asti.actual_start_time, asti.object_version_number
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE
@@ -28,7 +28,7 @@
         asti.instance_lock, jd.data AS input,
         asti.ref_type, asti.ref_id,
         asti.creation_date, asti.concurrent_limit_num,
-        asti.actual_start_time
+        asti.actual_start_time, asti.object_version_number
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE asti.task_code = #{taskCode}
@@ -45,7 +45,7 @@
         asti.instance_lock, jd.data AS input,
         asti.ref_type, asti.creation_date,
         asti.concurrent_limit_num,
-        asti.actual_start_time
+        asti.actual_start_time, asti.object_version_number
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE asti.task_code = #{taskCode}
@@ -70,7 +70,7 @@
         <if test="time != null">
             , actual_start_time = #{time}
         </if>
-        WHERE id = #{id} AND instance_lock IS NULL
+        WHERE id = #{id} AND instance_lock IS NULL AND object_version_number = #{number}
     </update>
 
     <update id="increaseRetriedCount">

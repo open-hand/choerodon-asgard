@@ -60,3 +60,6 @@ choerodon:
     skipService: register-server, api-gateway, gateway-helper, oauth-server, config-server, event-store-service
     fetch.time: 20
     isLocal: false
+  saga:
+    consumer:
+      enabled: false

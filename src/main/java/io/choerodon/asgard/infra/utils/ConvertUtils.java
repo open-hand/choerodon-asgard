@@ -11,7 +11,7 @@ import io.choerodon.asgard.domain.Saga;
 import io.choerodon.asgard.domain.SagaTask;
 import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.choerodon.asgard.infra.mapper.JsonDataMapper;
-import io.choerodon.swagger.property.PropertyData;
+import io.choerodon.asgard.saga.property.PropertyData;
 import org.modelmapper.ModelMapper;
 
 import java.io.IOException;

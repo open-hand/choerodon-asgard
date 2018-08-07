@@ -6,7 +6,7 @@ import io.choerodon.asgard.api.service.SagaService;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
 import io.choerodon.asgard.api.service.SagaTaskService;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
-import io.choerodon.swagger.property.PropertyData;
+import io.choerodon.asgard.saga.property.PropertyData;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -60,7 +60,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
             address = "127.0.0.1:" + address.split(":")[1];
         }
         ResponseEntity<PropertyData> response = restTemplate.getForEntity("http://"
-                + address + "/choerodon/properties", PropertyData.class);
+                + address + "/choerodon/asgard", PropertyData.class);
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         } else {
