@@ -1,7 +1,5 @@
 package io.choerodon.asgard.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 import java.util.Objects;
 
@@ -49,14 +47,13 @@ public class SagaTaskInstanceDTO {
 
     private String service;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date plannedStartTime;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date actualStartTime;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date actualEndTime;
+
+    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -250,6 +247,14 @@ public class SagaTaskInstanceDTO {
         this.actualEndTime = actualEndTime;
     }
 
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -268,6 +273,7 @@ public class SagaTaskInstanceDTO {
         return "SagaTaskInstanceDTO{" +
                 "id=" + id +
                 ", status='" + status + '\'' +
+                ", objectVersionNumber=" + objectVersionNumber +
                 '}';
     }
 }

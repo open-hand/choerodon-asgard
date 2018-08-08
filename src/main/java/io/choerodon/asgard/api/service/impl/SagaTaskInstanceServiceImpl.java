@@ -14,9 +14,9 @@ import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.infra.utils.StringLockProvider;
+import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
-import io.choerodon.core.saga.SagaDefinition;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +116,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             time = new Date();
         }
         if (j.getInstanceLock() == null) {
-            if (taskInstanceMapper.lockByInstanceAndUpdateStartTime(j.getId(), instance, time) == 1) {
+            if (taskInstanceMapper.lockByInstanceAndUpdateStartTime(j.getId(), instance, j.getObjectVersionNumber(), time) == 1) {
                 returnList.add(j);
             }
         } else if (j.getInstanceLock().equals(instance)) {
@@ -243,7 +243,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public void retry(Long id) {
+    public void retry(long id) {
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(id);
         if (taskInstance == null) {
             throw new CommonException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
@@ -253,7 +253,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public void unlockById(Long id) {
+    public void unlockById(long id) {
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(id);
         if (taskInstance == null) {
             throw new CommonException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
@@ -261,4 +261,5 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         taskInstance.setInstanceLock(null);
         taskInstanceMapper.updateByPrimaryKey(taskInstance);
     }
+
 }

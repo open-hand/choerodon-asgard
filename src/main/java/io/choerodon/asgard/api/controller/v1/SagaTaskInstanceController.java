@@ -43,7 +43,7 @@ public class SagaTaskInstanceController {
     @Permission(level = ResourceLevel.SITE)
     @ApiOperation(value = "去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
-    public void unlockById(@PathVariable Long id) {
+    public void unlockById(@PathVariable long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
@@ -57,7 +57,7 @@ public class SagaTaskInstanceController {
     @Permission(level = ResourceLevel.SITE)
     @ApiOperation(value = "手动重试消息")
     @PutMapping("/{id}/retry")
-    public void retry(@PathVariable Long id) {
+    public void retry(@PathVariable long id) {
         sagaTaskInstanceService.retry(id);
     }
 

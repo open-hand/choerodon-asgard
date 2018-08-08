@@ -8,7 +8,7 @@
         code,
         service,
         description,
-        input_schema AS input
+        input_schema AS inputSchema
         FROM asgard_orch_saga
         WHERE 1 = 1
         <if test="code != null">

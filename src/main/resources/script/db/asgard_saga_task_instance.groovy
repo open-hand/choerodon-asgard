@@ -59,10 +59,11 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
         }
     }
     changeSet(id: '2018-08-01-add-time', author: 'jcalaz@163.com') {
+        validCheckSum '7:e1c3a2a45aceb8c679ecd54042e42701'
         addColumn(tableName: 'asgard_saga_task_instance') {
-            column(name: "planned_start_time", type: "DATETIME", remarks: '计划开始执行时间')
-            column(name: "actual_start_time", type: "DATETIME", remarks: '实际开始执行时间')
-            column(name: "actual_end_time", type: "DATETIME", remarks: '实际执行结束时间')
+            column(name: "planned_start_time", type: "DATETIME(3)", remarks: '计划开始执行时间')
+            column(name: "actual_start_time", type: "DATETIME(3)", remarks: '实际开始执行时间')
+            column(name: "actual_end_time", type: "DATETIME(3)", remarks: '实际执行结束时间')
         }
     }
 }
