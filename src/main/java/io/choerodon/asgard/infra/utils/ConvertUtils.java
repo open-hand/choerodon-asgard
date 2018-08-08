@@ -59,6 +59,13 @@ public class ConvertUtils {
 
     public static String jsonMerge(final List<JsonMergeDTO> mergeDTOS, final ObjectMapper objectMapper) throws IOException {
         ObjectNode root = objectMapper.createObjectNode();
+        if (mergeDTOS.isEmpty()) {
+            return root.toString();
+        }
+        //元素都相同则直接返回任意一个
+        if (isAllTheSame(mergeDTOS)) {
+            return mergeDTOS.get(0).getTaskOutputJsonData();
+        }
         for (JsonMergeDTO dto : mergeDTOS) {
             JsonNode jsonNode = objectMapper.readTree(dto.getTaskOutputJsonData());
             if (jsonNode instanceof ObjectNode) {
@@ -70,6 +77,23 @@ public class ConvertUtils {
             }
         }
         return root.toString();
+    }
+
+    /**
+     * 判断所有元素是否相同
+     */
+    private static boolean isAllTheSame(final List<JsonMergeDTO> mergeDTOS) {
+        if (mergeDTOS.size() == 1) {
+            return true;
+        }
+        if (mergeDTOS.size() > 1) {
+            for (int i = 0; i < mergeDTOS.size() - 1; i++) {
+                if (!mergeDTOS.get(i).getTaskOutputJsonData().equals(mergeDTOS.get(i + 1).getTaskOutputJsonData())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }
