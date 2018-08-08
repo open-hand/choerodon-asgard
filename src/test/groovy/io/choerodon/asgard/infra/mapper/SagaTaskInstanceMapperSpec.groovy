@@ -2,7 +2,7 @@ package io.choerodon.asgard.infra.mapper
 
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.domain.SagaTaskInstance
-import io.choerodon.core.saga.SagaDefinition
+import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -39,7 +39,7 @@ class SagaTaskInstanceMapperSpec extends Specification {
         sagaTaskInstance.setTimeoutSeconds(1)
         sagaTaskInstance.setRetriedCount(0)
         sagaTaskInstance.setMaxRetryCount(1)
-        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name())
+        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
 
         when: '插入数据库'
         sagaTaskInstanceMapper.insert(sagaTaskInstance)
@@ -55,12 +55,12 @@ class SagaTaskInstanceMapperSpec extends Specification {
         data.getTimeoutSeconds() == 1
         data.getRetriedCount() == 0
         data.getMaxRetryCount() == 1
-        data.getStatus() == SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name()
+        data.getStatus() == SagaDefinition.TaskInstanceStatus.RUNNING.name()
     }
 
     def 'pollBatch'() {
         when: '根据code查询'
-        def result = sagaTaskInstanceMapper.pollBatch(sagaTaskInstance.getTaskCode(), 'instance')
+        def result = sagaTaskInstanceMapper.pollBatchNoneLimit(sagaTaskInstance.getSagaCode(), sagaTaskInstance.getTaskCode(), 'instance')
 
         then: '数据不为空;状态为RUNNING;instance_lock为null'
         result != null

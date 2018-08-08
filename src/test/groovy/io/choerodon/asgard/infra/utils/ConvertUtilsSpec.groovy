@@ -8,11 +8,13 @@ import io.choerodon.asgard.api.dto.JsonMergeDTO
 import io.choerodon.asgard.domain.JsonData
 import io.choerodon.asgard.domain.SagaTaskInstance
 import io.choerodon.asgard.infra.mapper.JsonDataMapper
-import io.choerodon.core.saga.SagaDefinition
-import io.choerodon.swagger.property.PropertyData
+import io.choerodon.asgard.saga.SagaDefinition
+import io.choerodon.asgard.saga.property.PropertyData
+import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
+import spock.lang.Shared
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -24,20 +26,20 @@ class ConvertUtilsSpec extends Specification {
     @Autowired
     JsonDataMapper jsonDataMapper
 
+    @Shared
+    def mapper = new ModelMapper()
+
     def 'convertSaga'() {
         given: '创建一个PropertyData.Saga'
-        String[] input = ['name', 'id']
-        String[] output = ['id', 'code', 'description']
-        def data = new PropertyData.Saga('code', 'desc', input, output)
+        def data = new PropertyData.Saga('code', 'desc')
         def service = 'convertSaga'
 
         when: '调用ConvertUtils的convertSaga方法'
-        def saga = ConvertUtils.convertSaga(data, service)
+        def saga = ConvertUtils.convertSaga(mapper, data, service)
 
         then: '验证转换结果'
         saga.getService() == service
         saga.getInputSchema() == 'name,id'
-        saga.getOutputKeys() == 'id,code,description'
         saga.getCode() == data.getCode()
         saga.getDescription() == data.getDescription()
     }
@@ -47,11 +49,11 @@ class ConvertUtilsSpec extends Specification {
         def data = new PropertyData.SagaTask('code', 'desc', 'sagaCode', 20, 33)
         data.setTimeoutSeconds(10)
         data.setTimeoutPolicy(SagaDefinition.TimeoutPolicy.ALERT_ONLY.name())
-        data.setConcurrentExecLimit(10)
+        data.setConcurrentLimitNum(10)
         def service = 'convertSaga'
 
         when: '调用ConvertUtils的convertSaga方法'
-        def saga = ConvertUtils.convertSagaTask(data, service)
+        def saga = ConvertUtils.convertSagaTask(mapper, data, service)
 
         then: '验证转换结果'
         saga.getService() == service
@@ -107,8 +109,8 @@ class ConvertUtilsSpec extends Specification {
         when: '执行jsonMerge'
         def map1 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data1, data2], objectMapper))
         def map2 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data1, data3], objectMapper))
-        map1 = (Map)map1
-        map2 = (Map)map2
+        map1 = (Map) map1
+        map2 = (Map) map2
 
         then: "验证jsonMerge结果"
         map1.get('name') == 'John2'

@@ -2,7 +2,7 @@ package io.choerodon.asgard.infra.mapper
 
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.domain.SagaInstance
-import io.choerodon.core.saga.SagaDefinition
+import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -27,7 +27,7 @@ class SagaInstanceMapperSpec extends Specification {
         given: '创建一个bean'
         def testCode = 'test-code'
         sagaInstance.setSagaCode(testCode)
-        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name())
+        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
 
         when: '插入数据库'
         sagaInstanceMapper.insert(sagaInstance)
@@ -39,7 +39,7 @@ class SagaInstanceMapperSpec extends Specification {
         def data = sagaInstanceMapper.selectByPrimaryKey(sagaInstance.getId())
 
         then: '对比数据'
-        data.getStatus() == SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name()
+        data.getStatus() == SagaDefinition.TaskInstanceStatus.RUNNING.name()
         data.getSagaCode() == testCode
     }
 
@@ -47,7 +47,7 @@ class SagaInstanceMapperSpec extends Specification {
         given: '更新bean数据'
         def testCode = 'test_update_code'
         sagaInstance.setSagaCode(testCode)
-        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.STATUS_COMPLETED.name())
+        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name())
 
         when: '执行数据库更新'
         def objectVersionNumber = sagaInstanceMapper.selectByPrimaryKey(sagaInstance.getId()).getObjectVersionNumber()
@@ -56,7 +56,7 @@ class SagaInstanceMapperSpec extends Specification {
 
         then: '对比数据'
         def data = sagaInstanceMapper.selectByPrimaryKey(sagaInstance.getId())
-        data.getStatus() == SagaDefinition.TaskInstanceStatus.STATUS_COMPLETED.name()
+        data.getStatus() == SagaDefinition.TaskInstanceStatus.COMPLETED.name()
         data.getSagaCode() == testCode
         data.getObjectVersionNumber() == objectVersionNumber + 1
     }

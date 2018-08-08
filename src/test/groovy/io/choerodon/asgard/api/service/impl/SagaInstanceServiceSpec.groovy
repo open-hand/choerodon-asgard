@@ -12,7 +12,7 @@ import io.choerodon.asgard.domain.SagaTask
 import io.choerodon.asgard.domain.SagaTaskInstance
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper
-import io.choerodon.core.saga.SagaDefinition
+import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -71,12 +71,12 @@ class SagaInstanceServiceSpec extends Specification {
         then: '数据库查看是否已有instance和taskInstance数据,并验证'
         SagaInstance instance = sagaInstanceMapper.selectOne(new SagaInstance(createUserSagaCode))
         instance != null
-        instance.getStatus() == SagaDefinition.InstanceStatus.STATUS_RUNNING.name()
+        instance.getStatus() == SagaDefinition.InstanceStatus.RUNNING.name()
         instance.getSagaCode() == createUserSagaCode
 
         SagaTaskInstance devopsTaskInstance = sagaTaskInstanceMapper.selectOne(new SagaTaskInstance(devopsTaskCode))
         devopsTaskInstance != null
-        devopsTaskInstance.getStatus() == SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name()
+        devopsTaskInstance.getStatus() == SagaDefinition.TaskInstanceStatus.RUNNING.name()
         devopsTaskInstance.getSagaCode() == createUserSagaCode
         devopsTaskInstance.getTaskCode() == devopsTaskCode
         devopsTaskInstance.getSagaInstanceId() == instance.getId()
