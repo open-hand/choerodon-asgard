@@ -10,17 +10,17 @@ public class SagaWithTaskDTO {
 
     private String description;
 
-    private String inputSchema;
+    private String input;
 
     private String service;
 
     private  List<List<SagaTaskDTO>> tasks;
 
-    public SagaWithTaskDTO(Long id, String code, String description, String inputSchema, String service) {
+    public SagaWithTaskDTO(Long id, String code, String description, String input, String service) {
         this.id = id;
         this.code = code;
         this.description = description;
-        this.inputSchema = inputSchema;
+        this.input = input;
         this.service = service;
     }
 
@@ -51,12 +51,12 @@ public class SagaWithTaskDTO {
         this.description = description;
     }
 
-    public String getInputSchema() {
-        return inputSchema;
+    public String getInput() {
+        return input;
     }
 
-    public void setInputSchema(String inputSchema) {
-        this.inputSchema = inputSchema;
+    public void setInput(String input) {
+        this.input = input;
     }
 
     public String getService() {
