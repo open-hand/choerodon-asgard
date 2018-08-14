@@ -58,7 +58,7 @@ mybatis:
 choerodon:
   asgard:
     skipService: register-server, api-gateway, gateway-helper, oauth-server, config-server, event-store-service
-    fetch.time: 20
+    fetch.time: 10
     isLocal: false
   saga:
     consumer:
