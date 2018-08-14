@@ -26,7 +26,7 @@ public class RegisterInstanceListener {
     private static final String STATUS_DOWN = "DOWN";
     private final ObjectMapper mapper = new ObjectMapper();
 
-    @Value("${choerodon.asgard.fetch.time:20}")
+    @Value("${choerodon.asgard.fetch.time:10}")
     private Integer sagaFetchTime;
 
     private RegisterInstanceService registerInstanceService;
