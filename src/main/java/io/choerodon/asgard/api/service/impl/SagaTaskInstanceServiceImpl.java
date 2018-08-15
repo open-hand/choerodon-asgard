@@ -255,7 +255,8 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             throw new CommonException("error.sagaInstance.notExist");
         }
         sagaInstance.setStatus(SagaDefinition.InstanceStatus.RUNNING.name());
-        instanceMapper.updateByPrimaryKeySelective(sagaInstance);
+        sagaInstance.setEndTime(null);
+        instanceMapper.updateByPrimaryKey(sagaInstance);
         taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name());
         taskInstanceMapper.updateByPrimaryKeySelective(taskInstance);
     }
