@@ -22,7 +22,7 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
                 constraints(nullable: false)
             }
             column(name: 'ref_type', type: 'VARCHAR(128)', remarks: '关联类型')
-            column(name: 'ref_id', type: 'VARCHAR(128)', remarks: '关联id')
+            column(name: 'ref_id', type: 'TEXT', remarks: '关联id')
             column(name: 'instance_lock', type: 'VARCHAR(64)', remarks: '消费该消息的实例锁')
 
             column(name: 'retried_count', type: 'INT UNSIGNED', defaultValue: "0", remarks: '重试次数') {
@@ -50,20 +50,14 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
             column(name: 'max_retry_count', type: 'INT UNSIGNED', defaultValue: "0", remarks: '最大重试次数') {
                 constraints(nullable: false)
             }
-
+            column(name: "planned_start_time", type: "DATETIME(3)", remarks: '计划开始执行时间')
+            column(name: "actual_start_time", type: "DATETIME(3)", remarks: '实际开始执行时间')
+            column(name: "actual_end_time", type: "DATETIME(3)", remarks: '实际执行结束时间')
             column(name: "OBJECT_VERSION_NUMBER", type: "BIGINT", defaultValue: "1")
             column(name: "CREATED_BY", type: "BIGINT", defaultValue: "-1")
             column(name: "CREATION_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
             column(name: "LAST_UPDATED_BY", type: "BIGINT", defaultValue: "-1")
             column(name: "LAST_UPDATE_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
-        }
-    }
-    changeSet(id: '2018-08-01-add-time', author: 'jcalaz@163.com') {
-        validCheckSum '7:e1c3a2a45aceb8c679ecd54042e42701'
-        addColumn(tableName: 'asgard_saga_task_instance') {
-            column(name: "planned_start_time", type: "DATETIME(3)", remarks: '计划开始执行时间')
-            column(name: "actual_start_time", type: "DATETIME(3)", remarks: '实际开始执行时间')
-            column(name: "actual_end_time", type: "DATETIME(3)", remarks: '实际执行结束时间')
         }
     }
 }
