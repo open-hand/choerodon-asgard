@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.StringUtils;
 
@@ -243,11 +244,18 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
+    @Transactional
     public void retry(long id) {
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(id);
         if (taskInstance == null) {
             throw new CommonException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
         }
+        SagaInstance sagaInstance = instanceMapper.selectByPrimaryKey(taskInstance.getSagaInstanceId());
+        if (sagaInstance == null) {
+            throw new CommonException("error.sagaInstance.notExist");
+        }
+        sagaInstance.setStatus(SagaDefinition.InstanceStatus.RUNNING.name());
+        instanceMapper.updateByPrimaryKeySelective(sagaInstance);
         taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name());
         taskInstanceMapper.updateByPrimaryKeySelective(taskInstance);
     }
