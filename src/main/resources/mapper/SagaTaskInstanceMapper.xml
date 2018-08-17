@@ -2,50 +2,56 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper">
 
-    <select id="pollBatchNoneLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+    <select id="pollBatchNoneLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
         SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
         asti.seq, asti.saga_code,
-        asti.instance_lock, jd.data AS input
+        asti.instance_lock, jd.data AS input,
+        asti.actual_start_time, asti.object_version_number
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
-        WHERE asti.task_code = #{taskCode}
+        WHERE
+        asti.status = 'RUNNING'
         AND asti.saga_code = #{sagaCode}
+        AND asti.concurrent_limit_policy = 'NONE'
         AND (asti.instance_lock IS null OR asti.instance_lock = #{instance})
-        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'NONE'
+        AND asti.task_code = #{taskCode}
+        ORDER BY asti.id
     </select>
 
-    <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+    <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
         SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
         asti.seq, asti.saga_code,
         asti.instance_lock, jd.data AS input,
         asti.ref_type, asti.ref_id,
-        asti.creation_date, asti.concurrent_limit_num
+        asti.creation_date, asti.concurrent_limit_num,
+        asti.actual_start_time, asti.object_version_number
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE asti.task_code = #{taskCode}
         AND asti.saga_code = #{sagaCode}
-        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'TYPE_AND_ID'
-        ORDER BY asti.creation_date
+        AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'TYPE_AND_ID'
+        ORDER BY asti.id
     </select>
 
-    <select id="pollBatchTypeLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+    <select id="pollBatchTypeLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
         SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
         asti.seq, asti.saga_code,
         asti.instance_lock, jd.data AS input,
         asti.ref_type, asti.creation_date,
-        asti.concurrent_limit_num
+        asti.concurrent_limit_num,
+        asti.actual_start_time, asti.object_version_number
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE asti.task_code = #{taskCode}
         AND asti.saga_code = #{sagaCode}
-        AND asti.status = 'STATUS_RUNNING' AND asti.concurrent_limit_policy = 'TYPE'
-        ORDER BY asti.creation_date
+        AND asti.status = 'RUNNING' AND asti.concurrent_limit_policy = 'TYPE'
+        ORDER BY asti.id
     </select>
 
     <update id="lockByInstanceBatch" parameterType="java.util.List">
@@ -58,10 +64,13 @@
         </foreach>
     </update>
 
-    <update id="lockByInstance">
+    <update id="lockByInstanceAndUpdateStartTime">
         UPDATE asgard_saga_task_instance
         SET instance_lock = #{instance}, object_version_number = object_version_number + 1
-        WHERE id = #{id} AND instance_lock IS NULL
+        <if test="time != null">
+            , actual_start_time = #{time}
+        </if>
+        WHERE id = #{id} AND instance_lock IS NULL AND object_version_number = #{number}
     </update>
 
     <update id="increaseRetriedCount">
@@ -73,11 +82,11 @@
     <update id="unlockByInstance" parameterType="java.lang.String">
         UPDATE asgard_saga_task_instance
         SET  instance_lock = NULL, object_version_number = object_version_number + 1
-        WHERE instance_lock = #{instance}
+        WHERE instance_lock = #{instance} AND status = 'RUNNING'
     </update>
 
     <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
-        SELECT
+                SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
         asti.seq, asti.saga_code,
@@ -87,10 +96,13 @@
         asti.max_retry_count, asti.retried_count,
         asti.timeout_seconds, asti.timeout_policy,
         asti.exception_message, ojd.data AS output,
-        ijd.data AS input
+        asti.actual_start_time,  asti.actual_end_time,
+        asti.planned_start_time, st.description,
+        st.service,ijd.data AS input
         FROM asgard_saga_task_instance asti
         LEFT JOIN asgard_orch_json_data ijd ON asti.input_data_id = ijd.id
         LEFT JOIN asgard_orch_json_data ojd ON asti.output_data_id = ojd.id
+        LEFT JOIN asgard_orch_saga_task st ON asti.task_code = st.code AND asti.saga_code = st.saga_code
         WHERE asti.saga_instance_id = #{sagaInstanceId}
     </select>
 

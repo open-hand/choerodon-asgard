@@ -15,7 +15,7 @@
     </parent>
 
     <properties>
-        <choerodon.starters.version>6.0.0.RELEASE</choerodon.starters.version>
+        <choerodon.starters.version>0.6.0.RELEASE</choerodon.starters.version>
     </properties>
     <dependencies>
         <!--spring boot-->
@@ -66,6 +66,11 @@
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-core</artifactId>
+            <version>${choerodon.starters.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-starter-asgard</artifactId>
             <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>

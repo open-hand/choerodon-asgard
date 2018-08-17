@@ -1,6 +1,7 @@
 package io.choerodon.asgard.api.service.impl;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.api.dto.SagaInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
@@ -12,20 +13,22 @@ import io.choerodon.asgard.domain.SagaInstance;
 import io.choerodon.asgard.domain.SagaTask;
 import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.choerodon.asgard.infra.mapper.*;
+import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
-import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.core.saga.SagaDefinition;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +39,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SagaInstanceService.class);
 
     public static final String DB_ERROR = "error.db.insertOrUpdate";
 
@@ -59,6 +63,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         this.instanceMapper = instanceMapper;
         this.taskInstanceMapper = taskInstanceMapper;
         this.jsonDataMapper = jsonDataMapper;
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         modelMapper.addMappings(new PropertyMap<SagaTask, SagaTaskInstance>() {
             @Override
@@ -75,9 +80,6 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public ResponseEntity<SagaInstanceDTO> start(final StartInstanceDTO dto) {
-        if (dto.getUserId() != null) {
-            DetailsHelper.getUserDetails().setUserId(dto.getUserId());
-        }
         final String code = dto.getSagaCode();
         if (!sagaMapper.existByCode(code)) {
             throw new FeignException("error.saga.notExist");
@@ -102,8 +104,9 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Transactional
     public SagaInstanceDTO startInstanceAndTask(final StartInstanceDTO dto, final List<SagaTask> sagaTasks) {
+        final Date startTime = new Date(System.currentTimeMillis());
         SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
-                SagaDefinition.TaskInstanceStatus.RUNNING.name(), new Date());
+                SagaDefinition.TaskInstanceStatus.RUNNING.name(), startTime);
         Long inputDataId = null;
         if (dto.getInput() != null) {
             JsonData jsonData = new JsonData(dto.getInput());
@@ -121,19 +124,21 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         for (Map.Entry<Integer, List<SagaTask>> entry : taskMap.entrySet()) {
             if (i < 1) {
                 i++;
-                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, true);
+                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, startTime,true);
             } else {
-                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, false);
+                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, startTime,false);
             }
         }
         return modelMapper.map(instanceMapper.selectByPrimaryKey(instance.getId()), SagaInstanceDTO.class);
     }
 
     private void addRunningTask(final List<SagaTask> sagaTaskList, final StartInstanceDTO dto,
-                                final Long instanceId, final Long inputDataId, boolean running) {
+                                final Long instanceId, final Long inputDataId,
+                                final Date startTime, boolean running) {
         sagaTaskList.forEach(t -> {
             SagaTaskInstance sagaTaskInstance = modelMapper.map(t, SagaTaskInstance.class);
             sagaTaskInstance.setSagaInstanceId(instanceId);
+            sagaTaskInstance.setPlannedStartTime(startTime);
             sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name());
             sagaTaskInstance.setRefId(dto.getRefId());
             sagaTaskInstance.setRefType(dto.getRefType());
@@ -159,7 +164,8 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public ResponseEntity<SagaWithTaskInstanceDTO> query(Long id) {
+    @Transactional
+    public ResponseEntity<String> query(Long id) {
         SagaInstance sagaInstance = instanceMapper.selectByPrimaryKey(id);
         if (sagaInstance == null) {
             throw new CommonException("error.sagaInstance.notExist");
@@ -176,6 +182,12 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                         .stream()
                         .collect(groupingBy(SagaTaskInstanceDTO::getSeq)).values());
         dto.setTasks(list);
-        return new ResponseEntity<>(dto, HttpStatus.OK);
+        String response = null;
+        try {
+            response = objectMapper.writeValueAsString(dto);
+        } catch (JsonProcessingException e) {
+            LOGGER.warn("error.SagaInstanceService.query.JsonProcessingException {}", e);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

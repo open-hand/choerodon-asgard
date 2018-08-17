@@ -28,4 +28,12 @@ public class PollCodeDTO {
     public void setTaskCode(String taskCode) {
         this.taskCode = taskCode;
     }
+
+    @Override
+    public String toString() {
+        return "PollCodeDTO{" +
+                "sagaCode='" + sagaCode + '\'' +
+                ", taskCode='" + taskCode + '\'' +
+                '}';
+    }
 }

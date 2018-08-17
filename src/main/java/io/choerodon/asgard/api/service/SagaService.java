@@ -9,10 +9,13 @@ import org.springframework.http.ResponseEntity;
 
 public interface SagaService {
 
-    void createSaga(Saga saga);
+    void create(Saga saga);
 
     ResponseEntity<Page<SagaDTO>> pagingQuery (PageRequest pageRequest, String code,
                                                String description, String service, String params);
 
     ResponseEntity<SagaWithTaskDTO> query(Long id);
+
+    void delete(Long id);
+
 }

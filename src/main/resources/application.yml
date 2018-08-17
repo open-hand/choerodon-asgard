@@ -17,7 +17,7 @@ spring:
     producer:
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
     consumer:
-      group-id: asgard-service
+      group-id: asgard-service-consumer
       auto-offset-reset: latest
     listener:
       ack-mode: record
@@ -58,5 +58,8 @@ mybatis:
 choerodon:
   asgard:
     skipService: register-server, api-gateway, gateway-helper, oauth-server, config-server, event-store-service
-    fetch.time: 20
+    fetch.time: 10
     isLocal: false
+  saga:
+    consumer:
+      enabled: false

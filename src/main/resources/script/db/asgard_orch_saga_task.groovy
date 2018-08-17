@@ -42,4 +42,13 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
         }
         addUniqueConstraint(tableName: 'asgard_orch_saga_task', columnNames: 'saga_code,code', constraintName: "saga_task_code_unique")
     }
+
+    changeSet(id: '2018-08-03-add-outputSchemaSource', author: 'jcalaz@163.com') {
+        addColumn(tableName: 'asgard_orch_saga_task') {
+            column(name: "output_schema_source", type: "VARCHAR(32)", defaultValue: "NONE", remarks: 'outputSchema定义来源，取值: OUTPUT_SCHEMA,OUTPUT_SCHEMA_CLASS,METHOD_RETURN_TYPE,NONE') {
+                constraints(nullable: false)
+            }
+        }
+    }
+
 }

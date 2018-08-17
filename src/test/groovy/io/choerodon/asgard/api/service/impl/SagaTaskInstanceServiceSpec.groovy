@@ -10,7 +10,7 @@ import io.choerodon.asgard.domain.SagaInstance
 import io.choerodon.asgard.domain.SagaTaskInstance
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper
-import io.choerodon.core.saga.SagaDefinition
+import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -45,7 +45,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
     def setup () {
         def sagaInstance = new SagaInstance()
         sagaInstance.setSagaCode('SagaTaskInstanceServiceSpec_saga')
-        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name())
+        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
         sagaInstanceMapper.insert(sagaInstance)
         def data = sagaInstanceMapper.selectByPrimaryKey(sagaInstance)
 
@@ -59,7 +59,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
         sagaTaskInstance.setTimeoutSeconds(1)
         sagaTaskInstance.setRetriedCount(0)
         sagaTaskInstance.setMaxRetryCount(1)
-        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name())
+        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
         sagaTaskInstanceMapper.insert(sagaTaskInstance)
 
     }
@@ -84,7 +84,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
         pollList.size() == 1
         SagaTaskInstanceDTO sagaTaskInstance = pollList.get(0)
         sagaTaskInstance.getId() != null
-        sagaTaskInstance.getStatus() == SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name()
+        sagaTaskInstance.getStatus() == SagaDefinition.TaskInstanceStatus.RUNNING.name()
         sagaTaskInstanceStatusDTO.setId(sagaTaskInstance.getId())
 
         then: '换个instance再次拉取，验证拉取不到'
@@ -95,7 +95,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
 
     def 'updateStatus'() {
         given: '给定一个更新状态的DTO'
-        sagaTaskInstanceStatusDTO.setStatus(SagaDefinition.InstanceStatus.STATUS_COMPLETED.name())
+        sagaTaskInstanceStatusDTO.setStatus(SagaDefinition.InstanceStatus.COMPLETED.name())
         sagaTaskInstanceStatusDTO.setOutput(JsonOutput.toJson([name: 'John2', id: 2, pass: 'valJest']))
 
         when: '调用的sagaTaskInstanceService的更新状态方法'
@@ -104,7 +104,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
         then: '数据库查询验证状态已经更新'
         def data =sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstanceStatusDTO.getId())
         data != null
-        data.getStatus() == SagaDefinition.InstanceStatus.STATUS_COMPLETED.name()
+        data.getStatus() == SagaDefinition.InstanceStatus.COMPLETED.name()
     }
 
     @Transactional
@@ -120,7 +120,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
         sagaTaskInstance.setTimeoutSeconds(1)
         sagaTaskInstance.setRetriedCount(0)
         sagaTaskInstance.setMaxRetryCount(1)
-        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name())
+        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
         sagaTaskInstance.setInstanceLock('asgard-test-service-test-instance')
         sagaTaskInstanceMapper.insert(sagaTaskInstance)
 

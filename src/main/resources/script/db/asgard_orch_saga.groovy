@@ -22,4 +22,12 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga.groovy') {
             column(name: "LAST_UPDATE_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2018-08-03-add-inputSchemaSource', author: 'jcalaz@163.com') {
+        addColumn(tableName: 'asgard_orch_saga') {
+            column(name: "input_schema_source", type: "VARCHAR(32)", defaultValue: "NONE", remarks: 'inputSchema定义来源，取值: INPUT_SCHEMA,INPUT_SCHEMA_CLASS,NONE') {
+                constraints(nullable: false)
+            }
+        }
+    }
 }

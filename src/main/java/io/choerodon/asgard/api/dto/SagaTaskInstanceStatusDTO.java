@@ -48,4 +48,14 @@ public class SagaTaskInstanceStatusDTO {
     public void setId(Long id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "SagaTaskInstanceStatusDTO{" +
+                "id=" + id +
+                ", status='" + status + '\'' +
+                ", output='" + output + '\'' +
+                ", exceptionMessage='" + exceptionMessage + '\'' +
+                '}';
+    }
 }

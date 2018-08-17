@@ -1,5 +1,8 @@
 package io.choerodon.asgard.api.dto;
 
+import java.util.Date;
+import java.util.Objects;
+
 public class SagaTaskInstanceDTO {
 
     private Long id;
@@ -39,6 +42,18 @@ public class SagaTaskInstanceDTO {
     private String output;
 
     private String creationDate;
+
+    private String description;
+
+    private String service;
+
+    private Date plannedStartTime;
+
+    private Date actualStartTime;
+
+    private Date actualEndTime;
+
+    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -190,5 +205,75 @@ public class SagaTaskInstanceDTO {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
+    public Date getPlannedStartTime() {
+        return plannedStartTime;
+    }
+
+    public void setPlannedStartTime(Date plannedStartTime) {
+        this.plannedStartTime = plannedStartTime;
+    }
+
+    public Date getActualStartTime() {
+        return actualStartTime;
+    }
+
+    public void setActualStartTime(Date actualStartTime) {
+        this.actualStartTime = actualStartTime;
+    }
+
+    public Date getActualEndTime() {
+        return actualEndTime;
+    }
+
+    public void setActualEndTime(Date actualEndTime) {
+        this.actualEndTime = actualEndTime;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SagaTaskInstanceDTO that = (SagaTaskInstanceDTO) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "SagaTaskInstanceDTO{" +
+                "id=" + id +
+                ", status='" + status + '\'' +
+                ", objectVersionNumber=" + objectVersionNumber +
+                '}';
     }
 }

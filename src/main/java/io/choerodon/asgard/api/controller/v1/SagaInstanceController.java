@@ -1,7 +1,6 @@
-package io.choerodon.asgard.api.controller;
+package io.choerodon.asgard.api.controller.v1;
 
 import io.choerodon.asgard.api.dto.SagaInstanceDTO;
-import io.choerodon.asgard.api.dto.SagaWithTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.StartInstanceDTO;
 import io.choerodon.asgard.api.service.SagaInstanceService;
 import io.choerodon.core.domain.Page;
@@ -13,12 +12,13 @@ import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 
-@RestController
+@Controller
 @RequestMapping("/v1/sagas/instances")
 public class SagaInstanceController {
 
@@ -33,7 +33,8 @@ public class SagaInstanceController {
      * 开始执行一个saga
      */
     @PostMapping("/{code:.*}")
-    @ApiOperation(value = "开始一个saga")
+    @ApiOperation(value = "内部接口。开始一个saga")
+    @ResponseBody
     public ResponseEntity<SagaInstanceDTO> start(@PathVariable("code") String code,
                                                  @RequestBody @Valid StartInstanceDTO dto) {
         dto.setSagaCode(code);
@@ -44,6 +45,7 @@ public class SagaInstanceController {
     @GetMapping
     @ApiOperation(value = "查询事务实例列表")
     @CustomPageRequest
+    @ResponseBody
     public ResponseEntity<Page<SagaInstanceDTO>> pagingQuery(@RequestParam(value = "sagaCode", required = false) String sagaCode,
                                                              @RequestParam(name = "status", required = false) String status,
                                                              @RequestParam(name = "refType", required = false) String refType,
@@ -55,9 +57,9 @@ public class SagaInstanceController {
     }
 
     @Permission(level = ResourceLevel.SITE)
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "查询某个事务实例运行详情")
-    public ResponseEntity<SagaWithTaskInstanceDTO> query(@PathVariable("id") Long id) {
+    public ResponseEntity<String> query(@PathVariable("id") Long id) {
         return sagaInstanceService.query(id);
     }
 

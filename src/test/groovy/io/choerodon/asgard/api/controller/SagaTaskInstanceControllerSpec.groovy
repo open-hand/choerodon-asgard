@@ -11,7 +11,7 @@ import io.choerodon.asgard.domain.SagaInstance
 import io.choerodon.asgard.domain.SagaTaskInstance
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper
-import io.choerodon.core.saga.SagaDefinition
+import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -51,7 +51,7 @@ class SagaTaskInstanceControllerSpec extends Specification {
     def setup () {
         SagaInstance sagaInstance = new SagaInstance()
         sagaInstance.setSagaCode(testCode)
-        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name())
+        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
         sagaInstanceMapper.insert(sagaInstance)
         def data = sagaInstanceMapper.selectByPrimaryKey(sagaInstance)
 
@@ -65,7 +65,7 @@ class SagaTaskInstanceControllerSpec extends Specification {
         sagaTaskInstance.setTimeoutSeconds(1)
         sagaTaskInstance.setRetriedCount(0)
         sagaTaskInstance.setMaxRetryCount(1)
-        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name())
+        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
         sagaTaskInstanceMapper.insert(sagaTaskInstance)
 
     }
@@ -73,9 +73,6 @@ class SagaTaskInstanceControllerSpec extends Specification {
     def 'PollBatch'() {
         given: '给定一个批量拉取的DTO'
         PollBatchDTO pollBatchDTO = new PollBatchDTO()
-        Set<String> codes = new HashSet<>()
-        codes.add(testCode)
-        pollBatchDTO.setCodes(codes)
         pollBatchDTO.setInstance('asgard-test-service-test-instance')
 
         when: '向批量拉取task消息的接口发送请求'
@@ -89,14 +86,14 @@ class SagaTaskInstanceControllerSpec extends Specification {
         SagaTaskInstanceDTO temp = list.get(0)
         taskInstanceDTO.setStatus(temp.getStatus())
         taskInstanceDTO.setId(temp.getId())
-        taskInstanceDTO.getStatus() == SagaDefinition.InstanceStatus.STATUS_RUNNING.name()
+        taskInstanceDTO.getStatus() == SagaDefinition.InstanceStatus.RUNNING.name()
     }
 
     def 'UpdateStatus'() {
         given: '给定一个更新状态的DTO'
         SagaTaskInstanceStatusDTO sagaTaskInstanceStatusDTO = new SagaTaskInstanceStatusDTO()
         sagaTaskInstanceStatusDTO.setId(taskInstanceDTO.getId())
-        sagaTaskInstanceStatusDTO.setStatus(SagaDefinition.InstanceStatus.STATUS_COMPLETED.name())
+        sagaTaskInstanceStatusDTO.setStatus(SagaDefinition.InstanceStatus.COMPLETED.name())
         sagaTaskInstanceStatusDTO.setOutput(JsonOutput.toJson([name: 'John1', id: 2, pass: 'valJest']))
 
         when: '向更新状态接口发送PUT请求'

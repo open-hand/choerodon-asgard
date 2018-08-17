@@ -1,4 +1,4 @@
-package io.choerodon.asgard.api.controller;
+package io.choerodon.asgard.api.controller.v1;
 
 import io.choerodon.asgard.api.dto.SagaDTO;
 import io.choerodon.asgard.api.dto.SagaWithTaskDTO;
@@ -36,7 +36,7 @@ public class SagaController {
                                                      @RequestParam(required = false, name = "service") String service,
                                                      @RequestParam(required = false, name = "params") String params,
                                                      @ApiIgnore
-                                              @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return sagaService.pagingQuery(pageRequest, code, description, service, params);
     }
 
@@ -46,5 +46,14 @@ public class SagaController {
     public ResponseEntity<SagaWithTaskDTO> query(@PathVariable("id") Long id) {
         return sagaService.query(id);
     }
+
+
+    @Permission(level = ResourceLevel.SITE)
+    @DeleteMapping("/{id}")
+    @ApiOperation(value = "删除事务")
+    public void delete(@PathVariable("id") Long id) {
+        sagaService.delete(id);
+    }
+
 
 }

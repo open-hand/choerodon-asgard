@@ -11,8 +11,8 @@ import io.choerodon.asgard.domain.Saga;
 import io.choerodon.asgard.domain.SagaTask;
 import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.choerodon.asgard.infra.mapper.JsonDataMapper;
-import io.choerodon.swagger.property.PropertyData;
-import org.springframework.beans.BeanUtils;
+import io.choerodon.asgard.saga.property.PropertyData;
+import org.modelmapper.ModelMapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,18 +23,14 @@ public class ConvertUtils {
     private ConvertUtils() {
     }
 
-    public static Saga convertSaga(final PropertyData.Saga saga, final String service) {
-        Saga sagaDO = new Saga();
-        sagaDO.setCode(saga.getCode());
-        sagaDO.setDescription(saga.getDescription());
+    public static Saga convertSaga(final ModelMapper mapper, final PropertyData.Saga saga, final String service) {
+        Saga sagaDO = mapper.map(saga, Saga.class);
         sagaDO.setService(service);
-        sagaDO.setInputSchema(saga.getInputSchema());
         return sagaDO;
     }
 
-    public static SagaTask convertSagaTask(final PropertyData.SagaTask sagaTask, final String service) {
-        SagaTask sagaTaskDO = new SagaTask();
-        BeanUtils.copyProperties(sagaTask, sagaTaskDO);
+    public static SagaTask convertSagaTask(final ModelMapper mapper, final PropertyData.SagaTask sagaTask, final String service) {
+        SagaTask sagaTaskDO = mapper.map(sagaTask, SagaTask.class);
         sagaTaskDO.setService(service);
         return sagaTaskDO;
     }
@@ -63,6 +59,13 @@ public class ConvertUtils {
 
     public static String jsonMerge(final List<JsonMergeDTO> mergeDTOS, final ObjectMapper objectMapper) throws IOException {
         ObjectNode root = objectMapper.createObjectNode();
+        if (mergeDTOS.isEmpty()) {
+            return root.toString();
+        }
+        //元素都相同则直接返回任意一个
+        if (isAllTheSame(mergeDTOS)) {
+            return mergeDTOS.get(0).getTaskOutputJsonData();
+        }
         for (JsonMergeDTO dto : mergeDTOS) {
             JsonNode jsonNode = objectMapper.readTree(dto.getTaskOutputJsonData());
             if (jsonNode instanceof ObjectNode) {
@@ -74,6 +77,23 @@ public class ConvertUtils {
             }
         }
         return root.toString();
+    }
+
+    /**
+     * 判断所有元素是否相同
+     */
+    private static boolean isAllTheSame(final List<JsonMergeDTO> mergeDTOS) {
+        if (mergeDTOS.size() == 1) {
+            return true;
+        }
+        if (mergeDTOS.size() > 1) {
+            for (int i = 0; i < mergeDTOS.size() - 1; i++) {
+                if (!mergeDTOS.get(i).getTaskOutputJsonData().equals(mergeDTOS.get(i + 1).getTaskOutputJsonData())) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }

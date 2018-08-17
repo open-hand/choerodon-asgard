@@ -13,11 +13,11 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
                 constraints(nullable: false)
             }
             column(name: 'ref_type', type: 'VARCHAR(128)', remarks: '关联类型')
-            column(name: 'ref_id', type: 'VARCHAR(128)', remarks: '关联id')
+            column(name: 'ref_id', type: 'TEXT', remarks: '关联id')
             column(name: 'input_data_id', type: 'BIGINT UNSIGNED', remarks: '输入参数的json data id')
             column(name: 'output_data_id', type: 'BIGINT UNSIGNED', remarks: '输出参数的json data id')
-            column(name: "start_time", type: "DATETIME", remarks: 'saga开始执行的时间')
-            column(name: "end_time", type: "DATETIME", remarks: 'saga执行结束的时间')
+            column(name: "start_time", type: "DATETIME(3)", remarks: 'saga开始执行的时间')
+            column(name: "end_time", type: "DATETIME(3)", remarks: 'saga执行结束的时间')
 
 
             column(name: "OBJECT_VERSION_NUMBER", type: "BIGINT", defaultValue: "1")

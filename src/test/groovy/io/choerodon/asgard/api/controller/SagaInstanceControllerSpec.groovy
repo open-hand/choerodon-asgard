@@ -8,7 +8,7 @@ import io.choerodon.asgard.api.service.SagaTaskService
 import io.choerodon.asgard.domain.Saga
 import io.choerodon.asgard.domain.SagaInstance
 import io.choerodon.asgard.domain.SagaTask
-import io.choerodon.core.saga.SagaDefinition
+import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -60,7 +60,7 @@ class SagaInstanceControllerSpec extends Specification {
         then: '状态码为200;saga的状态为RUNNING'
         entity.statusCode.is2xxSuccessful()
         entity.body.getSagaCode() == createUserSagaCode
-        entity.body.getStatus() == SagaDefinition.InstanceStatus.STATUS_RUNNING.name()
+        entity.body.getStatus() == SagaDefinition.InstanceStatus.RUNNING.name()
     }
 
 
