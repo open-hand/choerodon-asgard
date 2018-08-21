@@ -2,15 +2,21 @@ package io.choerodon.asgard.api.dto;
 
 import javax.validation.constraints.NotNull;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class StartInstanceDTO {
 
+    @ApiModelProperty(value = "对应Saga 编码")
     private String sagaCode;
 
+    @ApiModelProperty(value = "输入")
     private String input;
 
+    @ApiModelProperty(value = "关联业务类型")
     @NotNull(message = "error.startSaga.refTypeNull")
     private String refType;
 
+    @ApiModelProperty(value = "关联业务ID")
     @NotNull(message = "error.startSaga.refTIdNull")
     private String refId;
 

@@ -1,9 +1,13 @@
 package io.choerodon.asgard.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class JsonMergeDTO {
 
+    @ApiModelProperty(value = "SagaTask 编码")
     private String taskCode;
 
+    @ApiModelProperty(value = "SagaTask 输出数据")
     private String taskOutputJsonData;
 
     public JsonMergeDTO() {

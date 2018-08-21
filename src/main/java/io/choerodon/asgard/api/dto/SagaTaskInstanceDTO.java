@@ -3,56 +3,83 @@ package io.choerodon.asgard.api.dto;
 import java.util.Date;
 import java.util.Objects;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class SagaTaskInstanceDTO {
 
+    @ApiModelProperty(value = value = "主键ID")
     private Long id;
 
+    @ApiModelProperty(value = value = "Saga实例ID")
     private Long sagaInstanceId;
 
+    @ApiModelProperty(value = value = "对应SagaTask 编码")
     private String taskCode;
 
+    @ApiModelProperty(value = value = "对应Saga 编码")
     private String sagaCode;
 
+    @ApiModelProperty(value = value = "运行的微服务实例")
     private String instanceLock;
 
+    @ApiModelProperty(value = value = "状态")
     private String status;
 
+    @ApiModelProperty(value = value = "运行次序")
     private Integer seq;
 
+    @ApiModelProperty(value = value = "最大重试次数")
     private Integer maxRetryCount;
 
+    @ApiModelProperty(value = value = "已重试次数")
     private Integer retriedCount;
 
+    @ApiModelProperty(value = value = "超时时间")
     private Integer timeoutSeconds;
 
+    @ApiModelProperty(value = value = "超时策略")
     private String timeoutPolicy;
 
+    @ApiModelProperty(value = value = "异常信息")
     private String exceptionMessage;
 
+    @ApiModelProperty(value = value = "关联业务类型")
     private String refType;
 
+    @ApiModelProperty(value = value = "关联业务ID")
     private String refId;
 
+    @ApiModelProperty(value = "并发数")
     private Integer concurrentLimitNum;
 
+    @ApiModelProperty(value = "并发策略")
     private String concurrentLimitPolicy;
 
+    @ApiModelProperty(value = value = "输入")
     private String input;
 
+    @ApiModelProperty(value = value = "输出")
     private String output;
 
+    @ApiModelProperty(value = "创建时间")
     private String creationDate;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "所属微服务")
     private String service;
 
+    @ApiModelProperty(value = "计划开始时间")
     private Date plannedStartTime;
 
+    @ApiModelProperty(value = "实际开始时间")
     private Date actualStartTime;
 
+    @ApiModelProperty(value = "实际完成时间")
     private Date actualEndTime;
 
+    @ApiModelProperty(value = "乐观锁版本号")
     private Long objectVersionNumber;
 
     public Long getId() {
