@@ -7,46 +7,46 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class SagaTaskInstanceDTO {
 
-    @ApiModelProperty(value = value = "主键ID")
+    @ApiModelProperty(value = "主键ID")
     private Long id;
 
-    @ApiModelProperty(value = value = "Saga实例ID")
+    @ApiModelProperty(value = "Saga实例ID")
     private Long sagaInstanceId;
 
-    @ApiModelProperty(value = value = "对应SagaTask 编码")
+    @ApiModelProperty(value = "对应SagaTask 编码")
     private String taskCode;
 
-    @ApiModelProperty(value = value = "对应Saga 编码")
+    @ApiModelProperty(value = "对应Saga 编码")
     private String sagaCode;
 
-    @ApiModelProperty(value = value = "运行的微服务实例")
+    @ApiModelProperty(value = "运行的微服务实例")
     private String instanceLock;
 
-    @ApiModelProperty(value = value = "状态")
+    @ApiModelProperty(value = "状态")
     private String status;
 
-    @ApiModelProperty(value = value = "运行次序")
+    @ApiModelProperty(value = "运行次序")
     private Integer seq;
 
-    @ApiModelProperty(value = value = "最大重试次数")
+    @ApiModelProperty(value = "最大重试次数")
     private Integer maxRetryCount;
 
-    @ApiModelProperty(value = value = "已重试次数")
+    @ApiModelProperty(value = "已重试次数")
     private Integer retriedCount;
 
-    @ApiModelProperty(value = value = "超时时间")
+    @ApiModelProperty(value = "超时时间")
     private Integer timeoutSeconds;
 
-    @ApiModelProperty(value = value = "超时策略")
+    @ApiModelProperty(value = "超时策略")
     private String timeoutPolicy;
 
-    @ApiModelProperty(value = value = "异常信息")
+    @ApiModelProperty(value = "异常信息")
     private String exceptionMessage;
 
-    @ApiModelProperty(value = value = "关联业务类型")
+    @ApiModelProperty(value = "关联业务类型")
     private String refType;
 
-    @ApiModelProperty(value = value = "关联业务ID")
+    @ApiModelProperty(value = "关联业务ID")
     private String refId;
 
     @ApiModelProperty(value = "并发数")
@@ -55,10 +55,10 @@ public class SagaTaskInstanceDTO {
     @ApiModelProperty(value = "并发策略")
     private String concurrentLimitPolicy;
 
-    @ApiModelProperty(value = value = "输入")
+    @ApiModelProperty(value = "输入")
     private String input;
 
-    @ApiModelProperty(value = value = "输出")
+    @ApiModelProperty(value = "输出")
     private String output;
 
     @ApiModelProperty(value = "创建时间")
