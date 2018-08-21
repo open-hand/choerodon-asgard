@@ -1,20 +1,22 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import io.choerodon.asgard.api.dto.SagaDTO;
 import io.choerodon.asgard.api.dto.SagaWithTaskDTO;
 import io.choerodon.asgard.api.service.SagaService;
 import io.choerodon.core.domain.Page;
+import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/v1/sagas")
@@ -27,7 +29,7 @@ public class SagaController {
         this.sagaService = sagaService;
     }
 
-    @Permission(level = ResourceLevel.SITE)
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "查询事务列表")
     @CustomPageRequest
@@ -40,7 +42,7 @@ public class SagaController {
         return sagaService.pagingQuery(pageRequest, code, description, service, params);
     }
 
-    @Permission(level = ResourceLevel.SITE)
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
     @ApiOperation(value = "查询某个事务的定义详情")
     public ResponseEntity<SagaWithTaskDTO> query(@PathVariable("id") Long id) {
@@ -48,7 +50,7 @@ public class SagaController {
     }
 
 
-    @Permission(level = ResourceLevel.SITE)
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除事务")
     public void delete(@PathVariable("id") Long id) {
