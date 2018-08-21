@@ -2,19 +2,27 @@ package io.choerodon.asgard.api.dto;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class SagaWithTaskDTO {
 
+    @ApiModelProperty(value = "主键ID")
     private Long id;
 
+    @ApiModelProperty(value = "编码")
     private String code;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "输入")
     private String input;
 
+    @ApiModelProperty(value = "服务名")
     private String service;
 
-    private  List<List<SagaTaskDTO>> tasks;
+    @ApiModelProperty(value = "SagaTask 列表")
+    private List<List<SagaTaskDTO>> tasks;
 
     public SagaWithTaskDTO(Long id, String code, String description, String input, String service) {
         this.id = id;

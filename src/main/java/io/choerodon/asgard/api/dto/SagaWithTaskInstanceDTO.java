@@ -4,24 +4,33 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class SagaWithTaskInstanceDTO {
 
+    @ApiModelProperty(value = "主键ID")
     private Long id;
 
+    @ApiModelProperty(value = "对应Saga 编码")
     private String sagaCode;
 
     private String status;
-
+    @ApiModelProperty(value = "开始时间")
     private Date startTime;
 
+    @ApiModelProperty(value = "结束时间")
     private Date endTime;
 
+    @ApiModelProperty(value = "关联业务类型")
     private String refType;
 
+    @ApiModelProperty(value = "关联业务ID")
     private String refId;
 
+    @ApiModelProperty(value = "输入")
     private String input;
 
+    @ApiModelProperty(value = "输出")
     private String output;
 
     private List<List<SagaTaskInstanceDTO>> tasks = new ArrayList<>();
