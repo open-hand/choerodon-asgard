@@ -62,7 +62,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
 
     @Override
     public Set<SagaTaskInstanceDTO> pollBatch(final PollBatchDTO pollBatchDTO) {
-        final Set<SagaTaskInstanceDTO> returnList = new HashSet<>();
+        final Set<SagaTaskInstanceDTO> returnList = new LinkedHashSet<>();
         pollBatchDTO.getCodes().forEach(code -> {
             StringLockProvider.Mutex mutex = stringLockProvider.getMutex(code.getSagaCode() + ":" + code.getTaskCode());
             synchronized (mutex) {
@@ -210,7 +210,9 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                 instance.setStatus(SagaDefinition.InstanceStatus.COMPLETED.name());
                 instance.setEndTime(new Date());
                 instance.setOutputDataId(temp.getId());
-                instanceMapper.updateByPrimaryKeySelective(instance);
+                if (instanceMapper.updateByPrimaryKeySelective(instance) != 1) {
+                    throw new FeignException("error.updateStatusCompleted.updateInstanceFailed");
+                }
                 return;
             }
             nextTaskInstances.forEach(t -> {
@@ -219,7 +221,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                 taskInstanceMapper.updateByPrimaryKeySelective(t);
             });
         } catch (IOException e) {
-            throw new FeignException("json merge error");
+            throw new FeignException("json merge error", e);
         }
 
     }
@@ -239,7 +241,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         try {
             taskInstanceMapper.unlockByInstance(instance);
         } catch (Exception e) {
-            LOGGER.warn("error.unlockByInstance {}", instance);
+            LOGGER.warn("error.unlockByInstance {}, cause {}", instance, e);
         }
     }
 
