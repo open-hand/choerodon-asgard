@@ -1,4 +1,4 @@
-package io.choerodon.asgard.api.controller
+package io.choerodon.asgard.api.controller.v1
 
 import com.fasterxml.jackson.databind.JavaType
 import com.fasterxml.jackson.databind.ObjectMapper
