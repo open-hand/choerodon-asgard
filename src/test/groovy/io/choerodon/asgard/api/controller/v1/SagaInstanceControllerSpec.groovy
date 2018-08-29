@@ -24,7 +24,7 @@ class SagaInstanceControllerSpec extends Specification {
     @Autowired
     SagaInstanceController sagaInstanceController
 
-    def "测试 开始一个saga"() {
+    def "测试 开始saga接口"() {
         given: "创建请求DTO"
         def code = "code"
         def validDto = new StartInstanceDTO()
@@ -59,7 +59,7 @@ class SagaInstanceControllerSpec extends Specification {
         1 * sagaInstanceService.start(_)
     }
 
-    def "测试 查询事务实例列表"() {
+    def "测试 查询事务实例列表接口"() {
         given: '设置查询参数'
         def sagaCode = 'sagaCode'
         def status = 'status'
@@ -83,7 +83,7 @@ class SagaInstanceControllerSpec extends Specification {
         0 * sagaInstanceService.pageQuery(_, sagaCode, status, refType, refId, wrongParam)
     }
 
-    def "测试 查询某个事务实例运行详情"() {
+    def "测试 查询某个事务实例运行详情接口"() {
         given: "设置查询id"
         def id = 1L
         def notId = 10L
