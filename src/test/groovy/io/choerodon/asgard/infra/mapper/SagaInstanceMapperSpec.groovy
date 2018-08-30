@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -39,6 +40,7 @@ class SagaInstanceMapperSpec extends Specification {
         data.getCreatedBy() != null
     }
 
+    @Unroll
     def '测试 fulltextSearch方法'() {
         given: '准备查询数据'
         def dbData = new SagaInstance('fs_code', 'fs_type', 'fs_id', 'fs_status', new Date(), new Date())

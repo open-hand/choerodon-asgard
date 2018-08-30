@@ -35,13 +35,6 @@ public class ConvertUtils {
         return sagaTaskDO;
     }
 
-    public static String stringArrayJoin(final List<String> stringList, final String join) {
-        StringBuilder builder = new StringBuilder();
-        int limitSize = stringList.size() - 1;
-        stringList.stream().limit(limitSize).forEach(t -> builder.append(t).append(join));
-        builder.append(stringList.get(limitSize));
-        return builder.toString();
-    }
 
     public static List<JsonMergeDTO> convertToJsonMerge(final List<SagaTaskInstance> seqTaskInstances, final JsonDataMapper jsonDataMapper) {
         List<JsonMergeDTO> list = new ArrayList<>(seqTaskInstances.size());

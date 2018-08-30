@@ -29,22 +29,25 @@ class ConvertUtilsSpec extends Specification {
     @Shared
     def mapper = new ModelMapper()
 
-    def 'convertSaga'() {
+    def '测试 convertSaga方法'() {
         given: '创建一个PropertyData.Saga'
-        def data = new PropertyData.Saga('code', 'desc')
+        def test = new PropertyData.Saga('code', 'desc')
+        test.setInputSchema('name,id')
+        test.setInputSchemaSource('data')
         def service = 'convertSaga'
 
         when: '调用ConvertUtils的convertSaga方法'
-        def saga = ConvertUtils.convertSaga(mapper, data, service)
+        def result = ConvertUtils.convertSaga(mapper, test, service)
 
         then: '验证转换结果'
-        saga.getService() == service
-        saga.getInputSchema() == 'name,id'
-        saga.getCode() == data.getCode()
-        saga.getDescription() == data.getDescription()
+        result.getService() == service
+        result.getInputSchema() == test.getInputSchema()
+        result.getInputSchemaSource() == test.getInputSchemaSource()
+        result.getCode() == test.getCode()
+        result.getDescription() == test.getDescription()
     }
 
-    def 'convertSagaTask'() {
+    def '测试 convertSagaTask方法'() {
         given: '创建一个PropertyData.SagaTask'
         def data = new PropertyData.SagaTask('code', 'desc', 'sagaCode', 20, 33)
         data.setTimeoutSeconds(10)
@@ -67,19 +70,8 @@ class ConvertUtilsSpec extends Specification {
         saga.getConcurrentLimitNum() == saga.getConcurrentLimitNum()
     }
 
-    def 'stringArrayJoin'() {
-        given: '创建一个list给出join字符串'
-        def list = ['abc', 'def', 'ghi', 'uk']
-        def join = '&%'
 
-        when: '执行stringArrayJoin'
-        def data = ConvertUtils.stringArrayJoin(list, join)
-
-        then: '验证结果'
-        data == 'abc&%def&%ghi&%uk'
-    }
-
-    def 'convertToJsonMerge'() {
+    def '测试 convertToJsonMerge方法'() {
         given: '创建一个SagaTaskInstance的集合，并数据库插入json数据'
         def jsonData1 = new JsonData(JsonOutput.toJson([name: 'John2', id: 2, pass: 'valJest']))
         def jsonData2 = new JsonData(JsonOutput.toJson([id: 23, value: 'valJest']))
@@ -98,7 +90,7 @@ class ConvertUtilsSpec extends Specification {
         jsonMergeDTOS.get(1).getTaskOutputJsonData() == jsonData2.getData()
     }
 
-    def 'jsonMerge'() {
+    def '测试 jsonMerge方法'() {
         given: '创建几个JsonMergeDTO'
         def objectMapper = new ObjectMapper()
         def jsonSlurper = new JsonSlurper()
@@ -119,6 +111,5 @@ class ConvertUtilsSpec extends Specification {
         map2.get('name') == 'John1'
         map2.get('pass') == 'valJest'
         map2.get('code4') == false
-
     }
 }
