@@ -1,162 +1,182 @@
 package io.choerodon.asgard.infra.mapper
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.domain.SagaTaskInstance
+import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO
+import io.choerodon.asgard.domain.SagaTaskInstanceBuilder
 import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import spock.lang.Shared
+import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
-import spock.lang.Stepwise
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(IntegrationTestConfiguration)
-@Stepwise
+@Transactional
 class SagaTaskInstanceMapperSpec extends Specification {
 
     @Autowired
     SagaTaskInstanceMapper sagaTaskInstanceMapper
 
-    @Shared
-    SagaTaskInstance sagaTaskInstance = new SagaTaskInstance()
+    def createSagaTaskInstance(String taskCode, String sagaCode, String cp = SagaDefinition.ConcurrentLimitPolicy.NONE.name(), int cn = 1) {
+        return SagaTaskInstanceBuilder.aSagaTaskInstance()
+                .withTaskCode(taskCode)
+                .withSagaCode(sagaCode)
+                .withSeq(1)
+                .withSagaInstanceId(1L)
+                .withMaxRetryCount(1)
+                .withTimeoutPolicy(SagaDefinition.TimeoutPolicy.RETRY.name())
+                .withTimeoutSeconds(1).withRetriedCount(0)
+                .withMaxRetryCount(1)
+                .withConcurrentLimitPolicy(cp)
+                .withConcurrentLimitNum(cn)
+                .withStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name()).build()
+    }
 
-    @Shared
-    def lock = '127.0.0.1:8090'
-
-    def 'insert'() {
-        given: '创建一个bean'
-        def testCode = 'SagaTaskInstanceMapperSpec'
-        def testSagaCode = 'SagaTaskInstanceMapperSpec_saga'
-        sagaTaskInstance.setTaskCode(testCode)
-        sagaTaskInstance.setSagaCode(testSagaCode)
-        sagaTaskInstance.setSeq(1)
-        sagaTaskInstance.setSagaInstanceId(1L)
-        sagaTaskInstance.setMaxRetryCount(1)
-        sagaTaskInstance.setTimeoutPolicy(SagaDefinition.TimeoutPolicy.RETRY.name())
-        sagaTaskInstance.setTimeoutSeconds(1)
-        sagaTaskInstance.setRetriedCount(0)
-        sagaTaskInstance.setMaxRetryCount(1)
-        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
-
-        when: '插入数据库'
+    def '测试 pollBatchNoneLimit方法'() {
+        given: '插入三条测试数据'
+        def instance = '127.0.0.1:8080'
+        def sagaTaskInstance = createSagaTaskInstance('pollNoneTask', 'pollNoneSaga')
+        sagaTaskInstance.setInstanceLock(null)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        sagaTaskInstance.setId(null)
+        sagaTaskInstance.setInstanceLock(instance)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        sagaTaskInstance.setId(null)
+        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name())
         sagaTaskInstanceMapper.insert(sagaTaskInstance)
 
-        then: '在数据库查询对比数据'
-        sagaTaskInstance.getId() != null
-        def data = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
-        data.getTaskCode() == testCode
-        data.getSagaCode() == testSagaCode
-        data.getSeq() == 1
-        data.getSagaInstanceId() == 1L
-        data.getTimeoutPolicy() == SagaDefinition.TimeoutPolicy.RETRY.name()
-        data.getTimeoutSeconds() == 1
-        data.getRetriedCount() == 0
-        data.getMaxRetryCount() == 1
-        data.getStatus() == SagaDefinition.TaskInstanceStatus.RUNNING.name()
+        when: '执行pollBatchNoneLimit查询'
+        def result = sagaTaskInstanceMapper.pollBatchNoneLimit(sagaTaskInstance.getSagaCode(), sagaTaskInstance.getTaskCode(), instance)
+
+        then: '查询数据应为两条；第一条id应小于第二条; 实例锁为空或为传入的实例'
+        result.size() == 2
+        result.get(0).getInstanceLock() == null || result.get(0).getInstanceLock() == instance
+        result.get(1).getInstanceLock() == null || result.get(1).getInstanceLock() == instance
+        result.get(0).getId() < result.get(1).getId()
     }
 
-    def 'pollBatch'() {
-        when: '根据code查询'
-        def result = sagaTaskInstanceMapper.pollBatchNoneLimit(sagaTaskInstance.getSagaCode(), sagaTaskInstance.getTaskCode(), 'instance')
+    def '测试 pollBatchTypeAndIdLimit方法'() {
+        given: '插入三条测试数据'
+        def instance = '127.0.0.1:8080'
+        def sagaTaskInstance = createSagaTaskInstance('pollTypeIdTask', 'pollTypeIdSaga', SagaDefinition.ConcurrentLimitPolicy.TYPE_AND_ID.name())
+        sagaTaskInstance.setInstanceLock(null)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        sagaTaskInstance.setId(null)
+        sagaTaskInstance.setInstanceLock(instance)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        sagaTaskInstance.setId(null)
+        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name())
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
 
-        then: '数据不为空;状态为RUNNING;instance_lock为null'
-        result != null
-        result.size() > 0
-        def data = result.get(0)
-        data.getTaskCode() == sagaTaskInstance.getTaskCode()
-        data.getStatus() == SagaDefinition.TaskInstanceStatus.STATUS_RUNNING.name()
-        data.getInstanceLock() == null
+        when: '执行pollBatchTypeAndIdLimit查询'
+        def result = sagaTaskInstanceMapper.pollBatchTypeAndIdLimit(sagaTaskInstance.getSagaCode(), sagaTaskInstance.getTaskCode())
+
+        then: '查询数据应为两条; 第一条id应小于第二条'
+        result.size() == 2
+        result.get(0).getId() < result.get(1).getId()
     }
 
-    def 'select'() {
-        when: '根据ID查询'
-        def data = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
+    def '测试 pollBatchTypeLimit方法'() {
+        given: '插入三条测试数据'
+        def instance = '127.0.0.1:8080'
+        def sagaTaskInstance = createSagaTaskInstance('pollNoneTask', 'pollNoneSaga', SagaDefinition.ConcurrentLimitPolicy.TYPE.name())
+        sagaTaskInstance.setInstanceLock(null)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        sagaTaskInstance.setId(null)
+        sagaTaskInstance.setInstanceLock(instance)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        sagaTaskInstance.setId(null)
+        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name())
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
 
-        then: '数据ID不为空'
-        data.getId() != null
-    }
+        when: '执行pollBatchTypeLimit查询'
+        def result = sagaTaskInstanceMapper.pollBatchTypeLimit(sagaTaskInstance.getSagaCode(), sagaTaskInstance.getTaskCode())
 
-
-    def 'update'() {
-        given: '更新bean数据'
-        def testCode = 'SagaTaskInstanceMapperSpec_update'
-        def testSagaCode = 'SagaTaskInstanceMapperSpec_saga_update'
-        sagaTaskInstance.setTaskCode(testCode)
-        sagaTaskInstance.setSagaCode(testSagaCode)
-        sagaTaskInstance.setSeq(2)
-        sagaTaskInstance.setSagaInstanceId(2L)
-        sagaTaskInstance.setMaxRetryCount(2)
-        sagaTaskInstance.setTimeoutPolicy(SagaDefinition.TimeoutPolicy.ALERT_ONLY.name())
-        sagaTaskInstance.setTimeoutSeconds(2)
-        sagaTaskInstance.setRetriedCount(1)
-        sagaTaskInstance.setMaxRetryCount(2)
-
-        when: '执行数据库更新'
-        def objectVersionNumber = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId()).getObjectVersionNumber()
-        sagaTaskInstance.setObjectVersionNumber(objectVersionNumber)
-        sagaTaskInstanceMapper.updateByPrimaryKeySelective(sagaTaskInstance)
-
-        then: '数据库查询对比数据'
-        def data = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
-        data.getTaskCode() == testCode
-        data.getSagaCode() == testSagaCode
-        data.getObjectVersionNumber() == objectVersionNumber + 1
-        data.getSeq() == 2
-        data.getSagaInstanceId() == 2L
-        data.getTimeoutPolicy() == SagaDefinition.TimeoutPolicy.ALERT_ONLY.name()
-        data.getTimeoutSeconds() == 2
-        data.getRetriedCount() == 1
-        data.getMaxRetryCount() == 2
+        then: '查询数据应为两条；第一条id应小于第二条'
+        result.size() == 2
+        result.get(0).getId() < result.get(1).getId()
     }
 
 
-    def 'increaseRetriedCount'() {
-        given: '查询数据'
-        def data = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
+    def '测试 increaseRetriedCount方法'() {
+        given: '插入一条测试数据'
+        def sagaTaskInstance = createSagaTaskInstance('rcTask', 'rcCode')
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
 
         when: '执行增加重试次数操作'
         sagaTaskInstanceMapper.increaseRetriedCount(sagaTaskInstance.getId())
 
         then: '查询数据库验证重试次数'
         def newData = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
-        newData.getObjectVersionNumber() == data.getObjectVersionNumber() + 1
-        newData.getRetriedCount() == data.getRetriedCount() + 1
+        newData.getRetriedCount() == sagaTaskInstance.getRetriedCount() + 1
     }
 
-    def 'lockByInstance'() {
-        given: '查询数据'
-        def data = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
+    def '测试 lockByInstanceAndUpdateStartTime方法'() {
+        given: '数据库插入两条测试数据'
+        def sagaTaskInstance = createSagaTaskInstance('lockTask', 'lockSaga')
+        sagaTaskInstance.setInstanceLock(null)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        def db = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
 
 
-        when: '执行lockByInstance并重新查询数据'
-        sagaTaskInstanceMapper.lockByInstance(data.getId(), lock)
-        def newData = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
+        when: '正确参数调用lockByInstanceAndUpdateStartTime方法'
+        def date = new Date()
+        def instance = '127.0.0.1:8080'
+        def rowNum = sagaTaskInstanceMapper.lockByInstanceAndUpdateStartTime(db.getId(), instance, db.getObjectVersionNumber(), date)
+        then: '影响行数为1；instance和date更新生效'
+        rowNum == 1
+        def db2 = sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId())
+        db2.getInstanceLock() == instance
+        db2.getActualStartTime() == date
 
-        then: '验证实例锁已加上'
-        newData.getObjectVersionNumber() == data.getObjectVersionNumber() + 1
-        newData.getInstanceLock() == lock
+        when: '使用错误的versionNumber调用lockByInstanceAndUpdateStartTime方法'
+        def rowNum2 = sagaTaskInstanceMapper.lockByInstanceAndUpdateStartTime(db.getId(), '127.0.0.1:9090', 1000L, new Date())
+        then: '影响行数为0'
+        rowNum2 == 0
     }
 
-    def 'unlockByInstance'() {
-        when: '执行unlockByInstance'
-        sagaTaskInstanceMapper.unlockByInstance(lock)
+    def '测试 unlockByInstance方法'() {
+        given: '插入两条测试数据'
+        def instance = '127.0.0.1:9092'
+        def sagaTaskInstance = createSagaTaskInstance('unlockTask', 'unlockSaga')
+        sagaTaskInstance.setInstanceLock(instance)
+        sagaTaskInstance.setInstanceLock(instance)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        def id1 = sagaTaskInstance.getId()
+        sagaTaskInstance.setId(null)
+        sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name())
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        def id2 = sagaTaskInstance.getId()
+
+        when: '执行unlockByInstance方法'
+        int rowNum = sagaTaskInstanceMapper.unlockByInstance(instance)
 
         then: '数据库查询有无该lock的数据为空'
-        SagaTaskInstance query = new SagaTaskInstance()
-        query.setInstanceLock(lock)
-        def lockCount = sagaTaskInstanceMapper.selectCount(query)
-        lockCount == 0
+        rowNum == 1
+        sagaTaskInstanceMapper.selectByPrimaryKey(id1).getInstanceLock() == null
+        sagaTaskInstanceMapper.selectByPrimaryKey(id2).getInstanceLock() == instance
     }
 
-    def 'delete'() {
-        when: '根据ID删除'
-        sagaTaskInstanceMapper.deleteByPrimaryKey(sagaTaskInstance.getId())
+    def '测试 selectAllBySagaInstanceId方法'() {
+        given: '插入两条测试数据'
+        def sagaInstanceId = 99L
+        def sagaTaskInstance = createSagaTaskInstance('selectBySagaInstanceTask', 'selectBySagaInstanceSaga')
+        sagaTaskInstance.setInstanceLock(null)
+        sagaTaskInstance.setSagaInstanceId(sagaInstanceId)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
+        sagaTaskInstance.setId(null)
+        sagaTaskInstanceMapper.insert(sagaTaskInstance)
 
-        then: '查询数据为空'
-        sagaTaskInstanceMapper.selectByPrimaryKey(sagaTaskInstance.getId()) == null
+        when: '执行selectAllBySagaInstanceI方法'
+        List<SagaTaskInstanceDTO> result = sagaTaskInstanceMapper.selectAllBySagaInstanceId(sagaInstanceId)
+
+        then: '验证查询结果，条数为2'
+        result.size() == 2
+        result.get(0).getSagaInstanceId() == sagaInstanceId
+        result.get(1).getSagaInstanceId() == sagaInstanceId
     }
 
 }

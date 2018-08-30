@@ -5,78 +5,70 @@ import io.choerodon.asgard.domain.Saga
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import spock.lang.Shared
+import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
-import spock.lang.Stepwise
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(IntegrationTestConfiguration)
-@Stepwise
+@Transactional
 class SagaMapperSpec extends Specification {
 
     @Autowired
     SagaMapper sagaMapper
 
-    @Shared Saga saga = new Saga()
+    def '测试 插入方法'() {
+        given: '创建一个对象'
+        def saga = new Saga()
+        saga.setCode('test-saga')
 
-    def 'insert'() {
-        given: '创建一个bean'
-        def testCode = 'test_data'
-        saga.setCode(testCode)
+        when: '调用mapper的插入方法'
+        def rowNum = sagaMapper.insert(saga)
 
-        when: '插入数据库'
+        then: '数据库查询确认插入'
+        rowNum == 1
+        saga.getId() != null
+        def data = sagaMapper.selectByPrimaryKey(saga.getId())
+        data.getCode() == saga.getCode()
+        data.getObjectVersionNumber() != null
+        data.getCreationDate() != null
+        data.getCreatedBy() != null
+    }
+
+    def '测试 existByCode方法'() {
+        given: '数据库插入一条测试数据'
+        def saga = new Saga()
+        saga.setCode('existByCode')
         sagaMapper.insert(saga)
 
-        then: '返回ID'
-        saga.getId() != null
+        when: '调用existByCode方法'
+        def exist = sagaMapper.existByCode(saga.getCode())
 
-        when: '根据ID在数据库查询'
-        def data = sagaMapper.selectByPrimaryKey(saga.getId())
-
-        then: '对比数据'
-        data.getCode() == testCode
+        then: '验证存在'
+        exist
     }
 
-    def 'existByCode'() {
-        when: '根据code查询是否存在'
-        def num = sagaMapper.existByCode(saga.getCode())
 
-        then: '返回ID'
-        num
-    }
+    def '测试 fulltextSearch方法'() {
+        given: '准备查询数据'
+        def dbData = new Saga('fs_saga', 'asgard-service', 'saga测试code', '{}', 'INPUT_SCHEMA')
+        sagaMapper.insert(dbData)
 
-    def 'update'() {
-        given: '更新bean数据'
-        def testCode = 'test_update_code'
-        saga.setCode(testCode)
+        expect: '期望的结果数量'
+        sagaMapper.fulltextSearch(code, description, service, params).size() == size
 
-        when: '执行数据库更新'
-        def objectVersionNumber = sagaMapper.selectByPrimaryKey(saga.getId()).getObjectVersionNumber()
-        saga.setObjectVersionNumber(objectVersionNumber)
-        sagaMapper.updateByPrimaryKeySelective(saga)
-
-        then: '对比数据'
-        def data = sagaMapper.selectByPrimaryKey(saga.getId())
-        data.getCode() == testCode
-        data.getObjectVersionNumber() == objectVersionNumber + 1
-    }
-
-    def 'select'() {
-        when: '根据ID查询'
-        def data = sagaMapper.selectByPrimaryKey(saga.getId())
-
-        then: '数据ID不为空'
-        data.getId() != null
-    }
-
-    def 'delete'() {
-        when: '根据ID删除'
-        sagaMapper.deleteByPrimaryKey(saga.getId())
-
-        then: '查询数据为空'
-        sagaMapper.selectByPrimaryKey(saga.getId()) == null
+        where: '验证查询结果数量'
+        code       || description || service  || params     || size
+        'fs_saga'  || null        || null     || null       || 1
+        null       || 'saga测试'    || null     || null       || 1
+        null       || null        || 'asgard' || null       || 1
+        'fs_saga1' || null        || null     || null       || 0
+        null       || null        || null     || 'fs_saga'  || 1
+        null       || null        || null     || 'saga测试'   || 1
+        null       || null        || null     || 'asgard'   || 1
+        null       || null        || null     || 'fs_saga1' || 0
+        null       || null        || null     || 'saga测试1'  || 0
     }
 
 }

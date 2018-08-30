@@ -34,6 +34,14 @@ public class Saga extends AuditDomain {
     public Saga() {
     }
 
+    public Saga(String code, String service, String description, String inputSchema, String inputSchemaSource) {
+        this.code = code;
+        this.description = description;
+        this.inputSchema = inputSchema;
+        this.service = service;
+        this.inputSchemaSource = inputSchemaSource;
+    }
+
     public Long getId() {
         return id;
     }
