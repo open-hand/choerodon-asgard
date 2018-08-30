@@ -41,6 +41,10 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
         this.sagaTaskInstanceService = sagaTaskInstanceService;
     }
 
+    public void setLocal(Boolean local) {
+        isLocal = local;
+    }
+
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -69,7 +73,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         } else {
-            throw new RemoteAccessException("error.fetchPropertyData");
+            throw new RemoteAccessException("error.fetchPropertyData.statusCodeNot2XX");
         }
     }
 

@@ -61,7 +61,7 @@ class SagaMapperSpec extends Specification {
         where: '验证查询结果数量'
         code       || description || service  || params     || size
         'fs_saga'  || null        || null     || null       || 1
-        null       || 'saga测试'    || null     || null       || 1
+        null       || 'saga测试'   || null     || null       || 1
         null       || null        || 'asgard' || null       || 1
         'fs_saga1' || null        || null     || null       || 0
         null       || null        || null     || 'fs_saga'  || 1
