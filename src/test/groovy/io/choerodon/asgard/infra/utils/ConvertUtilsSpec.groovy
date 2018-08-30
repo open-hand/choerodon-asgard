@@ -96,20 +96,30 @@ class ConvertUtilsSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def data1 = new JsonMergeDTO('code1', JsonOutput.toJson([name: 'John1', pass: 'valJest']))
         def data2 = new JsonMergeDTO('code2', JsonOutput.toJson([name: 'John2', id: 2]))
-        def data3 = new JsonMergeDTO('code4', 'false')
+        def data3 = new JsonMergeDTO('code3', 'false')
+        def data4 = new JsonMergeDTO('code4', objectMapper.writeValueAsString(['one','two'] as String[]))
 
         when: '执行jsonMerge'
         def map1 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data1, data2], objectMapper))
         def map2 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data1, data3], objectMapper))
+        def map3 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data3, data4], objectMapper))
+        def emptyList = ConvertUtils.jsonMerge([], objectMapper)
         map1 = (Map) map1
         map2 = (Map) map2
+        map3 = (Map) map3
 
         then: "验证jsonMerge结果"
+        emptyList == '{}'
         map1.get('name') == 'John2'
         map1.get('pass') == 'valJest'
         map1.get('id') == 2
+
         map2.get('name') == 'John1'
         map2.get('pass') == 'valJest'
-        map2.get('code4') == false
+        map2.get('code3') == false
+
+        map3.get('code3') == false
+        ((List)map3.get('code4')).get(0) == 'one'
+        ((List)map3.get('code4')).get(1) == 'two'
     }
 }
