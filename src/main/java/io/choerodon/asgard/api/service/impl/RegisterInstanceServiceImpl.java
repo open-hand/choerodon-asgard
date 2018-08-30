@@ -34,10 +34,15 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     private final ModelMapper modelMapper = new ModelMapper();
 
     public RegisterInstanceServiceImpl(SagaService sagaService,
-                                       SagaTaskService sagaTaskService, SagaTaskInstanceService sagaTaskInstanceService) {
+                                       SagaTaskService sagaTaskService,
+                                       SagaTaskInstanceService sagaTaskInstanceService) {
         this.sagaService = sagaService;
         this.sagaTaskService = sagaTaskService;
         this.sagaTaskInstanceService = sagaTaskInstanceService;
+    }
+
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Override

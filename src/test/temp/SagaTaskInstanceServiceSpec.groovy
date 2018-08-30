@@ -1,4 +1,4 @@
-package io.choerodon.asgard.api.service.impl
+package io.choerodon.asgard.api.temp
 
 import groovy.json.JsonOutput
 import io.choerodon.asgard.IntegrationTestConfiguration
