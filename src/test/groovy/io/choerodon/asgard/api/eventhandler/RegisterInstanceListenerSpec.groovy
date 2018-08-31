@@ -46,16 +46,14 @@ class RegisterInstanceListenerSpec extends Specification {
 
         when: '当接收消息为UP的服务消息'
         registerInstanceListener.handle(upRecord)
-        Thread.sleep(1000)
+        Thread.sleep(500)
         then: 'RegisterInstanceService的up方法执行'
         1 * mockRegisterInstanceService.instanceUpConsumer(_)
 
         when: '当接收消息为DOWN的服务消息'
         registerInstanceListener.handle(downRecord)
-        Thread.sleep(1000)
+        Thread.sleep(500)
         then: 'RegisterInstanceService的down方法执行'
         1 * mockRegisterInstanceService.instanceDownConsumer(_)
-
-
     }
 }
