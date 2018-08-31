@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.service
 
+import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.dto.SagaWithTaskInstanceDTO
@@ -16,6 +17,8 @@ import org.springframework.context.annotation.Import
 import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 import spock.lang.Stepwise
+
+import java.text.SimpleDateFormat
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -49,6 +52,41 @@ class SagaInstanceServiceSpec extends Specification {
 
     def mapper = new ObjectMapper()
 
+
+    def '测试 query方法'() {
+        given: '数据库插入测试数据'
+        mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"))
+        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
+        def sagaInstance = new SagaInstance('query', 'type', '', 'id', new Date())
+        sagaInstanceMapper.insertSelective(sagaInstance)
+        def json = new JsonData('data')
+        jsonDataMapper.insert(json)
+        def taskInstanceOne = createSagaTaskInstance('one', sagaInstance.getId(), 2, json.getId())
+        def taskInstanceTwo = createSagaTaskInstance('two', sagaInstance.getId(), 8, json.getId())
+        def taskInstanceThree = createSagaTaskInstance('three', sagaInstance.getId(), 8, json.getId())
+        sagaTaskInstanceMapper.insertSelective(taskInstanceOne)
+        sagaTaskInstanceMapper.insertSelective(taskInstanceTwo)
+        sagaTaskInstanceMapper.insertSelective(taskInstanceThree)
+
+        when: '查询不存在的id'
+        sagaInstanceService.query(9999L)
+
+        then: '抛出CommonException'
+        CommonException notExist = thrown CommonException
+        notExist.getCode() == 'error.sagaInstance.notExist'
+
+        when: '查询存在的id'
+        String result = sagaInstanceService.query(sagaInstance.getId()).getBody()
+
+        then: '验证查询数据'
+        def dto = mapper.readValue(result, SagaWithTaskInstanceDTO)
+        dto.getSagaCode() == sagaInstance.getSagaCode()
+        dto.getTasks().size() == 2
+        dto.getTasks().get(0).size() == 1
+        dto.getTasks().get(0).get(0).getTaskCode() == taskInstanceOne.getTaskCode()
+        dto.getTasks().get(1).size() == 2
+        dto.getTasks().get(1).get(0).getSeq() == taskInstanceTwo.getSeq()
+    }
 
     def '测试 start方法'() {
         given: '数据库插入测试所需要数据'
@@ -128,37 +166,6 @@ class SagaInstanceServiceSpec extends Specification {
         1 * instanceMapper.fulltextSearch(_, _, _, _, _)
     }
 
-    def '测试 query方法'() {
-        given: '数据库插入测试数据'
-        def sagaInstance = new SagaInstance('query', 'type', '', 'id', new Date())
-        sagaInstanceMapper.insertSelective(sagaInstance)
-        def json = new JsonData('data')
-        jsonDataMapper.insert(json)
-        def taskInstanceOne = createSagaTaskInstance('one', sagaInstance.getId(), 2, json.getId())
-        def taskInstanceTwo = createSagaTaskInstance('two', sagaInstance.getId(), 8, json.getId())
-        def taskInstanceThree = createSagaTaskInstance('three', sagaInstance.getId(), 8, json.getId())
-        sagaTaskInstanceMapper.insertSelective(taskInstanceOne)
-        sagaTaskInstanceMapper.insertSelective(taskInstanceTwo)
-        sagaTaskInstanceMapper.insertSelective(taskInstanceThree)
-
-        when: '查询不存在的id'
-        sagaInstanceService.query(9999L)
-
-        then: '抛出CommonException'
-        thrown CommonException
-
-        when: '查询存在的id'
-        String result = sagaInstanceService.query(sagaInstance.getId()).getBody()
-
-        then: '验证查询数据'
-        def dto = mapper.readValue(result, SagaWithTaskInstanceDTO)
-        dto.getSagaCode() == sagaInstance.getSagaCode()
-        dto.getTasks().size() == 2
-        dto.getTasks().get(0).size() == 1
-        dto.getTasks().get(0).get(0).getTaskCode() == taskInstanceOne.getTaskCode()
-        dto.getTasks().get(1).size() == 2
-        dto.getTasks().get(1).get(0).getSeq() == taskInstanceTwo.getSeq()
-    }
 
     def createSagaTaskInstance(String taskCode, long instanceId, int seq, long dataId) {
         return SagaTaskInstanceBuilder.aSagaTaskInstance()

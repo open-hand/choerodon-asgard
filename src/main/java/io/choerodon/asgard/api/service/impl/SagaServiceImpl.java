@@ -13,7 +13,6 @@ import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
@@ -49,6 +48,10 @@ public class SagaServiceImpl implements SagaService {
         this.sagaTaskMapper = sagaTaskMapper;
     }
 
+    public void setSagaMapper(SagaMapper sagaMapper) {
+        this.sagaMapper = sagaMapper;
+    }
+
     @Override
     public void create(Saga saga) {
         if (StringUtils.isEmpty(saga.getCode()) || StringUtils.isEmpty(saga.getService())) {
@@ -57,9 +60,7 @@ public class SagaServiceImpl implements SagaService {
         }
         Saga selectSaga = sagaMapper.selectOne(new Saga(saga.getCode()));
         if (selectSaga == null) {
-            if (sagaMapper.insertSelective(saga) != 1) {
-                LOGGER.warn("error.createSaga.insert, saga : {}", saga);
-            }
+            sagaMapper.insertSelective(saga);
         } else if (saga.getService().equals(selectSaga.getService())) {
             saga.setId(selectSaga.getId());
             saga.setObjectVersionNumber(selectSaga.getObjectVersionNumber());
@@ -110,14 +111,14 @@ public class SagaServiceImpl implements SagaService {
     public void delete(Long id) {
         Saga saga = sagaMapper.selectByPrimaryKey(id);
         if (saga == null) {
-            throw new FeignException("error.saga.notExist");
+            throw new CommonException("error.saga.notExist");
         }
         SagaTask sagaTask = new SagaTask();
         sagaTask.setIsEnabled(true);
         sagaTask.setSagaCode(saga.getCode());
         List<SagaTask> sagaTasks = sagaTaskMapper.select(sagaTask);
         if (!sagaTasks.isEmpty()) {
-            throw new FeignException("error.saga.deleteWhenTaskExist");
+            throw new CommonException("error.saga.deleteWhenTaskExist");
         }
         sagaMapper.deleteByPrimaryKey(id);
     }

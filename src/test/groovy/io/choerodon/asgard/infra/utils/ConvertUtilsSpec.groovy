@@ -78,9 +78,11 @@ class ConvertUtilsSpec extends Specification {
         jsonDataMapper.insert(jsonData1)
         jsonDataMapper.insert(jsonData2)
         def list = [new SagaTaskInstance('code1', jsonData1.getId()), new SagaTaskInstance('code2', jsonData2.getId())]
+        def emptyDataIdslist = [new SagaTaskInstance('code1', null), new SagaTaskInstance('code2', jsonData2.getId())]
 
         when: '调用convertToJsonMerge方法'
         def jsonMergeDTOS = ConvertUtils.convertToJsonMerge(list, jsonDataMapper)
+        def emptyDataIdJsonMergeDTOS = ConvertUtils.convertToJsonMerge(emptyDataIdslist, jsonDataMapper)
 
         then: '验证结果'
         jsonMergeDTOS.size() == 2
@@ -88,6 +90,7 @@ class ConvertUtilsSpec extends Specification {
         jsonMergeDTOS.get(0).getTaskOutputJsonData() == jsonData1.getData()
         jsonMergeDTOS.get(1).getTaskCode() == list.get(1).getTaskCode()
         jsonMergeDTOS.get(1).getTaskOutputJsonData() == jsonData2.getData()
+        emptyDataIdJsonMergeDTOS.size() == 1
     }
 
     def '测试 jsonMerge方法'() {
@@ -103,6 +106,7 @@ class ConvertUtilsSpec extends Specification {
         def map1 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data1, data2], objectMapper))
         def map2 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data1, data3], objectMapper))
         def map3 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data3, data4], objectMapper))
+        def map4 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data3], objectMapper))
         def emptyList = ConvertUtils.jsonMerge([], objectMapper)
         map1 = (Map) map1
         map2 = (Map) map2
@@ -121,5 +125,7 @@ class ConvertUtilsSpec extends Specification {
         map3.get('code3') == false
         ((List)map3.get('code4')).get(0) == 'one'
         ((List)map3.get('code4')).get(1) == 'two'
+
+        map4 == false
     }
 }
