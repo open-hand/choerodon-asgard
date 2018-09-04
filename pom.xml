@@ -14,16 +14,6 @@
         <version>0.8.0.RELEASE</version>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>http://repo1.maven.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <properties>
         <choerodon.starters.version>0.6.2.RELEASE</choerodon.starters.version>
     </properties>
@@ -134,7 +124,7 @@
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.23.1-GA</version>
+            <version>3.12.1.GA</version>
             <scope>test</scope>
             <type>bundle</type>
         </dependency>
