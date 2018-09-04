@@ -17,23 +17,17 @@ public class StringLockProvider {
         }
         Mutex key = new MutexImpl(id);
         synchronized (mutexMap) {
-            WeakReference<Mutex> ref = mutexMap.computeIfAbsent(key, WeakReference::new);
-            Mutex mutex = ref.get();
-            if (mutex == null) {
-                mutexMap.put(key, new WeakReference<>(key));
-                return key;
-            }
-            return mutex;
+            return mutexMap.computeIfAbsent(key, WeakReference::new).get();
         }
     }
 
-    public  interface Mutex {
+    public interface Mutex {
     }
 
     private static class MutexImpl implements Mutex {
         private final String code;
 
-        protected MutexImpl(String id) {
+        private MutexImpl(String id) {
             this.code = id;
         }
 

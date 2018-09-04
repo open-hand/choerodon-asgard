@@ -20,7 +20,6 @@ class StringLockProviderSpec extends Specification {
 
         when: '创建code相同的Mutex'
         StringLockProvider.Mutex one2 = stringLockProvider.getMutex('one')
-
         then: 'code相同则Mutex为同一个对象'
         one1 == one2
 
@@ -29,11 +28,16 @@ class StringLockProviderSpec extends Specification {
         StringLockProvider.Mutex three = stringLockProvider.getMutex('three')
         StringLockProvider.Mutex four = stringLockProvider.getMutex('four')
         StringLockProvider.Mutex five = stringLockProvider.getMutex('five')
-
         then: 'code不同则Mutex不同'
+        one1 != null
         one1 != two
         one1 != three
         one1 != four
         one1 != five
+
+        when: 'getMutex传入参数为null'
+        stringLockProvider.getMutex(null)
+        then: '抛出空指针异常'
+        thrown NullPointerException
     }
 }

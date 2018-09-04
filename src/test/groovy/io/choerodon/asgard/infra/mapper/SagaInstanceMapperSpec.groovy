@@ -6,75 +6,61 @@ import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import spock.lang.Shared
+import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
-import spock.lang.Stepwise
+import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(IntegrationTestConfiguration)
-@Stepwise
+@Transactional
 class SagaInstanceMapperSpec extends Specification {
 
     @Autowired
     SagaInstanceMapper sagaInstanceMapper
 
-    @Shared
-    SagaInstance sagaInstance = new SagaInstance()
-
-    def 'insert'() {
-        given: '创建一个bean'
-        def testCode = 'test-code'
-        sagaInstance.setSagaCode(testCode)
+    def '测试 插入方法'() {
+        given: '创建一个对象'
+        def sagaInstance = new SagaInstance()
+        sagaInstance.setSagaCode('test-code')
         sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
 
-        when: '插入数据库'
-        sagaInstanceMapper.insert(sagaInstance)
+        when: '调用mapper的插入方法'
+        def rowNum = sagaInstanceMapper.insert(sagaInstance)
 
-        then: '返回ID'
+        then: '数据库查询确认插入'
+        rowNum == 1
         sagaInstance.getId() != null
-
-        when: '根据ID在数据库查询'
         def data = sagaInstanceMapper.selectByPrimaryKey(sagaInstance.getId())
-
-        then: '对比数据'
         data.getStatus() == SagaDefinition.TaskInstanceStatus.RUNNING.name()
-        data.getSagaCode() == testCode
+        data.getSagaCode() == sagaInstance.getSagaCode()
+        data.getObjectVersionNumber() != null
+        data.getCreationDate() != null
+        data.getCreatedBy() != null
     }
 
-    def 'update'() {
-        given: '更新bean数据'
-        def testCode = 'test_update_code'
-        sagaInstance.setSagaCode(testCode)
-        sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name())
+    @Unroll
+    def '测试 fulltextSearch方法'() {
+        given: '准备查询数据'
+        def dbData = new SagaInstance('fs_code', 'fs_type', 'fs_id', 'fs_status', new Date(), new Date())
+        sagaInstanceMapper.insert(dbData)
 
-        when: '执行数据库更新'
-        def objectVersionNumber = sagaInstanceMapper.selectByPrimaryKey(sagaInstance.getId()).getObjectVersionNumber()
-        sagaInstance.setObjectVersionNumber(objectVersionNumber)
-        sagaInstanceMapper.updateByPrimaryKeySelective(sagaInstance)
+        expect: '期望的结果数量'
+        sagaInstanceMapper.fulltextSearch(sagaCode, status, refType, refId, params).size() == size
 
-        then: '对比数据'
-        def data = sagaInstanceMapper.selectByPrimaryKey(sagaInstance.getId())
-        data.getStatus() == SagaDefinition.TaskInstanceStatus.COMPLETED.name()
-        data.getSagaCode() == testCode
-        data.getObjectVersionNumber() == objectVersionNumber + 1
-    }
-
-    def 'select'() {
-        when: '根据ID查询'
-        def data = sagaInstanceMapper.selectByPrimaryKey(sagaInstance.getId())
-
-        then: '数据ID不为空'
-        data.getId() != null
-    }
-
-    def 'delete'() {
-        when: '根据ID删除]'
-        sagaInstanceMapper.deleteByPrimaryKey(sagaInstance.getId())
-
-        then: '查询数据为空'
-        sagaInstanceMapper.selectByPrimaryKey(sagaInstance.getId()) == null
+        where: '验证查询结果数量'
+        sagaCode   || status      || refType   || refId   || params      || size
+        'fs_code'  || null        || null      || null    || null        || 1
+        null       || 'fs_status' || null      || null    || null        || 1
+        null       || null        || 'fs_type' || null    || null        || 1
+        null       || null        || null      || 'fs_id' || null        || 1
+        'fs_code1' || null        || null      || null    || null        || 0
+        null       || null        || null      || null    || 'fs_code'   || 1
+        null       || null        || null      || null    || 'fs_type'   || 1
+        null       || null        || null      || null    || 'fs_id'     || 1
+        null       || null        || null      || null    || 'fs_status' || 1
+        null       || null        || null      || null    || 'fs_test'   || 0
     }
 
 }

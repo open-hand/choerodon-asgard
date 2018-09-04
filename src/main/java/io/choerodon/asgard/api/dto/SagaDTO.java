@@ -58,4 +58,15 @@ public class SagaDTO {
     public void setService(String service) {
         this.service = service;
     }
+
+    public SagaDTO(Long id, String code, String description, String input, String service) {
+        this.id = id;
+        this.code = code;
+        this.description = description;
+        this.input = input;
+        this.service = service;
+    }
+
+    public SagaDTO() {
+    }
 }

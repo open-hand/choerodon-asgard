@@ -22,8 +22,8 @@ public class RegisterInstanceListener {
 
     private static final String REGISTER_TOPIC = "register-server";
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterInstanceListener.class);
-    private static final String STATUS_UP = "UP";
-    private static final String STATUS_DOWN = "DOWN";
+    public static final String STATUS_UP = "UP";
+    public static final String STATUS_DOWN = "DOWN";
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Value("${choerodon.asgard.fetch.time:10}")
@@ -37,6 +37,18 @@ public class RegisterInstanceListener {
 
     public RegisterInstanceListener(RegisterInstanceService registerInstanceService) {
         this.registerInstanceService = registerInstanceService;
+    }
+
+    public void setRegisterInstanceService(RegisterInstanceService registerInstanceService) {
+        this.registerInstanceService = registerInstanceService;
+    }
+
+    public void setSagaFetchTime(Integer sagaFetchTime) {
+        this.sagaFetchTime = sagaFetchTime;
+    }
+
+    public void setSkipServices(String[] skipServices) {
+        this.skipServices = skipServices;
     }
 
     /**

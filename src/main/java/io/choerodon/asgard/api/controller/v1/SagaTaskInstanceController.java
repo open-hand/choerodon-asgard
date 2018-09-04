@@ -3,18 +3,20 @@ package io.choerodon.asgard.api.controller.v1;
 import java.util.Set;
 import javax.validation.Valid;
 
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
+import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import io.choerodon.asgard.api.dto.PollBatchDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
-import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
 
 @RestController
 @RequestMapping("/v1/sagas/tasks/instances")
@@ -23,6 +25,10 @@ public class SagaTaskInstanceController {
     private SagaTaskInstanceService sagaTaskInstanceService;
 
     public SagaTaskInstanceController(SagaTaskInstanceService sagaTaskInstanceService) {
+        this.sagaTaskInstanceService = sagaTaskInstanceService;
+    }
+
+    public void setSagaTaskInstanceService(SagaTaskInstanceService sagaTaskInstanceService) {
         this.sagaTaskInstanceService = sagaTaskInstanceService;
     }
 
@@ -52,7 +58,10 @@ public class SagaTaskInstanceController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
-    public void unlockByInstance(@RequestParam("instance") String instance) {
+    public void unlockByInstance(@RequestParam(value = "instance", required = false) String instance) {
+        if (StringUtils.isEmpty(instance)) {
+            throw new CommonException("error.unlockByInstance.instanceEmpty");
+        }
         sagaTaskInstanceService.unlockByInstance(instance);
     }
 

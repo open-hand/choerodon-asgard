@@ -34,10 +34,19 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     private final ModelMapper modelMapper = new ModelMapper();
 
     public RegisterInstanceServiceImpl(SagaService sagaService,
-                                       SagaTaskService sagaTaskService, SagaTaskInstanceService sagaTaskInstanceService) {
+                                       SagaTaskService sagaTaskService,
+                                       SagaTaskInstanceService sagaTaskInstanceService) {
         this.sagaService = sagaService;
         this.sagaTaskService = sagaTaskService;
         this.sagaTaskInstanceService = sagaTaskInstanceService;
+    }
+
+    public void setLocal(Boolean local) {
+        isLocal = local;
+    }
+
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -64,7 +73,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
         if (response.getStatusCode() == HttpStatus.OK) {
             return response.getBody();
         } else {
-            throw new RemoteAccessException("error.fetchPropertyData");
+            throw new RemoteAccessException("error.fetchPropertyData.statusCodeNot2XX");
         }
     }
 

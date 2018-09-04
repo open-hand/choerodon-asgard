@@ -1,8 +1,9 @@
-package io.choerodon.asgard.api.service.impl
+package io.choerodon.asgard.api.temp
 
 import groovy.json.JsonOutput
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.dto.PollBatchDTO
+import io.choerodon.asgard.api.dto.PollCodeDTO
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO
 import io.choerodon.asgard.api.service.SagaTaskInstanceService
@@ -72,8 +73,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
         given: '给定一个批量拉取的DTO'
         def pollInstance = 'asgard-test-service-test-instance'
         PollBatchDTO pollBatchDTO = new PollBatchDTO()
-        Set<String> codes = new HashSet<>()
-        codes.add(testCode)
+        List<PollCodeDTO> codes = new ArrayList<>()
         pollBatchDTO.setCodes(codes)
         pollBatchDTO.setInstance(pollInstance)
 

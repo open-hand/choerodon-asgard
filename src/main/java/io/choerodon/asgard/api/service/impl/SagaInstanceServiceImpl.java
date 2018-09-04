@@ -21,8 +21,6 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -39,8 +37,6 @@ import static java.util.stream.Collectors.groupingBy;
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SagaInstanceService.class);
-
     public static final String DB_ERROR = "error.db.insertOrUpdate";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -54,7 +50,8 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     private JsonDataMapper jsonDataMapper;
 
 
-    public SagaInstanceServiceImpl(SagaMapper sagaMapper, SagaTaskMapper taskMapper,
+    public SagaInstanceServiceImpl(SagaMapper sagaMapper,
+                                   SagaTaskMapper taskMapper,
                                    SagaInstanceMapper instanceMapper,
                                    SagaTaskInstanceMapper taskInstanceMapper,
                                    JsonDataMapper jsonDataMapper) {
@@ -92,9 +89,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             Date date = new Date();
             SagaInstance instanceDO = new SagaInstance(code, dto.getRefType(), dto.getRefId(),
                     SagaDefinition.InstanceStatus.NON_CONSUMER.name(), date, date);
-            if (instanceMapper.insertSelective(instanceDO) != 1) {
-                throw new FeignException(DB_ERROR);
-            }
+            instanceMapper.insertSelective(instanceDO);
             return new ResponseEntity<>(modelMapper.map(
                     instanceMapper.selectByPrimaryKey(instanceDO.getId()), SagaInstanceDTO.class), HttpStatus.OK);
         }
@@ -110,23 +105,19 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         Long inputDataId = null;
         if (dto.getInput() != null) {
             JsonData jsonData = new JsonData(dto.getInput());
-            if (jsonDataMapper.insertSelective(jsonData) != 1) {
-                throw new FeignException(DB_ERROR);
-            }
+            jsonDataMapper.insertSelective(jsonData);
             inputDataId = jsonData.getId();
             instance.setInputDataId(inputDataId);
         }
-        if (instanceMapper.insertSelective(instance) != 1) {
-            throw new FeignException(DB_ERROR);
-        }
+        instanceMapper.insertSelective(instance);
         Map<Integer, List<SagaTask>> taskMap = sagaTasks.stream().collect(groupingBy(SagaTask::getSeq));
         int i = 0;
         for (Map.Entry<Integer, List<SagaTask>> entry : taskMap.entrySet()) {
             if (i < 1) {
                 i++;
-                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, startTime,true);
+                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, startTime, true);
             } else {
-                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, startTime,false);
+                addRunningTask(entry.getValue(), dto, instance.getId(), inputDataId, startTime, false);
             }
         }
         return modelMapper.map(instanceMapper.selectByPrimaryKey(instance.getId()), SagaInstanceDTO.class);
@@ -164,7 +155,6 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    @Transactional
     public ResponseEntity<String> query(Long id) {
         SagaInstance sagaInstance = instanceMapper.selectByPrimaryKey(id);
         if (sagaInstance == null) {
@@ -182,12 +172,11 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                         .stream()
                         .collect(groupingBy(SagaTaskInstanceDTO::getSeq)).values());
         dto.setTasks(list);
-        String response = null;
         try {
-            response = objectMapper.writeValueAsString(dto);
+            return new ResponseEntity<>(objectMapper.writeValueAsString(dto), HttpStatus.OK);
         } catch (JsonProcessingException e) {
-            LOGGER.warn("error.SagaInstanceService.query.JsonProcessingException {}", e);
+            throw new CommonException("error.SagaInstanceService.IOException", e);
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 }

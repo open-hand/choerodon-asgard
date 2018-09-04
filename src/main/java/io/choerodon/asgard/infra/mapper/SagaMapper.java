@@ -13,7 +13,9 @@ public interface SagaMapper extends BaseMapper<Saga> {
     @Select("select count(*) from asgard_orch_saga where code = #{code}")
     boolean existByCode(@Param("code") String code);
 
-    List<SagaDTO> fulltextSearch(@Param("code") String code, @Param("description") String description,
-                                 @Param("service") String service, @Param("params") String params);
+    List<SagaDTO> fulltextSearch(@Param("code") String code,
+                                 @Param("description") String description,
+                                 @Param("service") String service,
+                                 @Param("params") String params);
 
 }

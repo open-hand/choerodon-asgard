@@ -1,10 +1,10 @@
 package io.choerodon.asgard
 
 import com.fasterxml.jackson.databind.ObjectMapper
-
 import io.choerodon.core.oauth.CustomUserDetails
 import io.choerodon.liquibase.LiquibaseConfig
 import io.choerodon.liquibase.LiquibaseExecutor
+import org.apache.ibatis.javassist.ClassPool
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.TestConfiguration
@@ -51,6 +51,7 @@ class IntegrationTestConfiguration {
 
     @PostConstruct
     void init() {
+        mockDoPageAndSort()
         liquibaseExecutor.execute()
         setTestRestTemplateJWT()
     }
@@ -83,5 +84,12 @@ class IntegrationTestConfiguration {
         return jwtToken
     }
 
+    private static void mockDoPageAndSort() {
+        def cp = new ClassPool(true)
+        def ctClass = cp.get('io.choerodon.mybatis.pagehelper.PageHelper')
+        def ctMethod = ctClass.getDeclaredMethod("doPageAndSort")
+        ctMethod.setBody("{ \$2.doSelect(); return null; }")
+        ctClass.toClass()
+    }
 
 }

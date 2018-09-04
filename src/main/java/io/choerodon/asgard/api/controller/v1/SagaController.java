@@ -29,6 +29,10 @@ public class SagaController {
         this.sagaService = sagaService;
     }
 
+    public void setSagaService(SagaService sagaService) {
+        this.sagaService = sagaService;
+    }
+
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "查询事务列表")

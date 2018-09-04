@@ -30,6 +30,10 @@ public class SagaInstanceController {
         this.sagaInstanceService = sagaInstanceService;
     }
 
+    public void setSagaInstanceService(SagaInstanceService sagaInstanceService) {
+        this.sagaInstanceService = sagaInstanceService;
+    }
+
     /**
      * 内部接口。生产者端通过feign调用该接口
      * 开始执行一个saga
@@ -52,7 +56,7 @@ public class SagaInstanceController {
                                                              @RequestParam(name = "status", required = false) String status,
                                                              @RequestParam(name = "refType", required = false) String refType,
                                                              @RequestParam(name = "refId", required = false) String refId,
-                                                             @RequestParam(required = false, name = "params") String params,
+                                                             @RequestParam(name = "params", required = false) String params,
                                                              @ApiIgnore
                                                              @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params);
@@ -64,6 +68,5 @@ public class SagaInstanceController {
     public ResponseEntity<String> query(@PathVariable("id") Long id) {
         return sagaInstanceService.query(id);
     }
-
 
 }

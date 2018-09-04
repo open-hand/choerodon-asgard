@@ -27,8 +27,7 @@ public class SagaTaskServiceImpl implements SagaTaskService {
         serviceSagaTask.setService(service);
         List<SagaTask> dbTasks = sagaTaskMapper.select(serviceSagaTask);
         sagaTaskList.forEach(i -> {
-            if (StringUtils.isEmpty(i.getCode()) || StringUtils.isEmpty(i.getService())
-                    || i.getSeq() == null) {
+            if (StringUtils.isEmpty(i.getCode()) || StringUtils.isEmpty(i.getService()) || i.getSeq() == null) {
                 return;
             }
             SagaTask findSaga = findByCode(dbTasks, i.getSagaCode(), i.getCode());
@@ -54,6 +53,9 @@ public class SagaTaskServiceImpl implements SagaTaskService {
 
     private SagaTask findByCode(final List<SagaTask> sagaTaskList, final String sagaCode, final String code) {
         for (SagaTask sagaTask : sagaTaskList) {
+            if (StringUtils.isEmpty(sagaTask.getCode()) || StringUtils.isEmpty(sagaTask.getService()) || sagaTask.getSeq() == null) {
+                return null;
+            }
             if (sagaTask.getCode().equals(code) && sagaTask.getSagaCode().equals(sagaCode)) {
                 return sagaTask;
             }
