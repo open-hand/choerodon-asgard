@@ -72,7 +72,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                     if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
                         return;
                     }
-                    addReturnList(returnList, pollBatchDTO.getInstance(), t);
+                    addToReturnList(returnList, pollBatchDTO.getInstance(), t);
                 });
 
                 //并发策略为TYPE_AND_ID的消息拉取。
@@ -105,11 +105,11 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                           final String instance) {
         int currentLimitNum = list.get(0).getConcurrentLimitNum();
         list.stream().sorted(Comparator.comparing(SagaTaskInstanceDTO::getCreationDate)).limit(currentLimitNum).forEach(j ->
-                addReturnList(returnList, instance, j)
+                addToReturnList(returnList, instance, j)
         );
     }
 
-    private void addReturnList(final Set<SagaTaskInstanceDTO> returnList,
+    private void addToReturnList(final Set<SagaTaskInstanceDTO> returnList,
                                final String instance,
                                final SagaTaskInstanceDTO j) {
         Date time = null;
@@ -125,6 +125,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         }
     }
 
+    //todo 通过修改事务等方式，解决多个请求进来可能会出现的脏读问题
     @Override
     public SagaTaskInstanceDTO updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
@@ -181,21 +182,21 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         if (taskInstanceMapper.updateByPrimaryKeySelective(taskInstance) != 1) {
             throw new FeignException(DB_ERROR);
         }
-        Map<Integer, List<SagaTaskInstance>> integerListMap = taskInstanceMapper
+        Map<Integer, List<SagaTaskInstance>> seqTaskListMap = taskInstanceMapper
                 .select(new SagaTaskInstance(taskInstance.getSagaInstanceId()))
                 .stream().collect(groupingBy(SagaTaskInstance::getSeq));
-        long unFinishedCount = integerListMap.get(taskInstance.getSeq()).stream()
+        long unFinishedCount = seqTaskListMap.get(taskInstance.getSeq()).stream()
                 .filter(t -> !SagaDefinition.InstanceStatus.COMPLETED.name().equals(t.getStatus())).count();
         if (unFinishedCount > 0) {
             return;
         }
-        startNextTaskInstance(integerListMap, taskInstance, instance);
+        startNextTaskInstance(seqTaskListMap, taskInstance, instance);
     }
 
-    private void startNextTaskInstance(final Map<Integer, List<SagaTaskInstance>> integerListMap, final SagaTaskInstance taskInstance, final SagaInstance instance) {
+    private void startNextTaskInstance(final Map<Integer, List<SagaTaskInstance>> seqTaskListMap, final SagaTaskInstance taskInstance, final SagaInstance instance) {
         try {
             final JsonData temp = new JsonData();
-            final List<SagaTaskInstance> seqTaskInstances = integerListMap.get(taskInstance.getSeq());
+            final List<SagaTaskInstance> seqTaskInstances = seqTaskListMap.get(taskInstance.getSeq());
             String nextInputJson = ConvertUtils.jsonMerge(ConvertUtils.convertToJsonMerge(seqTaskInstances, jsonDataMapper), objectMapper);
             if (nextInputJson != null) {
                 JsonData nextInputData = new JsonData(nextInputJson);
@@ -205,7 +206,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                 temp.setId(nextInputData.getId());
             }
 
-            List<SagaTaskInstance> nextTaskInstances = getNextTaskInstances(integerListMap, taskInstance.getSeq());
+            List<SagaTaskInstance> nextTaskInstances = getNextTaskInstances(seqTaskListMap, taskInstance.getSeq());
             if (nextTaskInstances.isEmpty()) {
                 instance.setStatus(SagaDefinition.InstanceStatus.COMPLETED.name());
                 instance.setEndTime(new Date());

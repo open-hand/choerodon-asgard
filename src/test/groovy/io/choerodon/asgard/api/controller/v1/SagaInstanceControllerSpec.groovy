@@ -27,14 +27,10 @@ class SagaInstanceControllerSpec extends Specification {
     def "测试 开始saga接口"() {
         given: "创建请求DTO"
         def code = "code"
-        def validDto = new StartInstanceDTO()
-        validDto.setInput("in")
-        validDto.setRefId("id")
-        validDto.setRefType("type")
-        def inValidDto = new StartInstanceDTO()
-        inValidDto.setInput("in")
-        inValidDto.setRefId(null)
-        inValidDto.setRefType(null)
+        def dto = new StartInstanceDTO()
+        dto.setInput("in")
+        dto.setRefId("id")
+        dto.setRefType("type")
 
         and: "mock sagaInstanceService"
         def sagaInstanceService = Mock(SagaInstanceService)
@@ -43,20 +39,36 @@ class SagaInstanceControllerSpec extends Specification {
         when: "用合法的DTO调用开始saga接口"
         def entity = testRestTemplate.postForEntity(
                 "/v1/sagas/instances/{code}",
-                validDto, SagaInstanceDTO, code)
+                dto, SagaInstanceDTO, code)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
         1 * sagaInstanceService.start(_)
 
-        when: "用不合法的DTO调用开始saga接口"
-        def inValidEntity = testRestTemplate.postForEntity(
+        when: "用refId为空的DTO调用开始saga接口"
+        dto.setRefId(null)
+        dto.setRefType('type')
+        def emptyRefIdEntity = testRestTemplate.postForEntity(
                 "/v1/sagas/instances/{code}",
-                validDto, ExceptionResponse, code)
+                dto, ExceptionResponse, code)
 
-        then: "验证状态码成功；验证查询参数生效"
-        inValidEntity.statusCode.is2xxSuccessful()
-        1 * sagaInstanceService.start(_)
+        then: "验证状态码成功；验证异常code"
+        emptyRefIdEntity.statusCode.is2xxSuccessful()
+        emptyRefIdEntity.body.getFailed()
+        emptyRefIdEntity.body.getCode() == 'error.startSaga.refTIdNull'
+
+
+        when: "用refType为空的DTO调用开始saga接口"
+        dto.setRefId("id")
+        dto.setRefType(null)
+        def emptyRefTypeEntity = testRestTemplate.postForEntity(
+                "/v1/sagas/instances/{code}",
+                dto, ExceptionResponse, code)
+
+        then: "验证状态码成功；验证异常code"
+        emptyRefTypeEntity.statusCode.is2xxSuccessful()
+        emptyRefTypeEntity.body.getFailed()
+        emptyRefTypeEntity.body.getCode() == 'error.startSaga.refTypeNull'
     }
 
     def "测试 查询事务实例列表接口"() {

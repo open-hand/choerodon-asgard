@@ -54,6 +54,16 @@ public class SagaTaskInstanceStatusDTO {
         this.id = id;
     }
 
+    public SagaTaskInstanceStatusDTO(Long id, String status, String output, String exceptionMessage) {
+        this.id = id;
+        this.status = status;
+        this.output = output;
+        this.exceptionMessage = exceptionMessage;
+    }
+
+    public SagaTaskInstanceStatusDTO() {
+    }
+
     @Override
     public String toString() {
         return "SagaTaskInstanceStatusDTO{" +
