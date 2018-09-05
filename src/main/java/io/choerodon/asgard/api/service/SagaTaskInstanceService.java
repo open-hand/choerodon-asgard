@@ -1,8 +1,8 @@
 package io.choerodon.asgard.api.service;
 
-import io.choerodon.asgard.api.dto.PollBatchDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
+import io.choerodon.asgard.saga.dto.PollBatchDTO;
 
 import java.util.Set;
 

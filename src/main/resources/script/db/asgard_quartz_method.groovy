@@ -9,16 +9,16 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_ORCH_SAGA_TASK')
             }
-
             column(name: 'METHOD', type: 'VARCHAR(128)', remarks: '方法名') {
                 constraints(nullable: false)
             }
-
+            column(name: 'SERVICE', type: 'VARCHAR(64)', remarks: '方法所在服务') {
+                constraints(nullable: false)
+            }
             column(name: 'MAX_RETRY_COUNT', type: 'INT(7) UNSIGNED', defaultValue: "0", remarks: '最大重试次数') {
                 constraints(nullable: false)
             }
-
-            column(name: 'PARAMS', type: 'TEXT', remarks: '方法参数') {
+            column(name: 'PARAMS', type: 'TEXT', remarks: '方法参数列表的json形式') {
                 constraints(nullable: false)
             }
 

@@ -76,6 +76,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<SagaInstanceDTO> start(final StartInstanceDTO dto) {
         final String code = dto.getSagaCode();
         if (!sagaMapper.existByCode(code)) {
@@ -97,8 +98,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         return new ResponseEntity<>(startInstanceAndTask(dto, sagaTasks), HttpStatus.OK);
     }
 
-    @Transactional
-    public SagaInstanceDTO startInstanceAndTask(final StartInstanceDTO dto, final List<SagaTask> sagaTasks) {
+    private SagaInstanceDTO startInstanceAndTask(final StartInstanceDTO dto, final List<SagaTask> sagaTasks) {
         final Date startTime = new Date(System.currentTimeMillis());
         SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
                 SagaDefinition.TaskInstanceStatus.RUNNING.name(), startTime);

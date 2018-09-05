@@ -1,17 +1,18 @@
 package io.choerodon.asgard.infra.utils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 import io.choerodon.asgard.api.dto.JsonMergeDTO;
-import io.choerodon.asgard.domain.JsonData;
-import io.choerodon.asgard.domain.Saga;
-import io.choerodon.asgard.domain.SagaTask;
-import io.choerodon.asgard.domain.SagaTaskInstance;
+import io.choerodon.asgard.domain.*;
 import io.choerodon.asgard.infra.mapper.JsonDataMapper;
-import io.choerodon.asgard.saga.property.PropertyData;
+import io.choerodon.asgard.property.PropertyJobTask;
+import io.choerodon.asgard.property.PropertySaga;
+import io.choerodon.asgard.property.PropertySagaTask;
+import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 
 import java.io.IOException;
@@ -23,13 +24,27 @@ public class ConvertUtils {
     private ConvertUtils() {
     }
 
-    public static Saga convertSaga(final ModelMapper mapper, final PropertyData.Saga saga, final String service) {
+    public static QuartzMethod convertQuartzMethod(final ObjectMapper mapper, final PropertyJobTask jobTask, final String service) {
+       final  QuartzMethod method = new QuartzMethod();
+       method.setService(service);
+       method.setMaxRetryCount(jobTask.getMaxRetryCount());
+       method.setMethod(jobTask.getMethod());
+        try {
+            String params = mapper.writeValueAsString(jobTask.getParams());
+            method.setParams(params);
+            return method;
+        } catch (JsonProcessingException e) {
+            throw new CommonException("error.ConvertUtils.convertQuartzMethod", e);
+        }
+    }
+
+    public static Saga convertSaga(final ModelMapper mapper, final PropertySaga saga, final String service) {
         Saga sagaDO = mapper.map(saga, Saga.class);
         sagaDO.setService(service);
         return sagaDO;
     }
 
-    public static SagaTask convertSagaTask(final ModelMapper mapper, final PropertyData.SagaTask sagaTask, final String service) {
+    public static SagaTask convertSagaTask(final ModelMapper mapper, final PropertySagaTask sagaTask, final String service) {
         SagaTask sagaTaskDO = mapper.map(sagaTask, SagaTask.class);
         sagaTaskDO.setService(service);
         return sagaTaskDO;

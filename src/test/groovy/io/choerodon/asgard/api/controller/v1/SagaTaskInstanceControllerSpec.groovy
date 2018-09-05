@@ -1,9 +1,10 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.PollBatchDTO
+
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO
 import io.choerodon.asgard.api.service.SagaTaskInstanceService
+import io.choerodon.asgard.saga.dto.PollBatchDTO
 import io.choerodon.core.exception.ExceptionResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
