@@ -1,5 +1,6 @@
 package io.choerodon.asgard.domain;
 
+import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
@@ -8,7 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.Map;
+import java.util.List;
 
 @ModifyAudit
 @VersionAudit
@@ -21,12 +22,15 @@ public class QuartzMethod extends AuditDomain  {
 
     private String method;
 
-    private String maxRetryCount;
+    private Integer maxRetryCount;
+
+    private String service;
 
     private String params;
 
     @Transient
-    private Map<String, Object> paramMap;
+    private List<PropertyJobParam> paramList;
+
 
     public String getMethod() {
         return method;
@@ -36,11 +40,11 @@ public class QuartzMethod extends AuditDomain  {
         this.method = method;
     }
 
-    public String getMaxRetryCount() {
+    public Integer getMaxRetryCount() {
         return maxRetryCount;
     }
 
-    public void setMaxRetryCount(String maxRetryCount) {
+    public void setMaxRetryCount(Integer maxRetryCount) {
         this.maxRetryCount = maxRetryCount;
     }
 
@@ -52,14 +56,6 @@ public class QuartzMethod extends AuditDomain  {
         this.params = params;
     }
 
-    public Map<String, Object> getParamMap() {
-        return paramMap;
-    }
-
-    public void setParamMap(Map<String, Object> paramMap) {
-        this.paramMap = paramMap;
-    }
-
     public Long getId() {
         return id;
     }
@@ -68,4 +64,31 @@ public class QuartzMethod extends AuditDomain  {
         this.id = id;
     }
 
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
+    public List<PropertyJobParam> getParamList() {
+        return paramList;
+    }
+
+    public void setParamList(List<PropertyJobParam> paramList) {
+        this.paramList = paramList;
+    }
+
+    @Override
+    public String toString() {
+        return "QuartzMethod{" +
+                "id=" + id +
+                ", method='" + method + '\'' +
+                ", maxRetryCount=" + maxRetryCount +
+                ", service='" + service + '\'' +
+                ", params='" + params + '\'' +
+                ", paramList=" + paramList +
+                '}';
+    }
 }
