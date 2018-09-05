@@ -4,33 +4,33 @@
 
     <select id="fulltextSearch" resultType="io.choerodon.asgard.api.dto.SagaInstanceDTO">
         SELECT
-        id,
-        saga_code,
-        status,
-        start_time,
-        end_time,
-        ref_type,
-        ref_id
+            id,
+            saga_code,
+            status,
+            start_time,
+            end_time,
+            ref_type,
+            ref_id
         FROM asgard_saga_instance
         WHERE 1 = 1
         <if test="sagaCode != null">
-            AND saga_code LIKE concat('%',#{sagaCode},'%')
+            AND saga_code LIKE concat(concat('%',#{sagaCode}),'%')
         </if>
         <if test="status != null">
-            AND status LIKE concat('%',#{status},'%')
+            AND status LIKE concat(concat('%',#{status}),'%')
         </if>
         <if test="refType != null">
-            AND ref_type LIKE concat('%',#{refType},'%')
+            AND ref_type LIKE concat(concat('%',#{refType}),'%')
         </if>
         <if test="refId != null">
-            AND ref_id LIKE concat('%',#{refId},'%')
+            AND ref_id LIKE concat(concat('%',#{refId}),'%')
         </if>
         <if test="params != null">
             AND(
-            saga_code LIKE concat('%',#{params},'%') OR
-            status LIKE concat('%',#{params},'%') OR
-            ref_type LIKE concat('%',#{params},'%') OR
-            ref_id LIKE concat('%',#{params},'%')
+            saga_code LIKE concat(concat('%',#{params}),'%') OR
+            status LIKE concat(concat('%',#{params}),'%') OR
+            ref_type LIKE concat(concat('%',#{params}),'%') OR
+            ref_id LIKE concat(concat('%',#{params}),'%')
             )
         </if>
     </select>
