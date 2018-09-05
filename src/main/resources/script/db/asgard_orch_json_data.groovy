@@ -2,11 +2,14 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_orch_json_data.groovy') {
     changeSet(id: '2018-07-04-create-table-asgard_orch_json_data', author: 'jcalaz@163.com') {
-        createTable(tableName: "asgard_orch_json_data") {
-            column(name: 'id', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
-                constraints(primaryKey: true)
+        if(helper.dbType().isSupportSequence()){
+            createSequence(sequenceName: 'ASGARD_ORCH_JSON_DATA_S', startValue:"1")
+        }
+        createTable(tableName: "ASGARD_ORCH_JSON_DATA") {
+            column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
+                constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_ORCH_JSON_DATA')
             }
-            column(name: 'data', type: 'MEDIUMTEXT', remarks: '存储数据') {
+            column(name: 'DATA', type: 'MEDIUMTEXT', remarks: '存储数据') {
                 constraints(nullable: false)
             }
 
