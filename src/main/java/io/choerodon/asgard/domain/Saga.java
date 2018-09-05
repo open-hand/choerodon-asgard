@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @ModifyAudit
 @VersionAudit
-@Table(name = "asgard_orch_saga")
+@Table(name = "ASGARD_ORCH_SAGA")
 public class Saga extends AuditDomain {
 
     @Id
