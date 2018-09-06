@@ -33,6 +33,7 @@ public class SagaTaskInstanceController {
     }
 
     @PostMapping("/poll/batch")
+    @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
     public ResponseEntity<Set<SagaTaskInstanceDTO>> pollBatch(@RequestBody @Valid PollBatchDTO pollBatchDTO) {
         if (pollBatchDTO.getMaxPollSize() == null) {
@@ -43,6 +44,7 @@ public class SagaTaskInstanceController {
 
     @PutMapping("/{id}/status")
     @ApiOperation(value = "内部接口。更新任务的执行状态")
+    @Permission(permissionWithin = true)
     public SagaTaskInstanceDTO updateStatus(@PathVariable Long id, @RequestBody @Valid SagaTaskInstanceStatusDTO statusDTO) {
         statusDTO.setId(id);
         return sagaTaskInstanceService.updateStatus(statusDTO);
