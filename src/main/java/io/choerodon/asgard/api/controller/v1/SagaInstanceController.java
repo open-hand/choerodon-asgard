@@ -40,6 +40,7 @@ public class SagaInstanceController {
      */
     @PostMapping("/{code:.*}")
     @ApiOperation(value = "内部接口。开始一个saga")
+    @Permission(permissionWithin = true)
     @ResponseBody
     public ResponseEntity<SagaInstanceDTO> start(@PathVariable("code") String code,
                                                  @RequestBody @Valid StartInstanceDTO dto) {
