@@ -28,9 +28,11 @@ public class QuartzTasKInstance extends AuditDomain {
 
     private String exceptionMessage;
 
-    private String retriedCount;
+    private Integer retriedCount;
 
     private String instanceLock;
+
+    private String status;
 
     public Long getId() {
         return id;
@@ -80,11 +82,11 @@ public class QuartzTasKInstance extends AuditDomain {
         this.exceptionMessage = exceptionMessage;
     }
 
-    public String getRetriedCount() {
+    public Integer getRetriedCount() {
         return retriedCount;
     }
 
-    public void setRetriedCount(String retriedCount) {
+    public void setRetriedCount(Integer retriedCount) {
         this.retriedCount = retriedCount;
     }
 
@@ -94,5 +96,28 @@ public class QuartzTasKInstance extends AuditDomain {
 
     public void setInstanceLock(String instanceLock) {
         this.instanceLock = instanceLock;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "QuartzTasKInstance{" +
+                "id=" + id +
+                ", taskId=" + taskId +
+                ", plannedStartTime=" + plannedStartTime +
+                ", actualStartTime=" + actualStartTime +
+                ", plannedNextTime=" + plannedNextTime +
+                ", exceptionMessage='" + exceptionMessage + '\'' +
+                ", retriedCount='" + retriedCount + '\'' +
+                ", instanceLock='" + instanceLock + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }
