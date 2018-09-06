@@ -1,6 +1,5 @@
 package io.choerodon.asgard.domain;
 
-import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
@@ -8,8 +7,6 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import java.util.List;
 
 @ModifyAudit
 @VersionAudit
@@ -27,10 +24,6 @@ public class QuartzMethod extends AuditDomain  {
     private String service;
 
     private String params;
-
-    @Transient
-    private List<PropertyJobParam> paramList;
-
 
     public String getMethod() {
         return method;
@@ -72,14 +65,6 @@ public class QuartzMethod extends AuditDomain  {
         this.service = service;
     }
 
-    public List<PropertyJobParam> getParamList() {
-        return paramList;
-    }
-
-    public void setParamList(List<PropertyJobParam> paramList) {
-        this.paramList = paramList;
-    }
-
     @Override
     public String toString() {
         return "QuartzMethod{" +
@@ -88,7 +73,6 @@ public class QuartzMethod extends AuditDomain  {
                 ", maxRetryCount=" + maxRetryCount +
                 ", service='" + service + '\'' +
                 ", params='" + params + '\'' +
-                ", paramList=" + paramList +
                 '}';
     }
 }
