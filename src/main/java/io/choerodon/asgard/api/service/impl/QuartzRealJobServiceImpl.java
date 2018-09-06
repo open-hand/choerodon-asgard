@@ -59,6 +59,7 @@ public class QuartzRealJobServiceImpl extends QuartzRealJobInstanceService {
         tasKInstance.setTaskId(taskId);
         tasKInstance.setPlannedStartTime(new Date());
         tasKInstance.setRetriedCount(0);
+        tasKInstance.setActualLastTime(instanceMapper.selectLastTime(taskId));
         tasKInstance.setStatus(QuartzDefinition.InstanceStatus.RUNNING.name());
         tasKInstance.setPlannedNextTime(TriggerUtils.getNextFireTime(task));
         if (instanceMapper.insert(tasKInstance) != 1) {

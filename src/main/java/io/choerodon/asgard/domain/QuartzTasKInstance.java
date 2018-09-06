@@ -24,6 +24,8 @@ public class QuartzTasKInstance extends AuditDomain {
 
     private Date actualStartTime;
 
+    private Date actualLastTime;
+
     private Date plannedNextTime;
 
     private String exceptionMessage;
@@ -106,6 +108,14 @@ public class QuartzTasKInstance extends AuditDomain {
         this.status = status;
     }
 
+    public Date getActualLastTime() {
+        return actualLastTime;
+    }
+
+    public void setActualLastTime(Date actualLastTime) {
+        this.actualLastTime = actualLastTime;
+    }
+
     @Override
     public String toString() {
         return "QuartzTasKInstance{" +
@@ -113,9 +123,10 @@ public class QuartzTasKInstance extends AuditDomain {
                 ", taskId=" + taskId +
                 ", plannedStartTime=" + plannedStartTime +
                 ", actualStartTime=" + actualStartTime +
+                ", actualLastTime=" + actualLastTime +
                 ", plannedNextTime=" + plannedNextTime +
                 ", exceptionMessage='" + exceptionMessage + '\'' +
-                ", retriedCount='" + retriedCount + '\'' +
+                ", retriedCount=" + retriedCount +
                 ", instanceLock='" + instanceLock + '\'' +
                 ", status='" + status + '\'' +
                 '}';
