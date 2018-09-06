@@ -18,9 +18,10 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
             column(name: 'TRIGGER_TYPE', type: 'VARCHAR(16)', remarks: '触发器类型。simple_trigger和cron_trigger') {
                 constraints(nullable: false)
             }
-            column(name: 'TRIGGER_ID', type: 'BIGINT UNSIGNED', remarks: '触发器id') {
-                constraints(nullable: false)
-            }
+            column(name: "SIMPLE_REPEAT_COUNT", type: "BIGINT(7) UNSIGNED", remarks: 'simple-trigger重复次数')
+            column(name: "SIMPLE_REPEAT_INTERVAL", type: "BIGINT UNSIGNED", remarks: 'simple-trigger执行间隔')
+            column(name: "CRON_EXPRESSION", type: "VARCHAR(120)", remarks: 'cron-trigger表达式')
+
             column(name: 'EXECUTE_PARAMS', type: 'TEXT', remarks: '任务执行参数') {
                 constraints(nullable: false)
             }
