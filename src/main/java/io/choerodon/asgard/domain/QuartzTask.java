@@ -38,6 +38,8 @@ public class QuartzTask extends AuditDomain {
 
     private String cronExpression;
 
+    private String status;
+
     public Long getId() {
         return id;
     }
@@ -126,6 +128,14 @@ public class QuartzTask extends AuditDomain {
         this.cronExpression = cronExpression;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "QuartzTask{" +
@@ -140,6 +150,7 @@ public class QuartzTask extends AuditDomain {
                 ", simpleRepeatCount=" + simpleRepeatCount +
                 ", simpleRepeatInterval=" + simpleRepeatInterval +
                 ", cronExpression='" + cronExpression + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }

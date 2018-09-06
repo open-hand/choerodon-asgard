@@ -28,6 +28,9 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
             column(name: 'EXECUTE_METHOD', type: 'VARCHAR(128)', remarks: '任务执行类') {
                 constraints(nullable: false)
             }
+            column(name: 'status', type: 'VARCHAR(16)', defaultValue: "ENABLE", remarks: '任务状态。ENABLE,DISABLE,FINISHED') {
+                constraints(nullable: false)
+            }
 
             column(name: "OBJECT_VERSION_NUMBER", type: "BIGINT", defaultValue: "1")
             column(name: "CREATED_BY", type: "BIGINT", defaultValue: "-1")
