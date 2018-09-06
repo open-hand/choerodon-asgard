@@ -31,12 +31,12 @@ public class QuartzJobServiceImpl implements QuartzJobService {
     }
 
     @Override
-    public void pauseJob(QuartzTask task) {
+    public void checkJobIsExists(QuartzTask task) {
 
     }
 
     @Override
-    public void checkJobIsExists(QuartzTask task) {
+    public void pauseJob(long taskId) {
 
     }
 }

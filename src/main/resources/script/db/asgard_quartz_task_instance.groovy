@@ -17,6 +17,8 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
             }
             column(name: "ACTUAL_START_TIME", type: "DATETIME(3)", remarks: '实际开始执行时间')
 
+            column(name: "ACTUAL_LAST_TIME", type: "DATETIME(3)", remarks: '上次执行时间')
+
             column(name: "PLANNED_NEXT_TIME", type: "DATETIME(3)", remarks: '实际执行结束时间')
 
             column(name: 'EXCEPTION_MESSAGE', type: 'TEXT', remarks: '消息消费失败的异常信息')
