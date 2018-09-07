@@ -71,5 +71,17 @@ public class QuartzTaskDTO {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public QuartzTaskDTO() {
+    }
+
+    public QuartzTaskDTO(Long id, String name, String description, Date lastExecTime, Date nextExecTime, String status) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.lastExecTime = lastExecTime;
+        this.nextExecTime = nextExecTime;
+        this.status = status;
+    }
 }
 

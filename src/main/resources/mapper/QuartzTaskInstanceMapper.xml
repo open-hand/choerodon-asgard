@@ -1,27 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.choerodon.asgard.infra.mapper.SagaInstanceMapper">
+<mapper namespace="io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper">
 
-    <select id="selectLastTime" databaseId="mysql" resultType="java.util.Date">
-     SELECT actual_start_time FROM asgard_quartz_task_instance
+    <select id="selectLastInstance" databaseId="mysql" resultType="io.choerodon.asgard.domain.QuartzTasKInstance">
+     SELECT id, status, actual_start_time, execute_params FROM asgard_quartz_task_instance
      WHERE task_id = #{taskId}
      ORDER BY CREATION_DATE DESC
      LIMIT 1
-  </select>
+    </select>
 
-    <select id="selectLastTime" databaseId="oracle" resultType="java.util.Date">
+    <select id="selectLastInstance" databaseId="oracle" resultType="io.choerodon.asgard.domain.QuartzTasKInstance">
     <![CDATA[
       SELECT * FROM (
-         SELECT actual_start_time FROM asgard_quartz_task_instance
+         SELECT id, status, actual_start_time, execute_params FROM asgard_quartz_task_instance
          WHERE task_id = #{taskId}
          ORDER BY CREATION_DATE DESC
       ) WHERE ROWNUM <= 1
-    ]]>
-</select>
-
-    <select id="countUnCompletedInstance"  resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM asgard_quartz_task_instance
-        WHERE status != COMPLETED AND task_id = #{taskId}
+        ]]>
     </select>
 
     <select id="fulltextSearch" resultType="io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO">
@@ -39,7 +34,7 @@
         ON aqti.task_id = aqt.id
         WHERE 1 = 1
         <if test="taskName != null">
-            AND aqt.name = #{taskName}
+            AND aqt.name LIKE concat(concat('%',#{taskName}),'%')
         </if>
         <if test="status != null">
             AND aqti.status LIKE concat(concat('%',#{status}),'%')

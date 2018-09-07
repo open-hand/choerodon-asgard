@@ -13,7 +13,6 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -61,9 +61,11 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         }
         try {
             quartzTask.setExecuteMethod(method.getMethod());
+            quartzTask.setId(null);
+            quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
             quartzTask.setExecuteParams(objectMapper.writeValueAsString(dto.getParams()));
             validExecuteParams(dto.getParams(), method.getParams());
-            if (taskMapper.insert(quartzTask) != 1) {
+            if (taskMapper.insertSelective(quartzTask) != 1) {
                 throw new CommonException("error.scheduleTask.create");
             }
             QuartzTask db = taskMapper.selectByPrimaryKey(quartzTask.getId());
@@ -177,12 +179,27 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Override
     public ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params) {
-        List<QuartzTask> quartzTasks = taskMapper.fulltextSearch(status, name, description, params);
+        Page<QuartzTask> page = PageHelper.doPageAndSort(pageRequest,
+                () -> taskMapper.fulltextSearch(status, name, description, params));
+        Page<QuartzTaskDTO> pageBack = pageConvert(page);
+        return new ResponseEntity<>(pageBack, HttpStatus.OK);
+    }
 
-        // 待补充
-
-        return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
-                () -> ConvertHelper.convertList(quartzTasks, QuartzTaskDTO.class)), HttpStatus.OK);
+    private Page<QuartzTaskDTO> pageConvert(Page<QuartzTask> page){
+        List<QuartzTaskDTO> quartzTaskDTOS = new ArrayList<>();
+        Page<QuartzTaskDTO> pageBack = new Page<>();
+        pageBack.setNumber(page.getNumber());
+        pageBack.setNumberOfElements(page.getNumberOfElements());
+        pageBack.setSize(page.getSize());
+        pageBack.setTotalElements(page.getTotalElements());
+        pageBack.setTotalPages(page.getTotalPages());
+        if (page.getContent().isEmpty()) {
+            return pageBack;
+        } else {
+            page.getContent().forEach(t -> quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), null, null, t.getStatus())));
+            pageBack.setContent(quartzTaskDTOS);
+            return pageBack;
+        }
     }
 
 }

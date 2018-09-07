@@ -38,6 +38,8 @@ public class QuartzTasKInstance extends AuditDomain {
 
     private String status;
 
+    private String executeParams;
+
     public Long getId() {
         return id;
     }
@@ -126,20 +128,13 @@ public class QuartzTasKInstance extends AuditDomain {
         this.maxRetryCount = maxRetryCount;
     }
 
-    @Override
-    public String toString() {
-        return "QuartzTasKInstance{" +
-                "id=" + id +
-                ", taskId=" + taskId +
-                ", plannedStartTime=" + plannedStartTime +
-                ", actualStartTime=" + actualStartTime +
-                ", actualLastTime=" + actualLastTime +
-                ", plannedNextTime=" + plannedNextTime +
-                ", exceptionMessage='" + exceptionMessage + '\'' +
-                ", retriedCount=" + retriedCount +
-                ", maxRetryCount=" + maxRetryCount +
-                ", instanceLock='" + instanceLock + '\'' +
-                ", status='" + status + '\'' +
-                '}';
+    public String getExecuteParams() {
+        return executeParams;
     }
+
+    public void setExecuteParams(String executeParams) {
+        this.executeParams = executeParams;
+    }
+
+
 }

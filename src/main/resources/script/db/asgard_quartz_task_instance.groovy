@@ -27,6 +27,14 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
                 constraints(nullable: false)
             }
 
+            column(name: 'EXECUTE_PARAMS_ID', type: 'TEXT', remarks: '任务执行参数的jsonDataId') {
+                constraints(nullable: false)
+            }
+
+            column(name: 'EXECUTE_PARAMS', type: 'TEXT', remarks: '任务执行参数') {
+                constraints(nullable: false)
+            }
+
             column(name: 'INSTANCE_LOCK', type: 'VARCHAR(64)', remarks: '消费该消息的实例锁')
 
             column(name: 'STATUS', type: 'VARCHAR(32)', defaultValue: "RUNNING", remarks: '任务执行状态。RUNNING,FAILED,COMPLETED') {

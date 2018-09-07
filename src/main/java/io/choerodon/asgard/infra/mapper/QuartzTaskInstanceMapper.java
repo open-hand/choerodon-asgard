@@ -5,14 +5,11 @@ import io.choerodon.asgard.domain.QuartzTasKInstance;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
-public interface QuartzTasKInstanceMapper extends BaseMapper<QuartzTasKInstance> {
+public interface QuartzTaskInstanceMapper extends BaseMapper<QuartzTasKInstance> {
 
-    Date selectLastTime(@Param("taskId") long taskId);
-
-    int countUnCompletedInstance(@Param("taskId") long taskId);
+    QuartzTasKInstance selectLastInstance(@Param("taskId") long taskId);
 
     List<ScheduleTaskInstanceDTO> fulltextSearch(@Param("status") String status,
                                                  @Param("taskName") String taskName,

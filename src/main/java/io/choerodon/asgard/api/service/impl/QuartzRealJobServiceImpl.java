@@ -1,12 +1,12 @@
 package io.choerodon.asgard.api.service.impl;
 
-import io.choerodon.asgard.api.service.QuartzRealJobInstanceService;
+import io.choerodon.asgard.api.service.QuartzRealJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.domain.QuartzTasKInstance;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
-import io.choerodon.asgard.infra.mapper.QuartzTasKInstanceMapper;
+import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.schedule.QuartzDefinition;
@@ -17,20 +17,20 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 @Service
-public class QuartzRealJobServiceImpl extends QuartzRealJobInstanceService {
+public class QuartzRealJobServiceImpl implements QuartzRealJobService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QuartzRealJobInstanceService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QuartzRealJobService.class);
 
     private QuartzTaskMapper taskMapper;
 
-    private QuartzTasKInstanceMapper instanceMapper;
+    private QuartzTaskInstanceMapper instanceMapper;
 
     private QuartzMethodMapper methodMapper;
 
     private ScheduleTaskService scheduleTaskService;
 
     public QuartzRealJobServiceImpl(QuartzTaskMapper taskMapper,
-                                    QuartzTasKInstanceMapper instanceMapper,
+                                    QuartzTaskInstanceMapper instanceMapper,
                                     QuartzMethodMapper methodMapper,
                                     ScheduleTaskService scheduleTaskService) {
         this.taskMapper = taskMapper;
@@ -40,14 +40,17 @@ public class QuartzRealJobServiceImpl extends QuartzRealJobInstanceService {
     }
 
     @Override
-    public void verifyUntreatedInstance(long taskId) {
-        if (instanceMapper.countUnCompletedInstance(taskId) > 0) {
+    public void triggerEvent(long taskId) {
+        final QuartzTasKInstance lastInstance = instanceMapper.selectLastInstance(taskId);
+        if (lastInstance != null && !QuartzDefinition.InstanceStatus.COMPLETED.name().equals(lastInstance.getStatus())) {
             scheduleTaskService.disable(taskId, null, true);
+            return;
         }
+        createInstance(taskId, lastInstance);
     }
 
-    @Override
-    public void createInstance(long taskId) {
+
+    private void createInstance(long taskId, final QuartzTasKInstance lastInstance) {
         QuartzTask task = taskMapper.selectByPrimaryKey(taskId);
         if (task == null) {
             LOGGER.warn("task not exist when createInstance {}", taskId);
@@ -68,7 +71,12 @@ public class QuartzRealJobServiceImpl extends QuartzRealJobInstanceService {
         tasKInstance.setTaskId(taskId);
         tasKInstance.setPlannedStartTime(new Date());
         tasKInstance.setRetriedCount(0);
-        tasKInstance.setActualLastTime(instanceMapper.selectLastTime(taskId));
+        if (lastInstance != null) {
+            tasKInstance.setActualLastTime(lastInstance.getActualStartTime());
+            tasKInstance.setExecuteParams(lastInstance.getExecuteParams());
+        } else {
+            tasKInstance.setExecuteParams(task.getExecuteParams());
+        }
         tasKInstance.setStatus(QuartzDefinition.InstanceStatus.RUNNING.name());
         tasKInstance.setPlannedNextTime(TriggerUtils.getNextFireTime(task));
         tasKInstance.setMaxRetryCount(db.getMaxRetryCount());
