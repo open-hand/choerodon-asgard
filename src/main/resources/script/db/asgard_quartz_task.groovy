@@ -25,7 +25,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
             column(name: 'EXECUTE_PARAMS', type: 'TEXT', remarks: '任务执行参数') {
                 constraints(nullable: false)
             }
-            column(name: 'EXECUTE_METHOD', type: 'VARCHAR(128)', remarks: '任务执行类') {
+            column(name: 'EXECUTE_METHOD', type: 'VARCHAR(128)', remarks: '任务执行方法') {
                 constraints(nullable: false)
             }
             column(name: 'status', type: 'VARCHAR(16)', defaultValue: "ENABLE", remarks: '任务状态。ENABLE,DISABLE,FINISHED') {

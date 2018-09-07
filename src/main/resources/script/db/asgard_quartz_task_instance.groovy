@@ -32,6 +32,9 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
             column(name: 'STATUS', type: 'VARCHAR(32)', defaultValue: "RUNNING", remarks: '任务执行状态。RUNNING,FAILED,COMPLETED') {
                 constraints(nullable: false)
             }
+            column(name: 'max_retry_count', type: 'INT UNSIGNED', remarks: '最大重试次数') {
+                constraints(nullable: false)
+            }
 
             column(name: "OBJECT_VERSION_NUMBER", type: "BIGINT", defaultValue: "1")
             column(name: "CREATED_BY", type: "BIGINT", defaultValue: "-1")

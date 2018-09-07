@@ -2,13 +2,14 @@ package io.choerodon.asgard.api.service.impl;
 
 import io.choerodon.asgard.api.service.QuartzRealJobInstanceService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
+import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.domain.QuartzTasKInstance;
 import io.choerodon.asgard.domain.QuartzTask;
+import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTasKInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.quartz.QuartzDefinition;
-import io.choerodon.core.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,13 +25,17 @@ public class QuartzRealJobServiceImpl extends QuartzRealJobInstanceService {
 
     private QuartzTasKInstanceMapper instanceMapper;
 
+    private QuartzMethodMapper methodMapper;
+
     private ScheduleTaskService scheduleTaskService;
 
     public QuartzRealJobServiceImpl(QuartzTaskMapper taskMapper,
                                     QuartzTasKInstanceMapper instanceMapper,
+                                    QuartzMethodMapper methodMapper,
                                     ScheduleTaskService scheduleTaskService) {
         this.taskMapper = taskMapper;
         this.instanceMapper = instanceMapper;
+        this.methodMapper = methodMapper;
         this.scheduleTaskService = scheduleTaskService;
     }
 
@@ -45,11 +50,18 @@ public class QuartzRealJobServiceImpl extends QuartzRealJobInstanceService {
     public void createInstance(long taskId) {
         QuartzTask task = taskMapper.selectByPrimaryKey(taskId);
         if (task == null) {
-            LOGGER.info("task not exist when createInstance {}", taskId);
+            LOGGER.warn("task not exist when createInstance {}", taskId);
             return;
         }
         if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(task.getStatus())) {
-            LOGGER.info("task not enable when createInstance {}", task);
+            LOGGER.warn("task not enable when createInstance {}", task);
+            return;
+        }
+        QuartzMethod query = new QuartzMethod();
+        query.setMethod(task.getExecuteMethod());
+        QuartzMethod db = methodMapper.selectOne(query);
+        if (db == null) {
+            LOGGER.warn("task method not exist when createInstance {}", task);
             return;
         }
         QuartzTasKInstance tasKInstance = new QuartzTasKInstance();
@@ -59,8 +71,9 @@ public class QuartzRealJobServiceImpl extends QuartzRealJobInstanceService {
         tasKInstance.setActualLastTime(instanceMapper.selectLastTime(taskId));
         tasKInstance.setStatus(QuartzDefinition.InstanceStatus.RUNNING.name());
         tasKInstance.setPlannedNextTime(TriggerUtils.getNextFireTime(task));
+        tasKInstance.setMaxRetryCount(db.getMaxRetryCount());
         if (instanceMapper.insert(tasKInstance) != 1) {
-            throw new CommonException("error.quartzRealJobInstanceService.insertQuartzTaskInstance");
+            LOGGER.warn("taskInstance insert error when createInstance {}", task);
         }
     }
 

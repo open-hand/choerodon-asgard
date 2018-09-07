@@ -32,6 +32,8 @@ public class QuartzTasKInstance extends AuditDomain {
 
     private Integer retriedCount;
 
+    private Integer maxRetryCount;
+
     private String instanceLock;
 
     private String status;
@@ -116,6 +118,14 @@ public class QuartzTasKInstance extends AuditDomain {
         this.actualLastTime = actualLastTime;
     }
 
+    public Integer getMaxRetryCount() {
+        return maxRetryCount;
+    }
+
+    public void setMaxRetryCount(Integer maxRetryCount) {
+        this.maxRetryCount = maxRetryCount;
+    }
+
     @Override
     public String toString() {
         return "QuartzTasKInstance{" +
@@ -127,6 +137,7 @@ public class QuartzTasKInstance extends AuditDomain {
                 ", plannedNextTime=" + plannedNextTime +
                 ", exceptionMessage='" + exceptionMessage + '\'' +
                 ", retriedCount=" + retriedCount +
+                ", maxRetryCount=" + maxRetryCount +
                 ", instanceLock='" + instanceLock + '\'' +
                 ", status='" + status + '\'' +
                 '}';
