@@ -13,10 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -47,6 +44,27 @@ public class ScheduleTaskController {
             throw new CommonException("error.scheduleTask.invalidTriggerType");
         }
         return new ResponseEntity<>(scheduleTaskService.create(dto), HttpStatus.OK);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = "启用任务")
+    @PutMapping("/{id}/enable")
+    public void enable(@PathVariable long id, @RequestParam long objectVersionNumber) {
+       scheduleTaskService.enable(id, objectVersionNumber);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = "停用任务")
+    @PutMapping("/{id}/disable")
+    public void disable(@PathVariable long id, @RequestParam long objectVersionNumber) {
+        scheduleTaskService.disable(id, objectVersionNumber);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = "删除任务")
+    @PutMapping("/{id}/disable")
+    public void delete(@PathVariable long id) {
+        scheduleTaskService.delete(id);
     }
 
 }

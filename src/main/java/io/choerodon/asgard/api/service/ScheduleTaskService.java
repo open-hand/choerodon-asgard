@@ -7,4 +7,10 @@ public interface ScheduleTaskService {
 
     QuartzTask create(ScheduleTaskDTO dto);
 
+    void enable(long id, long objectVersionNumber);
+
+    void disable(long id, long objectVersionNumber);
+
+    void delete(long id);
+
 }

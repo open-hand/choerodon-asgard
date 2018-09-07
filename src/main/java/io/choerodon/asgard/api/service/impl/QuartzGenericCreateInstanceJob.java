@@ -1,24 +1,18 @@
 package io.choerodon.asgard.api.service.impl;
 
 import io.choerodon.asgard.api.service.QuartzRealJobService;
-import io.choerodon.asgard.infra.utils.SpringApplicationContextHelper;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.QuartzJobBean;
 
-import java.util.Optional;
+public class QuartzGenericCreateInstanceJob extends QuartzJobBean {
 
-public class QuartzGenericCreateInstanceJob implements Job {
+    @Autowired
+    private QuartzRealJobService realJobService;
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-
+    protected void executeInternal(JobExecutionContext jobExecutionContext) {
         final long taskId = jobExecutionContext.getMergedJobDataMap().getLongValue("taskId");
-        Optional.ofNullable(SpringApplicationContextHelper.getSpringFactory()).ifPresent(t -> {
-            QuartzRealJobService realJobService = t.getBean(QuartzRealJobService.class);
-            realJobService.triggerEvent(taskId);
-        });
-
+        realJobService.triggerEvent(taskId);
     }
-
 }
