@@ -1,7 +1,11 @@
 package io.choerodon.asgard.api.service;
 
+import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.domain.QuartzTask;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 
 public interface ScheduleTaskService {
 
@@ -12,5 +16,7 @@ public interface ScheduleTaskService {
     void disable(long id, Long objectVersionNumber, boolean executeWithIn);
 
     void delete(long id);
+
+    ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params);
 
 }

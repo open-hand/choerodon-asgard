@@ -24,4 +24,38 @@
         WHERE status != COMPLETED AND task_id = #{taskId}
     </select>
 
+    <select id="fulltextSearch" resultType="io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO">
+        SELECT
+        aqti.id,
+        aqti.status,
+        aqt.name AS taskName,
+        aqti.exception_message,
+        aqti.planned_start_time ,
+        aqti.actual_start_time,
+        aqti.actual_last_time,
+        aqti.planned_next_time
+        FROM asgard_quartz_task_instance aqti
+        LEFT JOIN asgard_quartz_task aqt
+        ON aqti.task_id = aqt.id
+        WHERE 1 = 1
+        <if test="taskName != null">
+            AND aqt.name = #{taskName}
+        </if>
+        <if test="status != null">
+            AND aqti.status LIKE concat(concat('%',#{status}),'%')
+        </if>
+
+        <if test="exceptionMessage != null">
+            AND aqti.exception_message LIKE concat(concat('%',#{exceptionMessage}),'%')
+        </if>
+
+        <if test="params != null">
+            AND(
+            aqt.name LIKE concat(concat('%',#{params}),'%') OR
+            aqti.exception_messag LIKE concat(concat('%',#{params}),'%') OR
+            aqti.status LIKE concat(concat('%',#{params}),'%')
+            )
+        </if>
+    </select>
+
 </mapper>

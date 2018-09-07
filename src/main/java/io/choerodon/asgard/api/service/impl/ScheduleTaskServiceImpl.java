@@ -2,6 +2,7 @@ package io.choerodon.asgard.api.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
@@ -12,8 +13,14 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.asgard.quartz.ParamType;
 import io.choerodon.asgard.quartz.QuartzDefinition;
+import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,4 +174,15 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         }
         quartzJobService.removeJob(id);
     }
+
+    @Override
+    public ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params) {
+        List<QuartzTask> quartzTasks = taskMapper.fulltextSearch(status, name, description, params);
+
+        // 待补充
+
+        return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
+                () -> ConvertHelper.convertList(quartzTasks, QuartzTaskDTO.class)), HttpStatus.OK);
+    }
+
 }
