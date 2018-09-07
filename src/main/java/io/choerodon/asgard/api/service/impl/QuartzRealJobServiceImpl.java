@@ -1,7 +1,7 @@
 package io.choerodon.asgard.api.service.impl;
 
-import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.QuartzRealJobInstanceService;
+import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzTasKInstance;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.mapper.QuartzTasKInstanceMapper;
@@ -24,23 +24,20 @@ public class QuartzRealJobServiceImpl extends QuartzRealJobInstanceService {
 
     private QuartzTasKInstanceMapper instanceMapper;
 
-    private QuartzJobService quartzJobService;
+    private ScheduleTaskService scheduleTaskService;
 
     public QuartzRealJobServiceImpl(QuartzTaskMapper taskMapper,
                                     QuartzTasKInstanceMapper instanceMapper,
-                                    QuartzJobService quartzJobService) {
+                                    ScheduleTaskService scheduleTaskService) {
         this.taskMapper = taskMapper;
         this.instanceMapper = instanceMapper;
-        this.quartzJobService = quartzJobService;
+        this.scheduleTaskService = scheduleTaskService;
     }
 
     @Override
     public void verifyUntreatedInstance(long taskId) {
-        QuartzTasKInstance query = new QuartzTasKInstance();
-        query.setStatus(QuartzDefinition.InstanceStatus.RUNNING.name());
-        query.setTaskId(taskId);
-        if (instanceMapper.selectCount(query) > 0) {
-            quartzJobService.pauseJob(taskId);
+        if (instanceMapper.countUnCompletedInstance(taskId) > 0) {
+            scheduleTaskService.disable(taskId, null, true);
         }
     }
 

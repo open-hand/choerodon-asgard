@@ -19,4 +19,9 @@
     ]]>
 </select>
 
+    <select id="countUnCompletedInstance"  resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM asgard_quartz_task_instance
+        WHERE status != COMPLETED AND task_id = #{taskId}
+    </select>
+
 </mapper>

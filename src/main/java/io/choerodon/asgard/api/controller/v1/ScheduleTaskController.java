@@ -57,7 +57,7 @@ public class ScheduleTaskController {
     @ApiOperation(value = "停用任务")
     @PutMapping("/{id}/disable")
     public void disable(@PathVariable long id, @RequestParam long objectVersionNumber) {
-        scheduleTaskService.disable(id, objectVersionNumber);
+        scheduleTaskService.disable(id, objectVersionNumber, false);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

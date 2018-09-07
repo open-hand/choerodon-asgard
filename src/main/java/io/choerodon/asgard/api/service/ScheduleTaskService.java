@@ -9,7 +9,7 @@ public interface ScheduleTaskService {
 
     void enable(long id, long objectVersionNumber);
 
-    void disable(long id, long objectVersionNumber);
+    void disable(long id, Long objectVersionNumber, boolean executeWithIn);
 
     void delete(long id);
 
