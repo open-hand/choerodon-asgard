@@ -28,5 +28,6 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
             column(name: "LAST_UPDATED_BY", type: "BIGINT", defaultValue: "-1")
             column(name: "LAST_UPDATE_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
+        addUniqueConstraint(tableName: 'ASGARD_QUARTZ_METHOD', columnNames: 'METHOD', constraintName: 'UK_ASGARD_QUARTZ_METHOD_METHOD')
     }
 }
