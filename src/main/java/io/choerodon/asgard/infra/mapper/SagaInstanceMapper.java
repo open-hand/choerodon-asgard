@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface SagaInstanceMapper extends BaseMapper<SagaInstance> {
 
-    List<SagaInstanceDTO> fulltextSearch(@Param("sagaCode") String sagaCode,
+    List<SagaInstanceDTO> fulltextSearchInstance(@Param("sagaCode") String sagaCode,
                                          @Param("status") String status,
                                          @Param("refType") String refType,
                                          @Param("refId") String refId,

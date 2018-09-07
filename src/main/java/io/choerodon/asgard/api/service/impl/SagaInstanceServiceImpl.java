@@ -151,7 +151,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                                                            String refId, String params) {
 
         return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
-                () -> instanceMapper.fulltextSearch(sagaCode, status, refType, refId, params)), HttpStatus.OK);
+                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params)), HttpStatus.OK);
     }
 
     @Override

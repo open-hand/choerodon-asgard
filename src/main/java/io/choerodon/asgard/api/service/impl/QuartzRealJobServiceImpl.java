@@ -9,7 +9,7 @@ import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTasKInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
-import io.choerodon.asgard.quartz.QuartzDefinition;
+import io.choerodon.asgard.schedule.QuartzDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

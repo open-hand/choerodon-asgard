@@ -69,7 +69,7 @@ public class ScheduleTaskController {
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "删除任务")
-    @PutMapping("/{id}/disable")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable long id) {
         scheduleTaskService.delete(id);
     }
