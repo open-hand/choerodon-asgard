@@ -7,22 +7,17 @@ public interface QuartzJobService {
     /**
      * 添加简单定时任务
      */
-    void addSimpleJob(QuartzTask task);
-
-    /**
-     * 添加cron定时任务
-     */
-    void addCronJob(QuartzTask task);
+    void addJob(QuartzTask task);
 
     /**
      * 删除定时任务
      */
-    void removeJob(QuartzTask task);
+    void removeJob(long taskId);
 
     /**
      * 恢复定时任务
      */
-    void resumeJob(QuartzTask task);
+    void resumeJob(long taskId);
 
     /**
      * 暂停定时任务
@@ -33,6 +28,6 @@ public interface QuartzJobService {
     /**
      * 检查定时任务是否存在
      */
-    void checkJobIsExists(QuartzTask task);
+    boolean checkJobIsExists(long taskId);
 
 }

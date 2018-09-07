@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
+import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.domain.QuartzTask;
@@ -10,9 +11,11 @@ import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.asgard.quartz.ParamType;
+import io.choerodon.asgard.quartz.QuartzDefinition;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +23,8 @@ import java.util.Map;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
+
+    private static final String TASK_NOT_EXIST = "error.scheduleTask.taskNotExist";
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -29,12 +34,18 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private QuartzTaskMapper taskMapper;
 
-    public ScheduleTaskServiceImpl(QuartzMethodMapper methodMapper, QuartzTaskMapper taskMapper) {
+    private QuartzJobService quartzJobService;
+
+    public ScheduleTaskServiceImpl(QuartzMethodMapper methodMapper,
+                                   QuartzTaskMapper taskMapper,
+                                   QuartzJobService quartzJobService) {
         this.methodMapper = methodMapper;
         this.taskMapper = taskMapper;
+        this.quartzJobService = quartzJobService;
     }
 
     @Override
+    @Transactional
     public QuartzTask create(final ScheduleTaskDTO dto) {
         QuartzTask quartzTask = modelMapper.map(dto, QuartzTask.class);
         QuartzMethod method = methodMapper.selectByPrimaryKey(dto.getMethodId());
@@ -48,7 +59,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             if (taskMapper.insert(quartzTask) != 1) {
                 throw new CommonException("error.scheduleTask.create");
             }
-            return taskMapper.selectByPrimaryKey(quartzTask.getId());
+            QuartzTask db = taskMapper.selectByPrimaryKey(quartzTask.getId());
+            quartzJobService.addJob(db);
+            return db;
         } catch (IOException e) {
             throw new CommonException("error.scheduleTask.createJsonIOException", e);
         }
@@ -105,4 +118,50 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         }
     }
 
+    @Transactional
+    @Override
+    public void enable(long id, long objectVersionNumber) {
+        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
+        }
+        if (QuartzDefinition.TaskStatus.DISABLE.name().equals(quartzTask.getStatus())) {
+            quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
+            quartzTask.setObjectVersionNumber(objectVersionNumber);
+            if (taskMapper.updateByPrimaryKey(quartzTask) != 1) {
+                throw new CommonException("error.scheduleTask.enableTaskFailed");
+            }
+            quartzJobService.resumeJob(id);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void disable(long id, long objectVersionNumber) {
+        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
+        }
+        if (QuartzDefinition.TaskStatus.ENABLE.name().equals(quartzTask.getStatus())) {
+            quartzTask.setStatus(QuartzDefinition.TaskStatus.DISABLE.name());
+            quartzTask.setObjectVersionNumber(objectVersionNumber);
+            if (taskMapper.updateByPrimaryKey(quartzTask) != 1) {
+                throw new CommonException("error.scheduleTask.disableTaskFailed");
+            }
+            quartzJobService.pauseJob(id);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void delete(long id) {
+        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
+        }
+        if (taskMapper.deleteByPrimaryKey(id) != 1) {
+            throw new CommonException("error.scheduleTask.deleteTaskFailed");
+        }
+        quartzJobService.removeJob(id);
+    }
 }
