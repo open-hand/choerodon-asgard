@@ -10,4 +10,6 @@ public interface QuartzTasKInstanceMapper extends BaseMapper<QuartzTasKInstance>
 
     Date selectLastTime(@Param("taskId") long taskId);
 
+    int countUnCompletedInstance(@Param("taskId") long taskId);
+
 }

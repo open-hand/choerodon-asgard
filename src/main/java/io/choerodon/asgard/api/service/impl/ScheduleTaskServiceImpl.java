@@ -137,10 +137,13 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Transactional
     @Override
-    public void disable(long id, long objectVersionNumber) {
+    public void disable(long id, Long objectVersionNumber, boolean executeWithIn) {
         QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
         if (quartzTask == null) {
             throw new CommonException(TASK_NOT_EXIST);
+        }
+        if (executeWithIn) {
+            objectVersionNumber = quartzTask.getObjectVersionNumber();
         }
         if (QuartzDefinition.TaskStatus.ENABLE.name().equals(quartzTask.getStatus())) {
             quartzTask.setStatus(QuartzDefinition.TaskStatus.DISABLE.name());
