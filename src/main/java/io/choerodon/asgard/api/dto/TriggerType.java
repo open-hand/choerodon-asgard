@@ -1,8 +1,8 @@
-package io.choerodon.asgard.api.pojo;
+package io.choerodon.asgard.api.dto;
 
 public enum TriggerType {
-    SIMPLE("simple trigger"),
-    CRON("cron trigger");
+    SIMPLE("simple-trigger"),
+    CRON("cron-trigger");
 
     private String value;
 

@@ -23,11 +23,13 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     @Value("${choerodon.asgard.isLocal:false}")
     private Boolean isLocal;
 
-    private SagaService sagaService;
+    private final SagaService sagaService;
 
-    private SagaTaskService sagaTaskService;
+    private final SagaTaskService sagaTaskService;
 
-    private SagaTaskInstanceService sagaTaskInstanceService;
+    private final SagaTaskInstanceService sagaTaskInstanceService;
+
+    private final ScheduleTaskInstanceService scheduleTaskInstanceService;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -38,11 +40,13 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     public RegisterInstanceServiceImpl(SagaService sagaService,
                                        SagaTaskService sagaTaskService,
                                        SagaTaskInstanceService sagaTaskInstanceService,
-                                       QuartzMethodService quartzMethodService) {
+                                       QuartzMethodService quartzMethodService,
+                                       ScheduleTaskInstanceService scheduleTaskInstanceService) {
         this.sagaService = sagaService;
         this.sagaTaskService = sagaTaskService;
         this.sagaTaskInstanceService = sagaTaskInstanceService;
         this.quartzMethodService = quartzMethodService;
+        this.scheduleTaskInstanceService = scheduleTaskInstanceService;
     }
 
     public void setLocal(Boolean local) {
@@ -56,6 +60,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     @Override
     public void instanceDownConsumer(final RegisterInstancePayloadDTO payload) {
         sagaTaskInstanceService.unlockByInstance(payload.getInstanceAddress());
+        scheduleTaskInstanceService.unlockByInstance(payload.getInstanceAddress());
     }
 
     @Override

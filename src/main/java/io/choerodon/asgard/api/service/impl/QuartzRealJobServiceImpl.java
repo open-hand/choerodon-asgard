@@ -13,6 +13,7 @@ import io.choerodon.asgard.schedule.QuartzDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 
@@ -70,12 +71,16 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
         QuartzTasKInstance tasKInstance = new QuartzTasKInstance();
         tasKInstance.setTaskId(taskId);
         tasKInstance.setPlannedStartTime(new Date());
+        tasKInstance.setExecuteMethod(task.getExecuteMethod());
         tasKInstance.setRetriedCount(0);
         if (lastInstance != null) {
             tasKInstance.setActualLastTime(lastInstance.getActualStartTime());
-            tasKInstance.setExecuteParams(lastInstance.getExecuteParams());
+            tasKInstance.setExecuteParams(lastInstance.getExecuteResult());
         } else {
             tasKInstance.setExecuteParams(task.getExecuteParams());
+        }
+        if (StringUtils.isEmpty(tasKInstance.getExecuteParams())) {
+            tasKInstance.setExecuteParams("{}");
         }
         tasKInstance.setStatus(QuartzDefinition.InstanceStatus.RUNNING.name());
         tasKInstance.setPlannedNextTime(TriggerUtils.getNextFireTime(task));

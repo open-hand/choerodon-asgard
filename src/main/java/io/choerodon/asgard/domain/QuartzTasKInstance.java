@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.Objects;
 
 @ModifyAudit
 @VersionAudit
@@ -39,6 +40,10 @@ public class QuartzTasKInstance extends AuditDomain {
     private String status;
 
     private String executeParams;
+
+    private String executeMethod;
+
+    private String executeResult;
 
     public Long getId() {
         return id;
@@ -136,5 +141,53 @@ public class QuartzTasKInstance extends AuditDomain {
         this.executeParams = executeParams;
     }
 
+    public String getExecuteMethod() {
+        return executeMethod;
+    }
 
+    public void setExecuteMethod(String executeMethod) {
+        this.executeMethod = executeMethod;
+    }
+
+    public String getExecuteResult() {
+        return executeResult;
+    }
+
+    public void setExecuteResult(String executeResult) {
+        this.executeResult = executeResult;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        QuartzTasKInstance that = (QuartzTasKInstance) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "QuartzTasKInstance{" +
+                "id=" + id +
+                ", taskId=" + taskId +
+                ", plannedStartTime=" + plannedStartTime +
+                ", actualStartTime=" + actualStartTime +
+                ", actualLastTime=" + actualLastTime +
+                ", plannedNextTime=" + plannedNextTime +
+                ", exceptionMessage='" + exceptionMessage + '\'' +
+                ", retriedCount=" + retriedCount +
+                ", maxRetryCount=" + maxRetryCount +
+                ", instanceLock='" + instanceLock + '\'' +
+                ", status='" + status + '\'' +
+                ", executeParams='" + executeParams + '\'' +
+                ", executeMethod='" + executeMethod + '\'' +
+                ", executeResult='" + executeResult + '\'' +
+                '}';
+    }
 }

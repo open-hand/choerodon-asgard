@@ -10,7 +10,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_ORCH_SAGA_TASK')
             }
             column(name: 'NAME', type: 'VARCHAR(64)', remarks: '任务名'){
-                constraints(nullable: false)
+                constraints(nullable: false, unique: true, uniqueConstraintName: 'UK_ASGARD_QUARTZ_TASK_NAME')
             }
             column(name: 'DESCRIPTION', type: 'VARCHAR(255)', remarks: '描述')
             column(name: "START_TIME", type: "DATETIME", remarks: '开始时间')

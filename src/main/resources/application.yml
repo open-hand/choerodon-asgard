@@ -75,3 +75,6 @@ choerodon:
   saga:
     consumer:
       enabled: false
+  schedule:
+    consumer:
+      enabled: false

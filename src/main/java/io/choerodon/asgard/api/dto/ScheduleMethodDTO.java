@@ -5,14 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.core.exception.CommonException;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.IOException;
 import java.util.List;
 
 public class ScheduleMethodDTO {
 
+    @ApiModelProperty(value = "方法id")
     private Long id;
 
+    @ApiModelProperty(value = "方法名")
     private String method;
 
     private List<PropertyJobParam> paramList;

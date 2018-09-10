@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
@@ -8,27 +9,37 @@ import java.util.Map;
 
 public class ScheduleTaskDTO {
 
+    @ApiModelProperty(value = "执行任务方法id")
     @NotNull(message = "error.scheduleTask.methodNull")
     private Long methodId;
 
+    @ApiModelProperty(value = "输入参数的map形式")
     private Map<String, Object> params;
 
+    @ApiModelProperty(value = "定时任务名")
     @NotEmpty(message = "error.scheduleTask.nameEmpty")
     private String name;
 
+    @ApiModelProperty(value = "定时任务描述")
     private String description;
 
+    @ApiModelProperty(value = "定时任务开始时间")
     private Date startTime;
 
+    @ApiModelProperty(value = "定时任务结束时间")
     private Date endTime;
 
+    @ApiModelProperty(value = "定时任务结束类型。simple-trigger或cron-trigger")
     @NotEmpty(message = "error.scheduleTask.triggerTypeEmpty")
     private String triggerType;
 
+    @ApiModelProperty(value = "simple-trigger的重复次数")
     private Integer simpleRepeatCount;
 
+    @ApiModelProperty(value = "simple-trigger的重复间隔(毫秒)")
     private Long simpleRepeatInterval;
 
+    @ApiModelProperty(value = "cron-trigger的cron表达式")
     private String cronExpression;
 
     public Long getMethodId() {

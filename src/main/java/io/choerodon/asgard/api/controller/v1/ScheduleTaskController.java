@@ -2,7 +2,7 @@ package io.choerodon.asgard.api.controller.v1;
 
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
-import io.choerodon.asgard.api.pojo.TriggerType;
+import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.core.domain.Page;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/v1/schedules/tasks")
@@ -39,12 +40,15 @@ public class ScheduleTaskController {
     @ApiOperation(value = "创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTask> create(@RequestBody @Valid ScheduleTaskDTO dto) {
+        if (dto.getParams() == null) {
+            dto.setParams(new HashMap<>(0));
+        }
         if (TriggerType.CRON.getValue().equals(dto.getTriggerType())) {
             if (StringUtils.isEmpty(dto.getCronExpression())) {
                 throw new CommonException("error.scheduleTask.cronExpressionEmpty");
             }
         } else if (TriggerType.SIMPLE.getValue().equals(dto.getTriggerType())) {
-            if (dto.getSimpleRepeatCount() == null || dto.getSimpleRepeatInterval() == null) {
+            if (dto.getSimpleRepeatInterval() == null) {
                 throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalNull");
             }
         } else {

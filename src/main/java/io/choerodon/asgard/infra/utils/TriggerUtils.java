@@ -1,6 +1,6 @@
 package io.choerodon.asgard.infra.utils;
 
-import io.choerodon.asgard.api.pojo.TriggerType;
+import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.domain.QuartzTask;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;

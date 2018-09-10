@@ -1,19 +1,25 @@
 package io.choerodon.asgard.api.service.impl;
 
-import io.choerodon.asgard.api.pojo.TriggerType;
+import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.core.exception.CommonException;
 import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 @Service
 public class QuartzJobServiceImpl implements QuartzJobService {
 
-    private static final String JOB_PREFIX = "job:";
+    private static final Logger LOGGER = LoggerFactory.getLogger(QuartzJobService.class);
 
-    private static final String TRIGGER_PREFIX = "trigger:";
+    private static final String JOB_PREFIX = "asgard_job:";
+
+    private static final String TRIGGER_PREFIX = "asgard_trigger:";
 
     private Scheduler scheduler;
 
@@ -35,7 +41,7 @@ public class QuartzJobServiceImpl implements QuartzJobService {
             if (task.getEndTime() != null) {
                 triggerBuilder.endAt(task.getEndTime());
             }
-            if (TriggerType.SIMPLE.name().equals(task.getTriggerType())) {
+            if (TriggerType.SIMPLE.getValue().equals(task.getTriggerType())) {
                 SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder.simpleSchedule();
                 if (task.getSimpleRepeatCount() == null) {
                     simpleScheduleBuilder.repeatForever();
@@ -45,7 +51,7 @@ public class QuartzJobServiceImpl implements QuartzJobService {
                 simpleScheduleBuilder.withIntervalInMilliseconds(task.getSimpleRepeatInterval()).withMisfireHandlingInstructionFireNow();
                 triggerBuilder.withSchedule(simpleScheduleBuilder);
             } else {
-                triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(task.getCronExpression()));
+                triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(task.getCronExpression()).withMisfireHandlingInstructionDoNothing());
             }
             if (!scheduler.isShutdown()) {
                 scheduler.scheduleJob(jobDetail, triggerBuilder.build());
@@ -83,15 +89,6 @@ public class QuartzJobServiceImpl implements QuartzJobService {
     }
 
     @Override
-    public boolean checkJobIsExists(final long taskId) {
-        try {
-            return scheduler.checkExists(new JobKey(JOB_PREFIX + taskId));
-        } catch (SchedulerException e) {
-            throw new CommonException("error.quartzJobService.checkJobIsExists", e);
-        }
-    }
-
-    @Override
     public void pauseJob(long taskId) {
         try {
             scheduler.pauseJob(new JobKey(JOB_PREFIX + taskId));
@@ -100,4 +97,14 @@ public class QuartzJobServiceImpl implements QuartzJobService {
         }
     }
 
+    @PostConstruct
+    public void startJobs() {
+        try {
+            if (!scheduler.isStarted()) {
+                scheduler.start();
+            }
+        } catch (SchedulerException e) {
+            LOGGER.error("error.restart.scheduler {}", e);
+        }
+    }
 }

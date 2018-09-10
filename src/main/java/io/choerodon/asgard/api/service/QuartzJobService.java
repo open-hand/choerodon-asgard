@@ -24,10 +24,4 @@ public interface QuartzJobService {
      */
     void pauseJob(long taskId);
 
-
-    /**
-     * 检查定时任务是否存在
-     */
-    boolean checkJobIsExists(long taskId);
-
 }

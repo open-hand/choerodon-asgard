@@ -26,14 +26,13 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
             column(name: 'RETRIED_COUNT', type: 'INT UNSIGNED', defaultValue: "0", remarks: '重试次数') {
                 constraints(nullable: false)
             }
-
-            column(name: 'EXECUTE_PARAMS_ID', type: 'TEXT', remarks: '任务执行参数的jsonDataId') {
-                constraints(nullable: false)
-            }
-
             column(name: 'EXECUTE_PARAMS', type: 'TEXT', remarks: '任务执行参数') {
                 constraints(nullable: false)
             }
+            column(name: 'EXECUTE_METHOD', type: 'VARCHAR(128)', remarks: '任务执行方法') {
+                constraints(nullable: false)
+            }
+            column(name: 'EXECUTE_RESULT', type: 'TEXT', remarks: '任务执行结果')
 
             column(name: 'INSTANCE_LOCK', type: 'VARCHAR(64)', remarks: '消费该消息的实例锁')
 

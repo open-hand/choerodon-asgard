@@ -79,7 +79,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private void validExecuteParams(final Map<String, Object> params, final String paramDefinition) throws IOException {
 
-        List<PropertyJobParam> paramDefinitionList = objectMapper.readValue(paramDefinition, new TypeReference<List<String>>() {
+        List<PropertyJobParam> paramDefinitionList = objectMapper.readValue(paramDefinition, new TypeReference<List<PropertyJobParam>>() {
         });
         params.forEach((k, v) -> {
             PropertyJobParam jobParam = getPropertyJobParam(k, paramDefinitionList);
@@ -185,7 +185,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         return new ResponseEntity<>(pageBack, HttpStatus.OK);
     }
 
-    private Page<QuartzTaskDTO> pageConvert(Page<QuartzTask> page){
+    private Page<QuartzTaskDTO> pageConvert(Page<QuartzTask> page) {
         List<QuartzTaskDTO> quartzTaskDTOS = new ArrayList<>();
         Page<QuartzTaskDTO> pageBack = new Page<>();
         pageBack.setNumber(page.getNumber());
