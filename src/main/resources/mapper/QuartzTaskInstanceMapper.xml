@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper">
+
+    <select id="selectLastInstance" resultType="io.choerodon.asgard.domain.QuartzTasKInstance">
+     SELECT id, status, actual_start_time, execute_result FROM asgard_quartz_task_instance
+     WHERE task_id = #{taskId}
+     ORDER BY CREATION_DATE DESC
+     LIMIT 1
+    </select>
+
+    <select id="selectLastInstance" databaseId="mysql" resultType="io.choerodon.asgard.domain.QuartzTasKInstance">
+     SELECT id, status, actual_start_time, execute_result FROM asgard_quartz_task_instance
+     WHERE task_id = #{taskId}
+     ORDER BY CREATION_DATE DESC
+     LIMIT 1
+    </select>
+
+    <select id="selectLastInstance" databaseId="oracle" resultType="io.choerodon.asgard.domain.QuartzTasKInstance">
+    <![CDATA[
+      SELECT * FROM (
+         SELECT id, status, actual_start_time, execute_result FROM asgard_quartz_task_instance
+         WHERE task_id = #{taskId}
+         ORDER BY CREATION_DATE DESC
+      ) WHERE ROWNUM <= 1
+        ]]>
+    </select>
+
+    <select id="fulltextSearch" resultType="io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO">
+        SELECT
+        aqti.id,
+        aqti.status,
+        aqt.name AS taskName,
+        aqti.exception_message,
+        aqti.planned_start_time ,
+        aqti.actual_start_time,
+        aqti.actual_last_time,
+        aqti.planned_next_time
+        FROM asgard_quartz_task_instance aqti
+        LEFT JOIN asgard_quartz_task aqt
+        ON aqti.task_id = aqt.id
+        WHERE 1 = 1
+        <if test="taskName != null">
+            AND aqt.name LIKE concat(concat('%',#{taskName}),'%')
+        </if>
+        <if test="status != null">
+            AND aqti.status LIKE concat(concat('%',#{status}),'%')
+        </if>
+
+        <if test="exceptionMessage != null">
+            AND aqti.exception_message LIKE concat(concat('%',#{exceptionMessage}),'%')
+        </if>
+
+        <if test="params != null">
+            AND(
+            aqt.name LIKE concat(concat('%',#{params}),'%') OR
+            aqti.exception_messag LIKE concat(concat('%',#{params}),'%') OR
+            aqti.status LIKE concat(concat('%',#{params}),'%')
+            )
+        </if>
+    </select>
+
+    <select id="pollBathByMethod" resultType="io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO" flushCache="true">
+        SELECT
+        id, execute_method AS method, execute_params, instance_lock, object_version_number
+        FROM asgard_quartz_task_instance
+        WHERE status = 'RUNNING' AND execute_method = #{method}
+    </select>
+
+    <update id="lockByInstanceAndUpdateStartTime">
+        UPDATE asgard_quartz_task_instance
+        SET instance_lock = #{instance}, object_version_number = object_version_number + 1
+        <if test="time != null">
+            , actual_start_time = #{time}
+        </if>
+        WHERE id = #{id} AND instance_lock IS NULL AND object_version_number = #{number}
+    </update>
+
+    <update id="unlockByInstance" parameterType="java.lang.String">
+        UPDATE asgard_saga_task_instance
+        SET  instance_lock = NULL, object_version_number = object_version_number + 1
+        WHERE instance_lock = #{instance} AND status = 'RUNNING'
+    </update>
+
+</mapper>

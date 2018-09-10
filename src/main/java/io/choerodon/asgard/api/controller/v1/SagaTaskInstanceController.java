@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.controller.v1;
 import java.util.Set;
 import javax.validation.Valid;
 
+import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.asgard.api.dto.PollBatchDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
@@ -33,6 +33,7 @@ public class SagaTaskInstanceController {
     }
 
     @PostMapping("/poll/batch")
+    @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
     public ResponseEntity<Set<SagaTaskInstanceDTO>> pollBatch(@RequestBody @Valid PollBatchDTO pollBatchDTO) {
         if (pollBatchDTO.getMaxPollSize() == null) {
@@ -43,6 +44,7 @@ public class SagaTaskInstanceController {
 
     @PutMapping("/{id}/status")
     @ApiOperation(value = "内部接口。更新任务的执行状态")
+    @Permission(permissionWithin = true)
     public SagaTaskInstanceDTO updateStatus(@PathVariable Long id, @RequestBody @Valid SagaTaskInstanceStatusDTO statusDTO) {
         statusDTO.setId(id);
         return sagaTaskInstanceService.updateStatus(statusDTO);
