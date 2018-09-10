@@ -13,6 +13,6 @@ public class QuartzGenericCreateInstanceJob extends QuartzJobBean {
     @Override
     protected void executeInternal(JobExecutionContext jobExecutionContext)  {
         final long taskId = jobExecutionContext.getMergedJobDataMap().getLongValue("taskId");
-        realJobService.triggerEvent(taskId);
+        realJobService.triggerEvent(taskId, jobExecutionContext);
     }
 }

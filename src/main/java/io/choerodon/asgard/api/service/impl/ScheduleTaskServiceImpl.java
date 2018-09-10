@@ -7,9 +7,12 @@ import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
+import io.choerodon.asgard.domain.QuartzTasKInstance;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
+import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
+import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
@@ -18,6 +21,8 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,11 +30,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleTaskService.class);
 
     private static final String TASK_NOT_EXIST = "error.scheduleTask.taskNotExist";
 
@@ -43,12 +51,16 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private QuartzJobService quartzJobService;
 
+    private QuartzTaskInstanceMapper instanceMapper;
+
     public ScheduleTaskServiceImpl(QuartzMethodMapper methodMapper,
                                    QuartzTaskMapper taskMapper,
-                                   QuartzJobService quartzJobService) {
+                                   QuartzJobService quartzJobService,
+                                   QuartzTaskInstanceMapper instanceMapper) {
         this.methodMapper = methodMapper;
         this.taskMapper = taskMapper;
         this.quartzJobService = quartzJobService;
+        this.instanceMapper = instanceMapper;
     }
 
     @Override
@@ -70,6 +82,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             }
             QuartzTask db = taskMapper.selectByPrimaryKey(quartzTask.getId());
             quartzJobService.addJob(db);
+            LOGGER.info("create job: {}", quartzTask);
             return db;
         } catch (IOException e) {
             throw new CommonException("error.scheduleTask.createJsonIOException", e);
@@ -141,6 +154,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 throw new CommonException("error.scheduleTask.enableTaskFailed");
             }
             quartzJobService.resumeJob(id);
+            LOGGER.info("enable job: {}", quartzTask);
         }
     }
 
@@ -161,6 +175,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 throw new CommonException("error.scheduleTask.disableTaskFailed");
             }
             quartzJobService.pauseJob(id);
+            LOGGER.info("disable job: {}", quartzTask);
         }
     }
 
@@ -175,6 +190,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             throw new CommonException("error.scheduleTask.deleteTaskFailed");
         }
         quartzJobService.removeJob(id);
+        LOGGER.info("delete job: {}", quartzTask);
     }
 
     @Override
@@ -196,10 +212,32 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         if (page.getContent().isEmpty()) {
             return pageBack;
         } else {
-            page.getContent().forEach(t -> quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), null, null, t.getStatus())));
+            page.getContent().forEach(t -> {
+                Date lastStartTime = null;
+                QuartzTasKInstance lastInstance = instanceMapper.selectLastInstance(t.getId());
+                if (lastInstance != null) {
+                    lastStartTime = lastInstance.getActualLastTime();
+                }
+                quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, TriggerUtils.getNextFireTime(t), t.getStatus()));
+            });
             pageBack.setContent(quartzTaskDTOS);
             return pageBack;
         }
     }
 
+    @Override
+    public void finish(long id) {
+        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
+        if (quartzTask == null) {
+            LOGGER.warn("finish job error, quartzTask is not exist {}", id);
+        } else {
+            quartzTask.setStatus(QuartzDefinition.TaskStatus.FINISHED.name());
+            if (taskMapper.updateByPrimaryKey(quartzTask) == 1) {
+                LOGGER.info("finish job: {}", quartzTask);
+            } else {
+                LOGGER.error("finish job error, updateStatus failed : {}", quartzTask);
+            }
+
+        }
+    }
 }

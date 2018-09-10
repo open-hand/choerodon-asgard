@@ -5,21 +5,15 @@ import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.core.exception.CommonException;
 import org.quartz.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
 
 @Service
 public class QuartzJobServiceImpl implements QuartzJobService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QuartzJobService.class);
+    public static final String JOB_PREFIX = "asgard_job:";
 
-    private static final String JOB_PREFIX = "asgard_job:";
-
-    private static final String TRIGGER_PREFIX = "asgard_trigger:";
+    public static final String TRIGGER_PREFIX = "asgard_trigger:";
 
     private Scheduler scheduler;
 
@@ -97,14 +91,4 @@ public class QuartzJobServiceImpl implements QuartzJobService {
         }
     }
 
-    @PostConstruct
-    public void startJobs() {
-        try {
-            if (!scheduler.isStarted()) {
-                scheduler.start();
-            }
-        } catch (SchedulerException e) {
-            LOGGER.error("error.restart.scheduler {}", e);
-        }
-    }
 }

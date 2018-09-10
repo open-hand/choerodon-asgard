@@ -16,6 +16,7 @@ import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.quartz.CronExpression;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -46,6 +47,9 @@ public class ScheduleTaskController {
         if (TriggerType.CRON.getValue().equals(dto.getTriggerType())) {
             if (StringUtils.isEmpty(dto.getCronExpression())) {
                 throw new CommonException("error.scheduleTask.cronExpressionEmpty");
+            }
+            if (!CronExpression.isValidExpression(dto.getCronExpression())) {
+                throw new CommonException("error.scheduleTask.cronExpressionInvalid");
             }
         } else if (TriggerType.SIMPLE.getValue().equals(dto.getTriggerType())) {
             if (dto.getSimpleRepeatInterval() == null) {

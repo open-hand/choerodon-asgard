@@ -10,6 +10,7 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.schedule.QuartzDefinition;
+import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,15 +42,17 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
     }
 
     @Override
-    public void triggerEvent(long taskId) {
+    public void triggerEvent(final long taskId, final JobExecutionContext jobExecutionContext) {
         final QuartzTasKInstance lastInstance = instanceMapper.selectLastInstance(taskId);
         if (lastInstance != null && !QuartzDefinition.InstanceStatus.COMPLETED.name().equals(lastInstance.getStatus())) {
             scheduleTaskService.disable(taskId, null, true);
             return;
         }
+        if (jobExecutionContext.getNextFireTime() == null) {
+            scheduleTaskService.finish(taskId);
+        }
         createInstance(taskId, lastInstance);
     }
-
 
     private void createInstance(long taskId, final QuartzTasKInstance lastInstance) {
         QuartzTask task = taskMapper.selectByPrimaryKey(taskId);

@@ -48,8 +48,6 @@ public class ScheduleAutoConfig {
                 this.applicationContext.getAutowireCapableBeanFactory()));
         schedulerFactoryBean.setBeanName(this.properties.getSchedulerName());
         schedulerFactoryBean.setAutoStartup(this.properties.isAutoStartup());
-        schedulerFactoryBean
-                .setStartupDelay((int) this.properties.getStartupDelay().getSeconds());
         schedulerFactoryBean.setWaitForJobsToCompleteOnShutdown(
                 this.properties.isWaitForJobsToCompleteOnShutdown());
         schedulerFactoryBean

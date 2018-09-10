@@ -17,6 +17,8 @@ public interface ScheduleTaskService {
 
     void delete(long id);
 
+    void finish(long id);
+
     ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params);
 
 }

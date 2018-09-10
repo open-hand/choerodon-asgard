@@ -62,15 +62,13 @@ choerodon:
     isLocal: true
     quartz:
       auto-startup: true
+      overwrite-existing-jobs: true
       properties:
         org.quartz.jobStore.tablePrefix: ASGARD_QUARTZ_
         org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
         org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
         org.quartz.jobStore.isClustered: true
         org.quartz.jobStore.misfireThreshold: 25000
-        org.quartz.threadPool.threadCount: 20
-        org.quartz.threadPool.threadPriority: 5
-        org.quartz.threadPool.class: org.quartz.simpl.SimpleThreadPool
         org.quartz.scheduler.makeSchedulerThreadDaemon: true
   saga:
     consumer:

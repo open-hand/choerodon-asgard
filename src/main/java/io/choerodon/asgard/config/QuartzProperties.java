@@ -2,7 +2,6 @@ package io.choerodon.asgard.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,8 +15,6 @@ public class QuartzProperties {
     private boolean overwriteExistingJobs = false;
 
     private boolean waitForJobsToCompleteOnShutdown = false;
-
-    private Duration startupDelay = Duration.ofSeconds(0);
 
     private final Map<String, String> properties = new HashMap<>();
 
@@ -51,14 +48,6 @@ public class QuartzProperties {
 
     public void setWaitForJobsToCompleteOnShutdown(boolean waitForJobsToCompleteOnShutdown) {
         this.waitForJobsToCompleteOnShutdown = waitForJobsToCompleteOnShutdown;
-    }
-
-    public Duration getStartupDelay() {
-        return startupDelay;
-    }
-
-    public void setStartupDelay(Duration startupDelay) {
-        this.startupDelay = startupDelay;
     }
 
     public Map<String, String> getProperties() {
