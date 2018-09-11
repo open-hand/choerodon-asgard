@@ -54,7 +54,7 @@
         <if test="params != null">
             AND(
             aqt.name LIKE concat(concat('%',#{params}),'%') OR
-            aqti.exception_messag LIKE concat(concat('%',#{params}),'%') OR
+            aqti.exception_message LIKE concat(concat('%',#{params}),'%') OR
             aqti.status LIKE concat(concat('%',#{params}),'%')
             )
         </if>
