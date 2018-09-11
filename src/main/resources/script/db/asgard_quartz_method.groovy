@@ -1,13 +1,13 @@
 package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
-    if(helper.dbType().isSupportSequence()){
-        createSequence(sequenceName: 'ASGARD_QUARTZ_METHOD_S', startValue:"1")
-    }
     changeSet(id: '2018-09-05-create-table-asgard_quartz_method', author: 'flyleft') {
+        if(helper.dbType().isSupportSequence()){
+            createSequence(sequenceName: 'ASGARD_QUARTZ_METHOD_S', startValue:"1")
+        }
         createTable(tableName: "ASGARD_QUARTZ_METHOD") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
-                constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_ORCH_SAGA_TASK')
+                constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_METHOD')
             }
             column(name: 'METHOD', type: 'VARCHAR(128)', remarks: '方法名') {
                 constraints(nullable: false)

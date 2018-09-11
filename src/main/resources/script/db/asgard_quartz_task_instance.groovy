@@ -1,10 +1,10 @@
 package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
-    if(helper.dbType().isSupportSequence()){
-        createSequence(sequenceName: 'ASGARD_QUARTZ_TASK_INSTANCE_S', startValue:"1")
-    }
     changeSet(id: '2018-09-05-create-table-asgard_quartz_task_instance', author: 'flyleft') {
+        if(helper.dbType().isSupportSequence()){
+            createSequence(sequenceName: 'ASGARD_QUARTZ_TASK_INSTANCE_S', startValue:"1")
+        }
         createTable(tableName: "ASGARD_QUARTZ_TASK_INSTANCE") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_TASK_INSTANCE')
