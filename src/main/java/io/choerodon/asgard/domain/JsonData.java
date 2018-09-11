@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @ModifyAudit
 @VersionAudit
-@Table(name = "asgard_orch_json_data")
+@Table(name = "ASGARD_ORCH_JSON_DATA")
 public class JsonData extends AuditDomain {
 
     @Id
@@ -41,4 +41,5 @@ public class JsonData extends AuditDomain {
     public void setData(String data) {
         this.data = data;
     }
+
 }

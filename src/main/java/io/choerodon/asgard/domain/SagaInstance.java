@@ -11,7 +11,7 @@ import java.util.Date;
 
 @ModifyAudit
 @VersionAudit
-@Table(name = "asgard_saga_instance")
+@Table(name = "ASGARD_SAGA_INSTANCE")
 public class SagaInstance extends AuditDomain {
 
     @Id

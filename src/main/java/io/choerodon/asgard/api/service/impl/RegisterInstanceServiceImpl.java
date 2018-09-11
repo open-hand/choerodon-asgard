@@ -1,12 +1,10 @@
 package io.choerodon.asgard.api.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.api.dto.RegisterInstancePayloadDTO;
-import io.choerodon.asgard.api.service.RegisterInstanceService;
-import io.choerodon.asgard.api.service.SagaService;
-import io.choerodon.asgard.api.service.SagaTaskInstanceService;
-import io.choerodon.asgard.api.service.SagaTaskService;
+import io.choerodon.asgard.api.service.*;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
-import io.choerodon.asgard.saga.property.PropertyData;
+import io.choerodon.asgard.property.PropertyData;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,20 +23,30 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     @Value("${choerodon.asgard.isLocal:false}")
     private Boolean isLocal;
 
-    private SagaService sagaService;
+    private final SagaService sagaService;
 
-    private SagaTaskService sagaTaskService;
+    private final SagaTaskService sagaTaskService;
 
-    private SagaTaskInstanceService sagaTaskInstanceService;
+    private final SagaTaskInstanceService sagaTaskInstanceService;
+
+    private final ScheduleTaskInstanceService scheduleTaskInstanceService;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private QuartzMethodService quartzMethodService;
+
     public RegisterInstanceServiceImpl(SagaService sagaService,
                                        SagaTaskService sagaTaskService,
-                                       SagaTaskInstanceService sagaTaskInstanceService) {
+                                       SagaTaskInstanceService sagaTaskInstanceService,
+                                       QuartzMethodService quartzMethodService,
+                                       ScheduleTaskInstanceService scheduleTaskInstanceService) {
         this.sagaService = sagaService;
         this.sagaTaskService = sagaTaskService;
         this.sagaTaskInstanceService = sagaTaskInstanceService;
+        this.quartzMethodService = quartzMethodService;
+        this.scheduleTaskInstanceService = scheduleTaskInstanceService;
     }
 
     public void setLocal(Boolean local) {
@@ -52,6 +60,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     @Override
     public void instanceDownConsumer(final RegisterInstancePayloadDTO payload) {
         sagaTaskInstanceService.unlockByInstance(payload.getInstanceAddress());
+        scheduleTaskInstanceService.unlockByInstance(payload.getInstanceAddress());
     }
 
     @Override
@@ -85,6 +94,9 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
         sagaTaskService.createSagaTaskList(propertyData.getSagaTasks().stream()
                 .map(t -> ConvertUtils.convertSagaTask(modelMapper, t, propertyData.getService()))
                 .collect(Collectors.toList()), propertyData.getService());
+        quartzMethodService.createMethodList(propertyData.getService(), propertyData.getJobTasks().stream()
+                .map(t -> ConvertUtils.convertQuartzMethod(objectMapper, t, propertyData.getService())).collect(Collectors.toList()));
+
     }
 
 }

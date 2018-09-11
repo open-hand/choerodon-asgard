@@ -3,7 +3,9 @@ package io.choerodon.asgard.api.service
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.dto.RegisterInstancePayloadDTO
 import io.choerodon.asgard.api.service.impl.RegisterInstanceServiceImpl
-import io.choerodon.asgard.saga.property.PropertyData
+import io.choerodon.asgard.property.PropertyData
+import io.choerodon.asgard.property.PropertySaga
+import io.choerodon.asgard.property.PropertySagaTask
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -42,10 +44,10 @@ class RegisterInstanceServiceSpec extends Specification {
         dto.setInstanceAddress('127.0.0.1:9092')
         def propertyData = new PropertyData()
         propertyData.setService('test-asgard-service')
-        def saga = new PropertyData.Saga()
+        def saga = new PropertySaga()
         saga.setCode('instanceUpConsumer')
         propertyData.addSaga(saga)
-        propertyData.addSagaTask(new PropertyData.SagaTask("instanceUpConsumerTask", "test", "instanceUpConsumer", 2, 4))
+        propertyData.addSagaTask(new PropertySagaTask("instanceUpConsumerTask", "test", "instanceUpConsumer", 2, 4))
 
         and: "mock service和restTemplate"
         def sagaService = Mock(SagaService)

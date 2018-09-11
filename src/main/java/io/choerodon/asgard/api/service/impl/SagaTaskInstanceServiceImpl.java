@@ -2,7 +2,6 @@ package io.choerodon.asgard.api.service.impl;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.api.dto.PollBatchDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
@@ -15,6 +14,7 @@ import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.infra.utils.StringLockProvider;
 import io.choerodon.asgard.saga.SagaDefinition;
+import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import org.modelmapper.ModelMapper;

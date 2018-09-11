@@ -8,8 +8,9 @@ import io.choerodon.asgard.api.dto.JsonMergeDTO
 import io.choerodon.asgard.domain.JsonData
 import io.choerodon.asgard.domain.SagaTaskInstance
 import io.choerodon.asgard.infra.mapper.JsonDataMapper
+import io.choerodon.asgard.property.PropertySaga
+import io.choerodon.asgard.property.PropertySagaTask
 import io.choerodon.asgard.saga.SagaDefinition
-import io.choerodon.asgard.saga.property.PropertyData
 import org.modelmapper.ModelMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,7 +32,7 @@ class ConvertUtilsSpec extends Specification {
 
     def '测试 convertSaga方法'() {
         given: '创建一个PropertyData.Saga'
-        def test = new PropertyData.Saga('code', 'desc')
+        def test = new PropertySaga('code', 'desc')
         test.setInputSchema('name,id')
         test.setInputSchemaSource('data')
         def service = 'convertSaga'
@@ -49,7 +50,7 @@ class ConvertUtilsSpec extends Specification {
 
     def '测试 convertSagaTask方法'() {
         given: '创建一个PropertyData.SagaTask'
-        def data = new PropertyData.SagaTask('code', 'desc', 'sagaCode', 20, 33)
+        def data = new PropertySagaTask()S('code', 'desc', 'sagaCode', 20, 33)
         data.setTimeoutSeconds(10)
         data.setTimeoutPolicy(SagaDefinition.TimeoutPolicy.ALERT_ONLY.name())
         data.setConcurrentLimitNum(10)
