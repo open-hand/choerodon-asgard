@@ -218,7 +218,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 if (lastInstance != null) {
                     lastStartTime = lastInstance.getActualLastTime();
                 }
-                quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, TriggerUtils.getNextFireTime(t), t.getStatus()));
+                quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, TriggerUtils.getNextFireTime(t), t.getStatus(),t.getObjectVersionNumber()));
             });
             pageBack.setContent(quartzTaskDTOS);
             return pageBack;
