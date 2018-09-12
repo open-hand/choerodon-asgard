@@ -3,7 +3,9 @@ package script.db
 databaseChangeLog(logicalFilePath: 'asgard_quartz.groovy') {
     changeSet(id: '2018-09-06-create-tables-asgard_quartz', author: 'jcalaz@163.com') {
         if(helper.isOracle()) {
-            sqlFile(path: './quartz_oracle.sql', relativeToChangelogFile: true, stripComments: true)
+//          plsql drop 分隔符是/，create statement的分隔符是; 所以分两个文件
+            sqlFile(path: './quartz_oracle_drop.sql', relativeToChangelogFile: true, stripComments: true, endDelimiter: '/')
+            sqlFile(path: './quartz_oracle_create.sql', relativeToChangelogFile: true, stripComments: true)
         } else {
             sqlFile(path: './quartz.sql', relativeToChangelogFile: true, stripComments: true)
         }
