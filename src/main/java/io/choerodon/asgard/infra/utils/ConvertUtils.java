@@ -1,11 +1,17 @@
 package io.choerodon.asgard.infra.utils;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+import org.modelmapper.ModelMapper;
+
 import io.choerodon.asgard.api.dto.JsonMergeDTO;
 import io.choerodon.asgard.domain.*;
 import io.choerodon.asgard.infra.mapper.JsonDataMapper;
@@ -13,11 +19,6 @@ import io.choerodon.asgard.property.PropertyJobTask;
 import io.choerodon.asgard.property.PropertySaga;
 import io.choerodon.asgard.property.PropertySagaTask;
 import io.choerodon.core.exception.CommonException;
-import org.modelmapper.ModelMapper;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ConvertUtils {
 
@@ -25,10 +26,12 @@ public class ConvertUtils {
     }
 
     public static QuartzMethod convertQuartzMethod(final ObjectMapper mapper, final PropertyJobTask jobTask, final String service) {
-       final  QuartzMethod method = new QuartzMethod();
-       method.setService(service);
-       method.setMaxRetryCount(jobTask.getMaxRetryCount());
-       method.setMethod(jobTask.getMethod());
+        final QuartzMethod method = new QuartzMethod();
+        method.setService(service);
+        method.setCode(jobTask.getCode());
+        method.setDescription(jobTask.getDescription());
+        method.setMaxRetryCount(jobTask.getMaxRetryCount());
+        method.setMethod(jobTask.getMethod());
         try {
             String params = mapper.writeValueAsString(jobTask.getParams());
             method.setParams(params);

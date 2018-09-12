@@ -1,19 +1,25 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import io.choerodon.asgard.api.dto.ScheduleMethodDTO;
-import io.choerodon.asgard.api.service.ScheduleMethodService;
-import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.swagger.annotation.Permission;
+import java.util.List;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.List;
+import io.choerodon.asgard.api.dto.ScheduleMethodDTO;
+import io.choerodon.asgard.api.dto.ScheduleMethodInfoDTO;
+import io.choerodon.asgard.api.service.ScheduleMethodService;
+import io.choerodon.core.domain.Page;
+import io.choerodon.core.iam.InitRoleCode;
+import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
+import io.choerodon.swagger.annotation.CustomPageRequest;
+import io.choerodon.swagger.annotation.Permission;
 
 @RestController
 @RequestMapping("/v1/schedules/methods")
@@ -26,11 +32,27 @@ public class ScheduleMethodController {
         this.scheduleMethodService = scheduleMethodService;
     }
 
+
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "获取执行方法列表")
     @GetMapping
-    public ResponseEntity<List<ScheduleMethodDTO>> list() {
-        return new ResponseEntity<>(scheduleMethodService.list(), HttpStatus.OK);
+    @ApiOperation(value = "分页查询执行方法列表")
+    @CustomPageRequest
+    @ResponseBody
+    public ResponseEntity<Page<ScheduleMethodInfoDTO>> pagingQuery(@RequestParam(value = "code", required = false) String code,
+                                                                   @RequestParam(name = "service", required = false) String service,
+                                                                   @RequestParam(name = "method", required = false) String method,
+                                                                   @RequestParam(name = "description", required = false) String description,
+                                                                   @RequestParam(name = "params", required = false) String params,
+                                                                   @ApiIgnore
+                                                                   @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+        return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params);
     }
 
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = "根据服务名获取方法")
+    @GetMapping("/service")
+    public ResponseEntity<List<ScheduleMethodDTO>> getMethodByService(@RequestParam(value = "service") String service) {
+        return new ResponseEntity<>(scheduleMethodService.getMethodByService(service), HttpStatus.OK);
+    }
 }

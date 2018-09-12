@@ -30,4 +30,13 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
         }
         addUniqueConstraint(tableName: 'ASGARD_QUARTZ_METHOD', columnNames: 'METHOD', constraintName: 'UK_ASGARD_QUARTZ_METHOD_METHOD')
     }
+
+    changeSet(id: '2018-09-11-add-code-and-description', author: 'longhe1996@icloud.com') {
+        addColumn(tableName: 'ASGARD_QUARTZ_METHOD') {
+            column(name: "CODE", type: "VARCHAR(64)", remarks: '方法标志') {
+                constraints(nullable: false)
+            }
+            column(name: "DESCRIPTION", type: "VARCHAR(255)", remarks: '方法描述')
+        }
+    }
 }
