@@ -18,11 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
+import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.domain.QuartzTasKInstance;
 import io.choerodon.asgard.domain.QuartzTask;
+import io.choerodon.asgard.domain.QuartzTaskDetail;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
@@ -239,6 +241,38 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 LOGGER.error("finish job error, updateStatus failed : {}", quartzTask);
             }
 
+        }
+    }
+
+    @Override
+    public ScheduleTaskDetailDTO getTaskDetail(Long id) {
+        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
+        } else {
+            Date lastStartTime = null;
+            QuartzTasKInstance lastInstance = instanceMapper.selectLastInstance(id);
+            if (lastInstance != null) {
+                lastStartTime = lastInstance.getActualLastTime();
+            }
+
+            QuartzTaskDetail quartzTaskDetail = taskMapper.selectTaskById(id);
+            QuartzTask task = new QuartzTask();
+            task.setTriggerType(quartzTaskDetail.getTriggerType());
+            task.setCronExpression(quartzTaskDetail.getCronExpression());
+            task.setEndTime(quartzTaskDetail.getEndTime());
+            task.setSimpleRepeatInterval(quartzTaskDetail.getSimpleRepeatInterval());
+            task.setSimpleRepeatIntervalUnit(quartzTaskDetail.getSimpleRepeatIntervalUnit());
+
+            return new ScheduleTaskDetailDTO(quartzTaskDetail,objectMapper,lastStartTime,TriggerUtils.getNextFireTime(task));
+        }
+    }
+
+    @Override
+    public void checkName(String name) {
+        List<Long> ids = taskMapper.selectTaskIdByName(name);
+        if(!ids.isEmpty()){
+            throw new CommonException("error.scheduleTask.name.exist");
         }
     }
 }

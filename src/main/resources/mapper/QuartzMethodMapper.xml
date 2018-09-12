@@ -36,4 +36,14 @@
         FROM asgard_quartz_method
         WHERE service = #{service}
     </select>
+
+    <select id="selectParamsById" resultType="io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO">
+        SELECT
+          id,
+	      params as paramsJson
+        FROM
+	      asgard_quartz_method
+        WHERE
+	      id = #{id}
+    </select>
 </mapper>

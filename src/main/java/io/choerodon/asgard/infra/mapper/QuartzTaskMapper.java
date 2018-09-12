@@ -1,11 +1,14 @@
 package io.choerodon.asgard.infra.mapper;
 
-import io.choerodon.asgard.domain.QuartzTask;
-import io.choerodon.mybatis.common.BaseMapper;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.List;
+import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
+import io.choerodon.asgard.domain.QuartzTask;
+import io.choerodon.asgard.domain.QuartzTaskDetail;
+import io.choerodon.mybatis.common.BaseMapper;
 
 public interface QuartzTaskMapper extends BaseMapper<QuartzTask> {
 
@@ -17,5 +20,5 @@ public interface QuartzTaskMapper extends BaseMapper<QuartzTask> {
                                     @Param("description") String description,
                                     @Param("params") String params);
 
-
+    QuartzTaskDetail selectTaskById(@Param("id") Long id);
 }

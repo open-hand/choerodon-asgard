@@ -3,9 +3,8 @@ package io.choerodon.asgard.infra.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
-import io.choerodon.asgard.api.dto.ScheduleMethodDTO;
+import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.mybatis.common.BaseMapper;
 
@@ -18,4 +17,6 @@ public interface QuartzMethodMapper extends BaseMapper<QuartzMethod> {
 
 
     List<QuartzMethod> selectByService(@Param("service") String service);
+
+    ScheduleMethodParamsDTO selectParamsById(@Param("id") Long id);
 }

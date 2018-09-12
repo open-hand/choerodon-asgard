@@ -13,10 +13,12 @@ import org.springframework.stereotype.Service;
 
 import io.choerodon.asgard.api.dto.ScheduleMethodDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodInfoDTO;
+import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
 import io.choerodon.asgard.api.service.ScheduleMethodService;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.core.domain.Page;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -77,5 +79,15 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
     @Override
     public List<ScheduleMethodDTO> getMethodByService(String serviceName) {
         return methodMapper.selectByService(serviceName).stream().map(t -> new ScheduleMethodDTO(t, objectMapper)).collect(Collectors.toList());
+    }
+
+    @Override
+    public ScheduleMethodParamsDTO getParams(Long id) {
+        QuartzMethod method = methodMapper.selectByPrimaryKey(id);
+        if (method == null) {
+            throw new CommonException("error.scheduleMethod.notExist");
+        }
+        ScheduleMethodParamsDTO scheduleMethodParamsDTO = methodMapper.selectParamsById(id);
+        return new ScheduleMethodParamsDTO(scheduleMethodParamsDTO.getId(),scheduleMethodParamsDTO.getParamsJson(),objectMapper);
     }
 }
