@@ -1,13 +1,14 @@
 package io.choerodon.asgard.api.service.impl;
 
-import io.choerodon.asgard.api.service.QuartzMethodService;
-import io.choerodon.asgard.domain.QuartzMethod;
-import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import io.choerodon.asgard.api.service.QuartzMethodService;
+import io.choerodon.asgard.domain.QuartzMethod;
+import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 
 @Service
 public class QuartzMethodServiceImpl implements QuartzMethodService {
@@ -33,6 +34,8 @@ public class QuartzMethodServiceImpl implements QuartzMethodService {
                 }
             } else {
                 i.setId(dbSameMethod.getId());
+                i.setCode(dbSameMethod.getCode());
+                i.setDescription(dbSameMethod.getDescription());
                 i.setObjectVersionNumber(dbSameMethod.getObjectVersionNumber());
                 methodMapper.updateByPrimaryKeySelective(i);
             }

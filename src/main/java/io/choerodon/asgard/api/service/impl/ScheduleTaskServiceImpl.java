@@ -1,7 +1,21 @@
 package io.choerodon.asgard.api.service.impl;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.service.QuartzJobService;
@@ -20,19 +34,6 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
@@ -72,7 +73,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             throw new CommonException("error.scheduleTask.methodNotExist");
         }
         try {
-            quartzTask.setExecuteMethod(method.getMethod());
+            quartzTask.setExecuteMethod(method.getCode());
             quartzTask.setId(null);
             quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
             quartzTask.setExecuteParams(objectMapper.writeValueAsString(dto.getParams()));

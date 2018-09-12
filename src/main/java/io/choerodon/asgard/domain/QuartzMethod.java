@@ -1,17 +1,17 @@
 package io.choerodon.asgard.domain;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
+import io.choerodon.mybatis.domain.AuditDomain;
+
 @ModifyAudit
 @VersionAudit
 @Table(name = "ASGARD_QUARTZ_METHOD")
-public class QuartzMethod extends AuditDomain  {
+public class QuartzMethod extends AuditDomain {
 
     @Id
     @GeneratedValue
@@ -24,6 +24,10 @@ public class QuartzMethod extends AuditDomain  {
     private String service;
 
     private String params;
+
+    private String code;
+
+    private String description;
 
     public String getMethod() {
         return method;
@@ -65,6 +69,22 @@ public class QuartzMethod extends AuditDomain  {
         this.service = service;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "QuartzMethod{" +
@@ -73,6 +93,8 @@ public class QuartzMethod extends AuditDomain  {
                 ", maxRetryCount=" + maxRetryCount +
                 ", service='" + service + '\'' +
                 ", params='" + params + '\'' +
+                ", code='" + code + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
