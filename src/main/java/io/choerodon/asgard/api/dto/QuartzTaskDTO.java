@@ -1,8 +1,8 @@
 package io.choerodon.asgard.api.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-
 import java.util.Date;
+
+import io.swagger.annotations.ApiModelProperty;
 
 public class QuartzTaskDTO {
 
@@ -23,6 +23,9 @@ public class QuartzTaskDTO {
 
     @ApiModelProperty(value = "状态")
     private String status;
+
+    @ApiModelProperty(value = "乐观锁版本号")
+    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -75,13 +78,22 @@ public class QuartzTaskDTO {
     public QuartzTaskDTO() {
     }
 
-    public QuartzTaskDTO(Long id, String name, String description, Date lastExecTime, Date nextExecTime, String status) {
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public QuartzTaskDTO(Long id, String name, String description, Date lastExecTime, Date nextExecTime, String status, Long objectVersionNumber) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.lastExecTime = lastExecTime;
         this.nextExecTime = nextExecTime;
         this.status = status;
+        this.objectVersionNumber = objectVersionNumber;
     }
 }
 
