@@ -25,4 +25,26 @@
             )
         </if>
     </select>
+
+    <select id="selectTaskById" resultType="io.choerodon.asgard.domain.QuartzTaskDetail">
+        SELECT
+            aqt.id,
+            aqt.execute_params AS params,
+            aqt.name,
+            aqt.description,
+            aqt.start_time,
+            aqt.end_time,
+            aqt.trigger_type,
+            aqt.simple_repeat_count,
+            aqt.simple_repeat_interval,
+            aqt.simple_repeat_interval_unit,
+            aqt.cron_expression,
+            aqm.service AS serviceName,
+            aqt.execute_method AS methodCode
+        FROM
+            asgard_quartz_task aqt
+        LEFT JOIN asgard_quartz_method aqm
+        ON aqt.execute_method = aqm.code
+        WHERE aqt.id = #{id}
+    </select>
 </mapper>

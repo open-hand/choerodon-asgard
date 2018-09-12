@@ -1,7 +1,20 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import java.util.HashMap;
+import javax.validation.Valid;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.quartz.CronExpression;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
+import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
 import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzTask;
@@ -14,17 +27,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.quartz.CronExpression;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/v1/schedules/tasks")
@@ -65,7 +67,7 @@ public class ScheduleTaskController {
     @ApiOperation(value = "启用任务")
     @PutMapping("/{id}/enable")
     public void enable(@PathVariable long id, @RequestParam long objectVersionNumber) {
-       scheduleTaskService.enable(id, objectVersionNumber);
+        scheduleTaskService.enable(id, objectVersionNumber);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
@@ -96,6 +98,20 @@ public class ScheduleTaskController {
         return scheduleTaskService.pageQuery(pageRequest, status, name, description, params);
     }
 
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @GetMapping("/{id}")
+    @ApiOperation(value = "查看任务详情")
+    public ResponseEntity<ScheduleTaskDetailDTO> getTaskDetail(@PathVariable long id) {
+        return new ResponseEntity<>(scheduleTaskService.getTaskDetail(id), HttpStatus.OK);
 
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = "任务名校验")
+    @PostMapping(value = "/check")
+    public ResponseEntity check(@RequestParam(name = "name") String name) {
+        scheduleTaskService.checkName(name);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 
 }

@@ -11,6 +11,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import io.choerodon.asgard.api.dto.ScheduleMethodDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodInfoDTO;
+import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
 import io.choerodon.asgard.api.service.ScheduleMethodService;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
@@ -54,5 +55,12 @@ public class ScheduleMethodController {
     @GetMapping("/service")
     public ResponseEntity<List<ScheduleMethodDTO>> getMethodByService(@RequestParam(value = "service") String service) {
         return new ResponseEntity<>(scheduleMethodService.getMethodByService(service), HttpStatus.OK);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @GetMapping("/{id}")
+    @ApiOperation(value = "查看可执行程序详情")
+    public ResponseEntity<ScheduleMethodParamsDTO> getParams(@PathVariable long id) {
+        return new ResponseEntity<>(scheduleMethodService.getParams(id), HttpStatus.OK);
     }
 }

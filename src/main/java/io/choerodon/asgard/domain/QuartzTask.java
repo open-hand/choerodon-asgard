@@ -1,13 +1,13 @@
 package io.choerodon.asgard.domain;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
-
+import java.util.Date;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
+
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 @ModifyAudit
 @VersionAudit
@@ -35,6 +35,8 @@ public class QuartzTask extends AuditDomain {
     private Integer simpleRepeatCount;
 
     private Long simpleRepeatInterval;
+
+    private String simpleRepeatIntervalUnit;
 
     private String cronExpression;
 
@@ -136,6 +138,14 @@ public class QuartzTask extends AuditDomain {
         this.status = status;
     }
 
+    public String getSimpleRepeatIntervalUnit() {
+        return simpleRepeatIntervalUnit;
+    }
+
+    public void setSimpleRepeatIntervalUnit(String simpleRepeatIntervalUnit) {
+        this.simpleRepeatIntervalUnit = simpleRepeatIntervalUnit;
+    }
+
     @Override
     public String toString() {
         return "QuartzTask{" +
@@ -149,6 +159,7 @@ public class QuartzTask extends AuditDomain {
                 ", triggerType='" + triggerType + '\'' +
                 ", simpleRepeatCount=" + simpleRepeatCount +
                 ", simpleRepeatInterval=" + simpleRepeatInterval +
+                ", simpleRepeatIntervalUnit='" + simpleRepeatIntervalUnit + '\'' +
                 ", cronExpression='" + cronExpression + '\'' +
                 ", status='" + status + '\'' +
                 '}';
