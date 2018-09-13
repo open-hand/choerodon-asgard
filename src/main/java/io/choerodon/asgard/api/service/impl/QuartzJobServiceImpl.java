@@ -1,12 +1,15 @@
 package io.choerodon.asgard.api.service.impl;
 
+import java.util.concurrent.TimeUnit;
+
+import org.quartz.*;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.core.exception.CommonException;
-import org.quartz.*;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
 @Service
 public class QuartzJobServiceImpl implements QuartzJobService {
@@ -42,7 +45,8 @@ public class QuartzJobServiceImpl implements QuartzJobService {
                 } else {
                     simpleScheduleBuilder.withRepeatCount(task.getSimpleRepeatCount());
                 }
-                simpleScheduleBuilder.withIntervalInMilliseconds(task.getSimpleRepeatInterval()).withMisfireHandlingInstructionFireNow();
+                Long intervalInMilliseconds = TimeUnit.valueOf(task.getSimpleRepeatIntervalUnit().toUpperCase()).toMillis(task.getSimpleRepeatInterval());
+                simpleScheduleBuilder.withIntervalInMilliseconds(intervalInMilliseconds).withMisfireHandlingInstructionFireNow();
                 triggerBuilder.withSchedule(simpleScheduleBuilder);
             } else {
                 triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(task.getCronExpression()).withMisfireHandlingInstructionDoNothing());

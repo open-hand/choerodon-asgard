@@ -1,6 +1,8 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
@@ -46,6 +48,11 @@ public class ScheduleTaskController {
         if (dto.getParams() == null) {
             dto.setParams(new HashMap<>(0));
         }
+
+        if(dto.getMethodId()==null){
+            throw new CommonException("error.scheduleTask.methodId.Empty");
+        }
+
         if (TriggerType.CRON.getValue().equals(dto.getTriggerType())) {
             if (StringUtils.isEmpty(dto.getCronExpression())) {
                 throw new CommonException("error.scheduleTask.cronExpressionEmpty");
@@ -56,6 +63,12 @@ public class ScheduleTaskController {
         } else if (TriggerType.SIMPLE.getValue().equals(dto.getTriggerType())) {
             if (dto.getSimpleRepeatInterval() == null) {
                 throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalNull");
+            }
+            if (dto.getSimpleRepeatIntervalUnit() == null) {
+                throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalUnitNull");
+            }
+            if(TimeUnit.valueOf(dto.getSimpleRepeatIntervalUnit().toUpperCase())==null){
+                throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalUnit.invalidType");
             }
         } else {
             throw new CommonException("error.scheduleTask.invalidTriggerType");
