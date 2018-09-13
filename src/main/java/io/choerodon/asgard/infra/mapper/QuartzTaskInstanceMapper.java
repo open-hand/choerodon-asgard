@@ -1,6 +1,7 @@
 package io.choerodon.asgard.infra.mapper;
 
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
+import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.domain.QuartzTaskInstance;
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
 import io.choerodon.mybatis.common.BaseMapper;
@@ -26,5 +27,11 @@ public interface QuartzTaskInstanceMapper extends BaseMapper<QuartzTaskInstance>
                                          @Param("instance") String instance,
                                          @Param("number") Long objectVersionNumber,
                                          @Param("time") Date date);
+
+
+    List<ScheduleTaskInstanceLogDTO> selectByTaskId(@Param("taskId") Long taskId,
+                                                    @Param("status") String status,
+                                                    @Param("serviceInstanceId") String serviceInstanceId,
+                                                    @Param("params") String params);
 
 }
