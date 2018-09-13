@@ -1,13 +1,14 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.quartz.CronExpression;
+import io.choerodon.asgard.infra.utils.TriggerUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -49,7 +50,7 @@ public class ScheduleTaskController {
             dto.setParams(new HashMap<>(0));
         }
 
-        if(dto.getMethodId()==null){
+        if (dto.getMethodId() == null) {
             throw new CommonException("error.scheduleTask.methodId.Empty");
         }
 
@@ -66,9 +67,6 @@ public class ScheduleTaskController {
             }
             if (dto.getSimpleRepeatIntervalUnit() == null) {
                 throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalUnitNull");
-            }
-            if(TimeUnit.valueOf(dto.getSimpleRepeatIntervalUnit().toUpperCase())==null){
-                throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalUnit.invalidType");
             }
         } else {
             throw new CommonException("error.scheduleTask.invalidTriggerType");
@@ -127,4 +125,13 @@ public class ScheduleTaskController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = "Cron表达式校验")
+    @PostMapping(value = "/cron")
+    public ResponseEntity<List<String>> cron(@RequestParam(name = "cron") String cron,
+                                             @RequestParam(name = "startTime") Date startTime,
+                                             @RequestParam(name = "endTime") Date endTime) {
+
+        return new ResponseEntity(TriggerUtils.getRecentThree(cron,startTime,endTime), HttpStatus.OK);
+    }
 }

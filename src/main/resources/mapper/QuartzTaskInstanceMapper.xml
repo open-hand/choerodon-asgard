@@ -2,21 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper">
 
-    <select id="selectLastInstance" resultType="io.choerodon.asgard.domain.QuartzTasKInstance">
-     SELECT id, status, actual_start_time, execute_result FROM asgard_quartz_task_instance
+    <select id="selectLastInstance" resultType="io.choerodon.asgard.domain.QuartzTaskInstance">
+     SELECT id, status, actual_start_time,planned_next_time, execute_result FROM asgard_quartz_task_instance
      WHERE task_id = #{taskId}
      ORDER BY CREATION_DATE DESC
      LIMIT 1
     </select>
 
-    <select id="selectLastInstance" databaseId="mysql" resultType="io.choerodon.asgard.domain.QuartzTasKInstance">
-     SELECT id, status, actual_start_time, execute_result FROM asgard_quartz_task_instance
+    <select id="selectLastInstance" databaseId="mysql" resultType="io.choerodon.asgard.domain.QuartzTaskInstance">
+     SELECT id, status, actual_start_time,planned_next_time, execute_result FROM asgard_quartz_task_instance
      WHERE task_id = #{taskId}
      ORDER BY CREATION_DATE DESC
      LIMIT 1
     </select>
 
-    <select id="selectLastInstance" databaseId="oracle" resultType="io.choerodon.asgard.domain.QuartzTasKInstance">
+    <select id="selectLastInstance" databaseId="oracle" resultType="io.choerodon.asgard.domain.QuartzTaskInstance">
     <![CDATA[
       SELECT * FROM (
          SELECT id, status, actual_start_time, execute_result FROM asgard_quartz_task_instance
@@ -28,34 +28,32 @@
 
     <select id="fulltextSearch" resultType="io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO">
         SELECT
-        aqti.id,
-        aqti.status,
-        aqt.name AS taskName,
-        aqti.exception_message,
-        aqti.planned_start_time ,
-        aqti.actual_start_time,
-        aqti.actual_last_time,
-        aqti.planned_next_time
-        FROM asgard_quartz_task_instance aqti
-        LEFT JOIN asgard_quartz_task aqt
-        ON aqti.task_id = aqt.id
+        id,
+        status,
+        task_name AS taskName,
+        exception_message,
+        planned_start_time ,
+        actual_start_time,
+        actual_last_time,
+        planned_next_time
+        FROM asgard_quartz_task_instance
         WHERE 1 = 1
         <if test="taskName != null">
-            AND aqt.name LIKE concat(concat('%',#{taskName}),'%')
+            AND task_name LIKE concat(concat('%',#{taskName}),'%')
         </if>
         <if test="status != null">
-            AND aqti.status LIKE concat(concat('%',#{status}),'%')
+            AND status LIKE concat(concat('%',#{status}),'%')
         </if>
 
         <if test="exceptionMessage != null">
-            AND aqti.exception_message LIKE concat(concat('%',#{exceptionMessage}),'%')
+            AND exception_message LIKE concat(concat('%',#{exceptionMessage}),'%')
         </if>
 
         <if test="params != null">
             AND(
-            aqt.name LIKE concat(concat('%',#{params}),'%') OR
-            aqti.exception_message LIKE concat(concat('%',#{params}),'%') OR
-            aqti.status LIKE concat(concat('%',#{params}),'%')
+            name LIKE concat(concat('%',#{params}),'%') OR
+            exception_message LIKE concat(concat('%',#{params}),'%') OR
+            status LIKE concat(concat('%',#{params}),'%')
             )
         </if>
     </select>
