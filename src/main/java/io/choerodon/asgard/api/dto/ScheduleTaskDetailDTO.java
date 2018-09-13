@@ -1,9 +1,7 @@
 package io.choerodon.asgard.api.dto;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +14,7 @@ public class ScheduleTaskDetailDTO {
     @ApiModelProperty(value = "主键id")
     private Long id;
     @ApiModelProperty(value = "输入参数的map形式")
-    private List<Map<String, String>> params;
+    private List<Map<String, Object>> params;
 
     @ApiModelProperty(value = "任务名称")
     private String name;
@@ -57,11 +55,11 @@ public class ScheduleTaskDetailDTO {
     @ApiModelProperty(value = "任务类名")
     private String methodCode;
 
-    public List<Map<String, String>> getParams() {
+    public List<Map<String, Object>> getParams() {
         return params;
     }
 
-    public void setParams(List<Map<String, String>> params) {
+    public void setParams(List<Map<String, Object>> params) {
         this.params = params;
     }
 
@@ -196,9 +194,15 @@ public class ScheduleTaskDetailDTO {
 
         this.lastExecTime = lastExecTime;
         this.nextExecTime = nextExecTime;
-
+        this.params = new ArrayList<>();
         try {
-            this.params = objectMapper.readValue(quartzTaskDetail.getParams(), new TypeReference<List<Map<String, String>>>() {
+            Map<String, Object> paramsMap = objectMapper.readValue(quartzTaskDetail.getParams(), new TypeReference<Map<String, String>>() {
+            });
+            paramsMap.forEach((k, v) -> {
+                Map<String, Object> param = new HashMap<>();
+                param.put("name", k);
+                param.put("value", v);
+                this.params.add(param);
             });
         } catch (IOException e) {
             throw new CommonException("error.scheduleTaskDetailDTO.jsonIOException", e);

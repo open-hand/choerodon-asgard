@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -24,9 +25,11 @@ public class ScheduleTaskDTO {
     private String description;
 
     @ApiModelProperty(value = "定时任务开始时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     @ApiModelProperty(value = "定时任务结束时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
     @ApiModelProperty(value = "定时任务结束类型。simple-trigger或cron-trigger")
@@ -36,8 +39,11 @@ public class ScheduleTaskDTO {
     @ApiModelProperty(value = "simple-trigger的重复次数")
     private Integer simpleRepeatCount;
 
-    @ApiModelProperty(value = "simple-trigger的重复间隔(毫秒)")
+    @ApiModelProperty(value = "simple-trigger的重复间隔")
     private Long simpleRepeatInterval;
+
+    @ApiModelProperty(value = "simple-trigger的重复间隔单位")
+    private String simpleRepeatIntervalUnit;
 
     @ApiModelProperty(value = "cron-trigger的cron表达式")
     private String cronExpression;
@@ -120,5 +126,13 @@ public class ScheduleTaskDTO {
 
     public void setCronExpression(String cronExpression) {
         this.cronExpression = cronExpression;
+    }
+
+    public String getSimpleRepeatIntervalUnit() {
+        return simpleRepeatIntervalUnit;
+    }
+
+    public void setSimpleRepeatIntervalUnit(String simpleRepeatIntervalUnit) {
+        this.simpleRepeatIntervalUnit = simpleRepeatIntervalUnit;
     }
 }
