@@ -1,14 +1,22 @@
 package io.choerodon.asgard.infra.utils;
 
-import io.choerodon.asgard.api.dto.TriggerType;
-import io.choerodon.asgard.domain.QuartzTask;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 
-import java.util.Date;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
+import io.choerodon.asgard.api.dto.TriggerType;
+import io.choerodon.asgard.domain.QuartzTask;
+import io.choerodon.asgard.domain.QuartzTaskInstance;
+import io.choerodon.core.exception.CommonException;
 
 public class TriggerUtils {
 
@@ -16,17 +24,19 @@ public class TriggerUtils {
 
     }
 
-    public static Date getNextFireTime(final QuartzTask task) {
+    public static Date getNextFireTime(final QuartzTask task, final QuartzTaskInstance taskInstance) {
         Date nextDate;
+        Date lastFiredTime = taskInstance.getPlannedStartTime();
         if (TriggerType.CRON.name().equals(task.getTriggerType())) {
             CronTrigger c = new CronTrigger(task.getCronExpression(), TimeZone.getDefault());
             SimpleTriggerContext t = new SimpleTriggerContext();
-            t.update(new Date(), new Date(), new Date());
+            t.update(lastFiredTime, lastFiredTime, lastFiredTime);
             nextDate = c.nextExecutionTime(t);
         } else {
-            final PeriodicTrigger periodicTrigger = new PeriodicTrigger(task.getSimpleRepeatInterval(), TimeUnit.MILLISECONDS);
+            Long intervalInMilliseconds = TimeUnit.valueOf(task.getSimpleRepeatIntervalUnit().toUpperCase()).toMillis(task.getSimpleRepeatInterval());
+            final PeriodicTrigger periodicTrigger = new PeriodicTrigger(intervalInMilliseconds, TimeUnit.MILLISECONDS);
             SimpleTriggerContext t = new SimpleTriggerContext();
-            t.update(new Date(), new Date(), new Date());
+            t.update(lastFiredTime, lastFiredTime, lastFiredTime);
             nextDate = periodicTrigger.nextExecutionTime(t);
         }
         if (task.getEndTime() == null) {
@@ -35,5 +45,21 @@ public class TriggerUtils {
         return task.getEndTime().compareTo(nextDate) >= 0 ? nextDate : null;
     }
 
-
+    public static List<String> getRecentThree(final String cron,final Date startTime,final Date endTime){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+        try {
+            cronTriggerImpl.setCronExpression(cron);
+        } catch (ParseException e) {
+            throw new CommonException("error.cron.parse");
+        }
+        List<Date> dates = org.quartz.TriggerUtils.computeFireTimesBetween(
+                cronTriggerImpl, null, startTime,
+                endTime);
+        if (dates.size() > 3) {
+            dates = dates.subList(0, 3);
+        }
+        return dates.stream()
+                .map(t -> format.format(t)).collect(Collectors.toList());
+    }
 }

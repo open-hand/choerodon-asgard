@@ -51,4 +51,11 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
         }
     }
 
+    changeSet(id: '2018-09-13-add-task_name', author: 'longhe1996@icloud.com') {
+        addColumn(tableName: 'ASGARD_QUARTZ_TASK_INSTANCE') {
+            column(name: "TASK_NAME", type: "VARCHAR(64)", remarks: '任务名') {
+                constraints(nullable: false)
+            }
+        }
+    }
 }

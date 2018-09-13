@@ -1,25 +1,27 @@
 package io.choerodon.asgard.domain;
 
+import java.util.Date;
+import java.util.Objects;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.util.Date;
-import java.util.Objects;
-
 @ModifyAudit
 @VersionAudit
 @Table(name = "ASGARD_QUARTZ_TASK_INSTANCE")
-public class QuartzTasKInstance extends AuditDomain {
+public class QuartzTaskInstance extends AuditDomain {
 
     @Id
     @GeneratedValue
     private Long id;
 
     private Long taskId;
+
+    private String taskName;
 
     private Date plannedStartTime;
 
@@ -157,11 +159,19 @@ public class QuartzTasKInstance extends AuditDomain {
         this.executeResult = executeResult;
     }
 
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        QuartzTasKInstance that = (QuartzTasKInstance) o;
+        QuartzTaskInstance that = (QuartzTaskInstance) o;
         return Objects.equals(id, that.id);
     }
 
@@ -173,9 +183,10 @@ public class QuartzTasKInstance extends AuditDomain {
 
     @Override
     public String toString() {
-        return "QuartzTasKInstance{" +
+        return "QuartzTaskInstance{" +
                 "id=" + id +
                 ", taskId=" + taskId +
+                ", taskName='" + taskName + '\'' +
                 ", plannedStartTime=" + plannedStartTime +
                 ", actualStartTime=" + actualStartTime +
                 ", actualLastTime=" + actualLastTime +

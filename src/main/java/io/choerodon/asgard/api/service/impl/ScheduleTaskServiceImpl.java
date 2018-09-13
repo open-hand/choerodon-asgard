@@ -22,13 +22,12 @@ import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
-import io.choerodon.asgard.domain.QuartzTasKInstance;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.domain.QuartzTaskDetail;
+import io.choerodon.asgard.domain.QuartzTaskInstance;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
-import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
@@ -99,7 +98,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         });
         params.forEach((k, v) -> {
             PropertyJobParam jobParam = getPropertyJobParam(k, paramDefinitionList);
-            if (jobParam != null && !validExecuteParam(v, jobParam.getType())) {
+            if (jobParam != null && !validExecuteParam(v, jobParam.getType(), jobParam.getDefaultValue())) {
                 throw new CommonException("error.scheduleTask.paramInvalidType");
             }
         });
@@ -114,28 +113,23 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         return null;
     }
 
-    private boolean validExecuteParam(final Object value, final String type) {
+    private boolean validExecuteParam(final Object value, final String type, final String defaultValue) {
+        if (value == null) {
+            return defaultValue != null;
+        }
         ParamType paramType = ParamType.getParamTypeByValue(type);
         if (paramType == null) {
             throw new CommonException("error.scheduleTask.paramType");
         }
         switch (paramType) {
-            case BYTE:
-                return value.getClass().equals(Byte.class);
-            case SHORT:
-                return value.getClass().equals(Short.class);
-            case CHARACTER:
-                return value.getClass().equals(Character.class);
             case INTEGER:
                 return value.getClass().equals(Integer.class);
             case LONG:
-                return value.getClass().equals(Long.class);
+                return value.getClass().equals(Integer.class);
             case STRING:
                 return value.getClass().equals(String.class);
             case BOOLEAN:
                 return value.getClass().equals(Boolean.class);
-            case FLOAT:
-                return value.getClass().equals(Float.class);
             case DOUBLE:
                 return value.getClass().equals(Double.class);
             default:
@@ -217,11 +211,13 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         } else {
             page.getContent().forEach(t -> {
                 Date lastStartTime = null;
-                QuartzTasKInstance lastInstance = instanceMapper.selectLastInstance(t.getId());
+                Date netStartTime = null;
+                QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(t.getId());
                 if (lastInstance != null) {
-                    lastStartTime = lastInstance.getActualLastTime();
+                    lastStartTime = lastInstance.getActualStartTime();
+                    netStartTime = lastInstance.getPlannedNextTime();
                 }
-                quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, TriggerUtils.getNextFireTime(t), t.getStatus(),t.getObjectVersionNumber()));
+                quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, netStartTime, t.getStatus(), t.getObjectVersionNumber()));
             });
             pageBack.setContent(quartzTaskDTOS);
             return pageBack;
@@ -251,9 +247,12 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             throw new CommonException(TASK_NOT_EXIST);
         } else {
             Date lastStartTime = null;
-            QuartzTasKInstance lastInstance = instanceMapper.selectLastInstance(id);
+            Date nextStartTime = null;
+            QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(id);
             if (lastInstance != null) {
-                lastStartTime = lastInstance.getActualLastTime();
+                lastStartTime = lastInstance.getActualStartTime();
+                nextStartTime = lastInstance.getPlannedNextTime();
+
             }
 
             QuartzTaskDetail quartzTaskDetail = taskMapper.selectTaskById(id);
@@ -264,14 +263,14 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             task.setSimpleRepeatInterval(quartzTaskDetail.getSimpleRepeatInterval());
             task.setSimpleRepeatIntervalUnit(quartzTaskDetail.getSimpleRepeatIntervalUnit());
 
-            return new ScheduleTaskDetailDTO(quartzTaskDetail,objectMapper,lastStartTime,TriggerUtils.getNextFireTime(task));
+            return new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
         }
     }
 
     @Override
     public void checkName(String name) {
         List<Long> ids = taskMapper.selectTaskIdByName(name);
-        if(!ids.isEmpty()){
+        if (!ids.isEmpty()) {
             throw new CommonException("error.scheduleTask.name.exist");
         }
     }

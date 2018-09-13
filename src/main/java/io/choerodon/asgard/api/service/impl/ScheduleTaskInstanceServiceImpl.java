@@ -3,7 +3,7 @@ package io.choerodon.asgard.api.service.impl;
 import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
-import io.choerodon.asgard.domain.QuartzTasKInstance;
+import io.choerodon.asgard.domain.QuartzTaskInstance;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
@@ -62,13 +62,14 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
         if (statusDTO.getObjectVersionNumber() == null) {
             throw new FeignException("error.scheduleTaskInstanceService.updateStatus.objectVersionNumberNull");
         }
-        QuartzTasKInstance dbInstance = instanceMapper.selectByPrimaryKey(statusDTO.getId());
+        QuartzTaskInstance dbInstance = instanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (dbInstance == null) {
             throw new FeignException("error.scheduleTaskInstanceService.updateStatus.instanceNotExist");
         }
         if (QuartzDefinition.InstanceStatus.COMPLETED.name().equals(statusDTO.getStatus())) {
             dbInstance.setObjectVersionNumber(statusDTO.getObjectVersionNumber());
             dbInstance.setStatus(QuartzDefinition.InstanceStatus.COMPLETED.name());
+            dbInstance.setActualStartTime(new Date());
             if (!StringUtils.isEmpty(statusDTO.getOutput())) {
                 dbInstance.setExecuteResult(statusDTO.getOutput());
             }
@@ -80,7 +81,7 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
         }
     }
 
-    private void updateFailedStatus(final QuartzTasKInstance dbInstance, final  UpdateTaskInstanceStatusDTO statusDTO) {
+    private void updateFailedStatus(final QuartzTaskInstance dbInstance, final  UpdateTaskInstanceStatusDTO statusDTO) {
         if (dbInstance.getRetriedCount() < dbInstance.getMaxRetryCount()) {
             dbInstance.setRetriedCount(dbInstance.getRetriedCount() + 1);
             if (instanceMapper.updateByPrimaryKeySelective(dbInstance) != 1) {
