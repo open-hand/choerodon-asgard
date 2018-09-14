@@ -2,6 +2,7 @@ package io.choerodon.asgard.api.service;
 
 import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
+import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -21,4 +22,6 @@ public interface ScheduleTaskInstanceService {
 
     void unlockByInstance(String instance);
 
+    Page<ScheduleTaskInstanceLogDTO> pagingQueryByTaskId(PageRequest pageRequest, Long taskId, String status,
+                                                         String serviceInstanceId, String params);
 }

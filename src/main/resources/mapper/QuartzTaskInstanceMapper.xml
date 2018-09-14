@@ -80,4 +80,51 @@
         WHERE instance_lock = #{instance} AND status = 'RUNNING'
     </update>
 
+
+    <select id="selectByTaskId" resultType="io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO">
+        SELECT
+            aqti.ID AS id,
+            aqti. STATUS AS STATUS,
+            aqti.ACTUAL_START_TIME AS actualStartTime,
+            aqti.PLANNED_START_TIME AS plannedStartTime,
+            concat(
+                concat(tmp.SERVICE, ":"),
+                aqti.INSTANCE_LOCK
+            ) AS serviceInstanceId
+        FROM
+            asgard_quartz_task_instance aqti
+        LEFT JOIN (
+            SELECT
+                aqm.SERVICE,
+                aqt.ID
+            FROM
+                asgard_quartz_method aqm
+            LEFT JOIN asgard_quartz_task aqt ON aqm. CODE = aqt.EXECUTE_METHOD
+        ) tmp ON aqti.TASK_ID = tmp.ID
+        WHERE
+            1 = 1
+        <if test="taskId != null">
+            AND aqti.TASK_ID = #{taskId}
+        </if>
+        <if test="status != null">
+            AND aqti.STATUS LIKE concat(concat('%',#{status}),'%')
+        </if>
+
+        <if test="serviceInstanceId != null">
+            AND concat(
+            concat(tmp.SERVICE, ":"),
+            aqti.INSTANCE_LOCK
+            ) LIKE concat(concat('%',#{serviceInstanceId}),'%')
+        </if>
+
+        <if test="params != null">
+            AND(
+            concat(
+            concat(tmp.service, ":"),
+            aqti.INSTANCE_LOCK
+            ) LIKE concat(concat('%',#{params}),'%') OR
+            status LIKE concat(concat('%',#{params}),'%')
+            )
+        </if>
+    </select>
 </mapper>

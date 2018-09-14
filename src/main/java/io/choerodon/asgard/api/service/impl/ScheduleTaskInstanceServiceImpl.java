@@ -1,7 +1,18 @@
 package io.choerodon.asgard.api.service.impl;
 
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
+import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.domain.QuartzTaskInstance;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
@@ -11,15 +22,6 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceService {
@@ -77,11 +79,11 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
                 throw new FeignException("error.scheduleTaskInstanceService.updateCompleteStatusFailed");
             }
         } else if (QuartzDefinition.InstanceStatus.FAILED.name().equals(statusDTO.getStatus())) {
-           updateFailedStatus(dbInstance, statusDTO);
+            updateFailedStatus(dbInstance, statusDTO);
         }
     }
 
-    private void updateFailedStatus(final QuartzTaskInstance dbInstance, final  UpdateTaskInstanceStatusDTO statusDTO) {
+    private void updateFailedStatus(final QuartzTaskInstance dbInstance, final UpdateTaskInstanceStatusDTO statusDTO) {
         if (dbInstance.getRetriedCount() < dbInstance.getMaxRetryCount()) {
             dbInstance.setRetriedCount(dbInstance.getRetriedCount() + 1);
             if (instanceMapper.updateByPrimaryKeySelective(dbInstance) != 1) {
@@ -102,5 +104,11 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
         if (instance != null) {
             instanceMapper.unlockByInstance(instance);
         }
+    }
+
+    @Override
+    public Page<ScheduleTaskInstanceLogDTO> pagingQueryByTaskId(PageRequest pageRequest, Long taskId, String status, String serviceInstanceId, String params) {
+        return PageHelper.doPageAndSort(pageRequest,
+                () -> instanceMapper.selectByTaskId(taskId, status, serviceInstanceId, params));
     }
 }
