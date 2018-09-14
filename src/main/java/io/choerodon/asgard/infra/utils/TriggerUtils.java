@@ -2,6 +2,7 @@ package io.choerodon.asgard.infra.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -45,7 +46,15 @@ public class TriggerUtils {
         return task.getEndTime().compareTo(nextDate) >= 0 ? nextDate : null;
     }
 
-    public static List<String> getRecentThree(final String cron,final Date startTime,final Date endTime){
+    public static List<String> getRecentThree(final String cron) {
+        Calendar calendar = Calendar.getInstance();
+        Date startTime = calendar.getTime();
+        calendar.add(Calendar.YEAR, 100);
+        Date endTime = calendar.getTime();
+        return TriggerUtils.getRecentThree(cron, startTime, endTime);
+    }
+
+    public static List<String> getRecentThree(final String cron, final Date startTime, final Date endTime) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
         try {

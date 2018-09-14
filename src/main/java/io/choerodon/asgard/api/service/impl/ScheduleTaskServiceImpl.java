@@ -113,7 +113,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         return null;
     }
 
-    private boolean validExecuteParam(final Object value, final String type, final String defaultValue) {
+    private boolean validExecuteParam(final Object value, final String type, final Object defaultValue) {
         if (value == null) {
             return defaultValue != null;
         }
