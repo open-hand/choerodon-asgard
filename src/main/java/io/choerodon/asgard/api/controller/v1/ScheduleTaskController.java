@@ -128,7 +128,7 @@ public class ScheduleTaskController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "Cron表达式校验")
     @PostMapping(value = "/cron")
-    public ResponseEntity<List<String>> cron(@RequestParam(name = "cron") String cron) {
+    public ResponseEntity<List<String>> cron(@RequestBody String cron) {
         return new ResponseEntity(TriggerUtils.getRecentThree(cron), HttpStatus.OK);
     }
 }
