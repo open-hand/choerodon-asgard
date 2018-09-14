@@ -5,6 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 @Service
 public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleTaskInstanceService.class);
 
     private QuartzTaskInstanceMapper instanceMapper;
 
@@ -69,6 +72,9 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
             throw new FeignException("error.scheduleTaskInstanceService.updateStatus.instanceNotExist");
         }
         if (QuartzDefinition.InstanceStatus.COMPLETED.name().equals(statusDTO.getStatus())) {
+            if (QuartzDefinition.InstanceStatus.FAILED.name().equals(dbInstance.getStatus())) {
+                throw new FeignException("error.scheduleTaskInstanceService.updateStatus.instanceWasFailed");
+            }
             dbInstance.setObjectVersionNumber(statusDTO.getObjectVersionNumber());
             dbInstance.setStatus(QuartzDefinition.InstanceStatus.COMPLETED.name());
             dbInstance.setActualStartTime(new Date());
@@ -110,5 +116,22 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
     public Page<ScheduleTaskInstanceLogDTO> pagingQueryByTaskId(PageRequest pageRequest, Long taskId, String status, String serviceInstanceId, String params) {
         return PageHelper.doPageAndSort(pageRequest,
                 () -> instanceMapper.selectByTaskId(taskId, status, serviceInstanceId, params));
+    }
+
+    @Override
+    public void failed(Long id,String exceptionMsg) {
+        QuartzTaskInstance quartzTaskInstance = instanceMapper.selectByPrimaryKey(id);
+        if (quartzTaskInstance == null) {
+            LOGGER.warn("failed schedule task instance error, quartzTaskInstance is not exist {}", id);
+        } else {
+            quartzTaskInstance.setStatus(QuartzDefinition.InstanceStatus.FAILED.name());
+            quartzTaskInstance.setExceptionMessage(exceptionMsg);
+            if (instanceMapper.updateByPrimaryKey(quartzTaskInstance) == 1) {
+                LOGGER.info("failed quartz instance success: {}", quartzTaskInstance);
+            } else {
+                LOGGER.error("failed quartz instance error, updateStatus failed : {}", quartzTaskInstance);
+            }
+
+        }
     }
 }

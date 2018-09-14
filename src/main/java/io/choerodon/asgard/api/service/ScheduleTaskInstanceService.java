@@ -1,14 +1,15 @@
 package io.choerodon.asgard.api.service;
 
+import java.util.Set;
+
+import org.springframework.http.ResponseEntity;
+
 import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
-
-import java.util.Set;
 
 public interface ScheduleTaskInstanceService {
 
@@ -24,4 +25,6 @@ public interface ScheduleTaskInstanceService {
 
     Page<ScheduleTaskInstanceLogDTO> pagingQueryByTaskId(PageRequest pageRequest, Long taskId, String status,
                                                          String serviceInstanceId, String params);
+
+    void failed(Long id,String exceptionMsg);
 }

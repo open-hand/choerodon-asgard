@@ -14,7 +14,7 @@ public class ScheduleMethodParamsDTO {
     @ApiModelProperty(value = "主键ID")
     private Long id;
     @ApiModelProperty(value = "参数MAP列表格式")
-    private List<Map<String, String>> paramsList;
+    private List<Map<String, Object>> paramsList;
     @ApiModelProperty(value = "参数Json格式")
     private String paramsJson;
 
@@ -26,11 +26,11 @@ public class ScheduleMethodParamsDTO {
         this.id = id;
     }
 
-    public List<Map<String, String>> getParamsList() {
+    public List<Map<String, Object>> getParamsList() {
         return paramsList;
     }
 
-    public void setParamsList(List<Map<String, String>> paramsList) {
+    public void setParamsList(List<Map<String, Object>> paramsList) {
         this.paramsList = paramsList;
     }
 
@@ -54,7 +54,7 @@ public class ScheduleMethodParamsDTO {
         this.id = id;
         this.paramsJson = paramsJson;
         try {
-            this.paramsList = objectMapper.readValue(paramsJson, new TypeReference<List<Map<String, String>>>() {
+            this.paramsList = objectMapper.readValue(paramsJson, new TypeReference<List<Map<String, Object>>>() {
             });
         } catch (IOException e) {
             throw new CommonException("error.ScheduleMethodParamsDTO.jsonIOException", e);
