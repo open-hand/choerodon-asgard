@@ -1,22 +1,24 @@
 package io.choerodon.asgard.api.service.impl;
 
-import io.choerodon.asgard.api.service.QuartzRealJobService;
-import io.choerodon.asgard.api.service.ScheduleTaskService;
-import io.choerodon.asgard.domain.QuartzMethod;
-import io.choerodon.asgard.domain.QuartzTaskInstance;
-import io.choerodon.asgard.domain.QuartzTask;
-import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
-import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
-import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
-import io.choerodon.asgard.infra.utils.TriggerUtils;
-import io.choerodon.asgard.schedule.QuartzDefinition;
+import java.util.Date;
+
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
+import io.choerodon.asgard.api.service.QuartzRealJobService;
+import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
+import io.choerodon.asgard.api.service.ScheduleTaskService;
+import io.choerodon.asgard.domain.QuartzMethod;
+import io.choerodon.asgard.domain.QuartzTask;
+import io.choerodon.asgard.domain.QuartzTaskInstance;
+import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
+import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
+import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
+import io.choerodon.asgard.infra.utils.TriggerUtils;
+import io.choerodon.asgard.schedule.QuartzDefinition;
 
 @Service
 public class QuartzRealJobServiceImpl implements QuartzRealJobService {
@@ -30,21 +32,25 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
     private QuartzMethodMapper methodMapper;
 
     private ScheduleTaskService scheduleTaskService;
+    private ScheduleTaskInstanceService scheduleTaskInstanceService;
 
     public QuartzRealJobServiceImpl(QuartzTaskMapper taskMapper,
                                     QuartzTaskInstanceMapper instanceMapper,
                                     QuartzMethodMapper methodMapper,
-                                    ScheduleTaskService scheduleTaskService) {
+                                    ScheduleTaskService scheduleTaskService,
+                                    ScheduleTaskInstanceService scheduleTaskInstanceService) {
         this.taskMapper = taskMapper;
         this.instanceMapper = instanceMapper;
         this.methodMapper = methodMapper;
         this.scheduleTaskService = scheduleTaskService;
+        this.scheduleTaskInstanceService = scheduleTaskInstanceService;
     }
 
     @Override
     public void triggerEvent(final long taskId, final JobExecutionContext jobExecutionContext) {
         final QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(taskId);
         if (lastInstance != null && !QuartzDefinition.InstanceStatus.COMPLETED.name().equals(lastInstance.getStatus())) {
+            scheduleTaskInstanceService.failed(lastInstance.getId(), "执行程序不存在");
             scheduleTaskService.disable(taskId, null, true);
             return;
         }

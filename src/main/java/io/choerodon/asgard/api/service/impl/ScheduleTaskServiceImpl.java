@@ -211,11 +211,13 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         } else {
             page.getContent().forEach(t -> {
                 Date lastStartTime = null;
-                Date netStartTime = null;
+                Date netStartTime;
                 QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(t.getId());
                 if (lastInstance != null) {
                     lastStartTime = lastInstance.getActualStartTime();
                     netStartTime = lastInstance.getPlannedNextTime();
+                } else {
+                    netStartTime = t.getStartTime();
                 }
                 quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, netStartTime, t.getStatus(), t.getObjectVersionNumber()));
             });
@@ -247,22 +249,15 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             throw new CommonException(TASK_NOT_EXIST);
         } else {
             Date lastStartTime = null;
-            Date nextStartTime = null;
+            Date nextStartTime;
             QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(id);
             if (lastInstance != null) {
                 lastStartTime = lastInstance.getActualStartTime();
                 nextStartTime = lastInstance.getPlannedNextTime();
-
+            } else {
+                nextStartTime = quartzTask.getStartTime();
             }
-
             QuartzTaskDetail quartzTaskDetail = taskMapper.selectTaskById(id);
-            QuartzTask task = new QuartzTask();
-            task.setTriggerType(quartzTaskDetail.getTriggerType());
-            task.setCronExpression(quartzTaskDetail.getCronExpression());
-            task.setEndTime(quartzTaskDetail.getEndTime());
-            task.setSimpleRepeatInterval(quartzTaskDetail.getSimpleRepeatInterval());
-            task.setSimpleRepeatIntervalUnit(quartzTaskDetail.getSimpleRepeatIntervalUnit());
-
             return new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
         }
     }
