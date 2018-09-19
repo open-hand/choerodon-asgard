@@ -27,7 +27,7 @@ public class TriggerUtils {
     public static Date getNextFireTime(final QuartzTask task, final QuartzTaskInstance taskInstance) {
         Date nextDate;
         Date lastFiredTime = taskInstance.getPlannedStartTime();
-        if (TriggerType.CRON.name().equals(task.getTriggerType())) {
+        if (TriggerType.CRON.getValue().equals(task.getTriggerType())) {
             CronTrigger c = new CronTrigger(task.getCronExpression(), TimeZone.getDefault());
             SimpleTriggerContext t = new SimpleTriggerContext();
             t.update(lastFiredTime, lastFiredTime, lastFiredTime);

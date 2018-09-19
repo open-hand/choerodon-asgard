@@ -42,7 +42,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
 
     changeSet(id: '2018-09-12-add-unit', author: 'longhe1996@icloud.com') {
         addColumn(tableName: 'ASGARD_QUARTZ_TASK') {
-            column(name: "SIMPLE_REPEAT_INTERVAL_UNIT", type: "VARCHAR(32)", defaultValue: "NONE", remarks: 'simple-trigger执行时间间隔的单位。SECOND,MINUTES,HOUR,WEEK,MONTH') {
+            column(name: "SIMPLE_REPEAT_INTERVAL_UNIT", type: "VARCHAR(32)", remarks: 'simple-trigger执行时间间隔的单位。SECOND,MINUTES,HOUR,WEEK,MONTH') {
                 constraints(nullable: false)
             }
         }
