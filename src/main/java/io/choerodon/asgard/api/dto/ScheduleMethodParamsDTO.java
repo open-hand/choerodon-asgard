@@ -26,14 +26,6 @@ public class ScheduleMethodParamsDTO {
         this.id = id;
     }
 
-    public List<Map<String, Object>> getParamsList() {
-        return paramsList;
-    }
-
-    public void setParamsList(List<Map<String, Object>> paramsList) {
-        this.paramsList = paramsList;
-    }
-
     public String getParamsJson() {
         return paramsJson;
     }
