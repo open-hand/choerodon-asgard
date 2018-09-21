@@ -34,6 +34,14 @@ public class ScheduleMethodParamsDTO {
         this.paramsJson = paramsJson;
     }
 
+    public List<Map<String, Object>> getParamsList() {
+        return paramsList;
+    }
+
+    public void setParamsList(List<Map<String, Object>> paramsList) {
+        this.paramsList = paramsList;
+    }
+
     public ScheduleMethodParamsDTO() {
     }
 

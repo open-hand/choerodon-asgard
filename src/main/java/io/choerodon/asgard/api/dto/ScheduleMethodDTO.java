@@ -24,23 +24,20 @@ public class ScheduleMethodDTO {
 
     private List<PropertyJobParam> paramList;
 
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public ScheduleMethodDTO() {
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
     }
 
     public String getCode() {
@@ -50,6 +47,18 @@ public class ScheduleMethodDTO {
     public void setCode(String code) {
         this.code = code;
     }
+
+    public List<PropertyJobParam> getParamList() {
+        return paramList;
+    }
+
+    public void setParamList(List<PropertyJobParam> paramList) {
+        this.paramList = paramList;
+    }
+
+    public ScheduleMethodDTO() {
+    }
+
 
     public ScheduleMethodDTO(final QuartzMethod method, final ObjectMapper objectMapper) {
         this.id = method.getId();
