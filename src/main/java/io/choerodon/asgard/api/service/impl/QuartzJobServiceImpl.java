@@ -24,6 +24,10 @@ public class QuartzJobServiceImpl implements QuartzJobService {
         this.scheduler = scheduler;
     }
 
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+    }
+
     @Override
     public void addJob(final QuartzTask task) {
         try {
