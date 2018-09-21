@@ -47,6 +47,14 @@ public class ScheduleTaskInstanceDTO {
         this.status = status;
     }
 
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
+
     public String getExceptionMessage() {
         return exceptionMessage;
     }
@@ -55,5 +63,36 @@ public class ScheduleTaskInstanceDTO {
         this.exceptionMessage = exceptionMessage;
     }
 
+    public Date getPlannedStartTime() {
+        return plannedStartTime;
+    }
+
+    public void setPlannedStartTime(Date plannedStartTime) {
+        this.plannedStartTime = plannedStartTime;
+    }
+
+    public Date getActualStartTime() {
+        return actualStartTime;
+    }
+
+    public void setActualStartTime(Date actualStartTime) {
+        this.actualStartTime = actualStartTime;
+    }
+
+    public Date getActualLastTime() {
+        return actualLastTime;
+    }
+
+    public void setActualLastTime(Date actualLastTime) {
+        this.actualLastTime = actualLastTime;
+    }
+
+    public Date getPlannedNextTime() {
+        return plannedNextTime;
+    }
+
+    public void setPlannedNextTime(Date plannedNextTime) {
+        this.plannedNextTime = plannedNextTime;
+    }
 }
 
