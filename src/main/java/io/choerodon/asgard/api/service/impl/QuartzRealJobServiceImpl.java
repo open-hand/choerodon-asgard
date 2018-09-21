@@ -50,7 +50,9 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
     public void triggerEvent(final long taskId, final JobExecutionContext jobExecutionContext) {
         final QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(taskId);
         if (lastInstance != null && !QuartzDefinition.InstanceStatus.COMPLETED.name().equals(lastInstance.getStatus())) {
-            scheduleTaskInstanceService.failed(lastInstance.getId(), "执行程序不存在");
+            if (QuartzDefinition.InstanceStatus.RUNNING.name().equals(lastInstance.getStatus())) {
+                scheduleTaskInstanceService.failed(lastInstance.getId(), "定时任务未被执行");
+            }
             scheduleTaskService.disable(taskId, null, true);
             return;
         }
