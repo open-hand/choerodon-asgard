@@ -8,6 +8,8 @@ import io.choerodon.asgard.api.dto.JsonMergeDTO
 import io.choerodon.asgard.domain.JsonData
 import io.choerodon.asgard.domain.SagaTaskInstance
 import io.choerodon.asgard.infra.mapper.JsonDataMapper
+import io.choerodon.asgard.property.PropertyJobParam
+import io.choerodon.asgard.property.PropertyJobTask
 import io.choerodon.asgard.property.PropertySaga
 import io.choerodon.asgard.property.PropertySagaTask
 import io.choerodon.asgard.saga.SagaDefinition
@@ -30,6 +32,35 @@ class ConvertUtilsSpec extends Specification {
     @Shared
     def mapper = new ModelMapper()
 
+    def '测试 convertQuartzMethod方法'() {
+        given: "参数准备"
+        def service = "service"
+        def jobTask = new PropertyJobTask()
+        jobTask.setCode("code")
+        jobTask.setDescription("description")
+        jobTask.setMethod("method")
+        jobTask.setMaxRetryCount(2)
+        def jobParam = new PropertyJobParam()
+        jobParam.setDefaultValue("dv")
+        jobParam.setDescription("description")
+        jobParam.setName("name")
+        jobParam.setType("String")
+        def list = new ArrayList<PropertyJobParam>()
+        list.add(jobParam)
+        jobTask.setParams(list)
+
+        when: "调用ConvertUtils的convertQuartzMethod方法"
+        def method = ConvertUtils.convertQuartzMethod(new ObjectMapper(), jobTask, service)
+
+        then: "结果换算验证"
+        method.getService() == service
+        method.getMethod() == jobTask.getMethod()
+        method.getCode() == jobTask.getCode()
+        method.getParams() == "[{\"name\":\"name\",\"defaultValue\":\"dv\",\"type\":\"String\",\"description\":\"description\"}]"
+        method.getDescription() == jobTask.getDescription()
+        method.getMaxRetryCount() == jobTask.getMaxRetryCount()
+    }
+
     def '测试 convertSaga方法'() {
         given: '创建一个PropertyData.Saga'
         def test = new PropertySaga('code', 'desc')
@@ -50,7 +81,7 @@ class ConvertUtilsSpec extends Specification {
 
     def '测试 convertSagaTask方法'() {
         given: '创建一个PropertyData.SagaTask'
-        def data = new PropertySagaTask()S('code', 'desc', 'sagaCode', 20, 33)
+        def data = new PropertySagaTask('code', 'desc', 'sagaCode', 20, 33)
         data.setTimeoutSeconds(10)
         data.setTimeoutPolicy(SagaDefinition.TimeoutPolicy.ALERT_ONLY.name())
         data.setConcurrentLimitNum(10)
@@ -101,7 +132,7 @@ class ConvertUtilsSpec extends Specification {
         def data1 = new JsonMergeDTO('code1', JsonOutput.toJson([name: 'John1', pass: 'valJest']))
         def data2 = new JsonMergeDTO('code2', JsonOutput.toJson([name: 'John2', id: 2]))
         def data3 = new JsonMergeDTO('code3', 'false')
-        def data4 = new JsonMergeDTO('code4', objectMapper.writeValueAsString(['one','two'] as String[]))
+        def data4 = new JsonMergeDTO('code4', objectMapper.writeValueAsString(['one', 'two'] as String[]))
 
         when: '执行jsonMerge'
         def map1 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data1, data2], objectMapper))
@@ -124,8 +155,8 @@ class ConvertUtilsSpec extends Specification {
         map2.get('code3') == false
 
         map3.get('code3') == false
-        ((List)map3.get('code4')).get(0) == 'one'
-        ((List)map3.get('code4')).get(1) == 'two'
+        ((List) map3.get('code4')).get(0) == 'one'
+        ((List) map3.get('code4')).get(1) == 'two'
 
         map4 == false
     }

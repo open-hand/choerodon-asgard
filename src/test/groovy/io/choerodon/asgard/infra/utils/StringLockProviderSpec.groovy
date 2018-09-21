@@ -12,7 +12,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Import(IntegrationTestConfiguration)
 class StringLockProviderSpec extends Specification {
 
-    @Autowired StringLockProvider stringLockProvider
+    @Autowired
+    StringLockProvider stringLockProvider
 
     def 'mutex'() {
         given: '创建一个Mutex'
@@ -34,6 +35,8 @@ class StringLockProviderSpec extends Specification {
         one1 != three
         one1 != four
         one1 != five
+        !one1.equals(null)
+        !one1.equals(new String("aa"))
 
         when: 'getMutex传入参数为null'
         stringLockProvider.getMutex(null)

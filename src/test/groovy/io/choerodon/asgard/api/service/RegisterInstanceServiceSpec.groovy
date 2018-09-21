@@ -28,7 +28,8 @@ class RegisterInstanceServiceSpec extends Specification {
 
         and: "mock sagaTaskInstanceService"
         def sagaTaskInstanceService = Mock(SagaTaskInstanceService)
-        def registerInstanceService = new RegisterInstanceServiceImpl(null, null, sagaTaskInstanceService)
+        def scheduleTaskInstanceService = Mock(ScheduleTaskInstanceService)
+        def registerInstanceService = new RegisterInstanceServiceImpl(null, null, sagaTaskInstanceService, null, scheduleTaskInstanceService)
 
         when: '调用instanceDownConsumer方法'
         registerInstanceService.instanceDownConsumer(dto)
@@ -36,6 +37,8 @@ class RegisterInstanceServiceSpec extends Specification {
         then: '确认sagaTaskInstanceService的unlockByInstance被执行'
         1 * sagaTaskInstanceService.unlockByInstance(dto.getInstanceAddress())
         0 * sagaTaskInstanceService.unlockByInstance(wrongAddress)
+        1 * scheduleTaskInstanceService.unlockByInstance(dto.getInstanceAddress())
+        0 * scheduleTaskInstanceService.unlockByInstance(wrongAddress)
     }
 
     def '测试 instanceUpConsumer方法'() {
@@ -52,13 +55,14 @@ class RegisterInstanceServiceSpec extends Specification {
         and: "mock service和restTemplate"
         def sagaService = Mock(SagaService)
         def sagaTaskService = Mock(SagaTaskService)
+        def quartzMethodService = Mock(QuartzMethodService)
         def correctRestTemplate = Stub(RestTemplate) {
             getForEntity(_, _) >>> new ResponseEntity<PropertyData>(propertyData, HttpStatus.OK)
         }
         def errorRestTemplate = Stub(RestTemplate) {
             getForEntity(_, _) >>> new ResponseEntity<PropertyData>(HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        def registerInstanceService = new RegisterInstanceServiceImpl(sagaService, sagaTaskService, null)
+        def registerInstanceService = new RegisterInstanceServiceImpl(sagaService, sagaTaskService, null, quartzMethodService, null)
 
         when: '使用correctRestTemplate调用instanceUpConsumer方法'
         registerInstanceService.setRestTemplate(correctRestTemplate)

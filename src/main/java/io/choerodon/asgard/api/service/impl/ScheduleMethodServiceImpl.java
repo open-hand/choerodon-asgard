@@ -36,9 +36,12 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
         this.methodMapper = methodMapper;
     }
 
-    @Override
-    public List<ScheduleMethodDTO> list() {
-        return methodMapper.selectAll().stream().map(t -> new ScheduleMethodDTO(t, objectMapper)).collect(Collectors.toList());
+    public void setDiscoveryClient(DiscoveryClient discoveryClient) {
+        this.discoveryClient = discoveryClient;
+    }
+
+    public void setMethodMapper(QuartzMethodMapper methodMapper) {
+        this.methodMapper = methodMapper;
     }
 
     @Override
@@ -47,7 +50,7 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
                 () -> methodMapper.fulltextSearch(code, service, method, description, params));
         Page<ScheduleMethodInfoDTO> pageBack = pageConvert(page);
         return new ResponseEntity<>(pageBack, HttpStatus.OK);
-//
+
 //        return new ResponseEntity<>(PageHelper.doPageAndSort(
 //                pageRequest,
 //                () -> methodMapper.fulltextSearch(code, service, method, description, params)
@@ -57,7 +60,7 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
 //                HttpStatus.OK);
     }
 
-    private Page<ScheduleMethodInfoDTO> pageConvert(Page<QuartzMethod> page) {
+    public Page<ScheduleMethodInfoDTO> pageConvert(Page<QuartzMethod> page) {
         List<ScheduleMethodInfoDTO> ScheduleMethodInfoDTOS = new ArrayList<>();
         Page<ScheduleMethodInfoDTO> pageBack = new Page<>();
         pageBack.setNumber(page.getNumber());

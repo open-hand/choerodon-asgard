@@ -47,7 +47,7 @@ class SagaInstanceMapperSpec extends Specification {
         sagaInstanceMapper.insert(dbData)
 
         expect: '期望的结果数量'
-        sagaInstanceMapper.fulltextSearch(sagaCode, status, refType, refId, params).size() == size
+        sagaInstanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params).size() == size
 
         where: '验证查询结果数量'
         sagaCode   || status      || refType   || refId   || params      || size

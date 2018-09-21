@@ -12,8 +12,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 public interface ScheduleMethodService {
 
-    List<ScheduleMethodDTO> list();
-
     ResponseEntity<Page<ScheduleMethodInfoDTO>> pageQuery(PageRequest pageRequest, String code,
                                                           String service, String method, String description, String params);
 

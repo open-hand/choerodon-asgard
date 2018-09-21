@@ -57,22 +57,4 @@ public class TriggerUtils {
         return dates.stream()
                 .map(t -> format.format(t)).collect(Collectors.toList());
     }
-
-    public static List<String> getRecentThree(final String cron, final Date startTime, final Date endTime) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
-        try {
-            cronTriggerImpl.setCronExpression(cron);
-        } catch (ParseException e) {
-            throw new CommonException("error.cron.parse");
-        }
-        List<Date> dates = org.quartz.TriggerUtils.computeFireTimesBetween(
-                cronTriggerImpl, null, startTime,
-                endTime);
-        if (dates.size() > 3) {
-            dates = dates.subList(0, 3);
-        }
-        return dates.stream()
-                .map(t -> format.format(t)).collect(Collectors.toList());
-    }
 }
