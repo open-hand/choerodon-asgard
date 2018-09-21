@@ -32,14 +32,6 @@ public class ScheduleMethodDTO {
         this.method = method;
     }
 
-    public List<PropertyJobParam> getParamList() {
-        return paramList;
-    }
-
-    public void setParamList(List<PropertyJobParam> paramList) {
-        this.paramList = paramList;
-    }
-
     public ScheduleMethodDTO() {
     }
 

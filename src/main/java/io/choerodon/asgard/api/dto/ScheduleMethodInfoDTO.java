@@ -56,14 +56,6 @@ public class ScheduleMethodInfoDTO {
         this.description = description;
     }
 
-    public Integer getOnlineInstanceNum() {
-        return onlineInstanceNum;
-    }
-
-    public void setOnlineInstanceNum(Integer onlineInstanceNum) {
-        this.onlineInstanceNum = onlineInstanceNum;
-    }
-
     @Override
     public String toString() {
         return "ScheduleMethodInfoDTO{" +

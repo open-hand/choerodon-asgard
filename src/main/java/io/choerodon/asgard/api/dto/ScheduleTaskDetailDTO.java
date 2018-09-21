@@ -79,100 +79,12 @@ public class ScheduleTaskDetailDTO {
         this.description = description;
     }
 
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getTriggerType() {
-        return triggerType;
-    }
-
-    public void setTriggerType(String triggerType) {
-        this.triggerType = triggerType;
-    }
-
-    public Integer getSimpleRepeatCount() {
-        return simpleRepeatCount;
-    }
-
-    public void setSimpleRepeatCount(Integer simpleRepeatCount) {
-        this.simpleRepeatCount = simpleRepeatCount;
-    }
-
-    public Long getSimpleRepeatInterval() {
-        return simpleRepeatInterval;
-    }
-
-    public void setSimpleRepeatInterval(Long simpleRepeatInterval) {
-        this.simpleRepeatInterval = simpleRepeatInterval;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getSimpleRepeatIntervalUnit() {
-        return simpleRepeatIntervalUnit;
-    }
-
-    public void setSimpleRepeatIntervalUnit(String simpleRepeatIntervalUnit) {
-        this.simpleRepeatIntervalUnit = simpleRepeatIntervalUnit;
-    }
-
-    public String getCronExpression() {
-        return cronExpression;
-    }
-
-    public void setCronExpression(String cronExpression) {
-        this.cronExpression = cronExpression;
-    }
-
-    public Date getLastExecTime() {
-        return lastExecTime;
-    }
-
-    public void setLastExecTime(Date lastExecTime) {
-        this.lastExecTime = lastExecTime;
-    }
-
-    public Date getNextExecTime() {
-        return nextExecTime;
-    }
-
-    public void setNextExecTime(Date nextExecTime) {
-        this.nextExecTime = nextExecTime;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public String getMethodCode() {
-        return methodCode;
-    }
-
-    public void setMethodCode(String methodCode) {
-        this.methodCode = methodCode;
     }
 
     public ScheduleTaskDetailDTO() {
