@@ -1,6 +1,5 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
@@ -8,7 +7,6 @@ import javax.validation.Valid;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.quartz.CronExpression;
-import io.choerodon.asgard.infra.utils.TriggerUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -21,6 +19,7 @@ import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
 import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzTask;
+import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -42,16 +41,16 @@ public class ScheduleTaskController {
         this.scheduleTaskService = scheduleTaskService;
     }
 
+    public void setScheduleTaskService(ScheduleTaskService scheduleTaskService) {
+        this.scheduleTaskService = scheduleTaskService;
+    }
+
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTask> create(@RequestBody @Valid ScheduleTaskDTO dto) {
         if (dto.getParams() == null) {
             dto.setParams(new HashMap<>(0));
-        }
-
-        if (dto.getMethodId() == null) {
-            throw new CommonException("error.scheduleTask.methodId.Empty");
         }
 
         if (TriggerType.CRON.getValue().equals(dto.getTriggerType())) {

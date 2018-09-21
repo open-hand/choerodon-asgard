@@ -33,6 +33,9 @@ public class ScheduleMethodController {
         this.scheduleMethodService = scheduleMethodService;
     }
 
+    public void setScheduleMethodService(ScheduleMethodService scheduleMethodService) {
+        this.scheduleMethodService = scheduleMethodService;
+    }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping

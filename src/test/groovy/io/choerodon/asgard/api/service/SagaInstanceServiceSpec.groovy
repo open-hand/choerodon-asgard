@@ -161,7 +161,7 @@ class SagaInstanceServiceSpec extends Specification {
         tempSagaInstanceService.pageQuery(new PageRequest(), "", "", "", "", "")
 
         then: '验证SagaInstanceMapper的fulltextSearch方法被调用'
-        1 * instanceMapper.fulltextSearch(_, _, _, _, _)
+        1 * instanceMapper.fulltextSearchInstance(_, _, _, _, _)
     }
 
 

@@ -39,7 +39,7 @@ class SagaTaskInstanceControllerSpec extends Specification {
         def entity = testRestTemplate.postForEntity("/v1/sagas/tasks/instances/poll/batch", dto, ExceptionResponse)
         then: '验证状态码；验证错误状态码正确'
         entity.statusCode.is2xxSuccessful()
-        entity.body.code == "error.pollBatch.instanceEmpty"
+        entity.body.code == "error.pollBatch.instanceEmpty" || "不能为空"
         0 * sagaTaskInstanceService.pollBatch(_)
 
         when: '用codes为null的DTO调用接口'
@@ -48,7 +48,7 @@ class SagaTaskInstanceControllerSpec extends Specification {
         def codesEntity = testRestTemplate.postForEntity("/v1/sagas/tasks/instances/poll/batch", dto, ExceptionResponse)
         then: '验证状态码；验证错误状态码正确'
         codesEntity.statusCode.is2xxSuccessful()
-        codesEntity.body.code == "error.pollBatch.codesNull"
+        codesEntity.body.code == "error.pollBatch.codesNull" || "不能为null"
         0 * sagaTaskInstanceService.pollBatch(_)
 
         when: '用合法的DTO调用接口'

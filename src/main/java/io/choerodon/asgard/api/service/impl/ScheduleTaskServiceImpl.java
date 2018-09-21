@@ -125,7 +125,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             case INTEGER:
                 return value.getClass().equals(Integer.class);
             case LONG:
-                return value.getClass().equals(Integer.class);
+                return value.getClass().equals(Long.class);
             case STRING:
                 return value.getClass().equals(String.class);
             case BOOLEAN:
@@ -198,7 +198,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         return new ResponseEntity<>(pageBack, HttpStatus.OK);
     }
 
-    private Page<QuartzTaskDTO> pageConvert(Page<QuartzTask> page) {
+    public Page<QuartzTaskDTO> pageConvert(Page<QuartzTask> page) {
         List<QuartzTaskDTO> quartzTaskDTOS = new ArrayList<>();
         Page<QuartzTaskDTO> pageBack = new Page<>();
         pageBack.setNumber(page.getNumber());

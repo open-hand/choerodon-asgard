@@ -35,6 +35,10 @@ public class ScheduleTaskInstanceController {
         this.scheduleTaskInstanceService = scheduleTaskInstanceService;
     }
 
+    public void setScheduleTaskInstanceService(ScheduleTaskInstanceService scheduleTaskInstanceService) {
+        this.scheduleTaskInstanceService = scheduleTaskInstanceService;
+    }
+
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "分页查询任务实例列表")
