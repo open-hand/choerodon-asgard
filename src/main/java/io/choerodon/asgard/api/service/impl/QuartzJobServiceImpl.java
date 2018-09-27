@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.service.impl;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.quartz.*;
@@ -34,7 +35,8 @@ public class QuartzJobServiceImpl implements QuartzJobService {
             JobDetail jobDetail = JobBuilder.newJob(QuartzGenericCreateInstanceJob.class).withIdentity(JOB_PREFIX + task.getId())
                     .usingJobData("taskId", task.getId()).withDescription(task.getName()).build();
             TriggerBuilder triggerBuilder = TriggerBuilder.newTrigger().withIdentity(TRIGGER_PREFIX + task.getId());
-            if (task.getStartTime() == null) {
+            //若 StartTime为空 或 StartTime 小于 当前时间 则 开始于 当前时间 ; 否则 开始于 StartTime
+            if (task.getStartTime() == null || task.getStartTime().getTime() < new Date().getTime()) {
                 triggerBuilder.startNow();
             } else {
                 triggerBuilder.startAt(task.getStartTime());
