@@ -51,6 +51,7 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
             methodConsumerDTOS.forEach(i -> {
                 if (i.getInstanceLock() == null) {
                     if (instanceMapper.lockByInstanceAndUpdateStartTime(i.getId(), instance, i.getObjectVersionNumber(), new Date()) > 0) {
+                        i.setObjectVersionNumber(i.getObjectVersionNumber() + 1);
                         consumerDTOS.add(i);
                     }
                 } else if (i.getInstanceLock().equals(instance)) {

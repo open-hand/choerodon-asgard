@@ -56,10 +56,10 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
             scheduleTaskService.disable(taskId, null, true);
             return;
         }
+        createInstance(taskId, lastInstance);
         if (jobExecutionContext.getNextFireTime() == null) {
             scheduleTaskService.finish(taskId);
         }
-        createInstance(taskId, lastInstance);
     }
 
     private void createInstance(long taskId, final QuartzTaskInstance lastInstance) {
