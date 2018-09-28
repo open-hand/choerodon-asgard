@@ -1,17 +1,5 @@
 package io.choerodon.asgard.api.service.impl;
 
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
@@ -24,6 +12,17 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceService {
@@ -51,11 +50,11 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
             List<ScheduleInstanceConsumerDTO> methodConsumerDTOS = instanceMapper.pollBathByMethod(t);
             methodConsumerDTOS.forEach(i -> {
                 if (i.getInstanceLock() == null) {
-                    consumerDTOS.add(i);
-                } else {
                     if (instanceMapper.lockByInstanceAndUpdateStartTime(i.getId(), instance, i.getObjectVersionNumber(), new Date()) > 0) {
                         consumerDTOS.add(i);
                     }
+                } else if (i.getInstanceLock().equals(instance)) {
+                    consumerDTOS.add(i);
                 }
             });
         });
@@ -119,7 +118,7 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
     }
 
     @Override
-    public void failed(Long id,String exceptionMsg) {
+    public void failed(Long id, String exceptionMsg) {
         QuartzTaskInstance quartzTaskInstance = instanceMapper.selectByPrimaryKey(id);
         if (quartzTaskInstance == null) {
             LOGGER.warn("failed schedule task instance error, quartzTaskInstance is not exist {}", id);
