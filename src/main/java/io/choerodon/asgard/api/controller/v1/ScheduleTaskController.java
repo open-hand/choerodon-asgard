@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
@@ -52,7 +53,9 @@ public class ScheduleTaskController {
         if (dto.getParams() == null) {
             dto.setParams(new HashMap<>(0));
         }
-
+        if(dto.getEndTime().getTime() < new Date().getTime()){
+            throw new CommonException("error.scheduleTask.endTime.cantbefore.now");
+        }
         if (TriggerType.CRON.getValue().equals(dto.getTriggerType())) {
             if (StringUtils.isEmpty(dto.getCronExpression())) {
                 throw new CommonException("error.scheduleTask.cronExpressionEmpty");
