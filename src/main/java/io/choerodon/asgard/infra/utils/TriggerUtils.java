@@ -57,4 +57,15 @@ public class TriggerUtils {
         return dates.stream()
                 .map(t -> format.format(t)).collect(Collectors.toList());
     }
+
+    public static Date getStartTime(final String cron) {
+        CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+        try {
+            cronTriggerImpl.setCronExpression(cron);
+        } catch (ParseException e) {
+            throw new CommonException("error.cron.parse");
+        }
+        return org.quartz.TriggerUtils.computeFireTimes(cronTriggerImpl, null, 1).get(0);
+    }
+
 }

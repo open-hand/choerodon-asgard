@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
+import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
@@ -28,6 +29,7 @@ import io.choerodon.asgard.domain.QuartzTaskInstance;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
+import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
@@ -211,15 +213,20 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         } else {
             page.getContent().forEach(t -> {
                 Date lastStartTime = null;
-                Date netStartTime;
+                Date nextStartTime;
                 QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(t.getId());
                 if (lastInstance != null) {
                     lastStartTime = lastInstance.getActualStartTime();
-                    netStartTime = lastInstance.getPlannedNextTime();
+                    nextStartTime = lastInstance.getPlannedNextTime();
                 } else {
-                    netStartTime = t.getStartTime();
+                    // 初次执行 开始时间已过，TriggerType 为 Cron ，则设当前时间的最近执行时间为下次执行时间 ；否则 设 开始时间 为 下次执行时间
+                    if (t.getStartTime().getTime() < new Date().getTime() && TriggerType.CRON.getValue().equals(t.getTriggerType())) {
+                        nextStartTime = TriggerUtils.getStartTime(t.getCronExpression());
+                    } else {
+                        nextStartTime = t.getStartTime();
+                    }
                 }
-                quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, netStartTime, t.getStatus(), t.getObjectVersionNumber()));
+                quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, nextStartTime, t.getStatus(), t.getObjectVersionNumber()));
             });
             pageBack.setContent(quartzTaskDTOS);
             return pageBack;
@@ -255,7 +262,12 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 lastStartTime = lastInstance.getActualStartTime();
                 nextStartTime = lastInstance.getPlannedNextTime();
             } else {
-                nextStartTime = quartzTask.getStartTime();
+                // 初次执行 开始时间已过，TriggerType 为 Cron ，则设当前时间的最近执行时间为下次执行时间 ；否则 设 开始时间 为 下次执行时间
+                if (quartzTask.getStartTime().getTime() < new Date().getTime() && TriggerType.CRON.getValue().equals(quartzTask.getTriggerType())) {
+                    nextStartTime = TriggerUtils.getStartTime(quartzTask.getCronExpression());
+                } else {
+                    nextStartTime = quartzTask.getStartTime();
+                }
             }
             QuartzTaskDetail quartzTaskDetail = taskMapper.selectTaskById(id);
             return new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
