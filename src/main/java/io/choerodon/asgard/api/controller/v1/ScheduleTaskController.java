@@ -53,7 +53,7 @@ public class ScheduleTaskController {
         if (dto.getParams() == null) {
             dto.setParams(new HashMap<>(0));
         }
-        if(dto.getEndTime().getTime() < new Date().getTime()){
+        if(dto.getEndTime()!=null && dto.getEndTime().getTime() < new Date().getTime()){
             throw new CommonException("error.scheduleTask.endTime.cantbefore.now");
         }
         if (TriggerType.CRON.getValue().equals(dto.getTriggerType())) {
