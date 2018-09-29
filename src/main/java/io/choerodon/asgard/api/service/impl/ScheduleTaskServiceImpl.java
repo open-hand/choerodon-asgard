@@ -226,6 +226,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                         nextStartTime = t.getStartTime();
                     }
                 }
+                if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(t.getStatus())) {
+                    nextStartTime = null;
+                }
                 quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, nextStartTime, t.getStatus(), t.getObjectVersionNumber()));
             });
             pageBack.setContent(quartzTaskDTOS);
@@ -268,6 +271,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 } else {
                     nextStartTime = quartzTask.getStartTime();
                 }
+            }
+            if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(quartzTask.getStatus())) {
+                nextStartTime = null;
             }
             QuartzTaskDetail quartzTaskDetail = taskMapper.selectTaskById(id);
             return new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
