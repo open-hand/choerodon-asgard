@@ -1,13 +1,5 @@
 package io.choerodon.asgard.api.service.impl;
 
-import java.util.Date;
-
-import org.quartz.JobExecutionContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import io.choerodon.asgard.api.service.QuartzRealJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
@@ -19,6 +11,13 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.schedule.QuartzDefinition;
+import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.util.Date;
 
 @Service
 public class QuartzRealJobServiceImpl implements QuartzRealJobService {
@@ -87,7 +86,11 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
         taskInstance.setRetriedCount(0);
         if (lastInstance != null) {
             taskInstance.setActualLastTime(lastInstance.getActualStartTime());
-            taskInstance.setExecuteParams(lastInstance.getExecuteResult());
+            if (lastInstance.getExecuteResult() != null) {
+                taskInstance.setExecuteParams(lastInstance.getExecuteResult());
+            } else {
+                taskInstance.setExecuteParams(task.getExecuteParams());
+            }
         } else {
             taskInstance.setExecuteParams(task.getExecuteParams());
         }
