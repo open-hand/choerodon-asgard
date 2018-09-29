@@ -64,6 +64,9 @@ public class ScheduleTaskController {
                 throw new CommonException("error.scheduleTask.cronExpressionInvalid");
             }
         } else if (TriggerType.SIMPLE.getValue().equals(dto.getTriggerType())) {
+            // 实际重复次数 为 前端传回重复次数（执行次数） -1
+            dto.setSimpleRepeatCount(dto.getSimpleRepeatCount()-1);
+
             if (dto.getSimpleRepeatInterval() == null) {
                 throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalNull");
             }
