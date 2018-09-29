@@ -2,14 +2,14 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
     changeSet(id: '2018-09-05-create-table-asgard_quartz_task', author: 'flyleft') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'ASGARD_QUARTZ_TASK_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'ASGARD_QUARTZ_TASK_S', startValue: "1")
         }
         createTable(tableName: "ASGARD_QUARTZ_TASK") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_TASK')
             }
-            column(name: 'NAME', type: 'VARCHAR(64)', remarks: '任务名'){
+            column(name: 'NAME', type: 'VARCHAR(64)', remarks: '任务名') {
                 constraints(nullable: false, unique: true, uniqueConstraintName: 'UK_ASGARD_QUARTZ_TASK_NAME')
             }
             column(name: 'DESCRIPTION', type: 'VARCHAR(255)', remarks: '描述')
@@ -42,9 +42,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
 
     changeSet(id: '2018-09-12-add-unit', author: 'longhe1996@icloud.com') {
         addColumn(tableName: 'ASGARD_QUARTZ_TASK') {
-            column(name: "SIMPLE_REPEAT_INTERVAL_UNIT", type: "VARCHAR(32)", remarks: 'simple-trigger执行时间间隔的单位。SECOND,MINUTES,HOUR,WEEK,MONTH') {
-                constraints(nullable: false)
-            }
+            column(name: "SIMPLE_REPEAT_INTERVAL_UNIT", type: "VARCHAR(32)", remarks: 'simple-trigger执行时间间隔的单位。SECOND,MINUTES,HOUR,WEEK,MONTH')
         }
     }
 }

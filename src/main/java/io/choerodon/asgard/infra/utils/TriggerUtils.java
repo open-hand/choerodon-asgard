@@ -28,7 +28,8 @@ public class TriggerUtils {
         Date nextDate;
         Date lastFiredTime = taskInstance.getPlannedStartTime();
         if (TriggerType.CRON.getValue().equals(task.getTriggerType())) {
-            CronTrigger c = new CronTrigger(task.getCronExpression(), TimeZone.getDefault());
+            String cron = task.getCronExpression().substring(0, task.getCronExpression().lastIndexOf(" "));
+            CronTrigger c = new CronTrigger(cron, TimeZone.getDefault());
             SimpleTriggerContext t = new SimpleTriggerContext();
             t.update(lastFiredTime, lastFiredTime, lastFiredTime);
             nextDate = c.nextExecutionTime(t);
@@ -57,4 +58,15 @@ public class TriggerUtils {
         return dates.stream()
                 .map(t -> format.format(t)).collect(Collectors.toList());
     }
+
+    public static Date getStartTime(final String cron) {
+        CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+        try {
+            cronTriggerImpl.setCronExpression(cron);
+        } catch (ParseException e) {
+            throw new CommonException("error.cron.parse");
+        }
+        return org.quartz.TriggerUtils.computeFireTimes(cronTriggerImpl, null, 1).get(0);
+    }
+
 }
