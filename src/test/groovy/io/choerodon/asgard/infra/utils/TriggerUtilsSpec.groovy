@@ -21,6 +21,7 @@ class TriggerUtilsSpec extends Specification {
         where: "分支覆盖"
         task                                                                                                          | instance
         new QuartzTask(triggerType: "cron-trigger", cronExpression: "* * 1 * * ?", endTime: null)                     | new QuartzTaskInstance(plannedStartTime: new Date())
+        new QuartzTask(triggerType: "cron-trigger", cronExpression: "* * 1 * * ? ?", endTime: null)                   | new QuartzTaskInstance(plannedStartTime: new Date())
         new QuartzTask(triggerType: "cron-trigger", cronExpression: "* * 1 * * ?", endTime: new Date())               | new QuartzTaskInstance(plannedStartTime: new Date())
         new QuartzTask(triggerType: "simple-trigger", simpleRepeatInterval: 10L, simpleRepeatIntervalUnit: "SECONDS") | new QuartzTaskInstance(plannedStartTime: new Date())
     }
@@ -42,4 +43,22 @@ class TriggerUtilsSpec extends Specification {
         noExceptionThrown()
         three.size() == 3
     }
+
+    def "GetStartTime"() {
+        given: "参数准备"
+        def cron = "* * 1 * * ?"
+        def errorCron = "error"
+
+        when: "cron解析错误"
+        TriggerUtils.getStartTime(errorCron)
+        then: "抛出异常"
+        def e = thrown(CommonException)
+        e.message == "error.cron.parse"
+
+        when: "根据cron表达式获取下次执行时间"
+        TriggerUtils.getStartTime(cron)
+        then: "抛出异常"
+        noExceptionThrown()
+    }
+
 }

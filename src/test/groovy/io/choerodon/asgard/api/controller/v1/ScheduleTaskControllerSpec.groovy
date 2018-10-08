@@ -14,6 +14,8 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import spock.lang.Specification
 
+import java.text.SimpleDateFormat
+
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -37,6 +39,9 @@ class ScheduleTaskControllerSpec extends Specification {
         scheduleTaskDTO.setMethodId(1L)
         scheduleTaskDTO.setName("name")
         scheduleTaskDTO.setTriggerType("invalid")
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        Date endTime = simpleDateFormat.parse("2018-08-08 08:08:00")
+        scheduleTaskDTO.setEndTime(endTime)
 
         def inVaildScheduleTaskDTO = new ScheduleTaskDTO()
         inVaildScheduleTaskDTO.setName("")
@@ -47,7 +52,15 @@ class ScheduleTaskControllerSpec extends Specification {
         response.statusCode.is2xxSuccessful()
         0 * mockScheduleTaskService.create(_)
 
+        when: 'POST请求【创建定时任务】-结束时间为过去时间'
+        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
+        then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
+        response.statusCode.is2xxSuccessful()
+        response.body.get("code") == "error.scheduleTask.endTime.cantbefore.now"
+        0 * mockScheduleTaskService.create(scheduleTaskDTO)
+
         when: 'POST请求【创建定时任务】-invalidTriggerType'
+        scheduleTaskDTO.setEndTime(null)
         response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
@@ -56,6 +69,7 @@ class ScheduleTaskControllerSpec extends Specification {
 
         when: 'POST请求【创建定时任务】-repeatCountOrRepeatIntervalNull'
         scheduleTaskDTO.setTriggerType("simple-trigger")
+        scheduleTaskDTO.setSimpleRepeatCount(1)
         response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
