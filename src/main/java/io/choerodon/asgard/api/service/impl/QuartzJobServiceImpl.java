@@ -35,7 +35,7 @@ public class QuartzJobServiceImpl implements QuartzJobService {
             JobDetail jobDetail = JobBuilder.newJob(QuartzGenericCreateInstanceJob.class).withIdentity(JOB_PREFIX + task.getId())
                     .usingJobData("taskId", task.getId()).withDescription(task.getName()).build();
             TriggerBuilder triggerBuilder = TriggerBuilder.newTrigger().withIdentity(TRIGGER_PREFIX + task.getId());
-            //若 StartTime为空 或 StartTime 小于 当前时间 则 开始于 当前时间 ; 否则 开始于 StartTime
+            //若 StartTime 为空 或 StartTime 小于 当前时间 则 开始于 当前时间 ; 否则 开始于 StartTime
             if (task.getStartTime() == null || task.getStartTime().getTime() < new Date().getTime()) {
                 triggerBuilder.startNow();
             } else {
@@ -45,16 +45,21 @@ public class QuartzJobServiceImpl implements QuartzJobService {
                 triggerBuilder.endAt(task.getEndTime());
             }
             if (TriggerType.SIMPLE.getValue().equals(task.getTriggerType())) {
+                // 简单任务Schedule
                 SimpleScheduleBuilder simpleScheduleBuilder = SimpleScheduleBuilder.simpleSchedule();
+                // 设置重复次数：重复次数为空 则 永远重复
                 if (task.getSimpleRepeatCount() == null) {
                     simpleScheduleBuilder.repeatForever();
                 } else {
                     simpleScheduleBuilder.withRepeatCount(task.getSimpleRepeatCount());
                 }
+                // 设置重复间隔：根据 重复间隔数值 重复间隔单位 设置 milliseconds级别的重复间隔
                 Long intervalInMilliseconds = TimeUnit.valueOf(task.getSimpleRepeatIntervalUnit().toUpperCase()).toMillis(task.getSimpleRepeatInterval());
+                // withMisfireHandlingInstructionFireNow：misfire后恢复并马上执行
                 simpleScheduleBuilder.withIntervalInMilliseconds(intervalInMilliseconds).withMisfireHandlingInstructionFireNow();
                 triggerBuilder.withSchedule(simpleScheduleBuilder);
             } else {
+                // Cron任务Schedule，withMisfireHandlingInstructionDoNothing：所有的 misfire 不管，执行下一个周期的任务
                 triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(task.getCronExpression()).withMisfireHandlingInstructionDoNothing());
             }
             if (!scheduler.isShutdown()) {

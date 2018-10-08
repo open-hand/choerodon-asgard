@@ -146,6 +146,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         if (quartzTask == null) {
             throw new CommonException(TASK_NOT_EXIST);
         }
+        //将 停用的任务 启用，并恢复job
         if (QuartzDefinition.TaskStatus.DISABLE.name().equals(quartzTask.getStatus())) {
             quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
             quartzTask.setObjectVersionNumber(objectVersionNumber);
@@ -167,6 +168,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         if (executeWithIn) {
             objectVersionNumber = quartzTask.getObjectVersionNumber();
         }
+        // 将 未结束的任务 置为 停止，并暂停job
         if (QuartzDefinition.TaskStatus.ENABLE.name().equals(quartzTask.getStatus())) {
             quartzTask.setStatus(QuartzDefinition.TaskStatus.DISABLE.name());
             quartzTask.setObjectVersionNumber(objectVersionNumber);
