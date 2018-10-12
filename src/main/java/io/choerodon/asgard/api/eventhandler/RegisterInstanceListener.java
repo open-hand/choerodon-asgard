@@ -26,11 +26,14 @@ public class RegisterInstanceListener {
     public static final String STATUS_DOWN = "DOWN";
     private final ObjectMapper mapper = new ObjectMapper();
 
-    @Value("${choerodon.asgard.fetch.time:10}")
+    @Value("${choerodon.asgard.fetch.time:20}")
     private Integer sagaFetchTime;
 
-    private RegisterInstanceService registerInstanceService;
+    @Value("${choerodon.asgard.fetch.interval:3}")
+    private Integer sagaFetchInterval;
 
+
+    private RegisterInstanceService registerInstanceService;
 
     @Value("${choerodon.asgard.skipService}")
     private String[] skipServices;
@@ -81,18 +84,18 @@ public class RegisterInstanceListener {
                             (t, retryCount) -> {
                                 if (retryCount >= sagaFetchTime) {
                                     if (t instanceof RemoteAccessException || t instanceof RestClientException) {
-                                        LOGGER.warn("error.registerConsumer.fetchDataError, payload {}", payload);
+                                        LOGGER.warn("error.registerConsumer.fetchDataError, payload {}", payload, t);
                                     } else {
-                                        LOGGER.warn("error.registerConsumer.msgConsumerError, payload {}", payload);
+                                        LOGGER.warn("error.registerConsumer.msgConsumerError, payload {}", payload, t);
                                     }
                                 }
                                 return retryCount;
-                            }).flatMap(y -> Observable.timer(2, TimeUnit.SECONDS)))
+                            }).flatMap(y -> Observable.timer(sagaFetchInterval, TimeUnit.SECONDS)))
                     .subscribeOn(Schedulers.io())
                     .subscribe((RegisterInstancePayloadDTO registerInstancePayload) -> {
                     });
         } catch (Exception e) {
-            LOGGER.warn("error happened when handle message， {} cause {}", message, e.getCause());
+            LOGGER.warn("error happened when handle message， {} cause {}", message, e);
         }
     }
 

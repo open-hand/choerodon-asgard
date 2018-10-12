@@ -6,7 +6,6 @@ import io.choerodon.asgard.api.service.*;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.property.PropertyData;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.remoting.RemoteAccessException;
@@ -19,9 +18,6 @@ import java.util.stream.Collectors;
 public class RegisterInstanceServiceImpl implements RegisterInstanceService {
 
     private RestTemplate restTemplate = new RestTemplate();
-
-    @Value("${choerodon.asgard.isLocal:false}")
-    private Boolean isLocal;
 
     private final SagaService sagaService;
 
@@ -49,10 +45,6 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
         this.scheduleTaskInstanceService = scheduleTaskInstanceService;
     }
 
-    public void setLocal(Boolean local) {
-        isLocal = local;
-    }
-
     public void setRestTemplate(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -74,9 +66,6 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     }
 
     private PropertyData fetchPropertyData(String address) {
-        if (isLocal) {
-            address = "127.0.0.1:" + address.split(":")[1];
-        }
         ResponseEntity<PropertyData> response = restTemplate.getForEntity("http://"
                 + address + "/choerodon/asgard", PropertyData.class);
         if (response.getStatusCode() == HttpStatus.OK) {

@@ -58,8 +58,9 @@ mybatis:
 choerodon:
   asgard:
     skipService: register-server, api-gateway, gateway-helper, oauth-server, config-server, event-store-service
-    fetch.time: 20
-    isLocal: true
+    fetch:
+      interval: 3
+      time: 20
     quartz:
       auto-startup: true
       overwrite-existing-jobs: true
