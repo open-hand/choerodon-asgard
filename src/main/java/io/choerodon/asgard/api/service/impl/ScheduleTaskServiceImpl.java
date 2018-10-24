@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
@@ -29,8 +31,10 @@ import io.choerodon.asgard.domain.QuartzTaskInstance;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
+import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.property.PropertyJobParam;
+import io.choerodon.asgard.property.PropertyTimedTask;
 import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.core.domain.Page;
@@ -56,6 +60,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     private QuartzJobService quartzJobService;
 
     private QuartzTaskInstanceMapper instanceMapper;
+
 
     public ScheduleTaskServiceImpl(QuartzMethodMapper methodMapper,
                                    QuartzTaskMapper taskMapper,
@@ -91,7 +96,6 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         } catch (IOException e) {
             throw new CommonException("error.scheduleTask.createJsonIOException", e);
         }
-
     }
 
     private void validExecuteParams(final Map<String, Object> params, final String paramDefinition) throws IOException {
@@ -288,5 +292,58 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         if (!ids.isEmpty()) {
             throw new CommonException("error.scheduleTask.name.exist");
         }
+    }
+
+    @Override
+    public void createTaskList(String service, List<PropertyTimedTask> scanTasks, String version) {
+        //此处借用闲置属性cronexpression设置是否为一次执行：是返回"1",多次执行返回"0"
+        List<QuartzTask> collect = scanTasks.stream().map(t -> ConvertUtils.convertQuartzTask(objectMapper, t, service)).collect(Collectors.toList());
+        collect.forEach(i -> {
+            QuartzMethod method = new QuartzMethod();
+            method.setCode(i.getExecuteMethod());
+            List<QuartzMethod> select = methodMapper.select(method);
+            if (select.isEmpty()) {
+                throw new CommonException("error.scheduleTask.methodNotExist");
+            } else if (select.size() == 1) {
+                method = select.get(0);
+            }
+            QuartzTask query = new QuartzTask();
+            query.setExecuteMethod(i.getExecuteMethod());
+            List<QuartzTask> dbTasks = taskMapper.select(query);
+            //若数据库中无相同任务名  或  数据库中有相同任务名的任务 且 每次部署执行，则 创建task（name=name+version），创建job
+            Boolean byTaskName = findByTaskName(dbTasks, i.getName());
+            if (!byTaskName || (byTaskName && i.getCronExpression().equals("0"))) {
+                i.setName(i.getName() + ":" + version);
+                //若为 同一版本下的相同任务名的 任务，不创建，不执行
+                List<QuartzTask> ifEqual = dbTasks.stream().filter(t -> t.getName().equals(i.getName())).collect(Collectors.toList());
+                if (ifEqual.isEmpty()) {
+                    try {
+                        validExecuteParams(objectMapper.readValue(i.getExecuteParams(), new TypeReference<Map<String, Object>>() {
+                        }), method.getParams());
+                        if (taskMapper.insertSelective(i) != 1) {
+                            throw new CommonException("error.scheduleTask.create");
+                        }
+                        QuartzTask db = taskMapper.selectByPrimaryKey(i.getId());
+                        quartzJobService.addJob(db);
+                        LOGGER.info("create job: {}", i);
+                    } catch (IOException e) {
+                        throw new CommonException("error.scheduleTask.createJsonIOException", e);
+                    }
+                }
+            }
+        });
+    }
+
+
+    private Boolean findByTaskName(final List<QuartzTask> tasks, final String taskName) {
+        for (QuartzTask task : tasks) {
+            if (task.getName().indexOf(":") != -1) {
+                String[] strings = StringUtils.delimitedListToStringArray(task.getName(), ":");
+                if (strings[0].equals(taskName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
