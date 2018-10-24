@@ -29,7 +29,9 @@ class RegisterInstanceServiceSpec extends Specification {
         and: "mock sagaTaskInstanceService"
         def sagaTaskInstanceService = Mock(SagaTaskInstanceService)
         def scheduleTaskInstanceService = Mock(ScheduleTaskInstanceService)
-        def registerInstanceService = new RegisterInstanceServiceImpl(null, null, sagaTaskInstanceService, null, scheduleTaskInstanceService)
+        def scheduleTaskService = Mock(ScheduleTaskService)
+
+        def registerInstanceService = new RegisterInstanceServiceImpl(null, null, sagaTaskInstanceService, null, scheduleTaskService, scheduleTaskInstanceService)
 
         when: '调用instanceDownConsumer方法'
         registerInstanceService.instanceDownConsumer(dto)
@@ -56,17 +58,18 @@ class RegisterInstanceServiceSpec extends Specification {
         def sagaService = Mock(SagaService)
         def sagaTaskService = Mock(SagaTaskService)
         def quartzMethodService = Mock(QuartzMethodService)
+        def scheduleTaskService = Mock(ScheduleTaskService)
+
         def correctRestTemplate = Stub(RestTemplate) {
             getForEntity(_, _) >>> new ResponseEntity<PropertyData>(propertyData, HttpStatus.OK)
         }
         def errorRestTemplate = Stub(RestTemplate) {
             getForEntity(_, _) >>> new ResponseEntity<PropertyData>(HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        def registerInstanceService = new RegisterInstanceServiceImpl(sagaService, sagaTaskService, null, quartzMethodService, null)
+        def registerInstanceService = new RegisterInstanceServiceImpl(sagaService, sagaTaskService, null, quartzMethodService, scheduleTaskService, null)
 
         when: '使用correctRestTemplate调用instanceUpConsumer方法'
         registerInstanceService.setRestTemplate(correctRestTemplate)
-        registerInstanceService.setLocal(false)
         registerInstanceService.instanceUpConsumer(dto)
 
         then: '验证service调用'
@@ -75,7 +78,6 @@ class RegisterInstanceServiceSpec extends Specification {
 
         when: '使用errorRestTemplate调用instanceUpConsumer方法'
         registerInstanceService.setRestTemplate(errorRestTemplate)
-        registerInstanceService.setLocal(true)
         registerInstanceService.instanceUpConsumer(dto)
 
         then: '验证service调用'
