@@ -2,6 +2,7 @@ package io.choerodon.asgard.infra.utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +19,8 @@ import io.choerodon.asgard.infra.mapper.JsonDataMapper;
 import io.choerodon.asgard.property.PropertyJobTask;
 import io.choerodon.asgard.property.PropertySaga;
 import io.choerodon.asgard.property.PropertySagaTask;
+import io.choerodon.asgard.property.PropertyTimedTask;
+import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.core.exception.CommonException;
 
 public class ConvertUtils {
@@ -38,6 +41,33 @@ public class ConvertUtils {
             return method;
         } catch (JsonProcessingException e) {
             throw new CommonException("error.ConvertUtils.convertQuartzMethod", e);
+        }
+    }
+
+    public static QuartzTask convertQuartzTask(final ObjectMapper mapper, final PropertyTimedTask timedTask, final String service) {
+        final QuartzTask task = new QuartzTask();
+        task.setId(null);
+        task.setName(timedTask.getName());
+        task.setDescription(timedTask.getDescription());
+        task.setExecuteMethod(timedTask.getMethodCode());
+        task.setTriggerType("simple-trigger");
+        task.setStartTime(new Date());
+        task.setSimpleRepeatCount(timedTask.getRepeatCount());
+        task.setSimpleRepeatInterval(timedTask.getRepeatInterval());
+        task.setSimpleRepeatIntervalUnit(timedTask.getRepeatIntervalUnit());
+        task.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
+        //所有自定义定时任务皆为简单任务，此处借用此闲置属性放置是否是一次执行
+        if (timedTask.getOneExecution()) {
+            task.setCronExpression("1");
+        } else {
+            task.setCronExpression("0");
+        }
+        try {
+            String params = mapper.writeValueAsString(timedTask.getParams());
+            task.setExecuteParams(params);
+            return task;
+        } catch (JsonProcessingException e) {
+            throw new CommonException("error.ConvertUtils.convertQuartzTask", e);
         }
     }
 
