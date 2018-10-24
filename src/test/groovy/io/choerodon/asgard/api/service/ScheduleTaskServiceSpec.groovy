@@ -10,6 +10,8 @@ import io.choerodon.asgard.domain.QuartzTaskInstance
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper
+import io.choerodon.asgard.property.PropertyTimedTask
+import io.choerodon.asgard.schedule.QuartzDefinition
 import io.choerodon.core.domain.Page
 import io.choerodon.core.exception.CommonException
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
@@ -417,5 +419,76 @@ class ScheduleTaskServiceSpec extends Specification {
         then: "抛出异常"
         def e = thrown(CommonException)
         e.message == "error.scheduleTask.name.exist"
+    }
+
+    def "CreateTaskList1-[methodNotExist]"() {
+        given: "参数准备"
+        def service = "service"
+        def scanTasks = new ArrayList<PropertyTimedTask>()
+
+        def task = new PropertyTimedTask()
+        task.setName("name")
+        task.setDescription("description")
+        task.setMethodCode("methodCode")
+        task.setOneExecution(true)
+        task.setRepeatCount(0)
+        task.setRepeatInterval(100)
+        task.setRepeatIntervalUnit(QuartzDefinition.SimpleRepeatIntervalUnit.SECONDS.name())
+        Map<String, Object> map = new HashMap<>()
+        map.put("name1", "value1")
+        task.setParams(map)
+
+        scanTasks.add(task)
+        def version = "version"
+        and: "mock"
+        mockMethodMapper.select(_) >> { return new ArrayList<QuartzMethod>() }
+        when: "方法啊调用"
+        scheduleTaskService.createTaskList(service, scanTasks, version)
+        then: "抛出异常"
+        def e = thrown(CommonException)
+        e.message == "error.scheduleTask.methodNotExist"
+    }
+
+    def "CreateTaskList2"() {
+        given: "参数准备"
+        def service = "service"
+        def scanTasks = new ArrayList<PropertyTimedTask>()
+
+        def task = new PropertyTimedTask()
+        task.setName("name")
+        task.setDescription("description")
+        task.setMethodCode("methodCode")
+        task.setOneExecution(false)
+        task.setRepeatCount(0)
+        task.setRepeatInterval(100)
+        task.setRepeatIntervalUnit(QuartzDefinition.SimpleRepeatIntervalUnit.SECONDS.name())
+        Map<String, Object> map = new HashMap<>()
+        map.put("name1", "value1")
+        task.setParams(map)
+
+        scanTasks.add(task)
+
+        def version = "version2"
+        and: "mock"
+        mockMethodMapper.select(_) >> {
+            def methods = new ArrayList<QuartzMethod>()
+            def method = new QuartzMethod()
+            method.setCode("methodCode")
+            method.setParams("[{\"name\":\"name1\",\"defaultValue\":\"dv\",\"type\":\"String\",\"description\":\"description\"}]")
+            methods.add(method)
+            return methods
+        }
+
+        mockTaskMapper.select(_) >> {
+            def dbTasks = new ArrayList<QuartzTask>()
+            def task1 = new QuartzTask()
+            task1.setName("name:version1")
+            return dbTasks
+        }
+        mockTaskMapper.insertSelective(_) >> { return 1 }
+        when: "方法啊调用"
+        scheduleTaskService.createTaskList(service, scanTasks, version)
+        then: "抛出异常"
+        noExceptionThrown()
     }
 }
