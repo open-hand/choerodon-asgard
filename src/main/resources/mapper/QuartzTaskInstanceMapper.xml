@@ -49,6 +49,14 @@
             AND exception_message LIKE concat(concat('%',#{exceptionMessage}),'%')
         </if>
 
+        <if test="level != null">
+            AND fd_level = #{level}
+        </if>
+
+        <if test="sourceId != null">
+            AND source_id = #{sourceId}
+        </if>
+
         <if test="params != null">
             AND(
             name LIKE concat(concat('%',#{params}),'%') OR
@@ -108,6 +116,14 @@
         </if>
         <if test="status != null">
             AND aqti.STATUS LIKE concat(concat('%',#{status}),'%')
+        </if>
+
+        <if test="level != null">
+            AND aqti.fd_level = #{level}
+        </if>
+
+        <if test="sourceId != null">
+            AND aqti.source_id = #{sourceId}
         </if>
 
         <if test="serviceInstanceId != null">

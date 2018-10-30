@@ -1,5 +1,6 @@
 package io.choerodon.asgard.domain;
 
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -28,6 +29,9 @@ public class QuartzMethod extends AuditDomain {
     private String code;
 
     private String description;
+
+    @Column(name = "FD_LEVEL")
+    private String level;
 
     public String getMethod() {
         return method;
@@ -85,6 +89,14 @@ public class QuartzMethod extends AuditDomain {
         this.description = description;
     }
 
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
     @Override
     public String toString() {
         return "QuartzMethod{" +
@@ -95,6 +107,7 @@ public class QuartzMethod extends AuditDomain {
                 ", params='" + params + '\'' +
                 ", code='" + code + '\'' +
                 ", description='" + description + '\'' +
+                ", level='" + level + '\'' +
                 '}';
     }
 }

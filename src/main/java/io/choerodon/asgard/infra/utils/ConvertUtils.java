@@ -35,6 +35,7 @@ public class ConvertUtils {
         method.setDescription(jobTask.getDescription());
         method.setMaxRetryCount(jobTask.getMaxRetryCount());
         method.setMethod(jobTask.getMethod());
+        method.setLevel(jobTask.getLevel());
         try {
             String params = mapper.writeValueAsString(jobTask.getParams());
             method.setParams(params);

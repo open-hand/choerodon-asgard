@@ -58,4 +58,11 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
             }
         }
     }
+
+    changeSet(id: '2018-10-30-add-column-level', author: 'youquandeng1@gmail.com') {
+        addColumn(tableName: 'ASGARD_QUARTZ_TASK_INSTANCE') {
+            column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'STATUS')
+            column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED', defaultValue: "0", remarks: '创建该记录的源id，可以是projectId,也可以是organizarionId等', afterColumn: 'FD_LEVEL')
+        }
+    }
 }

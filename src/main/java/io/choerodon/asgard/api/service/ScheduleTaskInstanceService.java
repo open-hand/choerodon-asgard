@@ -14,7 +14,7 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 public interface ScheduleTaskInstanceService {
 
     ResponseEntity<Page<ScheduleTaskInstanceDTO>> pageQuery(PageRequest pageRequest, String status,
-                                                            String taskName, String exceptionMessage, String params);
+                                                            String taskName, String exceptionMessage, String params, String level, Long sourceId);
 
 
     Set<ScheduleInstanceConsumerDTO> pollBatch(Set<String> methods, String instance);
@@ -24,7 +24,7 @@ public interface ScheduleTaskInstanceService {
     void unlockByInstance(String instance);
 
     Page<ScheduleTaskInstanceLogDTO> pagingQueryByTaskId(PageRequest pageRequest, Long taskId, String status,
-                                                         String serviceInstanceId, String params);
+                                                         String serviceInstanceId, String params, String level, Long sourceId);
 
-    void failed(Long id,String exceptionMsg);
+    void failed(Long id, String exceptionMsg);
 }

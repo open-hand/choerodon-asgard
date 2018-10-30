@@ -49,6 +49,10 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private static final String TASK_NOT_EXIST = "error.scheduleTask.taskNotExist";
 
+    private static final String LEVEL_NOT_MATCH = "error.scheduleTask.levelNotMatch";
+
+    private static final String SOURCE_ID_NOT_MATCH = "error.scheduleTask.sourceIdNotMatch";
+
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -74,17 +78,22 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Override
     @Transactional
-    public QuartzTask create(final ScheduleTaskDTO dto) {
+    public QuartzTask create(final ScheduleTaskDTO dto, String level, Long sourceId) {
         QuartzTask quartzTask = modelMapper.map(dto, QuartzTask.class);
         QuartzMethod method = methodMapper.selectByPrimaryKey(dto.getMethodId());
         if (method == null) {
             throw new CommonException("error.scheduleTask.methodNotExist");
+        }
+        if (!level.equals(method.getLevel())) {
+            throw new CommonException("error.scheduleTask.levelNotMatch");
         }
         try {
             quartzTask.setExecuteMethod(method.getCode());
             quartzTask.setId(null);
             quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
             quartzTask.setExecuteParams(objectMapper.writeValueAsString(dto.getParams()));
+            quartzTask.setLevel(level);
+            quartzTask.setSourceId(sourceId);
             validExecuteParams(dto.getParams(), method.getParams());
             if (taskMapper.insertSelective(quartzTask) != 1) {
                 throw new CommonException("error.scheduleTask.create");
@@ -145,11 +154,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Transactional
     @Override
-    public void enable(long id, long objectVersionNumber) {
-        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
-        if (quartzTask == null) {
-            throw new CommonException(TASK_NOT_EXIST);
-        }
+    public void enable(long id, long objectVersionNumber, String level, Long sourceId) {
+        QuartzTask quartzTask = getQuartzTask(id, level, sourceId);
         //将 停用的任务 启用，并恢复job
         if (QuartzDefinition.TaskStatus.DISABLE.name().equals(quartzTask.getStatus())) {
             quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
@@ -160,6 +166,22 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             quartzJobService.resumeJob(id);
             LOGGER.info("enable job: {}", quartzTask);
         }
+    }
+
+    @Override
+    public QuartzTask getQuartzTask(long id, String level, Long sourceId) {
+        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
+        }
+        //不是当前源的任务
+        if (!sourceId.equals(quartzTask.getSourceId())) {
+            throw new CommonException(SOURCE_ID_NOT_MATCH);
+        }
+        if (!level.equals(quartzTask.getLevel())) {
+            throw new CommonException(LEVEL_NOT_MATCH);
+        }
+        return quartzTask;
     }
 
     @Transactional
@@ -186,11 +208,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Transactional
     @Override
-    public void delete(long id) {
-        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
-        if (quartzTask == null) {
-            throw new CommonException(TASK_NOT_EXIST);
-        }
+    public void delete(long id, String level, Long sourceId) {
+        QuartzTask quartzTask = getQuartzTask(id, level, sourceId);
         if (taskMapper.deleteByPrimaryKey(id) != 1) {
             throw new CommonException("error.scheduleTask.deleteTaskFailed");
         }
@@ -199,9 +218,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params) {
+    public ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params, String level, Long sourceId) {
         Page<QuartzTask> page = PageHelper.doPageAndSort(pageRequest,
-                () -> taskMapper.fulltextSearch(status, name, description, params));
+                () -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
         Page<QuartzTaskDTO> pageBack = pageConvert(page);
         return new ResponseEntity<>(pageBack, HttpStatus.OK);
     }
@@ -259,11 +278,18 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ScheduleTaskDetailDTO getTaskDetail(Long id) {
+    public ScheduleTaskDetailDTO getTaskDetail(Long id, String level, Long sourceId) {
         QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
         if (quartzTask == null) {
             throw new CommonException(TASK_NOT_EXIST);
         } else {
+            if (!level.equals(quartzTask.getLevel())) {
+                throw new CommonException(LEVEL_NOT_MATCH);
+            }
+            //不是当前源的任务
+            if (!sourceId.equals(quartzTask.getSourceId())) {
+                return null;
+            }
             Date lastStartTime = null;
             Date nextStartTime;
             QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(id);
@@ -287,8 +313,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public void checkName(String name) {
-        List<Long> ids = taskMapper.selectTaskIdByName(name);
+    public void checkName(String name, String level) {
+        List<Long> ids = taskMapper.selectTaskIdByName(name, level);
         if (!ids.isEmpty()) {
             throw new CommonException("error.scheduleTask.name.exist");
         }

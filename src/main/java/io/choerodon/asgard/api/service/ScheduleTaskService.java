@@ -14,27 +14,37 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 public interface ScheduleTaskService {
 
-    QuartzTask create(ScheduleTaskDTO dto);
+    QuartzTask create(ScheduleTaskDTO dto, String level, Long sourceId);
 
-    void enable(long id, long objectVersionNumber);
+    void enable(long id, long objectVersionNumber, String level, Long sourceId);
 
     void disable(long id, Long objectVersionNumber, boolean executeWithIn);
 
-    void delete(long id);
+    void delete(long id, String level, Long sourceId);
 
     void finish(long id);
 
-    ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params);
+    ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params, String level, Long sourceId);
 
-    ScheduleTaskDetailDTO getTaskDetail(Long id);
+    ScheduleTaskDetailDTO getTaskDetail(Long id, String level, Long sourceId);
 
-    void checkName(String name);
+    void checkName(String name, String level);
 
     /**
      * 自定义创建定时任务
+     *
      * @param service
      * @param scanTasks
      */
-    void createTaskList(final String service, final List<PropertyTimedTask> scanTasks,String version);
+    void createTaskList(final String service, final List<PropertyTimedTask> scanTasks, String version);
+
+    /**
+     * 根据id查询任务
+     *
+     * @param id
+     * @param level
+     * @return
+     */
+    QuartzTask getQuartzTask(long id, String level, Long sourceId);
 
 }

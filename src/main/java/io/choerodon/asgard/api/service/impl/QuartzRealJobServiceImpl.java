@@ -87,6 +87,9 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
         taskInstance.setPlannedStartTime(new Date());
         taskInstance.setExecuteMethod(task.getExecuteMethod());
         taskInstance.setRetriedCount(0);
+        //设置taskInstance的层级
+        taskInstance.setLevel(task.getLevel());
+        taskInstance.setSourceId(task.getSourceId());
         if (lastInstance != null) {
             taskInstance.setActualLastTime(lastInstance.getActualStartTime());
             if (lastInstance.getExecuteResult() != null) {

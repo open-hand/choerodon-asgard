@@ -25,7 +25,7 @@ class ScheduleTaskControllerSpec extends Specification {
     TestRestTemplate restTemplate
 
     @Autowired
-    private ScheduleTaskController scheduleTaskController
+    private ScheduleTaskSiteController scheduleTaskController
 
     private ScheduleTaskService mockScheduleTaskService = Mock(ScheduleTaskService)
 
