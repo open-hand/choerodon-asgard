@@ -85,7 +85,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             throw new CommonException("error.scheduleTask.methodNotExist");
         }
         if (!level.equals(method.getLevel())) {
-            throw new CommonException("error.scheduleTask.levelNotMatch");
+            throw new CommonException(LEVEL_NOT_MATCH);
         }
         try {
             quartzTask.setExecuteMethod(method.getCode());
@@ -279,37 +279,26 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Override
     public ScheduleTaskDetailDTO getTaskDetail(Long id, String level, Long sourceId) {
-        QuartzTask quartzTask = taskMapper.selectByPrimaryKey(id);
-        if (quartzTask == null) {
-            throw new CommonException(TASK_NOT_EXIST);
+        QuartzTask quartzTask = getQuartzTask(id, level, sourceId);
+        Date lastStartTime = null;
+        Date nextStartTime;
+        QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(id);
+        if (lastInstance != null) {
+            lastStartTime = lastInstance.getActualStartTime();
+            nextStartTime = lastInstance.getPlannedNextTime();
         } else {
-            if (!level.equals(quartzTask.getLevel())) {
-                throw new CommonException(LEVEL_NOT_MATCH);
-            }
-            //不是当前源的任务
-            if (!sourceId.equals(quartzTask.getSourceId())) {
-                return null;
-            }
-            Date lastStartTime = null;
-            Date nextStartTime;
-            QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(id);
-            if (lastInstance != null) {
-                lastStartTime = lastInstance.getActualStartTime();
-                nextStartTime = lastInstance.getPlannedNextTime();
+            // 初次执行 开始时间已过，TriggerType 为 Cron ，则设当前时间的最近执行时间为下次执行时间 ；否则 设 开始时间 为 下次执行时间
+            if (quartzTask.getStartTime().getTime() < new Date().getTime() && TriggerType.CRON.getValue().equals(quartzTask.getTriggerType())) {
+                nextStartTime = TriggerUtils.getStartTime(quartzTask.getCronExpression());
             } else {
-                // 初次执行 开始时间已过，TriggerType 为 Cron ，则设当前时间的最近执行时间为下次执行时间 ；否则 设 开始时间 为 下次执行时间
-                if (quartzTask.getStartTime().getTime() < new Date().getTime() && TriggerType.CRON.getValue().equals(quartzTask.getTriggerType())) {
-                    nextStartTime = TriggerUtils.getStartTime(quartzTask.getCronExpression());
-                } else {
-                    nextStartTime = quartzTask.getStartTime();
-                }
+                nextStartTime = quartzTask.getStartTime();
             }
-            if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(quartzTask.getStatus())) {
-                nextStartTime = null;
-            }
-            QuartzTaskDetail quartzTaskDetail = taskMapper.selectTaskById(id);
-            return new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
         }
+        if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(quartzTask.getStatus())) {
+            nextStartTime = null;
+        }
+        QuartzTaskDetail quartzTaskDetail = taskMapper.selectTaskById(id);
+        return new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
     }
 
     @Override
@@ -325,14 +314,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         //此处借用闲置属性cronexpression设置是否为一次执行：是返回"1",多次执行返回"0"
         List<QuartzTask> collect = scanTasks.stream().map(t -> ConvertUtils.convertQuartzTask(objectMapper, t, service)).collect(Collectors.toList());
         collect.forEach(i -> {
-            QuartzMethod method = new QuartzMethod();
-            method.setCode(i.getExecuteMethod());
-            List<QuartzMethod> select = methodMapper.select(method);
-            if (select.isEmpty()) {
-                throw new CommonException("error.scheduleTask.methodNotExist");
-            } else if (select.size() == 1) {
-                method = select.get(0);
-            }
+            QuartzMethod method = getQuartzMethod(i);
             QuartzTask query = new QuartzTask();
             query.setExecuteMethod(i.getExecuteMethod());
             List<QuartzTask> dbTasks = taskMapper.select(query);
@@ -358,6 +340,18 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 }
             }
         });
+    }
+
+    private QuartzMethod getQuartzMethod(QuartzTask i) {
+        QuartzMethod method = new QuartzMethod();
+        method.setCode(i.getExecuteMethod());
+        List<QuartzMethod> select = methodMapper.select(method);
+        if (select.isEmpty()) {
+            throw new CommonException("error.scheduleTask.methodNotExist");
+        } else if (select.size() == 1) {
+            method = select.get(0);
+        }
+        return method;
     }
 
 
