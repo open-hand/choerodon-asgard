@@ -47,7 +47,7 @@ class ScheduleTaskInstanceControllerSpec extends Specification {
                 "?status={status}&taskName={taskName}&exceptionMessage={exceptionMessage}&params={params}", Page, query)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskInstanceService.pageQuery(_, status, taskName, exceptionMessage, params)
+        1 * mockScheduleTaskInstanceService.pageQuery(_, status, taskName, exceptionMessage, params, _, _)
     }
 
     def "PollBatch"() {
@@ -85,7 +85,7 @@ class ScheduleTaskInstanceControllerSpec extends Specification {
 
     def "pagingQueryByTaskId"() {
         given: 'queryParams准备'
-        def taskId=1L
+        def taskId = 1L
         def status = "status"
         def serviceInstanceId = "serviceInstanceId"
         def params = "params"
@@ -99,9 +99,9 @@ class ScheduleTaskInstanceControllerSpec extends Specification {
         def pageRequest = new PageRequest(0, 20, new Sort(order))
 
         when: '对接口【分页查询执行方法列表】发送GET请求'
-        def entity = restTemplate.getForEntity("/v1/schedules/tasks/instances/{taskId}", Page, taskId,queryParams, pageRequest)
+        def entity = restTemplate.getForEntity("/v1/schedules/tasks/instances/{taskId}", Page, taskId, queryParams, pageRequest)
         then: '状态码正确；方法参数调用成功'
         entity.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskInstanceService.pagingQueryByTaskId(_,_,_,_,_)
+        1 * mockScheduleTaskInstanceService.pagingQueryByTaskId(_, _, _, _, _, _, _)
     }
 }

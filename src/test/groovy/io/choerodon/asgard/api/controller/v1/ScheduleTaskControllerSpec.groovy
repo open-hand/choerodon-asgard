@@ -50,7 +50,7 @@ class ScheduleTaskControllerSpec extends Specification {
         def response = restTemplate.postForEntity("/v1/schedules/tasks", inVaildScheduleTaskDTO, QuartzTask)
         then: '状态码验证通过；验证方法参数不生效；验证异常正确抛出'
         response.statusCode.is2xxSuccessful()
-        0 * mockScheduleTaskService.create(_)
+        0 * mockScheduleTaskService.create(_, _, _)
 
         when: 'POST请求【创建定时任务】-结束时间为过去时间'
         response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
@@ -74,7 +74,7 @@ class ScheduleTaskControllerSpec extends Specification {
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.repeatCountOrRepeatIntervalNull"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO)
+        0 * mockScheduleTaskService.create(scheduleTaskDTO, _, _)
 
         when: 'POST请求【创建定时任务】-repeatCountOrRepeatIntervalUnitNull'
         scheduleTaskDTO.setTriggerType("simple-trigger")
@@ -91,7 +91,7 @@ class ScheduleTaskControllerSpec extends Specification {
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.cronExpressionEmpty"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO)
+        0 * mockScheduleTaskService.create(scheduleTaskDTO, _, _)
 
         when: 'POST请求【创建定时任务】-cronExpressionInvalid'
         scheduleTaskDTO.setTriggerType("cron-trigger")
@@ -100,7 +100,7 @@ class ScheduleTaskControllerSpec extends Specification {
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.cronExpressionInvalid"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO)
+        0 * mockScheduleTaskService.create(scheduleTaskDTO, _, _)
 
         when: 'POST请求【创建定时任务】'
         scheduleTaskDTO.setTriggerType("cron-trigger")
@@ -108,7 +108,7 @@ class ScheduleTaskControllerSpec extends Specification {
         response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, QuartzTask)
         then: '状态码验证通过；验证方法参数生效'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.create(_)
+        1 * mockScheduleTaskService.create(_, _, _)
     }
 
     def "Enable"() {
@@ -120,7 +120,7 @@ class ScheduleTaskControllerSpec extends Specification {
         def response = restTemplate.exchange("/v1/schedules/tasks/{id}/enable?objectVersionNumber={objectVersionNumber}", HttpMethod.PUT, httpEntity, void, id, objectVersionNumber)
         then: '状态码验证通过；验证方法参数生效'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.enable(_, _)
+        1 * mockScheduleTaskService.enable(_, _, _, _)
     }
 
     def "Disable"() {
@@ -143,7 +143,7 @@ class ScheduleTaskControllerSpec extends Specification {
         def response = restTemplate.exchange('/v1/schedules/tasks/{id}', HttpMethod.DELETE, httpEntity, void, id)
         then: '状态码验证通过；验证方法参数生效'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.delete(_)
+        1 * mockScheduleTaskService.delete(_, _, _)
     }
 
     def "PagingQuery"() {
@@ -162,7 +162,7 @@ class ScheduleTaskControllerSpec extends Specification {
         def response = restTemplate.getForEntity("/v1/schedules/tasks", Page, query)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.pageQuery(_, _, _, _, _)
+        1 * mockScheduleTaskService.pageQuery(_, _, _, _, _, _, _)
     }
 
     def "GetTaskDetail"() {
@@ -172,7 +172,7 @@ class ScheduleTaskControllerSpec extends Specification {
         def response = restTemplate.getForEntity("/v1/schedules/tasks/{id}", ScheduleTaskDetailDTO, id)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.getTaskDetail(id)
+        1 * mockScheduleTaskService.getTaskDetail(id, _, _)
     }
 
     def "Check"() {
@@ -182,7 +182,7 @@ class ScheduleTaskControllerSpec extends Specification {
         def response = restTemplate.postForEntity("/v1/schedules/tasks/check?name={name}", null, String, name)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.checkName(name)
+        1 * mockScheduleTaskService.checkName(name, _)
     }
 
     def "Cron"() {

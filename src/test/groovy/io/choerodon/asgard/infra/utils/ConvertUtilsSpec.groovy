@@ -45,6 +45,7 @@ class ConvertUtilsSpec extends Specification {
         jobParam.setDescription("description")
         jobParam.setName("name")
         jobParam.setType("String")
+        jobTask.setLevel("site")
         def list = new ArrayList<PropertyJobParam>()
         list.add(jobParam)
         jobTask.setParams(list)
