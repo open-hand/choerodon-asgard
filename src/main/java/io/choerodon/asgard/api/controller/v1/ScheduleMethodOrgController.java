@@ -5,7 +5,6 @@ import io.choerodon.asgard.api.dto.ScheduleMethodInfoDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
 import io.choerodon.asgard.api.service.ScheduleMethodService;
 import io.choerodon.core.domain.Page;
-import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
