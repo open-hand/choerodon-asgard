@@ -1,28 +1,23 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import javax.validation.Valid;
 
+import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.quartz.CronExpression;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
-import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.domain.Page;
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
@@ -33,12 +28,12 @@ import io.choerodon.swagger.annotation.Permission;
 
 @RestController
 @RequestMapping("/v1/schedules/tasks")
-@Api("定时任务定义接口")
-public class ScheduleTaskController {
+@Api("全局层定时任务定义接口")
+public class ScheduleTaskSiteController {
 
     private ScheduleTaskService scheduleTaskService;
 
-    public ScheduleTaskController(ScheduleTaskService scheduleTaskService) {
+    public ScheduleTaskSiteController(ScheduleTaskService scheduleTaskService) {
         this.scheduleTaskService = scheduleTaskService;
     }
 
@@ -47,62 +42,38 @@ public class ScheduleTaskController {
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "创建定时任务")
+    @ApiOperation(value = "全局层创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTask> create(@RequestBody @Valid ScheduleTaskDTO dto) {
-        if (dto.getParams() == null) {
-            dto.setParams(new HashMap<>(0));
-        }
-        if(dto.getEndTime()!=null && dto.getEndTime().getTime() < new Date().getTime()){
-            throw new CommonException("error.scheduleTask.endTime.cantbefore.now");
-        }
-        if (TriggerType.CRON.getValue().equals(dto.getTriggerType())) {
-            if (StringUtils.isEmpty(dto.getCronExpression())) {
-                throw new CommonException("error.scheduleTask.cronExpressionEmpty");
-            }
-            if (!CronExpression.isValidExpression(dto.getCronExpression())) {
-                throw new CommonException("error.scheduleTask.cronExpressionInvalid");
-            }
-        } else if (TriggerType.SIMPLE.getValue().equals(dto.getTriggerType())) {
-            // 实际重复次数 为 前端传回重复次数（执行次数） -1
-            dto.setSimpleRepeatCount(dto.getSimpleRepeatCount()-1);
-
-            if (dto.getSimpleRepeatInterval() == null) {
-                throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalNull");
-            }
-            if (dto.getSimpleRepeatIntervalUnit() == null) {
-                throw new CommonException("error.scheduleTask.repeatCountOrRepeatIntervalUnitNull");
-            }
-        } else {
-            throw new CommonException("error.scheduleTask.invalidTriggerType");
-        }
-        return new ResponseEntity<>(scheduleTaskService.create(dto), HttpStatus.OK);
+        ScheduleTaskValidator.validatorCreate(dto);
+        return new ResponseEntity<>(scheduleTaskService.create(dto, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "启用任务")
+    @ApiOperation(value = "全局层启用任务")
     @PutMapping("/{id}/enable")
     public void enable(@PathVariable long id, @RequestParam long objectVersionNumber) {
-        scheduleTaskService.enable(id, objectVersionNumber);
+        scheduleTaskService.enable(id, objectVersionNumber, ResourceLevel.SITE.value(), 0L);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "停用任务")
+    @ApiOperation(value = "全局层停用任务")
     @PutMapping("/{id}/disable")
     public void disable(@PathVariable long id, @RequestParam long objectVersionNumber) {
+        scheduleTaskService.getQuartzTask(id, ResourceLevel.SITE.value(), 0L);
         scheduleTaskService.disable(id, objectVersionNumber, false);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "删除任务")
+    @ApiOperation(value = "全局层删除任务")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable long id) {
-        scheduleTaskService.delete(id);
+        scheduleTaskService.delete(id, ResourceLevel.SITE.value(), 0L);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
-    @ApiOperation(value = "分页查询定时任务")
+    @ApiOperation(value = "全局层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<Page<QuartzTaskDTO>> pagingQuery(@RequestParam(value = "status", required = false) String status,
@@ -111,27 +82,27 @@ public class ScheduleTaskController {
                                                            @RequestParam(name = "params", required = false) String params,
                                                            @ApiIgnore
                                                            @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params);
+        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.SITE.value(), 0L);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
-    @ApiOperation(value = "查看任务详情")
+    @ApiOperation(value = "全局层查看任务详情")
     public ResponseEntity<ScheduleTaskDetailDTO> getTaskDetail(@PathVariable long id) {
-        return new ResponseEntity<>(scheduleTaskService.getTaskDetail(id), HttpStatus.OK);
+        return new ResponseEntity<>(scheduleTaskService.getTaskDetail(id, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
 
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "任务名校验")
+    @ApiOperation(value = "全局层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@RequestParam(name = "name") String name) {
-        scheduleTaskService.checkName(name);
+        scheduleTaskService.checkName(name, ResourceLevel.SITE.value());
         return new ResponseEntity(HttpStatus.OK);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "Cron表达式校验")
+    @ApiOperation(value = "全局层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(@RequestBody String cron) {
         return new ResponseEntity(TriggerUtils.getRecentThree(cron), HttpStatus.OK);

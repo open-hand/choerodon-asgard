@@ -14,6 +14,7 @@ import io.choerodon.asgard.property.PropertyTimedTask
 import io.choerodon.asgard.schedule.QuartzDefinition
 import io.choerodon.core.domain.Page
 import io.choerodon.core.exception.CommonException
+import io.choerodon.core.iam.ResourceLevel
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import io.choerodon.mybatis.pagehelper.domain.Sort
 import org.springframework.boot.test.context.SpringBootTest
@@ -50,16 +51,16 @@ class ScheduleTaskServiceSpec extends Specification {
         mockMethodMapper.selectByPrimaryKey(_) >> { return method }
         mockTaskMapper.insertSelective(_) >> { return insert }
         when: '方法调用'
-        scheduleTaskService.create(dto)
+        scheduleTaskService.create(dto, "site", 0L)
         then: '结果分析'
         def e = thrown(exceptionType)
         e.message == msg
         where: "异常比对"
-        method                                                                                                                                                                                                                       | insert || exceptionType   | msg
-        null                                                                                                                                                                                                                         | 0      || CommonException | "error.scheduleTask.methodNotExist"
-        new QuartzMethod(code: "code", params: "[{\"name\":\"name\",\"defaultValue\":null,\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")          | 0      || CommonException | "error.scheduleTask.paramInvalidType"
-        new QuartzMethod(code: "code", params: "[{\"name\":\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"IntegerInValid\",\"description\":\"年龄\"}]") | 0      || CommonException | "error.scheduleTask.paramType"
-        new QuartzMethod(code: "code", params: "[{\"name\":\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")        | 0      || CommonException | "error.scheduleTask.create"
+        method                                                                                                                                                                                                                                      | insert || exceptionType   | msg
+        null                                                                                                                                                                                                                                        | 0      || CommonException | "error.scheduleTask.methodNotExist"
+        new QuartzMethod(code: "code", level: "site", params: "[{\"name\":\"name\",\"defaultValue\":null,\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")          | 0      || CommonException | "error.scheduleTask.paramInvalidType"
+        new QuartzMethod(code: "code", level: "site", params: "[{\"name\":\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"IntegerInValid\",\"description\":\"年龄\"}]") | 0      || CommonException | "error.scheduleTask.paramType"
+        new QuartzMethod(code: "code", level: "site", params: "[{\"name\":\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")        | 0      || CommonException | "error.scheduleTask.create"
     }
 
     def "Create[IOException]"() {
@@ -71,10 +72,10 @@ class ScheduleTaskServiceSpec extends Specification {
         dto.setParams(map)
         and: 'mock'
         mockMethodMapper.selectByPrimaryKey(_) >> {
-            return new QuartzMethod(code: "code", params: "[{\"name\",\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")
+            return new QuartzMethod(code: "code", level: "site", params: "[{\"name\",\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")
         }
         when: '方法调用'
-        scheduleTaskService.create(dto)
+        scheduleTaskService.create(dto, "site", 0L)
         then: '结果分析'
         def e = thrown(CommonException)
         e.message == "error.scheduleTask.createJsonIOException"
@@ -100,11 +101,11 @@ class ScheduleTaskServiceSpec extends Specification {
 
         and: 'mock'
         mockMethodMapper.selectByPrimaryKey(_) >> {
-            return new QuartzMethod(code: "code", params: params)
+            return new QuartzMethod(code: "code", level: "site", params: params)
         }
         mockTaskMapper.insertSelective(_) >> { return 1 }
         when: '方法调用'
-        scheduleTaskService.create(dto)
+        scheduleTaskService.create(dto, "site", 0L)
         then: '结果分析'
         noExceptionThrown()
     }
@@ -115,11 +116,13 @@ class ScheduleTaskServiceSpec extends Specification {
         def objectVersionNumber = 1L
 
         and: 'mock'
-        mockTaskMapper.selectByPrimaryKey(_) >> { return new QuartzTask(id: 1L, status: 'DISABLE') }
+        mockTaskMapper.selectByPrimaryKey(_) >> {
+            return new QuartzTask(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site")
+        }
         mockTaskMapper.updateByPrimaryKey(_) >> { return 1 }
 
         when: '方法调用'
-        scheduleTaskService.enable(id, objectVersionNumber)
+        scheduleTaskService.enable(id, objectVersionNumber, "site", 0L)
         then: '结果分析'
         noExceptionThrown()
     }
@@ -134,14 +137,14 @@ class ScheduleTaskServiceSpec extends Specification {
         mockTaskMapper.updateByPrimaryKey(_) >> { return 0 }
 
         when: '方法调用'
-        scheduleTaskService.enable(id, objectVersionNumber)
+        scheduleTaskService.enable(id, objectVersionNumber, "site", 0L)
         then: '结果分析'
         def error = thrown(CommonException)
         error.message == errormsg
         where: '异常分析'
-        dto                                       || errormsg
-        null                                      || "error.scheduleTask.taskNotExist"
-        new QuartzTask(id: 1L, status: 'DISABLE') || "error.scheduleTask.enableTaskFailed"
+        dto                                                                    || errormsg
+        null                                                                   || "error.scheduleTask.taskNotExist"
+        new QuartzTask(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site") || "error.scheduleTask.enableTaskFailed"
 
     }
 
@@ -187,12 +190,12 @@ class ScheduleTaskServiceSpec extends Specification {
 
         and: 'mock'
         mockTaskMapper.selectByPrimaryKey(_) >> {
-            return new QuartzTask(id: 1L, status: 'ENABLE', objectVersionNumber: 1L)
+            return new QuartzTask(id: 1L, status: 'ENABLE', sourceId: 0L, level: "site", objectVersionNumber: 1L)
         }
         mockTaskMapper.deleteByPrimaryKey(_) >> { return 1 }
 
         when: '方法调用'
-        scheduleTaskService.delete(id)
+        scheduleTaskService.delete(id, "site", 0L)
         then: '结果分析'
         noExceptionThrown()
     }
@@ -206,14 +209,14 @@ class ScheduleTaskServiceSpec extends Specification {
         mockTaskMapper.deleteByPrimaryKey(_) >> { return 0 }
 
         when: '方法调用'
-        scheduleTaskService.delete(id)
+        scheduleTaskService.delete(id, "site", 0L)
         then: '结果分析'
         def error = thrown(CommonException)
         error.message == errormsg
         where: '异常分析'
-        dto                                                               || errormsg
-        null                                                              || "error.scheduleTask.taskNotExist"
-        new QuartzTask(id: 1L, status: 'ENABLE', objectVersionNumber: 1L) || "error.scheduleTask.deleteTaskFailed"
+        dto                                                                                            || errormsg
+        null                                                                                           || "error.scheduleTask.taskNotExist"
+        new QuartzTask(id: 1L, status: 'ENABLE', sourceId: 0L, level: "site", objectVersionNumber: 1L) || "error.scheduleTask.deleteTaskFailed"
     }
 
     def "PageQuery"() {
@@ -234,9 +237,9 @@ class ScheduleTaskServiceSpec extends Specification {
         def order = new Sort.Order("id")
         def pageRequest = new PageRequest(1, 20, new Sort(order))
         and: "mock"
-        mockTaskMapper.fulltextSearch(_, _, _, _) >> { return taskList }
+        mockTaskMapper.fulltextSearch(_, _, _, _, _, _) >> { return taskList }
         when: '调用方法'
-        scheduleTaskService.pageQuery(pageRequest, status, name, description, params)
+        scheduleTaskService.pageQuery(pageRequest, status, name, description, params, "site", 0L)
         then: '无异常抛出'
         thrown(NullPointerException)
     }
@@ -347,7 +350,7 @@ class ScheduleTaskServiceSpec extends Specification {
         and: "mock"
         mockTaskMapper.selectByPrimaryKey(_) >> { return null }
         when: '方法调用'
-        scheduleTaskService.getTaskDetail(id)
+        scheduleTaskService.getTaskDetail(id, "site", 0L)
         then: "结果分析"
         def e = thrown(CommonException)
         e.message == "error.scheduleTask.taskNotExist"
@@ -359,13 +362,17 @@ class ScheduleTaskServiceSpec extends Specification {
 
         def detail = new QuartzTaskDetail()
         detail.setId(1L)
+        detail.setLevel("site")
+        detail.setSourceId(0L)
         detail.setParams("{\"isInstantly\",true,\"name\",\"zh\",\"age\",20}")
         and: "mock"
-        mockTaskMapper.selectByPrimaryKey(_) >> { return new QuartzTask(startTime: new Date()) }
+        mockTaskMapper.selectByPrimaryKey(_) >> {
+            return new QuartzTask(startTime: new Date(), level: "site", sourceId: 0L)
+        }
         mockInstanceMapper.selectLastInstance(_) >> { return null }
         mockTaskMapper.selectTaskById(_) >> { return detail }
         when: '方法调用'
-        scheduleTaskService.getTaskDetail(id)
+        scheduleTaskService.getTaskDetail(id, "site", 0L)
         then: "结果分析"
         def e = thrown(CommonException)
         e.message == "error.scheduleTaskDetailDTO.jsonIOException"
@@ -377,15 +384,19 @@ class ScheduleTaskServiceSpec extends Specification {
 
         def detail = new QuartzTaskDetail()
         detail.setId(1L)
+        detail.setLevel("site")
+        detail.setSourceId(0L)
         detail.setParams("{\"isInstantly\":true,\"name\":\"zh\",\"age\":20}")
         and: "mock"
-        mockTaskMapper.selectByPrimaryKey(_) >> { return new QuartzTask(startTime: new Date()) }
+        mockTaskMapper.selectByPrimaryKey(_) >> {
+            return new QuartzTask(startTime: new Date(), sourceId: 0L, level: "site")
+        }
         mockInstanceMapper.selectLastInstance(_) >> {
-            return new QuartzTaskInstance(actualStartTime: new Date(), plannedNextTime: new Date())
+            return new QuartzTaskInstance(actualStartTime: new Date(), plannedNextTime: new Date(), level: "site", sourceId: 0L)
         }
         mockTaskMapper.selectTaskById(_) >> { return detail }
         when: '方法调用'
-        scheduleTaskService.getTaskDetail(id)
+        scheduleTaskService.getTaskDetail(id, "site", 0L)
         then: "结果分析"
         noExceptionThrown()
     }
@@ -397,10 +408,10 @@ class ScheduleTaskServiceSpec extends Specification {
         list.add(1L)
 
         and: "mock"
-        mockTaskMapper.selectTaskIdByName(name) >> { return new ArrayList<Long>() }
+        mockTaskMapper.selectTaskIdByName(name, _) >> { return new ArrayList<Long>() }
 
         when: "方法调用"
-        scheduleTaskService.checkName(name)
+        scheduleTaskService.checkName(name, "site")
         then: "抛出异常"
         noExceptionThrown()
     }
@@ -412,10 +423,10 @@ class ScheduleTaskServiceSpec extends Specification {
         list.add(1L)
 
         and: "mock"
-        mockTaskMapper.selectTaskIdByName(name) >> { return list }
+        mockTaskMapper.selectTaskIdByName(name, ResourceLevel.SITE.value()) >> { return list }
 
         when: "方法调用"
-        scheduleTaskService.checkName(name)
+        scheduleTaskService.checkName(name, ResourceLevel.SITE.value())
         then: "抛出异常"
         def e = thrown(CommonException)
         e.message == "error.scheduleTask.name.exist"

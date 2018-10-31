@@ -17,7 +17,9 @@ public interface QuartzTaskInstanceMapper extends BaseMapper<QuartzTaskInstance>
     List<ScheduleTaskInstanceDTO> fulltextSearch(@Param("status") String status,
                                                  @Param("taskName") String taskName,
                                                  @Param("exceptionMessage") String exceptionMessage,
-                                                 @Param("params") String params);
+                                                 @Param("params") String params,
+                                                 @Param("level") String level,
+                                                 @Param("sourceId") Long sourceId);
 
     List<ScheduleInstanceConsumerDTO> pollBathByMethod(@Param("method") String method);
 
@@ -32,6 +34,8 @@ public interface QuartzTaskInstanceMapper extends BaseMapper<QuartzTaskInstance>
     List<ScheduleTaskInstanceLogDTO> selectByTaskId(@Param("taskId") Long taskId,
                                                     @Param("status") String status,
                                                     @Param("serviceInstanceId") String serviceInstanceId,
-                                                    @Param("params") String params);
+                                                    @Param("params") String params,
+                                                    @Param("level") String level,
+                                                    @Param("sourceId") Long sourceId);
 
 }

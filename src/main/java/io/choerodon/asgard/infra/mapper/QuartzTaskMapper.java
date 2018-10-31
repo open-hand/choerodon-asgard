@@ -12,13 +12,15 @@ import io.choerodon.mybatis.common.BaseMapper;
 
 public interface QuartzTaskMapper extends BaseMapper<QuartzTask> {
 
-    @Select("SELECT id FROM asgard_quartz_task WHERE name = #{taskName}")
-    List<Long> selectTaskIdByName(@Param("taskName") String taskName);
+    @Select("SELECT id FROM asgard_quartz_task WHERE name = #{taskName} AND fd_level = #{level}")
+    List<Long> selectTaskIdByName(@Param("taskName") String taskName, @Param("level") String level);
 
     List<QuartzTask> fulltextSearch(@Param("status") String status,
                                     @Param("name") String name,
                                     @Param("description") String description,
-                                    @Param("params") String params);
+                                    @Param("params") String params,
+                                    @Param("level") String level,
+                                    @Param("sourceId") Long sourceId);
 
     QuartzTaskDetail selectTaskById(@Param("id") Long id);
 }

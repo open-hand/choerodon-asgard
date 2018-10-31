@@ -13,10 +13,10 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 public interface ScheduleMethodService {
 
     ResponseEntity<Page<ScheduleMethodInfoDTO>> pageQuery(PageRequest pageRequest, String code,
-                                                          String service, String method, String description, String params);
+                                                          String service, String method, String description, String params, String level);
 
-    List<ScheduleMethodDTO> getMethodByService(String serviceName);
+    List<ScheduleMethodDTO> getMethodByService(String serviceName, String level);
 
 
-    ScheduleMethodParamsDTO getParams(Long id);
+    ScheduleMethodParamsDTO getParams(Long id, String level);
 }

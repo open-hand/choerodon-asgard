@@ -35,6 +35,8 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         def taskName = "taskName"
         def exceptionMessage = "exceptionMsg"
         def params = "params"
+        def level = "site"
+        def sourceId = 0L
         def stiDTOList = new ArrayList<ScheduleTaskInstanceDTO>()
         def stiDTO = new ScheduleTaskInstanceDTO()
         stiDTO.setId(1L)
@@ -45,10 +47,10 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         def pageRequest = new PageRequest(1, 20, new Sort(order))
 
         when: '方法调用'
-        scheduleTaskInstanceService.pageQuery(pageRequest, status, taskName, exceptionMessage, params)
+        scheduleTaskInstanceService.pageQuery(pageRequest, status, taskName, exceptionMessage, params, level, sourceId)
         then: '参数准备'
         noExceptionThrown()
-        1 * mockQuartzTaskInstanceMapper.fulltextSearch(status, taskName, exceptionMessage, params)
+        1 * mockQuartzTaskInstanceMapper.fulltextSearch(status, taskName, exceptionMessage, params, level, sourceId)
     }
 
     def "PollBatch"() {
@@ -132,10 +134,11 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         def pageRequest = new PageRequest(0, 20, new Sort(order))
 
         when: '方法调用'
-        scheduleTaskInstanceService.pagingQueryByTaskId(pageRequest, taskId, status, serviceInstanceId, params)
+        scheduleTaskInstanceService.pagingQueryByTaskId(pageRequest, taskId, status, serviceInstanceId, params, "site", 0L)
         then: "无异常抛出"
         noExceptionThrown()
-        1 * mockQuartzTaskInstanceMapper.selectByTaskId(_, _, _, _)
+        1 * mockQuartzTaskInstanceMapper.selectByTaskId(_, _, _, _, _, _)
+        1 * mockQuartzTaskInstanceMapper.selectOne(_) >> { new QuartzTaskInstance(level: "site") }
     }
 
     def "Failed"() {
@@ -150,8 +153,8 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         then: "异常判断"
         noExceptionThrown()
         where: "异常比对"
-        dto | num
-        null | 0
+        dto                            | num
+        null                           | 0
         new QuartzTaskInstance(id: 1L) | 1
         new QuartzTaskInstance(id: 1L) | 0
     }

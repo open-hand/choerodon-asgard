@@ -2,6 +2,7 @@ package io.choerodon.asgard.domain;
 
 import java.util.Date;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -46,6 +47,11 @@ public class QuartzTaskInstance extends AuditDomain {
     private String executeMethod;
 
     private String executeResult;
+
+    @Column(name = "FD_LEVEL")
+    private String level;
+
+    private Long sourceId;
 
     public Long getId() {
         return id;
@@ -167,6 +173,22 @@ public class QuartzTaskInstance extends AuditDomain {
         this.taskName = taskName;
     }
 
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -199,6 +221,8 @@ public class QuartzTaskInstance extends AuditDomain {
                 ", executeParams='" + executeParams + '\'' +
                 ", executeMethod='" + executeMethod + '\'' +
                 ", executeResult='" + executeResult + '\'' +
+                ", level='" + level + '\'' +
+                ", sourceId='" + sourceId + '\'' +
                 '}';
     }
 }

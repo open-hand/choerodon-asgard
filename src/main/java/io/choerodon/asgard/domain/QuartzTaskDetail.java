@@ -28,6 +28,10 @@ public class QuartzTaskDetail {
 
     private String methodCode;
 
+    private String level;
+
+    private Long sourceId;
+
     public Long getId() {
         return id;
     }
@@ -130,5 +134,21 @@ public class QuartzTaskDetail {
 
     public void setMethodCode(String methodCode) {
         this.methodCode = methodCode;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
     }
 }

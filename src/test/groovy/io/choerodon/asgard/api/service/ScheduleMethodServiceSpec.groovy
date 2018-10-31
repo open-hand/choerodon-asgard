@@ -56,7 +56,7 @@ class ScheduleMethodServiceSpec extends Specification {
         mockMethodMapper.fulltextSearch(_, _, _, _, _) >> { return list }
         dc.getInstances(_) >> { new ArrayList<>() }
         when: "方法调用"
-        scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params)
+        scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, "site")
         then: "结果分析"
         thrown(NullPointerException)
     }
@@ -117,9 +117,9 @@ class ScheduleMethodServiceSpec extends Specification {
         def list = new ArrayList<QuartzMethod>()
         list.add(quartzMethod)
         and: "mock"
-        mockMethodMapper.selectByService(_) >> { return list }
+        mockMethodMapper.selectByService(_, "site") >> { return list }
         when: "方法调用"
-        def query = scheduleMethodService.getMethodByService(serviceName)
+        def query = scheduleMethodService.getMethodByService(serviceName, "site")
         then: "结果分析"
         noExceptionThrown()
         query.size() == list.size()
@@ -131,7 +131,7 @@ class ScheduleMethodServiceSpec extends Specification {
         and: "mock"
         mockMethodMapper.selectByPrimaryKey(_) >> { return null }
         when: "方法调用"
-        scheduleMethodService.getParams(id)
+        scheduleMethodService.getParams(id, "site")
         then: "结果分析"
         def e = thrown(CommonException)
         e.message == "error.scheduleMethod.notExist"
@@ -142,6 +142,7 @@ class ScheduleMethodServiceSpec extends Specification {
         def id = 1L
         def quartzMethod = new QuartzMethod()
         quartzMethod.setId(1L)
+        quartzMethod.setLevel("site")
         def scheduleMethodParamsDTO = new ScheduleMethodParamsDTO()
         scheduleMethodParamsDTO.setId(1L)
         scheduleMethodParamsDTO.setParamsJson("[{\"name\":\"isInstantly\",\"defaultValue\":true,\"type\":\"Boolean\",\"description\":\"测试用布尔类型字段\"},{\"name\":\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")
@@ -151,7 +152,7 @@ class ScheduleMethodServiceSpec extends Specification {
         mockMethodMapper.selectParamsById(id) >> { return scheduleMethodParamsDTO }
 
         when: "方法调用"
-        scheduleMethodService.getParams(id)
+        scheduleMethodService.getParams(id, "site")
 
         then: "结果分析"
         noExceptionThrown()
@@ -162,6 +163,7 @@ class ScheduleMethodServiceSpec extends Specification {
         def id = 1L
         def quartzMethod = new QuartzMethod()
         quartzMethod.setId(1L)
+        quartzMethod.setLevel("site")
         def scheduleMethodParamsDTO = new ScheduleMethodParamsDTO()
         scheduleMethodParamsDTO.setId(1L)
         scheduleMethodParamsDTO.setParamsJson("[invalid]")
@@ -170,7 +172,7 @@ class ScheduleMethodServiceSpec extends Specification {
         mockMethodMapper.selectParamsById(id) >> { return scheduleMethodParamsDTO }
 
         when: "方法调用"
-        scheduleMethodService.getParams(id)
+        scheduleMethodService.getParams(id, "site")
 
         then: "结果分析"
         def e = thrown(CommonException)

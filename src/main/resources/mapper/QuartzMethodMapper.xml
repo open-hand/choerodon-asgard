@@ -19,7 +19,9 @@
         <if test="description != null">
             AND description LIKE concat(concat('%',#{description}),'%')
         </if>
-
+        <if test="level != null">
+            AND fd_level = #{level}
+        </if>
         <if test="params != null">
             AND(
             code LIKE concat(concat('%',#{params}),'%') OR
@@ -35,6 +37,9 @@
         *
         FROM asgard_quartz_method
         WHERE service = #{service}
+        <if test="level != null">
+            AND fd_level = #{level}
+        </if>
     </select>
 
     <select id="selectParamsById" resultType="io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO">

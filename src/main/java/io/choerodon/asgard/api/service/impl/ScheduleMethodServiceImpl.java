@@ -45,9 +45,9 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
     }
 
     @Override
-    public ResponseEntity<Page<ScheduleMethodInfoDTO>> pageQuery(PageRequest pageRequest, String code, String service, String method, String description, String params) {
+    public ResponseEntity<Page<ScheduleMethodInfoDTO>> pageQuery(PageRequest pageRequest, String code, String service, String method, String description, String params, String level) {
         Page<QuartzMethod> page = PageHelper.doPageAndSort(pageRequest,
-                () -> methodMapper.fulltextSearch(code, service, method, description, params));
+                () -> methodMapper.fulltextSearch(code, service, method, description, params, level));
         Page<ScheduleMethodInfoDTO> pageBack = pageConvert(page);
         return new ResponseEntity<>(pageBack, HttpStatus.OK);
 
@@ -80,17 +80,20 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
     }
 
     @Override
-    public List<ScheduleMethodDTO> getMethodByService(String serviceName) {
-        return methodMapper.selectByService(serviceName).stream().map(t -> new ScheduleMethodDTO(t, objectMapper)).collect(Collectors.toList());
+    public List<ScheduleMethodDTO> getMethodByService(String serviceName, String level) {
+        return methodMapper.selectByService(serviceName,level).stream().map(t -> new ScheduleMethodDTO(t, objectMapper)).collect(Collectors.toList());
     }
 
     @Override
-    public ScheduleMethodParamsDTO getParams(Long id) {
+    public ScheduleMethodParamsDTO getParams(Long id,String level) {
         QuartzMethod method = methodMapper.selectByPrimaryKey(id);
         if (method == null) {
             throw new CommonException("error.scheduleMethod.notExist");
         }
+        if(!level.equals(method.getLevel())){
+            throw new CommonException("error.scheduleMethod.levelNotMatch");
+        }
         ScheduleMethodParamsDTO scheduleMethodParamsDTO = methodMapper.selectParamsById(id);
-        return new ScheduleMethodParamsDTO(scheduleMethodParamsDTO.getId(),scheduleMethodParamsDTO.getParamsJson(),objectMapper);
+        return new ScheduleMethodParamsDTO(scheduleMethodParamsDTO.getId(), scheduleMethodParamsDTO.getParamsJson(), objectMapper);
     }
 }

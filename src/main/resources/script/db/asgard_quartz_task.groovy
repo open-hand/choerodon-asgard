@@ -45,4 +45,12 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
             column(name: "SIMPLE_REPEAT_INTERVAL_UNIT", type: "VARCHAR(32)", remarks: 'simple-trigger执行时间间隔的单位。SECOND,MINUTES,HOUR,WEEK,MONTH')
         }
     }
+
+    changeSet(id: '2018-10-30-add-column-level', author: 'youquandeng1@gmail.com') {
+        addColumn(tableName: 'ASGARD_QUARTZ_TASK') {
+            column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'EXECUTE_METHOD')
+            column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED', defaultValue: "0", remarks: '创建该记录的源id，可以是projectId,也可以是organizarionId等', afterColumn: 'FD_LEVEL')
+        }
+    }
+
 }

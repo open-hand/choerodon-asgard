@@ -39,4 +39,10 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
             column(name: "DESCRIPTION", type: "VARCHAR(255)", remarks: '方法描述')
         }
     }
+
+    changeSet(id: '2018-10-30-add-column-level', author: 'youquandeng1@gmail.com') {
+        addColumn(tableName: 'ASGARD_QUARTZ_METHOD') {
+            column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'PARAMS')
+        }
+    }
 }

@@ -16,7 +16,12 @@
         <if test="description != null">
             AND description LIKE concat(concat('%',#{description}),'%')
         </if>
-
+        <if test="level != null">
+            AND fd_level = #{level}
+        </if>
+        <if test="sourceId != null">
+            AND source_id = #{sourceId}
+        </if>
         <if test="params != null">
             AND(
             name LIKE concat(concat('%',#{params}),'%') OR
