@@ -16,7 +16,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(IntegrationTestConfiguration)
-class ScheduleMethodControllerSpec extends Specification {
+class ScheduleMethodSiteControllerSpec extends Specification {
     @Autowired
     TestRestTemplate restTemplate
 
