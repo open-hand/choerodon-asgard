@@ -1,6 +1,7 @@
 package io.choerodon.asgard;
 
 import io.choerodon.asgard.infra.utils.SpringApplicationContextHelper;
+import io.choerodon.eureka.event.EurekaEventHandler;
 import io.choerodon.resource.annoation.EnableChoerodonResourceServer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 public class AsgardApplication {
 
     public static void main(String[] args) {
+        EurekaEventHandler.getInstance().init();
         SpringApplication.run(AsgardApplication.class, args);
     }
 

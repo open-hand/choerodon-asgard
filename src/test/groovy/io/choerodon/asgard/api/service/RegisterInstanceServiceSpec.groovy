@@ -1,11 +1,12 @@
 package io.choerodon.asgard.api.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.RegisterInstancePayloadDTO
+
 import io.choerodon.asgard.api.service.impl.RegisterInstanceServiceImpl
 import io.choerodon.asgard.property.PropertyData
 import io.choerodon.asgard.property.PropertySaga
 import io.choerodon.asgard.property.PropertySagaTask
+import io.choerodon.eureka.event.EurekaEventPayload
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -22,7 +23,7 @@ class RegisterInstanceServiceSpec extends Specification {
 
     def '测试 instanceDownConsumer方法'() {
         given: '创建一个RegisterInstancePayloadDTO对象'
-        def dto = new RegisterInstancePayloadDTO()
+        def dto = new EurekaEventPayload()
         def wrongAddress = '127.0.0.1:8080'
         dto.setInstanceAddress('127.0.0.1:9092')
 
@@ -45,7 +46,7 @@ class RegisterInstanceServiceSpec extends Specification {
 
     def '测试 instanceUpConsumer方法'() {
         given: '创建RegisterInstancePayloadDTO和PropertyData对象'
-        def dto = new RegisterInstancePayloadDTO()
+        def dto = new EurekaEventPayload()
         dto.setInstanceAddress('127.0.0.1:9092')
         def propertyData = new PropertyData()
         propertyData.setService('test-asgard-service')

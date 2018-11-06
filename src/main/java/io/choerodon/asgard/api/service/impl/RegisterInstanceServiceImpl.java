@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.service.impl;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.eureka.event.EurekaEventPayload;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,6 @@ import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import io.choerodon.asgard.api.dto.RegisterInstancePayloadDTO;
 import io.choerodon.asgard.api.service.*;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.property.PropertyData;
@@ -55,13 +55,13 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     }
 
     @Override
-    public void instanceDownConsumer(final RegisterInstancePayloadDTO payload) {
+    public void instanceDownConsumer(final EurekaEventPayload payload) {
         sagaTaskInstanceService.unlockByInstance(payload.getInstanceAddress());
         scheduleTaskInstanceService.unlockByInstance(payload.getInstanceAddress());
     }
 
     @Override
-    public void instanceUpConsumer(final RegisterInstancePayloadDTO payload) {
+    public void instanceUpConsumer(final EurekaEventPayload payload) {
         PropertyData propertyData = fetchPropertyData(payload.getInstanceAddress());
         if (propertyData == null) {
             throw new RemoteAccessException("error.instanceUpConsumer.fetchPropertyData");
