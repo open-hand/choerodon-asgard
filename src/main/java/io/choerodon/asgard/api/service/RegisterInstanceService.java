@@ -1,11 +1,11 @@
 package io.choerodon.asgard.api.service;
 
-import io.choerodon.asgard.api.dto.RegisterInstancePayloadDTO;
+import io.choerodon.eureka.event.EurekaEventPayload;
 
 public interface RegisterInstanceService {
 
-    void instanceDownConsumer(final RegisterInstancePayloadDTO payload);
+    void instanceDownConsumer(final EurekaEventPayload payload);
 
-    void instanceUpConsumer(final RegisterInstancePayloadDTO payload);
+    void instanceUpConsumer(final EurekaEventPayload payload);
 
 }
