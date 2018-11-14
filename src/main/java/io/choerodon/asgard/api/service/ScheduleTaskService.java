@@ -20,6 +20,8 @@ public interface ScheduleTaskService {
 
     void disable(long id, Long objectVersionNumber, boolean executeWithIn);
 
+    void disableByOrganizationId(long orgId);
+
     void delete(long id, String level, Long sourceId);
 
     void finish(long id);
