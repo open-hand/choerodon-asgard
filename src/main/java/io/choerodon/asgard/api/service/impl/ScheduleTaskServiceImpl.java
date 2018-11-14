@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.core.iam.ResourceLevel;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,6 +195,10 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         if (executeWithIn) {
             objectVersionNumber = quartzTask.getObjectVersionNumber();
         }
+        disableTaskAndPauseJob(id, objectVersionNumber, quartzTask);
+    }
+
+    private void disableTaskAndPauseJob(long id, Long objectVersionNumber, QuartzTask quartzTask) {
         // 将 未结束的任务 置为 停止，并暂停job
         if (QuartzDefinition.TaskStatus.ENABLE.name().equals(quartzTask.getStatus())) {
             quartzTask.setStatus(QuartzDefinition.TaskStatus.DISABLE.name());
@@ -204,6 +209,17 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             quartzJobService.pauseJob(id);
             LOGGER.info("disable job: {}", quartzTask);
         }
+    }
+
+    @Override
+    public void disableByOrganizationId(long orgId) {
+        QuartzTask query = new QuartzTask();
+        query.setLevel(ResourceLevel.ORGANIZATION.value());
+        query.setSourceId(orgId);
+        List<QuartzTask> quartzTasks = taskMapper.select(query);
+        quartzTasks.forEach(quartzTask -> {
+            disableTaskAndPauseJob(quartzTask.getId(), quartzTask.getObjectVersionNumber(), quartzTask);
+        });
     }
 
     @Transactional
