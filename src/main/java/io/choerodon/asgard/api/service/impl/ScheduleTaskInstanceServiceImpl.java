@@ -9,7 +9,6 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
 import io.choerodon.core.domain.Page;
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -115,17 +114,6 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
 
     @Override
     public Page<ScheduleTaskInstanceLogDTO> pagingQueryByTaskId(PageRequest pageRequest, Long taskId, String status, String serviceInstanceId, String params, String level, Long sourceId) {
-        QuartzTaskInstance quartzTaskInstance = new QuartzTaskInstance();
-        //根据taskId和sourceId查询
-        quartzTaskInstance.setTaskId(taskId);
-        quartzTaskInstance.setSourceId(sourceId);
-        quartzTaskInstance = instanceMapper.selectOne(quartzTaskInstance);
-        if (quartzTaskInstance == null) {
-            throw new CommonException("error.scheduleTaskInstance.taskIdNotExist");
-        }
-        if (!level.equals(quartzTaskInstance.getLevel())) {
-            throw new CommonException("error.scheduleTaskInstance.levelNotMatch");
-        }
         return PageHelper.doPageAndSort(pageRequest,
                 () -> instanceMapper.selectByTaskId(taskId, status, serviceInstanceId, params, level, sourceId));
     }
