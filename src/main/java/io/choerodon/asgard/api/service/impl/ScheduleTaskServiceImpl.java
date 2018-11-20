@@ -1,14 +1,15 @@
 package io.choerodon.asgard.api.service.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.asgard.api.dto.*;
+import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
+import io.choerodon.asgard.infra.feign.IamFeignClient;
+import io.choerodon.asgard.schedule.annotation.JobParam;
 import io.choerodon.core.iam.ResourceLevel;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -19,10 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import io.choerodon.asgard.api.dto.QuartzTaskDTO;
-import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
-import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
-import io.choerodon.asgard.api.dto.TriggerType;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
@@ -66,15 +63,19 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private QuartzTaskInstanceMapper instanceMapper;
 
+    private IamFeignClient iamFeignClient;
+
 
     public ScheduleTaskServiceImpl(QuartzMethodMapper methodMapper,
                                    QuartzTaskMapper taskMapper,
                                    QuartzJobService quartzJobService,
-                                   QuartzTaskInstanceMapper instanceMapper) {
+                                   QuartzTaskInstanceMapper instanceMapper,
+                                   IamFeignClient iamFeignClient) {
         this.methodMapper = methodMapper;
         this.taskMapper = taskMapper;
         this.quartzJobService = quartzJobService;
         this.instanceMapper = instanceMapper;
+        this.iamFeignClient = iamFeignClient;
     }
 
     @Override
@@ -82,20 +83,18 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     public QuartzTask create(final ScheduleTaskDTO dto, String level, Long sourceId) {
         QuartzTask quartzTask = modelMapper.map(dto, QuartzTask.class);
         QuartzMethod method = methodMapper.selectByPrimaryKey(dto.getMethodId());
-        if (method == null) {
-            throw new CommonException("error.scheduleTask.methodNotExist");
-        }
-        if (!level.equals(method.getLevel())) {
-            throw new CommonException(LEVEL_NOT_MATCH);
-        }
+        validatorLevelAndQuartzMethod(level, method);
         try {
+            List<PropertyJobParam> propertyJobParams = objectMapper.readValue(method.getParams(), new TypeReference<List<PropertyJobParam>>() {
+            });
+            putDefaultParameter(propertyJobParams, dto, level, sourceId);
             quartzTask.setExecuteMethod(method.getCode());
             quartzTask.setId(null);
             quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
             quartzTask.setExecuteParams(objectMapper.writeValueAsString(dto.getParams()));
             quartzTask.setLevel(level);
             quartzTask.setSourceId(sourceId);
-            validExecuteParams(dto.getParams(), method.getParams());
+            validExecuteParams(dto.getParams(), propertyJobParams);
             if (taskMapper.insertSelective(quartzTask) != 1) {
                 throw new CommonException("error.scheduleTask.create");
             }
@@ -108,10 +107,44 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         }
     }
 
-    private void validExecuteParams(final Map<String, Object> params, final String paramDefinition) throws IOException {
+    /**
+     * 如果propertyJobParams中有默认自动注入参数，那么会自动注入到dto中
+     *
+     * @param dto
+     * @param level
+     * @param sourceId
+     */
+    private void putDefaultParameter(final List<PropertyJobParam> propertyJobParams, ScheduleTaskDTO dto, final String level, final Long sourceId) {
+        Map<String, Object> params = dto.getParams();
+        Set<String> jobParamsName = propertyJobParams.stream().map(PropertyJobParam::getName).collect(Collectors.toSet());
+        //确定params中有需要默认注入的字段才发起feign请求
+        if (ResourceLevel.ORGANIZATION.value().equals(level)
+                && Arrays.stream(DefaultAutowiredField.organizationDefaultField()).anyMatch(jobParamsName::contains)) {
+            OrganizationDTO organizationDTO = iamFeignClient.queryOrganization(sourceId).getBody();
+            params.put(DefaultAutowiredField.ORGANIZATION_ID, organizationDTO.getId());
+            params.put(DefaultAutowiredField.ORGANIZATION_NAME, organizationDTO.getName());
+            params.put(DefaultAutowiredField.ORGANIZATION_CODE, organizationDTO.getCode());
+        }
+        if (ResourceLevel.PROJECT.value().equals(level)
+                && Arrays.stream(DefaultAutowiredField.projectDefaultField()).anyMatch(jobParamsName::contains)) {
+            ProjectDTO projectDTO = iamFeignClient.queryProject(sourceId).getBody();
+            params.put(DefaultAutowiredField.PROJECT_ID, projectDTO.getId());
+            params.put(DefaultAutowiredField.PROJECT_NAME, projectDTO.getName());
+            params.put(DefaultAutowiredField.PROJECT_CODE, projectDTO.getCode());
+        }
+        dto.setParams(params);
+    }
 
-        List<PropertyJobParam> paramDefinitionList = objectMapper.readValue(paramDefinition, new TypeReference<List<PropertyJobParam>>() {
-        });
+    private void validatorLevelAndQuartzMethod(String level, QuartzMethod method) {
+        if (method == null) {
+            throw new CommonException("error.scheduleTask.methodNotExist");
+        }
+        if (!level.equals(method.getLevel())) {
+            throw new CommonException(LEVEL_NOT_MATCH);
+        }
+    }
+
+    private void validExecuteParams(final Map<String, Object> params, final List<PropertyJobParam> paramDefinitionList) throws IOException {
         params.forEach((k, v) -> {
             PropertyJobParam jobParam = getPropertyJobParam(k, paramDefinitionList);
             if (jobParam != null && !validExecuteParam(v, jobParam.getType(), jobParam.getDefaultValue())) {
@@ -343,7 +376,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 if (ifEqual.isEmpty()) {
                     try {
                         validExecuteParams(objectMapper.readValue(i.getExecuteParams(), new TypeReference<Map<String, Object>>() {
-                        }), method.getParams());
+                        }), objectMapper.readValue(method.getParams(), new TypeReference<List<PropertyJobParam>>() {
+                        }));
                         if (taskMapper.insertSelective(i) != 1) {
                             throw new CommonException("error.scheduleTask.create");
                         }
