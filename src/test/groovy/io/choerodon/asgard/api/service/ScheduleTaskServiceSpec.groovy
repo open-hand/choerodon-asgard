@@ -7,6 +7,7 @@ import io.choerodon.asgard.domain.QuartzMethod
 import io.choerodon.asgard.domain.QuartzTask
 import io.choerodon.asgard.domain.QuartzTaskDetail
 import io.choerodon.asgard.domain.QuartzTaskInstance
+import io.choerodon.asgard.infra.feign.IamFeignClient
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper
@@ -36,8 +37,10 @@ class ScheduleTaskServiceSpec extends Specification {
 
     private QuartzTaskInstanceMapper mockInstanceMapper = Mock(QuartzTaskInstanceMapper)
 
+    private IamFeignClient iamFeignClient = Mock(IamFeignClient)
+
     void setup() {
-        scheduleTaskService = new ScheduleTaskServiceImpl(mockMethodMapper, mockTaskMapper, mockQuartzJobService, mockInstanceMapper)
+        scheduleTaskService = new ScheduleTaskServiceImpl(mockMethodMapper, mockTaskMapper, mockQuartzJobService, mockInstanceMapper, iamFeignClient)
     }
 
     def "Create[Exception]"() {
