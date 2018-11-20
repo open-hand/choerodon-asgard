@@ -138,7 +138,6 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         then: "无异常抛出"
         noExceptionThrown()
         1 * mockQuartzTaskInstanceMapper.selectByTaskId(_, _, _, _, _, _)
-        1 * mockQuartzTaskInstanceMapper.selectOne(_) >> { new QuartzTaskInstance(level: "site") }
     }
 
     def "Failed"() {
