@@ -25,4 +25,7 @@ public class DefaultAutowiredField {
     public static String[] projectDefaultField() {
         return new String[]{PROJECT_ID, PROJECT_NAME, PROJECT_CODE};
     }
+
+    private DefaultAutowiredField() {
+    }
 }
