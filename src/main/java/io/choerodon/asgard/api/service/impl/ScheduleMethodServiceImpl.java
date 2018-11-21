@@ -1,10 +1,15 @@
 package io.choerodon.asgard.api.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
+import io.choerodon.core.iam.ResourceLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpStatus;
@@ -25,6 +30,8 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 @Service
 public class ScheduleMethodServiceImpl implements ScheduleMethodService {
 
+    public static final String DEFAULT = "default";
+    public static final String FIELD_NAME = "name";
     private QuartzMethodMapper methodMapper;
 
     @Autowired
@@ -81,19 +88,58 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
 
     @Override
     public List<ScheduleMethodDTO> getMethodByService(String serviceName, String level) {
-        return methodMapper.selectByService(serviceName,level).stream().map(t -> new ScheduleMethodDTO(t, objectMapper)).collect(Collectors.toList());
+        return methodMapper.selectByService(serviceName, level).stream().map(t -> new ScheduleMethodDTO(t, objectMapper)).collect(Collectors.toList());
     }
 
     @Override
-    public ScheduleMethodParamsDTO getParams(Long id,String level) {
+    public ScheduleMethodParamsDTO getParams(Long id, String level) {
         QuartzMethod method = methodMapper.selectByPrimaryKey(id);
         if (method == null) {
             throw new CommonException("error.scheduleMethod.notExist");
         }
-        if(!level.equals(method.getLevel())){
+        if (!level.equals(method.getLevel())) {
             throw new CommonException("error.scheduleMethod.levelNotMatch");
         }
         ScheduleMethodParamsDTO scheduleMethodParamsDTO = methodMapper.selectParamsById(id);
-        return new ScheduleMethodParamsDTO(scheduleMethodParamsDTO.getId(), scheduleMethodParamsDTO.getParamsJson(), objectMapper);
+        return markDefaultField(new ScheduleMethodParamsDTO(scheduleMethodParamsDTO.getId(), scheduleMethodParamsDTO.getParamsJson(), objectMapper)
+                , method.getLevel());
+    }
+
+    /**
+     * 给方法中标记是否是默认字段
+     * organization层默认字段：organizationId,organizationCode,organizationName
+     * project层默认字段：projectId,projectCode,projectName
+     * @param scheduleMethodParamsDTO
+     * @param level
+     * @return
+     */
+    private ScheduleMethodParamsDTO markDefaultField(ScheduleMethodParamsDTO scheduleMethodParamsDTO, final String level) {
+        List<Map<String, Object>> maps = scheduleMethodParamsDTO.getParamsList();
+        if (ResourceLevel.ORGANIZATION.value().equals(level)) {
+            maps.forEach(map -> {
+                if (Arrays.asList(DefaultAutowiredField.organizationDefaultField()).contains(map.get(FIELD_NAME).toString())) {
+                    map.put(DEFAULT, true);
+                } else {
+                    map.put(DEFAULT, false);
+                }
+            });
+        } else if (ResourceLevel.PROJECT.value().equals(level)) {
+            maps.forEach(map -> {
+                if (Arrays.asList(DefaultAutowiredField.projectDefaultField()).contains(map.get(FIELD_NAME).toString())) {
+                    map.put(DEFAULT, true);
+                } else {
+                    map.put(DEFAULT, false);
+                }
+            });
+        } else if (ResourceLevel.SITE.value().equals(level)) {
+            maps.forEach(map -> map.put(DEFAULT, false));
+        }
+        scheduleMethodParamsDTO.setParamsList(maps);
+        try {
+            scheduleMethodParamsDTO.setParamsJson(objectMapper.writeValueAsString(maps));
+        } catch (JsonProcessingException e) {
+            throw new CommonException("error.ScheduleMethodParamsDTO.jsonIOException", e);
+        }
+        return scheduleMethodParamsDTO;
     }
 }
