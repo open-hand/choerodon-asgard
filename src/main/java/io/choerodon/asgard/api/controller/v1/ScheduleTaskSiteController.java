@@ -3,7 +3,6 @@ package io.choerodon.asgard.api.controller.v1;
 import java.util.List;
 import javax.validation.Valid;
 
-import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -15,6 +14,7 @@ import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
+import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.domain.Page;
@@ -96,7 +96,7 @@ public class ScheduleTaskSiteController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层任务名校验")
     @PostMapping(value = "/check")
-    public ResponseEntity check(@RequestParam(name = "name") String name) {
+    public ResponseEntity check(@RequestBody String name) {
         scheduleTaskService.checkName(name, ResourceLevel.SITE.value());
         return new ResponseEntity(HttpStatus.OK);
     }
