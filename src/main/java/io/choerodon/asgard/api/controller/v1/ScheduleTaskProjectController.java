@@ -102,7 +102,7 @@ public class ScheduleTaskProjectController {
     @ApiOperation(value = "项目层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("project_id") long projectId,
-                                @RequestParam(name = "name") String name) {
+                                @RequestBody String name) {
         scheduleTaskService.checkName(name, ResourceLevel.PROJECT.value());
         return new ResponseEntity(HttpStatus.OK);
     }

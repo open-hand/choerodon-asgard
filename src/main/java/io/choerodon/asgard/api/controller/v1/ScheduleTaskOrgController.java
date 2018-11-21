@@ -1,5 +1,15 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import java.util.List;
+import javax.validation.Valid;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
@@ -14,15 +24,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/schedules/organizations/{organization_id}/tasks")
@@ -108,7 +109,7 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("organization_id") long orgId,
-                                @RequestParam(name = "name") String name) {
+                                @RequestBody String name) {
         scheduleTaskService.checkName(name, ResourceLevel.ORGANIZATION.value());
         return new ResponseEntity(HttpStatus.OK);
     }
