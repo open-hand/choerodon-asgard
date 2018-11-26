@@ -16,6 +16,7 @@ maven-test-branches:
     - tags
     - /^release-.*$/
     - /^hotfix-.*$/
+    - /^feature-.*$/
 
 maven-test-build:
   stage: mvn-package
@@ -30,7 +31,6 @@ maven-test-build:
     - tags
     - /^release-.*$/
     - /^hotfix-.*$/
-    - /^feature-.*$/
 
 docker-build:
   stage: docker-build

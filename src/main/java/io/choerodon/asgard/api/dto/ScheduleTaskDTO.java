@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
@@ -20,6 +21,7 @@ public class ScheduleTaskDTO {
 
     @ApiModelProperty(value = "定时任务名")
     @NotEmpty(message = "error.scheduleTask.nameEmpty")
+    @Size(max = 255, message = "error.scheduleTask.name.size")
     private String name;
 
     @ApiModelProperty(value = "定时任务描述")
