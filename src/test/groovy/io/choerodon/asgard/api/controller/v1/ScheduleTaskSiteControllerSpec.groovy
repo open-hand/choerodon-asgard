@@ -179,7 +179,7 @@ class ScheduleTaskSiteControllerSpec extends Specification {
         given: "参数准备"
         def name = "name"
         when: 'GET请求【查看任务详情】'
-        def response = restTemplate.postForEntity("/v1/schedules/tasks/check?name={name}", null, String, name)
+        def response = restTemplate.postForEntity("/v1/schedules/tasks/check", name, String)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
         1 * mockScheduleTaskService.checkName(name, _)

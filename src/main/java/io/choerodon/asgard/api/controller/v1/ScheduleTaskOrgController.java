@@ -69,7 +69,7 @@ public class ScheduleTaskOrgController {
     @Permission(permissionWithin = true)
     @ApiOperation(value = "停用指定组织下所有任务")
     @PutMapping("/disable")
-    public void disable(@PathVariable("organization_id") long orgId) {
+    public void disableByOrganizationId(@PathVariable("organization_id") long orgId) {
         scheduleTaskService.disableByOrganizationId(orgId);
     }
 

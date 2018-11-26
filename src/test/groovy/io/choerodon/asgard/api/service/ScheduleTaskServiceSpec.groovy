@@ -1,16 +1,20 @@
 package io.choerodon.asgard.api.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
+import io.choerodon.asgard.api.dto.RoleDTO
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO
+import io.choerodon.asgard.api.service.impl.NoticeServiceImpl
 import io.choerodon.asgard.api.service.impl.ScheduleTaskServiceImpl
 import io.choerodon.asgard.domain.QuartzMethod
 import io.choerodon.asgard.domain.QuartzTask
 import io.choerodon.asgard.domain.QuartzTaskDetail
 import io.choerodon.asgard.domain.QuartzTaskInstance
 import io.choerodon.asgard.infra.feign.IamFeignClient
+import io.choerodon.asgard.infra.feign.NotifyFeignClient
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper
+import io.choerodon.asgard.infra.mapper.QuartzTaskMemberMapper
 import io.choerodon.asgard.property.PropertyTimedTask
 import io.choerodon.asgard.schedule.QuartzDefinition
 import io.choerodon.core.domain.Page
@@ -18,8 +22,11 @@ import io.choerodon.core.exception.CommonException
 import io.choerodon.core.iam.ResourceLevel
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import io.choerodon.mybatis.pagehelper.domain.Sort
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -39,8 +46,16 @@ class ScheduleTaskServiceSpec extends Specification {
 
     private IamFeignClient iamFeignClient = Mock(IamFeignClient)
 
+    private NotifyFeignClient notifyFeignClient = Mock(NotifyFeignClient)
+
+    private NoticeService noticeService = new NoticeServiceImpl(notifyFeignClient, iamFeignClient)
+
+    private QuartzTaskMemberMapper mockQuartzTaskMemberMapper = Mock(QuartzTaskMemberMapper)
+
     void setup() {
-        scheduleTaskService = new ScheduleTaskServiceImpl(mockMethodMapper, mockTaskMapper, mockQuartzJobService, mockInstanceMapper, iamFeignClient)
+        scheduleTaskService = new ScheduleTaskServiceImpl(mockMethodMapper,
+                mockTaskMapper, mockQuartzJobService, mockInstanceMapper,
+                mockQuartzTaskMemberMapper, iamFeignClient, noticeService)
     }
 
     def "Create[Exception]"() {
@@ -92,8 +107,23 @@ class ScheduleTaskServiceSpec extends Specification {
         map.put("long", new Long(1111))
         map.put("bool", false)
         map.put("double", new Double(1.1))
+        RoleDTO roleDTO = new RoleDTO()
+        roleDTO.setId(1L)
+        roleDTO.setLevel("site")
+        roleDTO.setName("name")
+        roleDTO.setCode("code")
+        roleDTO.setEnabled(true)
         def dto = new ScheduleTaskDTO()
         dto.setParams(map)
+        dto.setMethodId(1L)
+        ScheduleTaskDTO.NotifyUser user = new ScheduleTaskDTO.NotifyUser()
+        user.setAdministrator(true)
+        user.setAssigner(true)
+        user.setCreator(true)
+        dto.setNotifyUser(user)
+        Long[] ids = new Long[1]
+        ids[0] = 1L
+        dto.setAssignUserIds(ids)
         def params = "[" +
                 "{\"name\":\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"字符串\"}," +
                 "{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"整型\"}," +
@@ -107,10 +137,12 @@ class ScheduleTaskServiceSpec extends Specification {
             return new QuartzMethod(code: "code", level: "site", params: params)
         }
         mockTaskMapper.insertSelective(_) >> { return 1 }
+        iamFeignClient.queryByCode(_) >> new ResponseEntity<RoleDTO>(roleDTO, HttpStatus.OK)
         when: '方法调用'
         scheduleTaskService.create(dto, "site", 0L)
         then: '结果分析'
-        noExceptionThrown()
+        def e = thrown(CommonException)
+        e.message == "error.quartzTaskMember.create"
     }
 
     def "Enable"() {
@@ -157,7 +189,7 @@ class ScheduleTaskServiceSpec extends Specification {
         def objectVersionNumber = 1L
 
         and: 'mock'
-        mockTaskMapper.selectByPrimaryKey(_) >> { return new QuartzTask(id: 1L, status: 'ENABLE') }
+        mockTaskMapper.selectByPrimaryKey(_) >> { return new QuartzTask(id: 1L, status: 'ENABLE', level: "site") }
         mockTaskMapper.updateByPrimaryKey(_) >> { return 1 }
 
         when: '方法调用'
@@ -341,10 +373,10 @@ class ScheduleTaskServiceSpec extends Specification {
         then: "结果分析"
         noExceptionThrown()
         where: "条件分支"
-        dto              | num
-        null             | 0
-        new QuartzTask() | 1
-        new QuartzTask() | 0
+        dto                           | num
+        null                          | 0
+        new QuartzTask(level: "site") | 1
+        new QuartzTask(level: "site") | 0
     }
 
     def "GetTaskDetail[Exception]"() {

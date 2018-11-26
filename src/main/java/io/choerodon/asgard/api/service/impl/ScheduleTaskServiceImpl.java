@@ -9,6 +9,16 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.asgard.api.dto.*;
+import io.choerodon.asgard.api.service.NoticeService;
+import io.choerodon.asgard.domain.*;
+import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
+import io.choerodon.asgard.infra.enums.MemberType;
+import io.choerodon.asgard.infra.feign.IamFeignClient;
+import io.choerodon.asgard.infra.mapper.QuartzTaskMemberMapper;
+import io.choerodon.core.iam.InitRoleCode;
+import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.core.oauth.DetailsHelper;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +27,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.domain.QuartzTaskDetail;
 import io.choerodon.asgard.domain.QuartzTaskInstance;
-import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
-import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
@@ -38,7 +44,6 @@ import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -67,17 +72,25 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private IamFeignClient iamFeignClient;
 
+    private NoticeService noticeService;
+
+    private QuartzTaskMemberMapper quartzTaskMemberMapper;
+
 
     public ScheduleTaskServiceImpl(QuartzMethodMapper methodMapper,
                                    QuartzTaskMapper taskMapper,
                                    QuartzJobService quartzJobService,
                                    QuartzTaskInstanceMapper instanceMapper,
-                                   IamFeignClient iamFeignClient) {
+                                   QuartzTaskMemberMapper quartzTaskMemberMapper,
+                                   IamFeignClient iamFeignClient,
+                                   NoticeService noticeService) {
         this.methodMapper = methodMapper;
         this.taskMapper = taskMapper;
         this.quartzJobService = quartzJobService;
         this.instanceMapper = instanceMapper;
+        this.quartzTaskMemberMapper = quartzTaskMemberMapper;
         this.iamFeignClient = iamFeignClient;
+        this.noticeService = noticeService;
     }
 
     @Override
@@ -101,12 +114,76 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 throw new CommonException("error.scheduleTask.create");
             }
             QuartzTask db = taskMapper.selectByPrimaryKey(quartzTask.getId());
+            //插入通知对象失败需要回滚
+            List<QuartzTaskMember> noticeMembers = insertNoticeMember(dto, level, quartzTask);
+            //发送通知失败不需要回滚,已捕获异常
+            noticeService.sendNotice(quartzTask, noticeMembers, "启用");
             quartzJobService.addJob(db);
             LOGGER.info("create job: {}", quartzTask);
             return db;
         } catch (IOException e) {
             throw new CommonException("error.scheduleTask.createJsonIOException", e);
         }
+    }
+
+    /**
+     * 插入通知成员信息
+     *
+     * @param dto
+     * @param level
+     * @param quartzTask
+     * @return
+     */
+    private List<QuartzTaskMember> insertNoticeMember(final ScheduleTaskDTO dto, final String level, final QuartzTask quartzTask) {
+        List<QuartzTaskMember> quartzTaskMembers = new ArrayList<>();
+        if (dto.getNotifyUser() == null) return quartzTaskMembers;
+        //判断是否为空，为了单测
+        Long currentUserId = DetailsHelper.getUserDetails() != null ? DetailsHelper.getUserDetails().getUserId() : null;
+        if (dto.getNotifyUser().getAdministrator()) {
+            RoleDTO roleDTO = getAdministratorRoleByLevel(level);
+            quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.ROLE, roleDTO.getId()));
+        }
+        if (dto.getNotifyUser().getCreator()) {
+            quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.USER, currentUserId));
+        }
+        Long[] assignUserIds = dto.getAssignUserIds();
+        if (dto.getNotifyUser().getAssigner() && assignUserIds != null) {
+            Set<Long> ids = Arrays.stream(assignUserIds).filter(id -> !id.equals(currentUserId)).collect(Collectors.toSet());
+            ids.forEach(id -> quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.USER, id)));
+        }
+        return quartzTaskMembers;
+    }
+
+
+    private QuartzTaskMember insertMember(final Long quartzTaskId, final MemberType user, final Long userId) {
+        QuartzTaskMember quartzTaskMember = new QuartzTaskMember();
+        quartzTaskMember.setTaskId(quartzTaskId);
+        quartzTaskMember.setMemberType(user.value());
+        quartzTaskMember.setMemberId(userId);
+        if (quartzTaskMemberMapper.insert(quartzTaskMember) != 1) {
+            throw new CommonException("error.quartzTaskMember.create");
+        }
+        return quartzTaskMember;
+    }
+
+    /**
+     * 通过层级得到对应的Administrator的RoleDTO
+     *
+     * @param level
+     * @return
+     */
+    private RoleDTO getAdministratorRoleByLevel(String level) {
+        RoleDTO roleDTO = new RoleDTO();
+        if (ResourceLevel.SITE.value().equals(level)) {
+            roleDTO = iamFeignClient.queryByCode(InitRoleCode.SITE_ADMINISTRATOR).getBody();
+        }
+        if (ResourceLevel.ORGANIZATION.value().equals(level)) {
+            roleDTO = iamFeignClient.queryByCode(InitRoleCode.ORGANIZATION_ADMINISTRATOR).getBody();
+        }
+        if (ResourceLevel.PROJECT.value().equals(level)) {
+            roleDTO = iamFeignClient.queryByCode(InitRoleCode.PROJECT_ADMINISTRATOR).getBody();
+        }
+        return roleDTO;
     }
 
     /**
@@ -200,8 +277,22 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 throw new CommonException("error.scheduleTask.enableTaskFailed");
             }
             quartzJobService.resumeJob(id);
+            List<QuartzTaskMember> noticeMembers = getQuartzTaskMembersByTaskId(quartzTask.getId());
+            noticeService.sendNotice(quartzTask, noticeMembers, "启用");
             LOGGER.info("enable job: {}", quartzTask);
         }
+    }
+
+    /**
+     * 通过taskId查询QuartzTaskMember
+     *
+     * @param taskId
+     * @return
+     */
+    private List<QuartzTaskMember> getQuartzTaskMembersByTaskId(final Long taskId) {
+        QuartzTaskMember query = new QuartzTaskMember();
+        query.setTaskId(taskId);
+        return quartzTaskMemberMapper.select(query);
     }
 
     @Override
@@ -242,6 +333,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 throw new CommonException("error.scheduleTask.disableTaskFailed");
             }
             quartzJobService.pauseJob(id);
+            List<QuartzTaskMember> noticeMembers = getQuartzTaskMembersByTaskId(quartzTask.getId());
+            noticeService.sendNotice(quartzTask, noticeMembers, "禁用");
             LOGGER.info("disable job: {}", quartzTask);
         }
     }
@@ -324,7 +417,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             } else {
                 LOGGER.error("finish job error, updateStatus failed : {}", quartzTask);
             }
-
+            List<QuartzTaskMember> noticeMembers = getQuartzTaskMembersByTaskId(quartzTask.getId());
+            noticeService.sendNotice(quartzTask, noticeMembers, "结束");
         }
     }
 
