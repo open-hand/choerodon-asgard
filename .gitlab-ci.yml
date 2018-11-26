@@ -16,7 +16,6 @@ maven-test-branches:
     - tags
     - /^release-.*$/
     - /^hotfix-.*$/
-    - /^feature-.*$/
 
 maven-test-build:
   stage: mvn-package
