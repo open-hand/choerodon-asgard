@@ -19,4 +19,6 @@ public interface ScheduleMethodService {
 
 
     ScheduleMethodParamsDTO getParams(Long id, String level);
+
+    Long getMethodIdByCode(String code);
 }

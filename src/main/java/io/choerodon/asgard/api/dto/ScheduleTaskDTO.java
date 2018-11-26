@@ -1,12 +1,14 @@
 package io.choerodon.asgard.api.dto;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.validator.constraints.NotEmpty;
-
-import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.Map;
 
 public class ScheduleTaskDTO {
 
@@ -19,6 +21,7 @@ public class ScheduleTaskDTO {
 
     @ApiModelProperty(value = "定时任务名")
     @NotEmpty(message = "error.scheduleTask.nameEmpty")
+    @Size(max = 255, message = "error.scheduleTask.name.size")
     private String name;
 
     @ApiModelProperty(value = "定时任务描述")
@@ -135,4 +138,23 @@ public class ScheduleTaskDTO {
     public void setSimpleRepeatIntervalUnit(String simpleRepeatIntervalUnit) {
         this.simpleRepeatIntervalUnit = simpleRepeatIntervalUnit;
     }
+
+    public ScheduleTaskDTO() {
+    }
+
+    public ScheduleTaskDTO(Long methodId, Map<String, Object> params, String name, String description, Date startTime) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+        this.methodId = methodId;
+        this.params = params;
+        this.name = name + "-" + simpleDateFormat.format(new Date());
+        this.description = description;
+        this.startTime = startTime;
+        this.triggerType = "simple-trigger";
+        this.simpleRepeatCount = 0;
+        this.simpleRepeatInterval = 3600L;
+        this.simpleRepeatIntervalUnit = "SECONDS";
+        this.endTime = null;
+        this.cronExpression = null;
+    }
+
 }
