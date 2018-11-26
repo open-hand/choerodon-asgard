@@ -142,4 +142,15 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
         }
         return scheduleMethodParamsDTO;
     }
+
+    @Override
+    public Long getMethodIdByCode(String code) {
+        QuartzMethod t = new QuartzMethod();
+        t.setCode(code);
+        QuartzMethod method = methodMapper.selectOne(t);
+        if(method==null){
+            throw new CommonException("error.scheduleMethod.notExist");
+        }
+        return method.getId();
+    }
 }

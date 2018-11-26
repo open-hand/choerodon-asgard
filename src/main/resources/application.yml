@@ -31,7 +31,7 @@ choerodon:
       auto-startup: true
       overwrite-existing-jobs: true
       properties:
-        org.quartz.jobStore.tablePrefix: ASGARD_QUARTZ_
+        org.quartz.jobStore.tablePrefix: QRTZ_
         org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
         org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
         org.quartz.jobStore.isClustered: true

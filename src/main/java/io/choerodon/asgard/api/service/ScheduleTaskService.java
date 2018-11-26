@@ -7,9 +7,11 @@ import org.springframework.http.ResponseEntity;
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
+import io.choerodon.asgard.api.dto.SystemNotificationDTO;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.property.PropertyTimedTask;
 import io.choerodon.core.domain.Page;
+import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 public interface ScheduleTaskService {
@@ -49,4 +51,8 @@ public interface ScheduleTaskService {
      */
     QuartzTask getQuartzTask(long id, String level, Long sourceId);
 
+    /**
+     * 根据level和sourceId查询系统公告
+     */
+    Page<SystemNotificationDTO> pagingAllNotification(PageRequest pageRequest, String status, String content, String params, ResourceLevel level, long sourceId);
 }

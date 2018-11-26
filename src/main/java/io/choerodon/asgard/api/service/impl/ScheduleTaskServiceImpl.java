@@ -1,16 +1,14 @@
 package io.choerodon.asgard.api.service.impl;
 
+import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.ORG_NOTIFICATION_CODE;
+import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.SITE_NOTIFICATION_CODE;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.api.dto.*;
-import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
-import io.choerodon.asgard.infra.feign.IamFeignClient;
-import io.choerodon.asgard.schedule.annotation.JobParam;
-import io.choerodon.core.iam.ResourceLevel;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +18,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.domain.QuartzTaskDetail;
 import io.choerodon.asgard.domain.QuartzTaskInstance;
+import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
+import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
@@ -37,6 +38,7 @@ import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -415,5 +417,14 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             }
         }
         return false;
+    }
+
+
+    @Override
+    public Page<SystemNotificationDTO> pagingAllNotification(PageRequest pageRequest, String status, String content, String params, ResourceLevel level, long sourceId) {
+        return PageHelper.doPageAndSort(pageRequest,
+                () -> taskMapper.selectNotification(ResourceLevel.ORGANIZATION.equals(level) ? ResourceLevel.ORGANIZATION.value() : ResourceLevel.SITE.value(),
+                        sourceId, ResourceLevel.ORGANIZATION.equals(level) ? ORG_NOTIFICATION_CODE : SITE_NOTIFICATION_CODE,
+                        status, content, params));
     }
 }
