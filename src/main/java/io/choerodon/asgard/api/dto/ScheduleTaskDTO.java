@@ -51,6 +51,26 @@ public class ScheduleTaskDTO {
     @ApiModelProperty(value = "cron-trigger的cron表达式")
     private String cronExpression;
 
+    private NotifyUser notifyUser;
+
+    private Long[] assignUserIds;
+
+    public NotifyUser getNotifyUser() {
+        return notifyUser;
+    }
+
+    public void setNotifyUser(NotifyUser notifyUser) {
+        this.notifyUser = notifyUser;
+    }
+
+    public Long[] getAssignUserIds() {
+        return assignUserIds;
+    }
+
+    public void setAssignUserIds(Long[] assignUserIds) {
+        this.assignUserIds = assignUserIds;
+    }
+
     public Long getMethodId() {
         return methodId;
     }
@@ -157,4 +177,33 @@ public class ScheduleTaskDTO {
         this.cronExpression = null;
     }
 
+    public static class NotifyUser {
+        Boolean creator;
+        Boolean administrator;
+        Boolean assigner;
+
+        public Boolean getCreator() {
+            return creator;
+        }
+
+        public void setCreator(Boolean creator) {
+            this.creator = creator;
+        }
+
+        public Boolean getAdministrator() {
+            return administrator;
+        }
+
+        public void setAdministrator(Boolean administrator) {
+            this.administrator = administrator;
+        }
+
+        public Boolean getAssigner() {
+            return assigner;
+        }
+
+        public void setAssigner(Boolean assigner) {
+            this.assigner = assigner;
+        }
+    }
 }
