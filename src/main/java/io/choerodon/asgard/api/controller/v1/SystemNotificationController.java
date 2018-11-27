@@ -19,6 +19,7 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 
@@ -90,7 +91,7 @@ public class SystemNotificationController {
                                                                                    @RequestParam(name = "content", required = false) String content,
                                                                                    @RequestParam(name = "params", required = false) String params,
                                                                                    @ApiIgnore
-                                                                                   @SortDefault() PageRequest pageRequest) {
+                                                                                   @SortDefault(value = "start_time",direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return new ResponseEntity<>(systemNocificationService.pagingAll(pageRequest, status, content, params, ResourceLevel.SITE, 0L), HttpStatus.OK);
     }
 
@@ -105,7 +106,7 @@ public class SystemNotificationController {
                                                                                  @RequestParam(name = "content", required = false) String content,
                                                                                  @RequestParam(name = "params", required = false) String params,
                                                                                  @ApiIgnore
-                                                                                 @SortDefault() PageRequest pageRequest) {
+                                                                                 @SortDefault(value = "start_time",direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return new ResponseEntity<>(systemNocificationService.pagingAll(pageRequest, status, content, params, ResourceLevel.ORGANIZATION, orgId), HttpStatus.OK);
     }
 }
