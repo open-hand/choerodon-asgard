@@ -75,7 +75,8 @@ public class NoticeServiceImpl implements NoticeService {
         Set<NoticeSendDTO.User> users = new HashSet<>();
         if (notifyMembers == null) return new ArrayList<>(users);
         for (QuartzTaskMember notifyMember : notifyMembers) {
-            if (MemberType.USER.value().equals(notifyMember.getMemberType())) {
+            if (MemberType.ASSIGNER.value().equals(notifyMember.getMemberType())
+                    || MemberType.CREATOR.value().equals(notifyMember.getMemberType())) {
                 NoticeSendDTO.User user = new NoticeSendDTO.User();
                 user.setId(notifyMember.getMemberId());
                 users.add(user);

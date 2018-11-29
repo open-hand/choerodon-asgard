@@ -4,7 +4,8 @@ package io.choerodon.asgard.infra.enums;
  * @author dengyouquan
  **/
 public enum MemberType {
-    USER("user"),
+    ASSIGNER("assigner"),
+    CREATOR("creator"),
     ROLE("role");
     private String value;
 

@@ -55,6 +55,17 @@ public class ScheduleTaskDetailDTO {
     @ApiModelProperty(value = "任务类名")
     private String methodCode;
 
+    @ApiModelProperty(value = "通知对象")
+    private NotifyUser notifyUser;
+
+    public NotifyUser getNotifyUser() {
+        return notifyUser;
+    }
+
+    public void setNotifyUser(NotifyUser notifyUser) {
+        this.notifyUser = notifyUser;
+    }
+
     public List<Map<String, Object>> getParams() {
         return params;
     }
@@ -208,5 +219,67 @@ public class ScheduleTaskDetailDTO {
             throw new CommonException("error.scheduleTaskDetailDTO.jsonIOException", e);
         }
 
+    }
+
+    public static class NotifyUser {
+        User creator;
+        Boolean administrator;
+        List<User> assigner;
+
+        public NotifyUser(User creator, Boolean administrator, List<User> assigner) {
+            this.creator = creator;
+            this.administrator = administrator;
+            this.assigner = assigner;
+        }
+
+        public User getCreator() {
+            return creator;
+        }
+
+        public void setCreator(User creator) {
+            this.creator = creator;
+        }
+
+        public Boolean getAdministrator() {
+            return administrator;
+        }
+
+        public void setAdministrator(Boolean administrator) {
+            this.administrator = administrator;
+        }
+
+        public List<User> getAssigner() {
+            return assigner;
+        }
+
+        public void setAssigner(List<User> assigner) {
+            this.assigner = assigner;
+        }
+    }
+
+    public static class User {
+        private String loginName;
+        private String realName;
+
+        public User(String loginName, String realName) {
+            this.loginName = loginName;
+            this.realName = realName;
+        }
+
+        public String getLoginName() {
+            return loginName;
+        }
+
+        public void setLoginName(String loginName) {
+            this.loginName = loginName;
+        }
+
+        public String getRealName() {
+            return realName;
+        }
+
+        public void setRealName(String realName) {
+            this.realName = realName;
+        }
     }
 }
