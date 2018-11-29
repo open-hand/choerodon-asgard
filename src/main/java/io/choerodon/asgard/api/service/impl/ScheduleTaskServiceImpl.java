@@ -144,12 +144,12 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.ROLE, roleDTO.getId()));
         }
         if (dto.getNotifyUser().getCreator()) {
-            quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.USER, currentUserId));
+            quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.CREATOR, currentUserId));
         }
         Long[] assignUserIds = dto.getAssignUserIds();
         if (dto.getNotifyUser().getAssigner() && assignUserIds != null) {
             Set<Long> ids = Arrays.stream(assignUserIds).filter(id -> !id.equals(currentUserId)).collect(Collectors.toSet());
-            ids.forEach(id -> quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.USER, id)));
+            ids.forEach(id -> quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.ASSIGNER, id)));
         }
         return quartzTaskMembers;
     }
@@ -443,7 +443,50 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             nextStartTime = null;
         }
         QuartzTaskDetail quartzTaskDetail = taskMapper.selectTaskById(id);
-        return new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
+        //得到通知对象
+        List<QuartzTaskMember> members = getQuartzTaskMembersByTaskId(quartzTask.getId());
+        ScheduleTaskDetailDTO detailDTO = new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
+        detailDTO.setNotifyUser(getNotifyUser(members));
+        return detailDTO;
+    }
+
+    /**
+     * 得到通知对象NotifyUser
+     *
+     * @param members
+     * @return
+     */
+    private ScheduleTaskDetailDTO.NotifyUser getNotifyUser(List<QuartzTaskMember> members) {
+        if (members == null || members.isEmpty()) return null;
+        ScheduleTaskDetailDTO.User creator = null;
+        Boolean administrator = false;
+        List<Long> idList = new LinkedList<>();
+        List<ScheduleTaskDetailDTO.User> assigners = new LinkedList<>();
+        for (int i = 0; i < members.size(); i++) {
+            QuartzTaskMember member = members.get(i);
+            if (MemberType.ASSIGNER.value().equals(member.getMemberType())) {
+                idList.add(member.getMemberId());
+            } else if (MemberType.CREATOR.value().equals(member.getMemberType())) {
+                Long[] creatorId = new Long[1];
+                creatorId[0] = member.getMemberId();
+                List<UserDTO> users = iamFeignClient.listUsersByIds(creatorId).getBody();
+                if (users.size() >= 1) {
+                    UserDTO userDTO = users.get(0);
+                    creator = new ScheduleTaskDetailDTO.User(userDTO.getLoginName(), userDTO.getRealName());
+                }
+            } else if (MemberType.ROLE.value().equals(member.getMemberType())) {
+                administrator = true;
+            }
+        }
+        if (!idList.isEmpty()) {
+            List<UserDTO> users = iamFeignClient.listUsersByIds(idList.toArray(new Long[0])).getBody();
+            for (int i = 0; i < users.size(); i++) {
+                UserDTO userDTO = users.get(i);
+                ScheduleTaskDetailDTO.User user = new ScheduleTaskDetailDTO.User(userDTO.getLoginName(), userDTO.getRealName());
+                assigners.add(user);
+            }
+        }
+        return new ScheduleTaskDetailDTO.NotifyUser(creator, administrator, assigners);
     }
 
     @Override

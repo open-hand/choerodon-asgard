@@ -8,6 +8,8 @@ import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 /**
  * @author dengyouquan
@@ -39,4 +41,7 @@ public interface IamFeignClient {
 
     @GetMapping(value = "/roles")
     ResponseEntity<RoleDTO> queryByCode(@RequestParam(value = "code") String code);
+
+    @PostMapping("/users/ids")
+    ResponseEntity<List<UserDTO>> listUsersByIds(@RequestBody Long[] ids);
 }

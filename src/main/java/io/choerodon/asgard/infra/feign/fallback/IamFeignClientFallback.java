@@ -8,6 +8,8 @@ import io.choerodon.core.notify.NoticeSendDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * @author dengyouquan
  **/
@@ -41,5 +43,10 @@ public class IamFeignClientFallback implements IamFeignClient {
     @Override
     public ResponseEntity<RoleDTO> queryByCode(String code) {
         throw new FeignException("error.feign.iam.queryByCode");
+    }
+
+    @Override
+    public ResponseEntity<List<UserDTO>> listUsersByIds(Long[] ids) {
+        throw new FeignException("error.feign.iam.listUsersByIds");
     }
 }
