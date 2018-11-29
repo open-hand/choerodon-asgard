@@ -9,16 +9,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.api.dto.*;
-import io.choerodon.asgard.api.service.NoticeService;
-import io.choerodon.asgard.domain.*;
-import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
-import io.choerodon.asgard.infra.enums.MemberType;
-import io.choerodon.asgard.infra.feign.IamFeignClient;
-import io.choerodon.asgard.infra.mapper.QuartzTaskMemberMapper;
-import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.core.oauth.DetailsHelper;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,15 +17,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import io.choerodon.asgard.api.dto.*;
+import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.api.service.QuartzJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
-import io.choerodon.asgard.domain.QuartzMethod;
-import io.choerodon.asgard.domain.QuartzTask;
-import io.choerodon.asgard.domain.QuartzTaskDetail;
-import io.choerodon.asgard.domain.QuartzTaskInstance;
+import io.choerodon.asgard.domain.*;
+import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
+import io.choerodon.asgard.infra.enums.MemberType;
+import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
+import io.choerodon.asgard.infra.mapper.QuartzTaskMemberMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.property.PropertyJobParam;
@@ -44,6 +38,9 @@ import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.InitRoleCode;
+import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -490,8 +487,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public void checkName(String name, String level) {
-        List<Long> ids = taskMapper.selectTaskIdByName(name, level);
+    public void checkName(String name, String level, Long sourceId) {
+        List<Long> ids = taskMapper.selectTaskIdByName(name, level,sourceId);
         if (!ids.isEmpty()) {
             throw new CommonException("error.scheduleTask.name.exist");
         }
