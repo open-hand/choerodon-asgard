@@ -1,5 +1,14 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import java.util.List;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import io.choerodon.asgard.api.dto.ScheduleMethodDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodInfoDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
@@ -12,14 +21,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/schedules/methods")
@@ -64,5 +65,13 @@ public class ScheduleMethodSiteController {
     @ApiOperation(value = "全局层查看可执行程序详情")
     public ResponseEntity<ScheduleMethodParamsDTO> getParams(@PathVariable long id) {
         return new ResponseEntity<>(scheduleMethodService.getParams(id, ResourceLevel.SITE.value()), HttpStatus.OK);
+    }
+
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = "平台层搜索有可执行任务的服务名")
+    @GetMapping("/services")
+    public ResponseEntity<List<String>> getServices() {
+        return new ResponseEntity<>(scheduleMethodService.getServices(ResourceLevel.SITE.value()), HttpStatus.OK);
     }
 }

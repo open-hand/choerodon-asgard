@@ -22,6 +22,9 @@ public class ScheduleMethodDTO {
     @ApiModelProperty(value = "方法编码")
     private String code;
 
+    @ApiModelProperty(value = "方法描述")
+    private String description;
+
     private List<PropertyJobParam> paramList;
 
     public Long getId() {
@@ -48,6 +51,14 @@ public class ScheduleMethodDTO {
         this.code = code;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public List<PropertyJobParam> getParamList() {
         return paramList;
     }
@@ -63,7 +74,8 @@ public class ScheduleMethodDTO {
     public ScheduleMethodDTO(final QuartzMethod method, final ObjectMapper objectMapper) {
         this.id = method.getId();
         this.method = method.getMethod();
-        this.code=method.getCode();
+        this.code = method.getCode();
+        this.description = method.getDescription();
         try {
             this.paramList = objectMapper.readValue(method.getParams(), new TypeReference<List<PropertyJobParam>>() {
             });

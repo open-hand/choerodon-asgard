@@ -43,13 +43,13 @@ public class ScheduleMethodProjectController {
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<Page<ScheduleMethodInfoDTO>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                                          @RequestParam(value = "code", required = false) String code,
-                                                                          @RequestParam(name = "service", required = false) String service,
-                                                                          @RequestParam(name = "method", required = false) String method,
-                                                                          @RequestParam(name = "description", required = false) String description,
-                                                                          @RequestParam(name = "params", required = false) String params,
-                                                                          @ApiIgnore
-                                                                          @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+                                                                   @RequestParam(value = "code", required = false) String code,
+                                                                   @RequestParam(name = "service", required = false) String service,
+                                                                   @RequestParam(name = "method", required = false) String method,
+                                                                   @RequestParam(name = "description", required = false) String description,
+                                                                   @RequestParam(name = "params", required = false) String params,
+                                                                   @ApiIgnore
+                                                                   @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, ResourceLevel.PROJECT.value());
     }
 
@@ -57,7 +57,7 @@ public class ScheduleMethodProjectController {
     @ApiOperation(value = "项目层根据服务名获取方法")
     @GetMapping("/service")
     public ResponseEntity<List<ScheduleMethodDTO>> getMethodByService(@PathVariable("project_id") long projectId,
-                                                                             @RequestParam(value = "service") String service) {
+                                                                      @RequestParam(value = "service") String service) {
         return new ResponseEntity<>(scheduleMethodService.getMethodByService(service, ResourceLevel.PROJECT.value()), HttpStatus.OK);
     }
 
@@ -65,7 +65,15 @@ public class ScheduleMethodProjectController {
     @GetMapping("/{id}")
     @ApiOperation(value = "项目层查看可执行程序详情")
     public ResponseEntity<ScheduleMethodParamsDTO> getParams(@PathVariable("project_id") long projectId,
-                                                                    @PathVariable long id) {
+                                                             @PathVariable long id) {
         return new ResponseEntity<>(scheduleMethodService.getParams(id, ResourceLevel.PROJECT.value()), HttpStatus.OK);
+    }
+
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @ApiOperation(value = "项目层搜索有可执行任务的服务名")
+    @GetMapping("/services")
+    public ResponseEntity<List<String>> getServices() {
+        return new ResponseEntity<>(scheduleMethodService.getServices(ResourceLevel.PROJECT.value()), HttpStatus.OK);
     }
 }
