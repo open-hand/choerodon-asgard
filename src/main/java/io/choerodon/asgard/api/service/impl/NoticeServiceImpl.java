@@ -1,6 +1,5 @@
 package io.choerodon.asgard.api.service.impl;
 
-import io.choerodon.asgard.api.dto.RoleDTO;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.domain.QuartzTaskMember;
@@ -9,7 +8,6 @@ import io.choerodon.asgard.infra.enums.MemberType;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.asgard.infra.feign.NotifyFeignClient;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.notify.NoticeSendDTO;
 import org.slf4j.Logger;
@@ -82,7 +80,7 @@ public class NoticeServiceImpl implements NoticeService {
                 users.add(user);
             }
             if (MemberType.ROLE.value().equals(notifyMember.getMemberType())) {
-                users.addAll(getAdministratorUsers(level, sourceId));
+                users.addAll(getAdministratorUsers(level, sourceId, notifyMember.getMemberId()));
             }
         }
         //去重
@@ -94,21 +92,19 @@ public class NoticeServiceImpl implements NoticeService {
      *
      * @param level
      * @param sourceId
+     * @param roleId
      * @return
      */
-    private List<NoticeSendDTO.User> getAdministratorUsers(String level, Long sourceId) {
+    private List<NoticeSendDTO.User> getAdministratorUsers(String level, Long sourceId, Long roleId) {
         List<NoticeSendDTO.User> users = new ArrayList<>();
         if (ResourceLevel.SITE.value().equals(level)) {
-            RoleDTO roleDTO = iamFeignClient.queryByCode(InitRoleCode.SITE_ADMINISTRATOR).getBody();
-            users = iamFeignClient.pagingQueryUsersByRoleIdOnSiteLevel(roleDTO.getId(), false).getBody();
+            users = iamFeignClient.pagingQueryUsersByRoleIdOnSiteLevel(roleId, false).getBody();
         }
         if (ResourceLevel.ORGANIZATION.value().equals(level)) {
-            RoleDTO roleDTO = iamFeignClient.queryByCode(InitRoleCode.ORGANIZATION_ADMINISTRATOR).getBody();
-            users = iamFeignClient.pagingQueryUsersByRoleIdOnOrganizationLevel(roleDTO.getId(), sourceId, false).getBody();
+            users = iamFeignClient.pagingQueryUsersByRoleIdOnOrganizationLevel(roleId, sourceId, false).getBody();
         }
         if (ResourceLevel.PROJECT.value().equals(level)) {
-            RoleDTO roleDTO = iamFeignClient.queryByCode(InitRoleCode.PROJECT_ADMINISTRATOR).getBody();
-            users = iamFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(roleDTO.getId(), sourceId, false).getBody();
+            users = iamFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(roleId, sourceId, false).getBody();
         }
         return users;
     }
