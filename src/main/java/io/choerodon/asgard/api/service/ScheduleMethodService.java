@@ -21,4 +21,12 @@ public interface ScheduleMethodService {
     ScheduleMethodParamsDTO getParams(Long id, String level);
 
     Long getMethodIdByCode(String code);
+
+    /**
+     * 查询各层级拥有可执行程序的服务
+     *
+     * @param level 层级
+     * @return 服务列表
+     */
+    List<String> getServices(String level);
 }

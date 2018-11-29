@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
-import io.choerodon.core.iam.ResourceLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpStatus;
@@ -21,9 +19,11 @@ import io.choerodon.asgard.api.dto.ScheduleMethodInfoDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
 import io.choerodon.asgard.api.service.ScheduleMethodService;
 import io.choerodon.asgard.domain.QuartzMethod;
+import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
@@ -109,6 +109,7 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
      * 给方法中标记是否是默认字段
      * organization层默认字段：organizationId,organizationCode,organizationName
      * project层默认字段：projectId,projectCode,projectName
+     *
      * @param scheduleMethodParamsDTO
      * @param level
      * @return
@@ -148,9 +149,18 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
         QuartzMethod t = new QuartzMethod();
         t.setCode(code);
         QuartzMethod method = methodMapper.selectOne(t);
-        if(method==null){
+        if (method == null) {
             throw new CommonException("error.scheduleMethod.notExist");
         }
         return method.getId();
+    }
+
+    @Override
+    public List<String> getServices(String level) {
+        QuartzMethod method = new QuartzMethod();
+        method.setLevel(level);
+        List<String> list = new ArrayList<>();
+        methodMapper.select(method).forEach(m -> list.add(m.getService()));
+        return list.stream().distinct().collect(Collectors.toList());
     }
 }
