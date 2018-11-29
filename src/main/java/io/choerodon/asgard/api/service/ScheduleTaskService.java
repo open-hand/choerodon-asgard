@@ -32,7 +32,7 @@ public interface ScheduleTaskService {
 
     ScheduleTaskDetailDTO getTaskDetail(Long id, String level, Long sourceId);
 
-    void checkName(String name, String level);
+    void checkName(String name, String level, Long sourceId);
 
     /**
      * 自定义创建定时任务

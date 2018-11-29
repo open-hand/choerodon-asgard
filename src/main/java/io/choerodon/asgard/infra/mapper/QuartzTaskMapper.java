@@ -12,8 +12,8 @@ import io.choerodon.mybatis.common.BaseMapper;
 
 public interface QuartzTaskMapper extends BaseMapper<QuartzTask> {
 
-    @Select("SELECT id FROM asgard_quartz_task WHERE name = #{taskName} AND fd_level = #{level}")
-    List<Long> selectTaskIdByName(@Param("taskName") String taskName, @Param("level") String level);
+    @Select("SELECT id FROM asgard_quartz_task WHERE name = #{taskName} AND fd_level = #{level} AND source_id= #{sourceId}")
+    List<Long> selectTaskIdByName(@Param("taskName") String taskName, @Param("level") String level, @Param("sourceId") Long sourceId);
 
     List<QuartzTask> fulltextSearch(@Param("status") String status,
                                     @Param("name") String name,

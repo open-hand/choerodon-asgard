@@ -110,7 +110,7 @@ public class ScheduleTaskOrgController {
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("organization_id") long orgId,
                                 @RequestBody String name) {
-        scheduleTaskService.checkName(name, ResourceLevel.ORGANIZATION.value());
+        scheduleTaskService.checkName(name, ResourceLevel.ORGANIZATION.value(),orgId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
