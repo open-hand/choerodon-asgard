@@ -55,6 +55,9 @@ public class ScheduleTaskDetailDTO {
     @ApiModelProperty(value = "任务类名")
     private String methodCode;
 
+    @ApiModelProperty(value = "方法描述")
+    private String methodDescription;
+
     @ApiModelProperty(value = "通知对象")
     private NotifyUser notifyUser;
 
@@ -184,6 +187,14 @@ public class ScheduleTaskDetailDTO {
 
     public void setMethodCode(String methodCode) {
         this.methodCode = methodCode;
+    }
+
+    public String getMethodDescription() {
+        return methodDescription;
+    }
+
+    public void setMethodDescription(String methodDescription) {
+        this.methodDescription = methodDescription;
     }
 
     public ScheduleTaskDetailDTO() {
