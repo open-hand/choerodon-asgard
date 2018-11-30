@@ -69,9 +69,9 @@ public class ScheduleMethodOrgController {
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION)
-    @ApiOperation(value = "平台层搜索有可执行任务的服务名")
+    @ApiOperation(value = "组织层搜索有可执行任务的服务名")
     @GetMapping("/services")
-    public ResponseEntity<List<String>> getServices() {
+    public ResponseEntity<List<String>> getServices(@PathVariable("organization_id") long orgId) {
         return new ResponseEntity<>(scheduleMethodService.getServices(ResourceLevel.ORGANIZATION.value()), HttpStatus.OK);
     }
 }

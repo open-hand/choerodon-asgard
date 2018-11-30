@@ -73,7 +73,7 @@ public class ScheduleMethodProjectController {
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层搜索有可执行任务的服务名")
     @GetMapping("/services")
-    public ResponseEntity<List<String>> getServices() {
+    public ResponseEntity<List<String>> getServices(@PathVariable("project_id") long projectId) {
         return new ResponseEntity<>(scheduleMethodService.getServices(ResourceLevel.PROJECT.value()), HttpStatus.OK);
     }
 }
