@@ -145,7 +145,10 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         }
         Long[] assignUserIds = dto.getAssignUserIds();
         if (dto.getNotifyUser().getAssigner() && assignUserIds != null) {
-            Set<Long> ids = Arrays.stream(assignUserIds).filter(id -> !id.equals(currentUserId)).collect(Collectors.toSet());
+            Set<Long> ids = Arrays.stream(assignUserIds).collect(Collectors.toSet());
+            if (dto.getNotifyUser().getCreator()) {
+                ids.remove(currentUserId);
+            }
             ids.forEach(id -> quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.ASSIGNER, id)));
         }
         return quartzTaskMembers;

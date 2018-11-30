@@ -178,31 +178,31 @@ public class ScheduleTaskDTO {
     }
 
     public static class NotifyUser {
-        Boolean creator;
-        Boolean administrator;
-        Boolean assigner;
+        boolean creator;
+        boolean administrator;
+        boolean assigner;
 
-        public Boolean getCreator() {
+        public boolean getCreator() {
             return creator;
         }
 
-        public void setCreator(Boolean creator) {
+        public void setCreator(boolean creator) {
             this.creator = creator;
         }
 
-        public Boolean getAdministrator() {
+        public boolean getAdministrator() {
             return administrator;
         }
 
-        public void setAdministrator(Boolean administrator) {
+        public void setAdministrator(boolean administrator) {
             this.administrator = administrator;
         }
 
-        public Boolean getAssigner() {
+        public boolean getAssigner() {
             return assigner;
         }
 
-        public void setAssigner(Boolean assigner) {
+        public void setAssigner(boolean assigner) {
             this.assigner = assigner;
         }
     }
