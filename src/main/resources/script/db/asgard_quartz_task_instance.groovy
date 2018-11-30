@@ -65,4 +65,8 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
             column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED', defaultValue: "0", remarks: '创建该记录的源id，可以是projectId,也可以是organizarionId等', afterColumn: 'FD_LEVEL')
         }
     }
+
+    changeSet(id: '2018-11-30-resize-column-task_name', author: 'longhe1996@icloud.com') {
+        renameColumn(columnDataType: 'VARCHAR(255)', newColumnName: "TASK_NAME", oldColumnName: "TASK_NAME", remarks: '任务名', tableName: 'ASGARD_QUARTZ_TASK_INSTANCE')
+    }
 }
