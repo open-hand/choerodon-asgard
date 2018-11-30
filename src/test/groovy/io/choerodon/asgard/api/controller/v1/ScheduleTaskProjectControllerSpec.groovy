@@ -183,7 +183,7 @@ class ScheduleTaskProjectControllerSpec extends Specification {
         def response = restTemplate.postForEntity(BASE_PATH + "/check", name, String)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.checkName(name, _)
+        1 * mockScheduleTaskService.checkName(name, _, _)
     }
 
     def "Cron"() {

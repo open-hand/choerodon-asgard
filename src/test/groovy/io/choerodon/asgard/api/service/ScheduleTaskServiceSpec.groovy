@@ -443,10 +443,10 @@ class ScheduleTaskServiceSpec extends Specification {
         list.add(1L)
 
         and: "mock"
-        mockTaskMapper.selectTaskIdByName(name, _) >> { return new ArrayList<Long>() }
+        mockTaskMapper.selectTaskIdByName(name, _, _) >> { return new ArrayList<Long>() }
 
         when: "方法调用"
-        scheduleTaskService.checkName(name, "site")
+        scheduleTaskService.checkName(name, "site", 0L)
         then: "抛出异常"
         noExceptionThrown()
     }
@@ -458,10 +458,10 @@ class ScheduleTaskServiceSpec extends Specification {
         list.add(1L)
 
         and: "mock"
-        mockTaskMapper.selectTaskIdByName(name, ResourceLevel.SITE.value()) >> { return list }
+        mockTaskMapper.selectTaskIdByName(name, ResourceLevel.SITE.value(), _) >> { return list }
 
         when: "方法调用"
-        scheduleTaskService.checkName(name, ResourceLevel.SITE.value())
+        scheduleTaskService.checkName(name, ResourceLevel.SITE.value(), 0L)
         then: "抛出异常"
         def e = thrown(CommonException)
         e.message == "error.scheduleTask.name.exist"
