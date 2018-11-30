@@ -444,6 +444,11 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         List<QuartzTaskMember> members = getQuartzTaskMembersByTaskId(quartzTask.getId());
         ScheduleTaskDetailDTO detailDTO = new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
         detailDTO.setNotifyUser(getNotifyUser(members));
+        //设置方法描述
+        QuartzMethod query = new QuartzMethod();
+        query.setCode(detailDTO.getMethodCode());
+        QuartzMethod quartzMethod = methodMapper.selectOne(query);
+        detailDTO.setMethodDescription(Optional.ofNullable(quartzMethod).map(QuartzMethod::getDescription).orElse(null));
         return detailDTO;
     }
 
@@ -488,7 +493,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Override
     public void checkName(String name, String level, Long sourceId) {
-        List<Long> ids = taskMapper.selectTaskIdByName(name, level,sourceId);
+        List<Long> ids = taskMapper.selectTaskIdByName(name, level, sourceId);
         if (!ids.isEmpty()) {
             throw new CommonException("error.scheduleTask.name.exist");
         }
