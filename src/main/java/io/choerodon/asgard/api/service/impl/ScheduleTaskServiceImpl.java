@@ -1,23 +1,7 @@
 package io.choerodon.asgard.api.service.impl;
 
-import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.ORG_NOTIFICATION_CODE;
-import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.SITE_NOTIFICATION_CODE;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.api.service.QuartzJobService;
@@ -43,6 +27,21 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.ORG_NOTIFICATION_CODE;
+import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.SITE_NOTIFICATION_CODE;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
@@ -188,10 +187,6 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     /**
      * 如果propertyJobParams中有默认自动注入参数，那么会自动注入到dto中
-     *
-     * @param dto
-     * @param level
-     * @param sourceId
      */
     private void putDefaultParameter(final List<PropertyJobParam> propertyJobParams, ScheduleTaskDTO dto, final String level, final Long sourceId) {
         Map<String, Object> params = dto.getParams();
@@ -223,7 +218,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         }
     }
 
-    private void validExecuteParams(final Map<String, Object> params, final List<PropertyJobParam> paramDefinitionList) throws IOException {
+    private void validExecuteParams(final Map<String, Object> params, final List<PropertyJobParam> paramDefinitionList) {
         params.forEach((k, v) -> {
             PropertyJobParam jobParam = getPropertyJobParam(k, paramDefinitionList);
             if (jobParam != null && !validExecuteParam(v, jobParam.getType(), jobParam.getDefaultValue())) {
@@ -345,9 +340,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         query.setLevel(ResourceLevel.ORGANIZATION.value());
         query.setSourceId(orgId);
         List<QuartzTask> quartzTasks = taskMapper.select(query);
-        quartzTasks.forEach(quartzTask -> {
-            disableTaskAndPauseJob(quartzTask.getId(), quartzTask.getObjectVersionNumber(), quartzTask);
-        });
+        quartzTasks.forEach(quartzTask -> disableTaskAndPauseJob(quartzTask.getId(), quartzTask.getObjectVersionNumber(), quartzTask));
     }
 
     @Transactional
@@ -475,7 +468,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 Long[] creatorId = new Long[1];
                 creatorId[0] = member.getMemberId();
                 List<UserDTO> users = iamFeignClient.listUsersByIds(creatorId).getBody();
-                if (users.size() >= 1) {
+                if (!users.isEmpty()) {
                     UserDTO userDTO = users.get(0);
                     creator = new ScheduleTaskDetailDTO.User(userDTO.getLoginName(), userDTO.getRealName());
                 }
@@ -513,7 +506,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             List<QuartzTask> dbTasks = taskMapper.select(query);
             //若数据库中无相同任务名  或  数据库中有相同任务名的任务 且 每次部署执行，则 创建task（name=name+version），创建job
             Boolean byTaskName = findByTaskName(dbTasks, i.getName());
-            if (!byTaskName || (byTaskName && i.getCronExpression().equals("0"))) {
+            if (!byTaskName || i.getCronExpression().equals("0")) {
                 i.setName(i.getName() + ":" + version);
                 //若为 同一版本下的相同任务名的 任务，不创建，不执行
                 List<QuartzTask> ifEqual = dbTasks.stream().filter(t -> t.getName().equals(i.getName())).collect(Collectors.toList());
@@ -551,7 +544,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private Boolean findByTaskName(final List<QuartzTask> tasks, final String taskName) {
         for (QuartzTask task : tasks) {
-            if (task.getName().indexOf(":") != -1) {
+            if (task.getName().contains(":")) {
                 String[] strings = StringUtils.delimitedListToStringArray(task.getName(), ":");
                 if (strings[0].equals(taskName)) {
                     return true;
