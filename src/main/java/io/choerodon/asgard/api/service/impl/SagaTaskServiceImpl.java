@@ -30,23 +30,32 @@ public class SagaTaskServiceImpl implements SagaTaskService {
             if (StringUtils.isEmpty(i.getCode()) || StringUtils.isEmpty(i.getService()) || i.getSeq() == null) {
                 return;
             }
-            SagaTask findSaga = findByCode(dbTasks, i.getSagaCode(), i.getCode());
-            if (findSaga == null) {
+            SagaTask dbSagaTask = findByCode(dbTasks, i.getSagaCode(), i.getCode());
+            if (dbSagaTask == null) {
                 i.setIsEnabled(true);
                 if (sagaTaskMapper.insertSelective(i) != 1) {
-                    LOGGER.warn("error.createSagaTask.insert, sagaTask : {}", i);
+                    LOGGER.error("insert saga task error: {}", i);
+                } else {
+                    LOGGER.info("insert saga task: {}", i);
                 }
             } else {
-                i.setId(findSaga.getId());
-                i.setIsEnabled(true);
-                i.setObjectVersionNumber(findSaga.getObjectVersionNumber());
-                sagaTaskMapper.updateByPrimaryKeySelective(i);
+                i.setId(dbSagaTask.getId());
+                i.setObjectVersionNumber(dbSagaTask.getObjectVersionNumber());
+                if (sagaTaskMapper.updateByPrimaryKeySelective(i) == 1) {
+                    LOGGER.info("update saga task: {}", i);
+                }
             }
         });
+        disableSagaTask(dbTasks, sagaTaskList);
+    }
+
+    private void disableSagaTask(final List<SagaTask> dbTasks, final List<SagaTask> sagaTaskList) {
         dbTasks.stream().filter(t -> t.getIsEnabled() && findByCode(sagaTaskList, t.getSagaCode(), t.getCode()) == null).forEach(t -> {
             t.setIsEnabled(false);
             if (sagaTaskMapper.updateByPrimaryKeySelective(t) != 1) {
-                LOGGER.warn("error.createSagaTask.delete, sagaTask : {}", t);
+                LOGGER.error("update saga task disabled error: {}", t);
+            } else {
+                LOGGER.info("update saga task disabled: {}", t);
             }
         });
     }
