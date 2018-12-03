@@ -79,7 +79,7 @@ public class SystemNotificationServiceImpl implements SystemNocificationService 
             });
             content = (String) o.get("content");
         } catch (IOException e) {
-            throw new CommonException("error.notification.getDetail.jsonIOException");
+            throw new CommonException("error.notification.content.jsonIOException", e);
         }
         return new SystemNotificationDTO(taskId, content, quartzTask.getStartTime(), getNotificationStatusFromTaskId(taskId));
     }
@@ -89,26 +89,44 @@ public class SystemNotificationServiceImpl implements SystemNocificationService 
         if (scheduleTaskInstanceLogDTOS.isEmpty()) {
             return SystemNotificationDTO.NotificationStatus.WAITING.value();
         } else {
-            return modifyStatus(scheduleTaskInstanceLogDTOS.get(0).getStatus());
+            return modifyStatus(scheduleTaskInstanceLogDTOS.get(0).getStatus(), true);
         }
     }
 
-    private String modifyStatus(String originStatus) {
-        String status = SystemNotificationDTO.NotificationStatus.WAITING.value();
-        if (originStatus.equalsIgnoreCase(QuartzDefinition.InstanceStatus.COMPLETED.name())) {
-            status = SystemNotificationDTO.NotificationStatus.COMPLETED.value();
-        } else if (originStatus.equalsIgnoreCase(QuartzDefinition.InstanceStatus.FAILED.name())) {
-            status = SystemNotificationDTO.NotificationStatus.FAILED.value();
-        } else if (originStatus.equalsIgnoreCase(QuartzDefinition.InstanceStatus.RUNNING.name())) {
-            status = SystemNotificationDTO.NotificationStatus.SENDING.value();
+    /**
+     * @param originStatus 待转换的状态
+     * @param isPositive   true : instanceStatus -> notificationStatus;
+     *                     false : notificationStatus ->instanceStatus
+     * @return
+     */
+    private String modifyStatus(String originStatus, Boolean isPositive) {
+        if (isPositive) {
+            String status = SystemNotificationDTO.NotificationStatus.WAITING.value();
+            if (originStatus.equalsIgnoreCase(QuartzDefinition.InstanceStatus.COMPLETED.name())) {
+                status = SystemNotificationDTO.NotificationStatus.COMPLETED.value();
+            } else if (originStatus.equalsIgnoreCase(QuartzDefinition.InstanceStatus.FAILED.name())) {
+                status = SystemNotificationDTO.NotificationStatus.FAILED.value();
+            } else if (originStatus.equalsIgnoreCase(QuartzDefinition.InstanceStatus.RUNNING.name())) {
+                status = SystemNotificationDTO.NotificationStatus.SENDING.value();
+            }
+            return status;
+        } else {
+            String status = null;
+            if (originStatus.equalsIgnoreCase(SystemNotificationDTO.NotificationStatus.COMPLETED.value())) {
+                status = QuartzDefinition.InstanceStatus.COMPLETED.name();
+            } else if (originStatus.equalsIgnoreCase(SystemNotificationDTO.NotificationStatus.FAILED.value())) {
+                status = QuartzDefinition.InstanceStatus.FAILED.name();
+            } else if (originStatus.equalsIgnoreCase(SystemNotificationDTO.NotificationStatus.SENDING.value())) {
+                status = QuartzDefinition.InstanceStatus.RUNNING.name();
+            }
+            return status;
         }
-        return status;
     }
 
     @Override
     public Page<SystemNotificationDTO> pagingAll(PageRequest pageRequest, String status, String content, String params, ResourceLevel level, long sourceId) {
-        if(status!=null){
-            status = modifyStatus(status);
+        if (status != null) {
+            status = modifyStatus(status, false);
         }
         Page<SystemNotificationDTO> systemNotificationDTOS = scheduleTaskService.pagingAllNotification(pageRequest, status, content, params, level, sourceId);
         systemNotificationDTOS.setContent(modifyContents(systemNotificationDTOS.getContent()));
@@ -122,7 +140,7 @@ public class SystemNotificationServiceImpl implements SystemNocificationService 
                 o = objectMapper.readValue(t.getContent(), new TypeReference<Map<String, Object>>() {
                 });
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new CommonException("error.notification.content.jsonIOException", e);
             }
             t.setContent((String) o.get("content"));
         });
