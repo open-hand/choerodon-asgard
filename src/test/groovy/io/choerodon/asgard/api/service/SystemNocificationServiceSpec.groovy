@@ -7,6 +7,7 @@ import io.choerodon.asgard.api.dto.SystemNotificationDTO
 import io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl
 import io.choerodon.asgard.domain.QuartzTask
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper
+import io.choerodon.asgard.infra.mapper.QuartzTaskMapper
 import io.choerodon.asgard.schedule.QuartzDefinition
 import io.choerodon.core.domain.Page
 import io.choerodon.core.iam.ResourceLevel
@@ -27,10 +28,10 @@ class SystemNocificationServiceSpec extends Specification {
     private ScheduleMethodService scheduleMethodService = Mock(ScheduleMethodService)
     private ScheduleTaskService scheduleTaskService = Mock(ScheduleTaskService)
     private QuartzTaskInstanceMapper instanceMapper = Mock(QuartzTaskInstanceMapper)
-
+    private QuartzTaskMapper quartzTaskMapper = Mock(QuartzTaskMapper)
 
     void setup() {
-        systemNocificationService = new SystemNotificationServiceImpl(scheduleMethodService, scheduleTaskService, instanceMapper)
+        systemNocificationService = new SystemNotificationServiceImpl(scheduleMethodService, scheduleTaskService, instanceMapper, quartzTaskMapper)
     }
 
     def "Create"() {

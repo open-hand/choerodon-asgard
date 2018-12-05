@@ -2,6 +2,7 @@ package io.choerodon.asgard.api.controller.v1;
 
 import javax.validation.Valid;
 
+import io.choerodon.asgard.api.dto.SystemNotificationUpdateDTO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -52,6 +53,13 @@ public class SystemNotificationController {
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = "更新系统公告")
+    @PutMapping("/update")
+    public ResponseEntity<SystemNotificationDTO> updateNotificationOnSite(@RequestBody @Valid SystemNotificationUpdateDTO dto) {
+        return new ResponseEntity<>(systemNocificationService.update(dto, ResourceLevel.SITE, 0L), HttpStatus.OK);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层删除公告")
     @DeleteMapping("/delete")
     public void deleteSiteNotification(@RequestParam(name = "taskId") Long taskId) {
@@ -74,7 +82,7 @@ public class SystemNotificationController {
                                                                                    @RequestParam(name = "content", required = false) String content,
                                                                                    @RequestParam(name = "params", required = false) String params,
                                                                                    @ApiIgnore
-                                                                                   @SortDefault(value = "start_time",direction = Sort.Direction.DESC) PageRequest pageRequest) {
+                                                                                   @SortDefault(value = "start_time", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return new ResponseEntity<>(systemNocificationService.pagingAll(pageRequest, status, content, params, ResourceLevel.SITE, 0L), HttpStatus.OK);
     }
 
