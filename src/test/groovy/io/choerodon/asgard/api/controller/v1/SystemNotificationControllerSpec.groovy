@@ -1,8 +1,10 @@
 package io.choerodon.asgard.api.controller.v1
 
+import com.netflix.ribbon.proxy.annotation.Http
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.dto.SystemNotificationCreateDTO
 import io.choerodon.asgard.api.dto.SystemNotificationDTO
+import io.choerodon.asgard.api.dto.SystemNotificationUpdateDTO
 import io.choerodon.asgard.api.service.ScheduleTaskService
 import io.choerodon.asgard.api.service.SystemNocificationService
 import io.choerodon.core.domain.Page
@@ -45,6 +47,39 @@ class SystemNotificationControllerSpec extends Specification {
 
         when: "POST请求【创建系统公告】"
         def entity = restTemplate.postForEntity(BASE_PATH + "/create", snDTO, SystemNotificationDTO)
+
+        then: "无异常抛出"
+        noExceptionThrown()
+        entity.statusCode.is2xxSuccessful()
+    }
+
+    def "UpdateNotificationOnSite"() {
+        given: "参数准备"
+        def snDTO = new SystemNotificationUpdateDTO()
+        snDTO.setTaskId(1L)
+        snDTO.setContent("content")
+        snDTO.setObjectVersionNumber(1L)
+        def httpEntity = new HttpEntity<SystemNotificationUpdateDTO>(snDTO)
+
+        when: "POST请求【创建系统公告】"
+        def entity = restTemplate.exchange(BASE_PATH + "/update", HttpMethod.PUT, httpEntity, SystemNotificationDTO)
+
+        then: "无异常抛出"
+        noExceptionThrown()
+        entity.statusCode.is2xxSuccessful()
+    }
+
+    def "UpdateNotificationOnSite2"() {
+        given: "参数准备"
+        def snDTO = new SystemNotificationUpdateDTO()
+        snDTO.setTaskId(1L)
+        snDTO.setContent("content")
+        snDTO.setStartTime(new Date())
+        snDTO.setObjectVersionNumber(2L)
+        def httpEntity = new HttpEntity<SystemNotificationUpdateDTO>(snDTO)
+
+        when: "POST请求【创建系统公告】"
+        def entity = restTemplate.exchange(BASE_PATH + "/update", HttpMethod.PUT, httpEntity, SystemNotificationDTO)
 
         then: "无异常抛出"
         noExceptionThrown()

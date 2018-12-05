@@ -4,8 +4,10 @@ import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO
 import io.choerodon.asgard.api.dto.SystemNotificationCreateDTO
 import io.choerodon.asgard.api.dto.SystemNotificationDTO
+import io.choerodon.asgard.api.dto.SystemNotificationUpdateDTO
 import io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl
 import io.choerodon.asgard.domain.QuartzTask
+import io.choerodon.asgard.domain.QuartzTaskDetail
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper
 import io.choerodon.asgard.schedule.QuartzDefinition
@@ -17,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import spock.lang.Specification
 
+import static java.lang.System.currentTimeMillis
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -47,8 +50,51 @@ class SystemNocificationServiceSpec extends Specification {
         and: "mock"
         scheduleMethodService.getMethodIdByCode(_) >> { return 1L }
         scheduleTaskService.create(_, _, _) >> { return quartzTask }
+        quartzTaskMapper.updateByPrimaryKeySelective(_) >> 1
         when: "方法调用"
         systemNocificationService.create(level, dto, userId, sourceId)
+        then: "结果比较"
+        noExceptionThrown()
+    }
+
+    def "Update"() {
+        given: "参数准备"
+        def level = ResourceLevel.SITE
+        def dto = new SystemNotificationUpdateDTO()
+        dto.setContent("content")
+        dto.setObjectVersionNumber(1L)
+        def sourceId = 1L
+        def quartzTask = new QuartzTaskDetail()
+        quartzTask.setId(1L)
+        quartzTask.setStartTime(new Date(currentTimeMillis() + 10000))
+        and: "mock"
+        quartzTaskMapper.selectTaskById(_) >> quartzTask
+        quartzTaskMapper.updateByPrimaryKeySelective(_) >> 1
+        when: "方法调用"
+        systemNocificationService.update(dto, level, sourceId)
+        then: "结果比较"
+        noExceptionThrown()
+    }
+
+    def "Update2"() {
+        given: "参数准备"
+        def level = ResourceLevel.SITE
+        def dto = new SystemNotificationUpdateDTO()
+        //taskId为null，因为delete方法中参数为long,Long转为null会报空指针异常
+        dto.setTaskId(1L)
+        dto.setContent("content")
+        dto.setStartTime(new Date())
+        dto.setObjectVersionNumber(2L)
+        def sourceId = 1L
+        def quartzTask = new QuartzTaskDetail()
+        quartzTask.setId(1L)
+        quartzTask.setStartTime(new Date(currentTimeMillis() + 10000))
+        and: "mock"
+        quartzTaskMapper.selectTaskById(_) >> quartzTask
+        scheduleMethodService.getMethodIdByCode(_) >> { return 1L }
+        scheduleTaskService.create(_, _, _) >> new QuartzTask()
+        when: "方法调用"
+        systemNocificationService.update(dto, level, sourceId)
         then: "结果比较"
         noExceptionThrown()
     }
