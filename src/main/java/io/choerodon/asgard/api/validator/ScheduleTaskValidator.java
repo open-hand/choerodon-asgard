@@ -13,6 +13,10 @@ import java.util.HashMap;
  * @author dengyouquan
  **/
 public class ScheduleTaskValidator {
+    public ScheduleTaskValidator() {
+        throw new IllegalStateException();
+    }
+
     public static void validatorCreate(ScheduleTaskDTO dto) {
         if (dto.getParams() == null) {
             dto.setParams(new HashMap<>(0));

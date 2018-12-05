@@ -2,6 +2,7 @@ package io.choerodon.asgard.api.service;
 
 import io.choerodon.asgard.api.dto.SystemNotificationCreateDTO;
 import io.choerodon.asgard.api.dto.SystemNotificationDTO;
+import io.choerodon.asgard.api.dto.SystemNotificationUpdateDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -17,6 +18,16 @@ public interface SystemNocificationService {
      * @param userId 公告创建人Id
      */
     SystemNotificationDTO create(ResourceLevel level, SystemNotificationCreateDTO dto, Long userId, Long sourceId);
+
+    /**
+     * 更新系统/组织公告
+     * @param dto
+     * @param level
+     * @param sourceId
+     * @return
+     */
+    SystemNotificationDTO update(SystemNotificationUpdateDTO dto, ResourceLevel level, Long sourceId);
+
 
     /**
      * 根据taskId获得公告详情

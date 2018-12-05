@@ -56,6 +56,7 @@
     <select id="selectNotification" resultType="io.choerodon.asgard.api.dto.SystemNotificationDTO">
         SELECT
         aqt.ID AS taskId,
+        aqt.OBJECT_VERSION_NUMBER AS objectVersionNumber,
         aqt.EXECUTE_PARAMS AS content,
         aqt.START_TIME AS sendTime,
         (

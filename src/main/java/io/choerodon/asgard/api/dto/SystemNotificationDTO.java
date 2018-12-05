@@ -19,6 +19,9 @@ public class SystemNotificationDTO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date sendTime;
 
+    @ApiModelProperty(value = "乐观锁版本号")
+    private Long objectVersionNumber;
+
     public enum NotificationStatus {
         COMPLETED("COMPLETED"),
         SENDING("SENDING"),
@@ -76,5 +79,13 @@ public class SystemNotificationDTO {
 
     public void setSendTime(Date sendTime) {
         this.sendTime = sendTime;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 }
