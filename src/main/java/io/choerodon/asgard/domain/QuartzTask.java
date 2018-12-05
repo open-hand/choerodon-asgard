@@ -31,6 +31,8 @@ public class QuartzTask extends AuditDomain {
 
     private String executeMethod;
 
+    private String executeStrategy;
+
     private String triggerType;
 
     private Integer simpleRepeatCount;
@@ -168,6 +170,14 @@ public class QuartzTask extends AuditDomain {
         this.simpleRepeatIntervalUnit = simpleRepeatIntervalUnit;
     }
 
+    public String getExecuteStrategy() {
+        return executeStrategy;
+    }
+
+    public void setExecuteStrategy(String executeStrategy) {
+        this.executeStrategy = executeStrategy;
+    }
+
     @Override
     public String toString() {
         return "QuartzTask{" +
@@ -178,6 +188,7 @@ public class QuartzTask extends AuditDomain {
                 ", endTime=" + endTime +
                 ", executeParams='" + executeParams + '\'' +
                 ", executeMethod='" + executeMethod + '\'' +
+                ", executeStrategy='" + executeStrategy + '\'' +
                 ", triggerType='" + triggerType + '\'' +
                 ", simpleRepeatCount=" + simpleRepeatCount +
                 ", simpleRepeatInterval=" + simpleRepeatInterval +
@@ -185,7 +196,7 @@ public class QuartzTask extends AuditDomain {
                 ", cronExpression='" + cronExpression + '\'' +
                 ", status='" + status + '\'' +
                 ", level='" + level + '\'' +
-                ", sourceId='" + sourceId + '\'' +
+                ", sourceId=" + sourceId +
                 '}';
     }
 }

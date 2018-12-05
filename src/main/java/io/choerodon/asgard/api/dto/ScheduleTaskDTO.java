@@ -51,6 +51,10 @@ public class ScheduleTaskDTO {
     @ApiModelProperty(value = "cron-trigger的cron表达式")
     private String cronExpression;
 
+
+    @ApiModelProperty(value = "执行策略")
+    private String executeStrategy;
+
     private NotifyUser notifyUser;
 
     private Long[] assignUserIds;
@@ -159,6 +163,14 @@ public class ScheduleTaskDTO {
         this.simpleRepeatIntervalUnit = simpleRepeatIntervalUnit;
     }
 
+    public String getExecuteStrategy() {
+        return executeStrategy;
+    }
+
+    public void setExecuteStrategy(String executeStrategy) {
+        this.executeStrategy = executeStrategy;
+    }
+
     public ScheduleTaskDTO() {
     }
 
@@ -204,6 +216,15 @@ public class ScheduleTaskDTO {
 
         public void setAssigner(boolean assigner) {
             this.assigner = assigner;
+        }
+    }
+
+    public static enum TriggerEventStrategy {
+        STOP,
+        SERIAL,
+        PARALLEL;
+
+        private TriggerEventStrategy() {
         }
     }
 }
