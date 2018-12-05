@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.service.impl;
 
+import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.service.QuartzRealJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
@@ -48,14 +49,19 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
     @Override
     public void triggerEvent(final long taskId, final JobExecutionContext jobExecutionContext) {
         final QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(taskId);
-        // 若任务由最近执行记录，且最近执行记录状态非Completed，则停用任务
-        if (lastInstance != null && !QuartzDefinition.InstanceStatus.COMPLETED.name().equals(lastInstance.getStatus())) {
-            // 若最近执行记录状态为：Running，则将最近执行记录置为失败
-            if (QuartzDefinition.InstanceStatus.RUNNING.name().equals(lastInstance.getStatus())) {
-                scheduleTaskInstanceService.failed(lastInstance.getId(), "定时任务未被执行");
+        QuartzTask task = taskMapper.selectByPrimaryKey(taskId);
+        String strategy = task.getExecuteStrategy();
+        //任务执行策略为STOP
+        if (ScheduleTaskDTO.TriggerEventStrategy.STOP.name().equalsIgnoreCase(strategy)) {
+            // 若任务有最近执行记录，且最近执行记录状态非Completed，则停用任务
+            if (lastInstance != null && !QuartzDefinition.InstanceStatus.COMPLETED.name().equals(lastInstance.getStatus())) {
+                // 若最近执行记录状态为：Running，则将最近执行记录置为失败
+                if (QuartzDefinition.InstanceStatus.RUNNING.name().equals(lastInstance.getStatus())) {
+                    scheduleTaskInstanceService.failed(lastInstance.getId(), "定时任务未被执行");
+                }
+                scheduleTaskService.disable(taskId, null, true);
+                return;
             }
-            scheduleTaskService.disable(taskId, null, true);
-            return;
         }
         createInstance(taskId, lastInstance);
         //若无下次执行计划，则结束任务

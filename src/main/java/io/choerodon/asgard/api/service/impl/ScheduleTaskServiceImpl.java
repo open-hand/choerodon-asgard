@@ -105,6 +105,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             quartzTask.setExecuteParams(objectMapper.writeValueAsString(dto.getParams()));
             quartzTask.setLevel(level);
             quartzTask.setSourceId(sourceId);
+            quartzTask.setExecuteStrategy(dto.getExecuteStrategy());
             validExecuteParams(dto.getParams(), propertyJobParams);
             if (taskMapper.insertSelective(quartzTask) != 1) {
                 throw new CommonException("error.scheduleTask.create");

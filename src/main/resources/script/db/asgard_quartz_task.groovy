@@ -57,4 +57,12 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
         renameColumn(columnDataType: 'VARCHAR(255)', newColumnName: "NAME", oldColumnName: "NAME", remarks: '任务名', tableName: 'ASGARD_QUARTZ_TASK')
     }
 
+    changeSet(id: '2018-12-05-add-column-strategy', author: 'longhe1996@icloud.com') {
+        addColumn(tableName: 'ASGARD_QUARTZ_TASK') {
+            column(name: "EXECUTE_STRATEGY", type: "VARCHAR(32)", defaultValue: "STOP",
+                    remarks: '任务的执行策略，默认为STOP：到了第二次执行时间，上一次执行尚未完成，则置上一次执行为失败状态，并停止任务',
+                    afterColumn: 'EXECUTE_METHOD')
+        }
+    }
+
 }
