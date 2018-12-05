@@ -75,7 +75,7 @@ public class SystemNotificationServiceImpl implements SystemNocificationService 
     @Override
     public SystemNotificationDTO update(SystemNotificationUpdateDTO dto, ResourceLevel level, Long sourceId) {
         QuartzTaskDetail detail = quartzTaskMapper.selectTaskById(dto.getTaskId());
-        if (detail.getStartTime().compareTo(new Date()) > 1) {
+        if (detail.getStartTime().compareTo(new Date()) < 1) {
             throw new CommonException("error.systemNotification.update");
         }
         //更新内容
