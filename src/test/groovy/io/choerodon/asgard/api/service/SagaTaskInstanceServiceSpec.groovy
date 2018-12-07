@@ -34,7 +34,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
     def '测试 unlockByInstance方法'() {
         given: 'mock mapper'
         def sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
-        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null)
+        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null)
         def instance = '127.0.0.1:8293'
 
         when: '调用unlockByInstance方法'
@@ -50,7 +50,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
 
         and: 'mock mapper'
         def sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
-        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null)
+        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null)
 
         when: '当该taskInstance不存在时调用unlockById方法'
         sagaTaskInstanceService.unlockById(10L)
@@ -84,7 +84,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
             selectByPrimaryKey(sagaTaskInstance.getSagaInstanceId()) >> sagaInstance
             selectByPrimaryKey(0L) >> null
         }
-        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, sagaInstanceMapper, null, null)
+        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, sagaInstanceMapper, null, null, null)
 
         when: '当该taskInstance不存在时调用retry方法'
         sagaTaskInstanceService.retry(0L)
@@ -156,7 +156,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
             pollBatchTypeAndIdLimit(_, _) >> [task3, task4]
             pollBatchTypeLimit(_, _) >> [task5, task6]
         }
-        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, new StringLockProvider(), null, null, null)
+        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, new StringLockProvider(), null, null, null, null)
 
         when: '执行poll方法'
         def result = sagaTaskInstanceService.pollBatch(pollBatchDTO)
@@ -190,7 +190,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
             selectByPrimaryKey(_) >> instance
         }
 
-        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(mockTaskInstanceMapper, null, mockInstanceMapper, null, transactionManager)
+        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(mockTaskInstanceMapper, null, mockInstanceMapper, null, transactionManager, null)
 
         when: '当重试次数大于等于最大重试次数调用更新失败方法'
         sagaTaskInstanceService.updateStatus(failedDto)
@@ -236,7 +236,7 @@ class SagaTaskInstanceServiceSpec extends Specification {
         def mockJsonDataMapper = Mock(JsonDataMapper) {
             insertSelective(_) >> 1
         }
-        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(mockUpdateTaskInstanceMapper, null, mockInstanceMapper, mockJsonDataMapper, transactionManager)
+        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(mockUpdateTaskInstanceMapper, null, mockInstanceMapper, mockJsonDataMapper, transactionManager, null)
 
         when: '当当前层级还有未完成消息时调用更新状态成功方法'
         mockUpdateTaskInstanceMapper.select(_) >> [unfinishedTask1]
