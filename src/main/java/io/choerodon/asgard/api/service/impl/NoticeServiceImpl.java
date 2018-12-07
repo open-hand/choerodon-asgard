@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.service.impl;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.domain.QuartzTaskMember;
+import io.choerodon.asgard.domain.SagaInstance;
 import io.choerodon.asgard.infra.enums.BusinessTypeCode;
 import io.choerodon.asgard.infra.enums.MemberType;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
@@ -45,6 +46,29 @@ public class NoticeServiceImpl implements NoticeService {
             notifyFeignClient.postNotice(noticeSendDTO);
         } catch (CommonException e) {
             LOGGER.info("schedule job send notice fail!", e);
+        }
+    }
+
+    @Override
+    public void sendSagaFailNotice(SagaInstance instance) {
+        //捕获异常，以免影响saga一致性
+        try {
+            NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+            noticeSendDTO.setCode("sagaInstanceFail");
+            noticeSendDTO.setSourceId(0L);
+            NoticeSendDTO.User user = new NoticeSendDTO.User();
+            user.setId(instance.getCreatedBy());
+            List<NoticeSendDTO.User> users = new ArrayList<>();
+            users.add(user);
+            noticeSendDTO.setTargetUsers(users);
+            Map<String, Object> params = new HashMap<>();
+            params.put("sagaInstanceId", instance.getId());
+            params.put("sagaCode", instance.getSagaCode());
+            params.put("level", instance.getLevel());
+            noticeSendDTO.setParams(params);
+            notifyFeignClient.postNotice(noticeSendDTO);
+        } catch (CommonException e) {
+            LOGGER.info("saga instance fail send notice fail");
         }
     }
 

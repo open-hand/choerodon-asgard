@@ -24,6 +24,8 @@ class SagaInstanceMapperSpec extends Specification {
         given: '创建一个对象'
         def sagaInstance = new SagaInstance()
         sagaInstance.setSagaCode('test-code')
+        sagaInstance.setSourceId(0L)
+        sagaInstance.setLevel("site")
         sagaInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name())
 
         when: '调用mapper的插入方法'
@@ -38,16 +40,20 @@ class SagaInstanceMapperSpec extends Specification {
         data.getObjectVersionNumber() != null
         data.getCreationDate() != null
         data.getCreatedBy() != null
+        data.getSourceId() == sagaInstance.getSourceId()
+        data.getLevel() == sagaInstance.getLevel()
     }
 
     @Unroll
     def '测试 fulltextSearch方法'() {
         given: '准备查询数据'
         def dbData = new SagaInstance('fs_code', 'fs_type', 'fs_id', 'fs_status', new Date(), new Date())
+        dbData.setSourceId(0L)
+        dbData.setLevel("site")
         sagaInstanceMapper.insert(dbData)
 
         expect: '期望的结果数量'
-        sagaInstanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params).size() == size
+        sagaInstanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, "site", 0L).size() == size
 
         where: '验证查询结果数量'
         sagaCode   || status      || refType   || refId   || params      || size

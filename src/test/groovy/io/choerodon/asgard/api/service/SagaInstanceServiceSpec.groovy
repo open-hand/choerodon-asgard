@@ -158,10 +158,10 @@ class SagaInstanceServiceSpec extends Specification {
         def tempSagaInstanceService = new SagaInstanceServiceImpl(null, null, instanceMapper, null, null)
 
         when: '调用pageQuery方法'
-        tempSagaInstanceService.pageQuery(new PageRequest(), "", "", "", "", "")
+        tempSagaInstanceService.pageQuery(new PageRequest(), "", "", "", "", "", "site", 0L)
 
         then: '验证SagaInstanceMapper的fulltextSearch方法被调用'
-        1 * instanceMapper.fulltextSearchInstance(_, _, _, _, _)
+        1 * instanceMapper.fulltextSearchInstance(_, _, _, _, _, _, _)
     }
 
 

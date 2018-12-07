@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
+import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
 import io.choerodon.asgard.domain.JsonData;
 import io.choerodon.asgard.domain.SagaInstance;
@@ -46,17 +47,20 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private SagaInstanceMapper instanceMapper;
     private JsonDataMapper jsonDataMapper;
     private DataSourceTransactionManager transactionManager;
+    private NoticeService noticeService;
 
     public SagaTaskInstanceServiceImpl(SagaTaskInstanceMapper taskInstanceMapper,
                                        StringLockProvider stringLockProvider,
                                        SagaInstanceMapper instanceMapper,
                                        JsonDataMapper jsonDataMapper,
-                                       DataSourceTransactionManager transactionManager) {
+                                       DataSourceTransactionManager transactionManager,
+                                       NoticeService noticeService) {
         this.taskInstanceMapper = taskInstanceMapper;
         this.stringLockProvider = stringLockProvider;
         this.instanceMapper = instanceMapper;
         this.jsonDataMapper = jsonDataMapper;
         this.transactionManager = transactionManager;
+        this.noticeService = noticeService;
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
     }
 
@@ -110,8 +114,8 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     private void addToReturnList(final Set<SagaTaskInstanceDTO> returnList,
-                               final String instance,
-                               final SagaTaskInstanceDTO j) {
+                                 final String instance,
+                                 final SagaTaskInstanceDTO j) {
         Date time = null;
         if (j.getActualStartTime() == null) {
             time = new Date();
@@ -164,6 +168,9 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             instance.setStatus(SagaDefinition.InstanceStatus.FAILED.name());
             instance.setEndTime(new Date());
             instanceMapper.updateByPrimaryKeySelective(instance);
+            if (instance.getCreatedBy() != 0) {
+                noticeService.sendSagaFailNotice(instance);
+            }
         } else {
             taskInstanceMapper.increaseRetriedCount(taskInstance.getId());
         }
