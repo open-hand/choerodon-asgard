@@ -30,4 +30,11 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
             column(name: "LAST_UPDATE_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2018-12-05-add-column-level', author: 'longhe1996@icloud.com') {
+        addColumn(tableName: 'ASGARD_SAGA_INSTANCE') {
+            column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'REF_ID')
+            column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED', defaultValue: "0", remarks: '创建该实例的源id，projectId/organizarionId', afterColumn: 'FD_LEVEL')
+        }
+    }
 }

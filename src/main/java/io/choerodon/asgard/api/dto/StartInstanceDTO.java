@@ -20,6 +20,12 @@ public class StartInstanceDTO {
     @NotNull(message = "error.startSaga.refTIdNull")
     private String refId;
 
+    @ApiModelProperty(value = "实例触发层级")
+    private String level;
+
+    @ApiModelProperty(value = "实力触发的组织/项目Id")
+    private Long sourceId;
+
     public String getSagaCode() {
         return sagaCode;
     }
@@ -52,4 +58,19 @@ public class StartInstanceDTO {
         this.refId = refId;
     }
 
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
 }
