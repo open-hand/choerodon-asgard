@@ -164,6 +164,35 @@ class SagaInstanceServiceSpec extends Specification {
         1 * instanceMapper.fulltextSearchInstance(_, _, _, _, _, _, _)
     }
 
+    def '测试 statistics方法'() {
+        given: 'mock instanceMapper'
+        def instanceMapper = Mock(SagaInstanceMapper)
+
+        and: 'mock对象注入SagaInstanceService'
+        def tempSagaInstanceService = new SagaInstanceServiceImpl(null, null, instanceMapper, null, null)
+
+        when: '调用pageQuery方法'
+        tempSagaInstanceService.statistics(null, null)
+
+        then: '验证SagaInstanceMapper的fulltextSearch方法被调用'
+        1 * instanceMapper.statisticsByStatus(_, _)
+    }
+
+
+    def '测试 queryDetails 方法'() {
+        given: 'mock instanceMapper'
+        def instanceMapper = Mock(SagaInstanceMapper)
+        def id = 1
+
+        and: 'mock对象注入SagaInstanceService'
+        def tempSagaInstanceService = new SagaInstanceServiceImpl(null, null, instanceMapper, null, null)
+
+        when: '调用pageQuery方法'
+        tempSagaInstanceService.queryDetails(id)
+
+        then: '验证SagaInstanceMapper的fulltextSearch方法被调用'
+        1 * instanceMapper.selectDetails(id)
+    }
 
     def createSagaTaskInstance(String taskCode, long instanceId, int seq, long dataId) {
         return SagaTaskInstanceBuilder.aSagaTaskInstance()

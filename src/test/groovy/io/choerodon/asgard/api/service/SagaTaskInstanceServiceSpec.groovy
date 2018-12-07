@@ -1,7 +1,6 @@
 package io.choerodon.asgard.api.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO
 import io.choerodon.asgard.api.service.impl.SagaTaskInstanceServiceImpl
 import io.choerodon.asgard.domain.SagaInstance
@@ -16,6 +15,7 @@ import io.choerodon.asgard.saga.SagaDefinition
 import io.choerodon.asgard.saga.dto.PollBatchDTO
 import io.choerodon.asgard.saga.dto.PollCodeDTO
 import io.choerodon.core.exception.CommonException
+import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -258,6 +258,18 @@ class SagaTaskInstanceServiceSpec extends Specification {
 
         then: '验证taskInstance的更新方法被调用被调用一次;instance的更新方法被调用一次'
         1 * mockInstanceMapper.updateByPrimaryKeySelective(instance)
+    }
+
+    def '测试 pageQuery方法'() {
+        given: 'mock mapper'
+        def sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
+        def sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null)
+
+        when: '调用pageQuery方法'
+        sagaTaskInstanceService.pageQuery(new PageRequest(), "", "", "", "", "site", 0L)
+
+        then: '验证SagaInstanceMapper的fulltextSearch方法被调用'
+        1 * sagaTaskInstanceMapper.fulltextSearchTaskInstance(_, _, _, _, _, _)
     }
 
 }
