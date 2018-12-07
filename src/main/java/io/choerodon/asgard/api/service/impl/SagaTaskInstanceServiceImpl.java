@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.service.impl;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
+import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
@@ -16,11 +17,17 @@ import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.infra.utils.StringLockProvider;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.dto.PollBatchDTO;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
@@ -281,4 +288,10 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         taskInstanceMapper.updateByPrimaryKey(taskInstance);
     }
 
+
+    @Override
+    public ResponseEntity<Page<SagaTaskInstanceInfoDTO>> pageQuery(PageRequest pageRequest, String sagaInstanceCode, String status, String taskInstanceCode, String params, String level, Long sourceId) {
+        return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
+                () -> taskInstanceMapper.fulltextSearchTaskInstance(sagaInstanceCode, status, taskInstanceCode,params, level, sourceId)), HttpStatus.OK);
+    }
 }
