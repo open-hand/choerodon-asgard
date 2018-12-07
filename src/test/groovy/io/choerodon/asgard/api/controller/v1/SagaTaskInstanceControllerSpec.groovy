@@ -1,7 +1,6 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO
 import io.choerodon.asgard.api.service.SagaTaskInstanceService
 import io.choerodon.asgard.saga.dto.PollBatchDTO
@@ -150,5 +149,29 @@ class SagaTaskInstanceControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
         0 * sagaTaskInstanceService.retry(notId)
         1 * sagaTaskInstanceService.retry(id)
+    }
+
+
+    def "测试 平台层分页查询SagaTask实例列表"() {
+        given: '设置查询参数'
+        def sagaInstanceCode = 'sagaInstanceCode'
+        def status = 'status'
+        def taskInstanceCode = 'taskInstanceCode'
+        def params = 'params'
+        def wrongParam = 'param'
+
+        and: 'mock sagaTaskInstanceService'
+        def sagaTaskInstanceService = Mock(SagaTaskInstanceService)
+        sagaTaskInstanceController.setSagaTaskInstanceService(sagaTaskInstanceService)
+
+        when: "调用查询事务列表接口"
+        def entity = testRestTemplate.getForEntity("/v1/sagas/tasks/instances?sagaInstanceCode={sagaInstanceCode}" +
+                "&status={status}&taskInstanceCode={taskInstanceCode}&params={params}",
+                String, sagaInstanceCode, status, taskInstanceCode, params)
+
+        then: "验证状态码成功；验证查询参数生效"
+        entity.statusCode.is2xxSuccessful()
+        1 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, params, null, null)
+        0 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, wrongParam, null, null)
     }
 }
