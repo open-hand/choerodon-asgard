@@ -1,12 +1,24 @@
 package io.choerodon.asgard.api.service.impl;
 
+import static java.util.stream.Collectors.groupingBy;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.api.dto.SagaInstanceDTO;
-import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.api.dto.SagaWithTaskInstanceDTO;
-import io.choerodon.asgard.api.dto.StartInstanceDTO;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.api.service.SagaInstanceService;
 import io.choerodon.asgard.domain.JsonData;
 import io.choerodon.asgard.domain.SagaInstance;
@@ -19,20 +31,6 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
@@ -89,7 +87,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         if (sagaTasks.isEmpty()) {
             Date date = new Date();
             SagaInstance instanceDO = new SagaInstance(code, dto.getRefType(), dto.getRefId(),
-                    SagaDefinition.InstanceStatus.NON_CONSUMER.name(), date, date);
+                    SagaDefinition.InstanceStatus.NON_CONSUMER.name(), date, date, dto.getLevel(), dto.getSourceId());
             instanceMapper.insertSelective(instanceDO);
             return new ResponseEntity<>(modelMapper.map(
                     instanceMapper.selectByPrimaryKey(instanceDO.getId()), SagaInstanceDTO.class), HttpStatus.OK);
@@ -101,7 +99,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     private SagaInstanceDTO startInstanceAndTask(final StartInstanceDTO dto, final List<SagaTask> sagaTasks) {
         final Date startTime = new Date(System.currentTimeMillis());
         SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
-                SagaDefinition.TaskInstanceStatus.RUNNING.name(), startTime);
+                SagaDefinition.TaskInstanceStatus.RUNNING.name(), startTime, dto.getLevel(), dto.getSourceId());
         Long inputDataId = null;
         if (dto.getInput() != null) {
             JsonData jsonData = new JsonData(dto.getInput());
@@ -148,10 +146,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     @Override
     public ResponseEntity<Page<SagaInstanceDTO>> pageQuery(PageRequest pageRequest, String sagaCode,
                                                            String status, String refType,
-                                                           String refId, String params) {
+                                                           String refId, String params, String level, Long sourceId) {
 
         return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
-                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params)), HttpStatus.OK);
+                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
     }
 
     @Override
@@ -178,5 +176,15 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             throw new CommonException("error.SagaInstanceService.IOException", e);
         }
 
+    }
+
+    @Override
+    public Map<String, Integer> statistics(String level, Long sourceId) {
+        return instanceMapper.statisticsByStatus(level, sourceId);
+    }
+
+    @Override
+    public SagaInstanceDetailsDTO queryDetails(Long id) {
+        return instanceMapper.selectDetails(id);
     }
 }

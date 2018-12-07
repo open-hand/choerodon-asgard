@@ -1,13 +1,14 @@
 package io.choerodon.asgard.domain;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
-
+import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
+
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 @ModifyAudit
 @VersionAudit
@@ -34,6 +35,11 @@ public class SagaInstance extends AuditDomain {
 
     private String refId;
 
+    @Column(name = "FD_LEVEL")
+    private String level;
+
+    private Long sourceId;
+
     public SagaInstance() {
     }
 
@@ -51,12 +57,33 @@ public class SagaInstance extends AuditDomain {
         this.endTime = endTime;
     }
 
+    public SagaInstance(String sagaCode, String refType, String refId, String status,
+                        Date startTime, Date endTime, String level, Long sourceId) {
+        this.sagaCode = sagaCode;
+        this.status = status;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.refType = refType;
+        this.refId = refId;
+        this.level = level;
+        this.sourceId = sourceId;
+    }
+
     public SagaInstance(String sagaCode, String refType, String refId, String status, Date startTime) {
         this.sagaCode = sagaCode;
         this.refType = refType;
         this.refId = refId;
         this.status = status;
         this.startTime = startTime;
+    }
+    public SagaInstance(String sagaCode, String refType, String refId, String status, Date startTime, String level, Long sourceId) {
+        this.sagaCode = sagaCode;
+        this.refType = refType;
+        this.refId = refId;
+        this.status = status;
+        this.startTime = startTime;
+        this.level = level;
+        this.sourceId = sourceId;
     }
 
     public String getRefType() {
@@ -131,4 +158,19 @@ public class SagaInstance extends AuditDomain {
         this.outputDataId = outputDataId;
     }
 
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Long getSourceId() {
+        return sourceId;
+    }
+
+    public void setSourceId(Long sourceId) {
+        this.sourceId = sourceId;
+    }
 }

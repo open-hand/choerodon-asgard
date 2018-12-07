@@ -20,10 +20,6 @@ public class SagaInstanceDTO {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
-    @ApiModelProperty(value = "结束时间")
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date endTime;
-
     @ApiModelProperty(value = "关联业务类型")
     private String refType;
 
@@ -60,14 +56,6 @@ public class SagaInstanceDTO {
 
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
     }
 
     public String getRefType() {
