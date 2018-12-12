@@ -64,29 +64,34 @@
 
     <select id="selectDetails" resultType="io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO">
         SELECT
-            select1.*, aos.DESCRIPTION AS DESCRIPTION,
-            aos.SERVICE AS SERVICE
+            asi.ID AS ID,
+            asi.SAGA_CODE AS SAGA_CODE,
+            aos.DESCRIPTION AS DESCRIPTION,
+            aos.SERVICE as SERVICE,
+            asi.FD_LEVEL AS LEVEL,
+            asi.REF_TYPE AS REF_TYPE,
+            asi.REF_ID AS REF_ID,
+            asi.START_TIME AS START_TIME,
+            asi.END_TIME AS END_TIME,
+            sum(CASE WHEN asti. STATUS = 'COMPLETED' THEN 1 ELSE 0 END) AS COMPLETED,
+            sum(CASE WHEN asti. STATUS = 'RUNNING' THEN 1 ELSE 0 END) AS RUNNING,
+            sum(CASE WHEN asti. STATUS = 'ROLLBACK' THEN 1 ELSE 0 END) AS ROLLBACK,
+            sum(CASE WHEN asti. STATUS = 'FAILED' THEN 1 ELSE 0 END) AS FAILED,
+            sum(CASE WHEN asti. STATUS = 'QUEUE' THEN 1 ELSE 0 END) AS QUEUE
         FROM
-            (
-                SELECT
-                    asi.ID AS ID,
-                    asi.SAGA_CODE AS SAGA_CODE,
-                    asi.FD_LEVEL AS LEVEL,
-                    asi.REF_TYPE AS REF_TYPE,
-                    asi.REF_ID AS REF_ID,
-                    asi.START_TIME AS START_TIME,
-                    asi.END_TIME AS END_TIME,
-                    sum(CASE WHEN asti. STATUS = 'COMPLETED' THEN 1 ELSE 0 END) AS COMPLETED,
-                    sum(CASE WHEN asti. STATUS = 'RUNNING' THEN 1 ELSE 0 END) AS RUNNING,
-                    sum(CASE WHEN asti. STATUS = 'ROLLBACK' THEN 1 ELSE 0 END) AS ROLLBACK,
-                    sum(CASE WHEN asti. STATUS = 'FAILED' THEN 1 ELSE 0 END) AS FAILED,
-                    sum(CASE WHEN asti. STATUS = 'QUEUE' THEN 1 ELSE 0 END) AS QUEUE
-                FROM
-                    asgard_saga_instance asi
-                LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
-                WHERE
-                    asi.ID=#{id}
-            ) select1
-        LEFT JOIN asgard_orch_saga aos ON select1.SAGA_CODE = aos. CODE
+            asgard_saga_instance asi
+        LEFT JOIN asgard_orch_saga aos ON asi.SAGA_CODE = aos. CODE
+        LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
+        WHERE asi.ID=#{id}
+        GROUP BY
+            asi.id,
+            asi.SAGA_CODE,
+            aos.DESCRIPTION,
+            aos.SERVICE,
+            asi.FD_LEVEL,
+            asi.REF_TYPE,
+            asi.REF_ID,
+            asi.START_TIME,
+            asi.END_TIME
     </select>
 </mapper>
