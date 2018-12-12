@@ -44,7 +44,7 @@ public class SystemNotificationController {
         this.scheduleTaskService = scheduleTaskService;
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
     @ApiOperation(value = "创建系统公告")
     @PostMapping("/create")
     public ResponseEntity<SystemNotificationDTO> createNotificationOnSite(@RequestBody @Valid SystemNotificationCreateDTO dto) {
@@ -52,28 +52,28 @@ public class SystemNotificationController {
         return new ResponseEntity<>(systemNocificationService.create(ResourceLevel.SITE, dto, userId, 0L), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
     @ApiOperation(value = "更新系统公告")
     @PutMapping("/update")
     public ResponseEntity<SystemNotificationDTO> updateNotificationOnSite(@RequestBody @Valid SystemNotificationUpdateDTO dto) {
         return new ResponseEntity<>(systemNocificationService.update(dto, ResourceLevel.SITE, 0L), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
     @ApiOperation(value = "平台层删除公告")
     @DeleteMapping("/delete")
     public void deleteSiteNotification(@RequestParam(name = "taskId") Long taskId) {
         scheduleTaskService.delete(taskId, ResourceLevel.SITE.value(), 0L);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
     @GetMapping("/detail/{id}")
     @ApiOperation(value = "全局层查看公告详情")
     public ResponseEntity<SystemNotificationDTO> getSiteNotificationDetails(@PathVariable long id) {
         return new ResponseEntity<>(systemNocificationService.getDetailById(ResourceLevel.SITE, id, 0L), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
     @GetMapping("/all")
     @ApiOperation(value = "全局层分页查询系统公告")
     @CustomPageRequest
