@@ -59,7 +59,7 @@
 
         <if test="params != null">
             AND(
-            name LIKE concat(concat('%',#{params}),'%') OR
+            task_name LIKE concat(concat('%',#{params}),'%') OR
             exception_message LIKE concat(concat('%',#{params}),'%') OR
             status LIKE concat(concat('%',#{params}),'%')
             )
