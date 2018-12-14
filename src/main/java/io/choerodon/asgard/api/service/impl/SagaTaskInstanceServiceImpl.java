@@ -14,7 +14,6 @@ import io.choerodon.asgard.infra.mapper.JsonDataMapper;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
-import io.choerodon.asgard.infra.utils.StringLockProvider;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.dto.PollBatchDTO;
 import io.choerodon.core.domain.Page;
@@ -22,7 +21,6 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,20 +48,17 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private final ModelMapper modelMapper = new ModelMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private SagaTaskInstanceMapper taskInstanceMapper;
-    private StringLockProvider stringLockProvider;
     private SagaInstanceMapper instanceMapper;
     private JsonDataMapper jsonDataMapper;
     private DataSourceTransactionManager transactionManager;
     private NoticeService noticeService;
 
     public SagaTaskInstanceServiceImpl(SagaTaskInstanceMapper taskInstanceMapper,
-                                       StringLockProvider stringLockProvider,
                                        SagaInstanceMapper instanceMapper,
                                        JsonDataMapper jsonDataMapper,
                                        DataSourceTransactionManager transactionManager,
                                        NoticeService noticeService) {
         this.taskInstanceMapper = taskInstanceMapper;
-        this.stringLockProvider = stringLockProvider;
         this.instanceMapper = instanceMapper;
         this.jsonDataMapper = jsonDataMapper;
         this.transactionManager = transactionManager;
@@ -75,38 +70,35 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     public Set<SagaTaskInstanceDTO> pollBatch(final PollBatchDTO pollBatchDTO) {
         final Set<SagaTaskInstanceDTO> returnList = new LinkedHashSet<>();
         pollBatchDTO.getCodes().forEach(code -> {
-            StringLockProvider.Mutex mutex = stringLockProvider.getMutex(code.getSagaCode() + ":" + code.getTaskCode());
-            synchronized (mutex) {
-                //并发策略为NONE的消息拉取。
-                taskInstanceMapper.pollBatchNoneLimit(
-                        code.getSagaCode(), code.getTaskCode(), pollBatchDTO.getInstance()).forEach(t -> {
-                    if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
-                        return;
-                    }
-                    addToReturnList(returnList, pollBatchDTO.getInstance(), t);
-                });
+            //并发策略为NONE的消息拉取。
+            taskInstanceMapper.pollBatchNoneLimit(
+                    code.getSagaCode(), code.getTaskCode(), pollBatchDTO.getInstance()).forEach(t -> {
+                if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
+                    return;
+                }
+                addToReturnList(returnList, pollBatchDTO.getInstance(), t);
+            });
 
-                //并发策略为TYPE_AND_ID的消息拉取。
-                taskInstanceMapper.pollBatchTypeAndIdLimit(
-                        code.getSagaCode(), code.getTaskCode()).stream()
-                        .collect(groupingBy(t -> t.getRefType() + ":" + t.getRefId())).values()
-                        .forEach(i -> {
-                            if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
-                                return;
-                            }
-                            addLimit(returnList, i, pollBatchDTO.getInstance());
-                        });
-                //并发策略为TYPE的消息拉取。
-                taskInstanceMapper.pollBatchTypeLimit(
-                        code.getSagaCode(), code.getTaskCode()).stream()
-                        .collect(groupingBy(SagaTaskInstanceDTO::getRefType)).values()
-                        .forEach(i -> {
-                            if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
-                                return;
-                            }
-                            addLimit(returnList, i, pollBatchDTO.getInstance());
-                        });
-            }
+            //并发策略为TYPE_AND_ID的消息拉取。
+            taskInstanceMapper.pollBatchTypeAndIdLimit(
+                    code.getSagaCode(), code.getTaskCode()).stream()
+                    .collect(groupingBy(t -> t.getRefType() + ":" + t.getRefId())).values()
+                    .forEach(i -> {
+                        if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
+                            return;
+                        }
+                        addLimit(returnList, i, pollBatchDTO.getInstance());
+                    });
+            //并发策略为TYPE的消息拉取。
+            taskInstanceMapper.pollBatchTypeLimit(
+                    code.getSagaCode(), code.getTaskCode()).stream()
+                    .collect(groupingBy(SagaTaskInstanceDTO::getRefType)).values()
+                    .forEach(i -> {
+                        if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
+                            return;
+                        }
+                        addLimit(returnList, i, pollBatchDTO.getInstance());
+                    });
         });
         return returnList;
     }
@@ -292,6 +284,6 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     @Override
     public ResponseEntity<Page<SagaTaskInstanceInfoDTO>> pageQuery(PageRequest pageRequest, String sagaInstanceCode, String status, String taskInstanceCode, String params, String level, Long sourceId) {
         return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
-                () -> taskInstanceMapper.fulltextSearchTaskInstance(sagaInstanceCode, status, taskInstanceCode,params, level, sourceId)), HttpStatus.OK);
+                () -> taskInstanceMapper.fulltextSearchTaskInstance(sagaInstanceCode, status, taskInstanceCode, params, level, sourceId)), HttpStatus.OK);
     }
 }

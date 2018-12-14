@@ -30,7 +30,7 @@ public class SagaTaskInstanceProjController {
         this.sagaTaskInstanceService = sagaTaskInstanceService;
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_ADMINISTRATOR})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER,InitRoleCode.PROJECT_ADMINISTRATOR})
     @GetMapping
     @ApiOperation(value = "项目层分页查询SagaTask实例列表")
     @CustomPageRequest

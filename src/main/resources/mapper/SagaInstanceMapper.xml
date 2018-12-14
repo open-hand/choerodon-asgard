@@ -83,6 +83,15 @@
         LEFT JOIN asgard_orch_saga aos ON asi.SAGA_CODE = aos. CODE
         LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
         WHERE asi.ID=#{id}
-        GROUP BY asi.ID
+        GROUP BY
+            asi.id,
+            asi.SAGA_CODE,
+            aos.DESCRIPTION,
+            aos.SERVICE,
+            asi.FD_LEVEL,
+            asi.REF_TYPE,
+            asi.REF_ID,
+            asi.START_TIME,
+            asi.END_TIME
     </select>
 </mapper>
