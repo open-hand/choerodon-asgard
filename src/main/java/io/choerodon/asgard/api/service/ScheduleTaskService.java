@@ -22,7 +22,7 @@ public interface ScheduleTaskService {
 
     void disable(long id, Long objectVersionNumber, boolean executeWithIn);
 
-    void disableByOrganizationId(long orgId);
+    void disableByLevelAndSourceId(String level,long sourceId);
 
     void delete(long id, String level, Long sourceId);
 

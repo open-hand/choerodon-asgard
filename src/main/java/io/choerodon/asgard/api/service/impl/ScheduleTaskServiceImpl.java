@@ -1,7 +1,23 @@
 package io.choerodon.asgard.api.service.impl;
 
+import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.ORG_NOTIFICATION_CODE;
+import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.SITE_NOTIFICATION_CODE;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.api.service.QuartzJobService;
@@ -27,21 +43,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.ORG_NOTIFICATION_CODE;
-import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.SITE_NOTIFICATION_CODE;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
@@ -336,10 +337,10 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public void disableByOrganizationId(long orgId) {
+    public void disableByLevelAndSourceId(String level, long sourceId) {
         QuartzTask query = new QuartzTask();
-        query.setLevel(ResourceLevel.ORGANIZATION.value());
-        query.setSourceId(orgId);
+        query.setLevel(level);
+        query.setSourceId(sourceId);
         List<QuartzTask> quartzTasks = taskMapper.select(query);
         quartzTasks.forEach(quartzTask -> disableTaskAndPauseJob(quartzTask.getId(), quartzTask.getObjectVersionNumber(), quartzTask));
     }
