@@ -1,5 +1,15 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import java.util.List;
+import javax.validation.Valid;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
@@ -15,15 +25,6 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/schedules/projects/{project_id}/tasks")
@@ -98,12 +99,20 @@ public class ScheduleTaskProjectController {
 
     }
 
+    @Permission(permissionWithin = true)
+    @ApiOperation(value = "停用指定项目下所有任务")
+    @PutMapping("/disable")
+    public void disableByProjectId(@PathVariable("project_id") long projectId) {
+        scheduleTaskService.disableByLevelAndSourceId(ResourceLevel.PROJECT.value(), projectId);
+    }
+
+
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("project_id") long projectId,
                                 @RequestBody String name) {
-        scheduleTaskService.checkName(name, ResourceLevel.PROJECT.value(),projectId);
+        scheduleTaskService.checkName(name, ResourceLevel.PROJECT.value(), projectId);
         return new ResponseEntity(HttpStatus.OK);
     }
 

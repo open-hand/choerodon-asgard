@@ -70,7 +70,7 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "停用指定组织下所有任务")
     @PutMapping("/disable")
     public void disableByOrganizationId(@PathVariable("organization_id") long orgId) {
-        scheduleTaskService.disableByOrganizationId(orgId);
+        scheduleTaskService.disableByLevelAndSourceId(ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION)
@@ -110,7 +110,7 @@ public class ScheduleTaskOrgController {
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("organization_id") long orgId,
                                 @RequestBody String name) {
-        scheduleTaskService.checkName(name, ResourceLevel.ORGANIZATION.value(),orgId);
+        scheduleTaskService.checkName(name, ResourceLevel.ORGANIZATION.value(), orgId);
         return new ResponseEntity(HttpStatus.OK);
     }
 
