@@ -15,7 +15,7 @@ public interface SagaTaskInstanceService {
 
     Set<SagaTaskInstanceDTO> pollBatch(PollBatchDTO pollBatchDTO);
 
-    SagaTaskInstanceDTO updateStatus(SagaTaskInstanceStatusDTO statusDTO);
+    void updateStatus(SagaTaskInstanceStatusDTO statusDTO);
 
     void unlockByInstance(String instance);
 
