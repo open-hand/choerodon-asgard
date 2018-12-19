@@ -21,7 +21,6 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -38,6 +37,7 @@ import java.util.*;
 
 import static io.choerodon.asgard.api.service.impl.SagaInstanceServiceImpl.DB_ERROR;
 import static java.util.stream.Collectors.groupingBy;
+import static org.springframework.transaction.TransactionDefinition.ISOLATION_REPEATABLE_READ;
 
 @Service
 public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
@@ -45,7 +45,6 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private static final String ERROR_CODE_TASK_INSTANCE_NOT_EXIST = "error.sagaTaskInstance.notExist";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaTaskInstanceService.class);
-    private final ModelMapper modelMapper = new ModelMapper();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private SagaTaskInstanceMapper taskInstanceMapper;
     private SagaInstanceMapper instanceMapper;
@@ -128,9 +127,8 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         }
     }
 
-    //todo 通过修改事务等方式，解决多个请求进来可能会出现的脏读问题
     @Override
-    public SagaTaskInstanceDTO updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
+    public void updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (taskInstance == null) {
             throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
@@ -140,6 +138,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             throw new FeignException("error.sagaInstance.notExist");
         }
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setIsolationLevel(ISOLATION_REPEATABLE_READ);
         def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
@@ -152,7 +151,6 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         } catch (Exception e) {
             transactionManager.rollback(status);
         }
-        return modelMapper.map(taskInstanceMapper.selectByPrimaryKey(statusDTO.getId()), SagaTaskInstanceDTO.class);
     }
 
     private void updateStatusFailed(final SagaTaskInstance taskInstance, final SagaInstance instance, final String exeMsg) {
