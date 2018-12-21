@@ -250,7 +250,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             case INTEGER:
                 return value.getClass().equals(Integer.class);
             case LONG:
-                return value.getClass().equals(Long.class);
+                return value.getClass().equals(Long.class) || value.getClass().equals(Integer.class);
             case STRING:
                 return value.getClass().equals(String.class);
             case BOOLEAN:
