@@ -25,4 +25,5 @@ public interface SagaInstanceService {
 
     Map<String, Integer> statistics(String level, Long sourceId);
 
+    Map<String, Object> queryFailedByDate(String beginDate, String endDate);
 }

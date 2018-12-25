@@ -61,6 +61,16 @@
         </if>
     </select>
 
+    <select id="selectFailedTimes" resultType="java.lang.Integer">
+        SELECT
+            COUNT(id)
+        FROM
+            asgard_saga_instance
+        WHERE
+            STATUS = 'FAILED'
+        AND start_time BETWEEN #{begin}
+        AND #{end}
+    </select>
 
     <select id="selectDetails" resultType="io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO">
         SELECT
