@@ -24,4 +24,7 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstance> {
                                             @Param("sourceId") Long sourceId);
 
     SagaInstanceDetailsDTO selectDetails(@Param("id") Long id);
+
+    Integer selectFailedTimes(@Param("begin") String begin,
+                              @Param("end") String end);
 }

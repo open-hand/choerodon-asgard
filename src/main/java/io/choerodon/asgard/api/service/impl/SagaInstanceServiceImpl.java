@@ -2,11 +2,9 @@ package io.choerodon.asgard.api.service.impl;
 
 import static java.util.stream.Collectors.groupingBy;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -186,5 +184,38 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     @Override
     public SagaInstanceDetailsDTO queryDetails(Long id) {
         return instanceMapper.selectDetails(id);
+    }
+
+    @Override
+    public Map<String, Object> queryFailedByDate(String beginDate, String endDate) {
+        List<String> date = new ArrayList<>();
+        List<Integer> data = new ArrayList<>();
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            Date begin = dateFormat.parse(beginDate);
+            Date end = dateFormat.parse(endDate);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(begin);
+
+            while (true) {
+                if (calendar.getTime().after(end)) {
+                    break;
+                }
+                String dateStr = dateFormat.format(calendar.getTime());
+                date.add(dateStr);
+                calendar.add(Calendar.DATE, 1);
+                String sqlEnd = dateFormat.format(calendar.getTime());
+                Integer count = instanceMapper.selectFailedTimes(dateStr, sqlEnd);
+                data.add(count);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", date);
+        map.put("data", data);
+        return map;
     }
 }

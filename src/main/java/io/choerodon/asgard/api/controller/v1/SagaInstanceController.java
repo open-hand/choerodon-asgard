@@ -4,6 +4,7 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -85,6 +86,16 @@ public class SagaInstanceController {
     @ApiOperation(value = "统计全平台各个事务实例状态下的实例个数")
     public ResponseEntity<Map> statistics() {
         return new ResponseEntity<>(sagaInstanceService.statistics(null, null), HttpStatus.OK);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER, InitRoleCode.SITE_ADMINISTRATOR})
+    @ApiOperation("根据日期查询事务失败的次数")
+    @GetMapping("/failed/count")
+    public ResponseEntity<Map<String, Object>> queryFailedByDate(@RequestParam(value = "begin_date")
+                                                                 @ApiParam(value = "日期格式yyyy-MM-dd", required = true) String beginDate,
+                                                                 @RequestParam(value = "end_date")
+                                                                 @ApiParam(value = "日期格式yyyy-MM-dd", required = true) String endDate) {
+        return new ResponseEntity<>(sagaInstanceService.queryFailedByDate(beginDate, endDate), HttpStatus.OK);
     }
 
 
