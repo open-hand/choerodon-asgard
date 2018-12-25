@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
-import io.choerodon.asgard.api.dto.SystemNotificationDTO;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.domain.QuartzTaskDetail;
 import io.choerodon.mybatis.common.BaseMapper;
@@ -23,11 +22,4 @@ public interface QuartzTaskMapper extends BaseMapper<QuartzTask> {
                                     @Param("sourceId") Long sourceId);
 
     QuartzTaskDetail selectTaskById(@Param("id") Long id);
-
-    List<SystemNotificationDTO> selectNotification(@Param("level") String level,
-                                                   @Param("sourceId") Long sourceId,
-                                                   @Param("code") String code,
-                                                   @Param("status") String status,
-                                                   @Param("content") String content,
-                                                   @Param("params") String params);
 }

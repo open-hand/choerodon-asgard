@@ -1,8 +1,5 @@
 package io.choerodon.asgard.api.service.impl;
 
-import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.ORG_NOTIFICATION_CODE;
-import static io.choerodon.asgard.api.service.impl.SystemNotificationServiceImpl.SITE_NOTIFICATION_CODE;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -554,14 +551,5 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             }
         }
         return false;
-    }
-
-
-    @Override
-    public Page<SystemNotificationDTO> pagingAllNotification(PageRequest pageRequest, String status, String content, String params, ResourceLevel level, long sourceId) {
-        return PageHelper.doPageAndSort(pageRequest,
-                () -> taskMapper.selectNotification(ResourceLevel.ORGANIZATION.equals(level) ? ResourceLevel.ORGANIZATION.value() : ResourceLevel.SITE.value(),
-                        sourceId, ResourceLevel.ORGANIZATION.equals(level) ? ORG_NOTIFICATION_CODE : SITE_NOTIFICATION_CODE,
-                        status, content, params));
     }
 }
