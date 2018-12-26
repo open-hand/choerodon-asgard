@@ -2,12 +2,14 @@ package io.choerodon.asgard.api.controller.v1;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
 import io.choerodon.core.domain.Page;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
@@ -30,7 +32,32 @@ public class SagaTaskInstanceProjController {
         this.sagaTaskInstanceService = sagaTaskInstanceService;
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER,InitRoleCode.PROJECT_ADMINISTRATOR})
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
+    @ApiOperation(value = "去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
+    @PutMapping("/{id}/unlock")
+    public void unlockById(@PathVariable("project_id") long projectId, @PathVariable long id) {
+        sagaTaskInstanceService.unlockById(id);
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
+    @ApiOperation(value = "根据服务实例批量去除消息的服务实例锁")
+    @PutMapping("/unlock_by_instance")
+    public void unlockByInstance(@PathVariable("project_id") long projectId, @RequestParam(value = "instance", required = false) String instance) {
+        if (StringUtils.isEmpty(instance)) {
+            throw new CommonException("error.unlockByInstance.instanceEmpty");
+        }
+        sagaTaskInstanceService.unlockByInstance(instance);
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
+    @ApiOperation(value = "手动重试消息")
+    @PutMapping("/{id}/retry")
+    public void retry(@PathVariable("project_id") long projectId, @PathVariable long id) {
+        sagaTaskInstanceService.retry(id);
+    }
+
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
     @GetMapping
     @ApiOperation(value = "项目层分页查询SagaTask实例列表")
     @CustomPageRequest
