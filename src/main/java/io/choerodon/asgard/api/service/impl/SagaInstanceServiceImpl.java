@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.groupingBy;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -189,7 +190,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     @Override
     public Map<String, Object> queryFailedByDate(String beginDate, String endDate) {
         List<String> date = new ArrayList<>();
-        List<Integer> data = new ArrayList<>();
+        List<Long> data = new ArrayList<>();
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -198,17 +199,20 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(begin);
-
+            List<Map<String, Object>> maps = instanceMapper.selectFailedTimes(dateFormat.format(begin), dateFormat.format(end));
+            List<Object> days = maps.stream().map(m -> m.get("days")).collect(Collectors.toList());
             while (true) {
                 if (calendar.getTime().after(end)) {
                     break;
                 }
-                String dateStr = dateFormat.format(calendar.getTime());
-                date.add(dateStr);
-                calendar.add(Calendar.DATE, 1);
-                String sqlEnd = dateFormat.format(calendar.getTime());
-                Integer count = instanceMapper.selectFailedTimes(dateStr, sqlEnd);
+                String format = dateFormat.format(calendar.getTime());
+                date.add(format);
+                Long count = 0L;
+                if (days.contains(format)) {
+                    count = (Long)maps.get(days.indexOf(format)).get("count");
+                }
                 data.add(count);
+                calendar.add(Calendar.DATE, 1);
             }
         } catch (ParseException e) {
             e.printStackTrace();
