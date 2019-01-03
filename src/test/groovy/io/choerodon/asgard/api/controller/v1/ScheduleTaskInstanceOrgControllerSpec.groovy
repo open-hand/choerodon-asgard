@@ -1,7 +1,6 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.UpdateTaskInstanceStatusDTO
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService
 import io.choerodon.core.domain.Page
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
@@ -10,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT

@@ -1,9 +1,9 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
+import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
@@ -76,7 +76,7 @@ public class ScheduleTaskInstanceSiteController {
     @PutMapping("/{id}/status")
     @ApiOperation(value = "内部接口。更新任务的执行状态")
     @Permission(permissionWithin = true)
-    public void updateStatus(@PathVariable long id, @RequestBody @Valid UpdateTaskInstanceStatusDTO statusDTO) {
+    public void updateStatus(@PathVariable long id, @RequestBody @Valid UpdateStatusDTO statusDTO) {
         statusDTO.setId(id);
         scheduleTaskInstanceService.updateStatus(statusDTO);
     }

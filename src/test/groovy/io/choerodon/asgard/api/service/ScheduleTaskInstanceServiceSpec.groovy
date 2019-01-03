@@ -1,9 +1,9 @@
 package io.choerodon.asgard.api.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.UpdateTaskInstanceStatusDTO
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO
 import io.choerodon.asgard.api.service.impl.ScheduleTaskInstanceServiceImpl
+import io.choerodon.asgard.common.UpdateStatusDTO
 import io.choerodon.asgard.domain.QuartzTaskInstance
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO
@@ -91,12 +91,12 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         error.message == errorMsg
         where: '异常比对'
         dto                                                                                                                       | dbInstance                                                        | num || exceptionType  | errorMsg
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: null)                                                                | null                                                              | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.objectVersionNumberNull"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L)                                                                  | null                                                              | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.instanceNotExist"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'COMPLETED', output: "1")                                | new QuartzTaskInstance(id: 1L, status: "FAILED")                  | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.instanceWasFailed"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'COMPLETED', output: "1")                                | new QuartzTaskInstance(id: 1L)                                    | 0   || FeignException | "error.scheduleTaskInstanceService.updateCompleteStatusFailed"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1")                                   | new QuartzTaskInstance(id: 1L, retriedCount: 1, maxRetryCount: 2) | 0   || FeignException | "error.scheduleTaskInstanceService.updateFailedStatusFailed"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1", exceptionMessage: "exceptionMsg") | new QuartzTaskInstance(id: 1L, retriedCount: 2, maxRetryCount: 1) | 0   || FeignException | "error.scheduleTaskInstanceService.updateFailedStatusFailed"
+        new UpdateStatusDTO(objectVersionNumber: null)                                                                | null                                                              | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.objectVersionNumberNull"
+        new UpdateStatusDTO(objectVersionNumber: 1L)                                                                  | null                                                              | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.instanceNotExist"
+        new UpdateStatusDTO(objectVersionNumber: 1L, status: 'COMPLETED', output: "1")                                | new QuartzTaskInstance(id: 1L, status: "FAILED")                  | 0 || FeignException | "error.scheduleTaskInstanceService.updateStatus.instanceWasFailed"
+        new UpdateStatusDTO(objectVersionNumber: 1L, status: 'COMPLETED', output: "1")                                | new QuartzTaskInstance(id: 1L)                                    | 0 || FeignException | "error.scheduleTaskInstanceService.updateCompleteStatusFailed"
+        new UpdateStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1")                                   | new QuartzTaskInstance(id: 1L, retriedCount: 1, maxRetryCount: 2) | 0 || FeignException | "error.scheduleTaskInstanceService.updateFailedStatusFailed"
+        new UpdateStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1", exceptionMessage: "exceptionMsg") | new QuartzTaskInstance(id: 1L, retriedCount: 2, maxRetryCount: 1) | 0 || FeignException | "error.scheduleTaskInstanceService.updateFailedStatusFailed"
     }
 
     def "UpdateStatus"() {
@@ -106,7 +106,7 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         }
         mockQuartzTaskInstanceMapper.updateByPrimaryKeySelective(_) >> { return 1 }
         when: '方法调用'
-        scheduleTaskInstanceService.updateStatus(new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1", exceptionMessage: "exceptionMsg"))
+        scheduleTaskInstanceService.updateStatus(new UpdateStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1", exceptionMessage: "exceptionMsg"))
         then: '抛出异常'
         noExceptionThrown()
     }

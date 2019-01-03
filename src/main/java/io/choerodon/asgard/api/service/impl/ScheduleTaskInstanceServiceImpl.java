@@ -1,9 +1,9 @@
 package io.choerodon.asgard.api.service.impl;
 
-import io.choerodon.asgard.UpdateTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
+import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.domain.QuartzTaskInstance;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.schedule.QuartzDefinition;
@@ -63,7 +63,7 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
     }
 
     @Override
-    public void updateStatus(final UpdateTaskInstanceStatusDTO statusDTO) {
+    public void updateStatus(final UpdateStatusDTO statusDTO) {
         if (statusDTO.getObjectVersionNumber() == null) {
             throw new FeignException("error.scheduleTaskInstanceService.updateStatus.objectVersionNumberNull");
         }
@@ -89,7 +89,7 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
         }
     }
 
-    private void updateFailedStatus(final QuartzTaskInstance dbInstance, final UpdateTaskInstanceStatusDTO statusDTO) {
+    private void updateFailedStatus(final QuartzTaskInstance dbInstance, final UpdateStatusDTO statusDTO) {
         if (dbInstance.getRetriedCount() < dbInstance.getMaxRetryCount()) {
             dbInstance.setRetriedCount(dbInstance.getRetriedCount() + 1);
             if (instanceMapper.updateByPrimaryKeySelective(dbInstance) != 1) {

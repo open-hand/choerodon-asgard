@@ -67,8 +67,8 @@ public class NoticeServiceImpl implements NoticeService {
             params.put("level", instance.getLevel());
             noticeSendDTO.setParams(params);
             notifyFeignClient.postNotice(noticeSendDTO);
-        } catch (CommonException e) {
-            LOGGER.info("saga instance fail send notice fail");
+        } catch (Exception e) {
+            LOGGER.info("saga instance fail send notice fail, msg: {}", e.getMessage());
         }
     }
 

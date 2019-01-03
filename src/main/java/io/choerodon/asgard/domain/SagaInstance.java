@@ -40,6 +40,8 @@ public class SagaInstance extends AuditDomain {
 
     private Long sourceId;
 
+    private String userDetails;
+
     public SagaInstance() {
     }
 
@@ -172,5 +174,31 @@ public class SagaInstance extends AuditDomain {
 
     public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public String getUserDetails() {
+        return userDetails;
+    }
+
+    public void setUserDetails(String userDetails) {
+        this.userDetails = userDetails;
+    }
+
+    @Override
+    public String toString() {
+        return "SagaInstance{" +
+                "id=" + id +
+                ", sagaCode='" + sagaCode + '\'' +
+                ", status='" + status + '\'' +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", inputDataId=" + inputDataId +
+                ", outputDataId=" + outputDataId +
+                ", refType='" + refType + '\'' +
+                ", refId='" + refId + '\'' +
+                ", level='" + level + '\'' +
+                ", sourceId=" + sourceId +
+                ", userDetails='" + userDetails + '\'' +
+                '}';
     }
 }

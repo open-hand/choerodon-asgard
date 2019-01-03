@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.swagger.annotations.ApiModelProperty;
 
 public class SagaWithTaskInstanceDTO {
@@ -33,7 +34,7 @@ public class SagaWithTaskInstanceDTO {
     @ApiModelProperty(value = "输出")
     private String output;
 
-    private List<List<SagaTaskInstanceDTO>> tasks = new ArrayList<>();
+    private List<List<SagaTaskInstance>> tasks = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -107,11 +108,11 @@ public class SagaWithTaskInstanceDTO {
         this.output = output;
     }
 
-    public List<List<SagaTaskInstanceDTO>> getTasks() {
-        return tasks;
+    public void setTasks(List<List<SagaTaskInstance>> tasks) {
+        this.tasks = tasks;
     }
 
-    public void setTasks(List<List<SagaTaskInstanceDTO>> tasks) {
-        this.tasks = tasks;
+    public List<List<SagaTaskInstance>> getTasks() {
+        return tasks;
     }
 }

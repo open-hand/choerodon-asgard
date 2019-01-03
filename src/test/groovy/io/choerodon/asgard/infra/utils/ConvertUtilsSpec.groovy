@@ -80,29 +80,6 @@ class ConvertUtilsSpec extends Specification {
         result.getDescription() == test.getDescription()
     }
 
-    def '测试 convertSagaTask方法'() {
-        given: '创建一个PropertyData.SagaTask'
-        def data = new PropertySagaTask('code', 'desc', 'sagaCode', 20, 33)
-        data.setTimeoutSeconds(10)
-        data.setTimeoutPolicy(SagaDefinition.TimeoutPolicy.ALERT_ONLY.name())
-        data.setConcurrentLimitNum(10)
-        def service = 'convertSaga'
-
-        when: '调用ConvertUtils的convertSaga方法'
-        def saga = ConvertUtils.convertSagaTask(mapper, data, service)
-
-        then: '验证转换结果'
-        saga.getService() == service
-        saga.getCode() == data.getCode()
-        saga.getDescription() == data.getDescription()
-        saga.getSagaCode() == data.getSagaCode()
-        saga.getSeq() == data.getSeq()
-        saga.getMaxRetryCount() == data.getMaxRetryCount()
-        saga.getTimeoutSeconds() == data.getTimeoutSeconds()
-        saga.getTimeoutPolicy() == data.getTimeoutPolicy()
-        saga.getConcurrentLimitNum() == saga.getConcurrentLimitNum()
-    }
-
 
     def '测试 convertToJsonMerge方法'() {
         given: '创建一个SagaTaskInstance的集合，并数据库插入json数据'

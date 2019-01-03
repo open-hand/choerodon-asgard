@@ -18,6 +18,9 @@ public class SagaTaskInstanceStatusDTO {
     @ApiModelProperty(value = "异常信息")
     private String exceptionMessage;
 
+    @ApiModelProperty(value = "版本id")
+    private Long objectVersionNumber;
+
     public String getStatus() {
         return status;
     }
@@ -51,6 +54,14 @@ public class SagaTaskInstanceStatusDTO {
         this.id = id;
     }
 
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     public SagaTaskInstanceStatusDTO(Long id, String status, String output, String exceptionMessage) {
         this.id = id;
         this.status = status;
@@ -68,6 +79,7 @@ public class SagaTaskInstanceStatusDTO {
                 ", status='" + status + '\'' +
                 ", output='" + output + '\'' +
                 ", exceptionMessage='" + exceptionMessage + '\'' +
+                ", objectVersionNumber=" + objectVersionNumber +
                 '}';
     }
 }

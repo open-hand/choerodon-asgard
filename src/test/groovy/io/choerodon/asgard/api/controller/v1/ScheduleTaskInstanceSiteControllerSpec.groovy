@@ -1,8 +1,8 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.UpdateTaskInstanceStatusDTO
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService
+import io.choerodon.asgard.common.UpdateStatusDTO
 import io.choerodon.core.domain.Page
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import io.choerodon.mybatis.pagehelper.domain.Sort
@@ -62,26 +62,6 @@ class ScheduleTaskInstanceSiteControllerSpec extends Specification {
         1 * mockScheduleTaskInstanceService.pollBatch(_, _)
     }
 
-    def "updateStatus"() {
-        given: '参数准备'
-        def id = 1L
-        def validStatusDTO = new UpdateTaskInstanceStatusDTO()
-        validStatusDTO.setStatus("RUNNNING")
-        def invalidStatusDTO = new UpdateTaskInstanceStatusDTO()
-        when: 'PUT请求【内部接口。更新任务的执行状态】'
-        HttpEntity<UpdateTaskInstanceStatusDTO> requestEntity1 = new HttpEntity<>(validStatusDTO)
-        def response1 = restTemplate.exchange("/v1/schedules/tasks/instances/{id}/status", HttpMethod.PUT, requestEntity1, Object, id)
-        then: '状态吗验证成功；参数验证合法'
-        response1.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskInstanceService.updateStatus(_)
-
-        when: 'PUT请求【内部接口。更新任务的执行状态】'
-        HttpEntity<UpdateTaskInstanceStatusDTO> requestEntity2 = new HttpEntity<>(invalidStatusDTO)
-        def response2 = restTemplate.exchange("/v1/schedules/tasks/instances/{id}/status", HttpMethod.PUT, requestEntity2, Object, id)
-        then: '状态吗验证成功；参数验证不合法'
-        response2.statusCode.is2xxSuccessful()
-        0 * mockScheduleTaskInstanceService.updateStatus(_)
-    }
 
     def "pagingQueryByTaskId"() {
         given: 'queryParams准备'

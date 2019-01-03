@@ -38,15 +38,7 @@ public class SagaTaskInstance extends AuditDomain {
 
     private Integer retriedCount;
 
-    private Integer timeoutSeconds;
-
-    private String timeoutPolicy;
-
     private String exceptionMessage;
-
-    private String refType;
-
-    private String refId;
 
     private String concurrentLimitPolicy;
 
@@ -57,6 +49,8 @@ public class SagaTaskInstance extends AuditDomain {
     private Date actualStartTime;
 
     private Date actualEndTime;
+
+    private String service;
 
     public SagaTaskInstance(String taskCode, Long outputDataId) {
         this.taskCode = taskCode;
@@ -72,22 +66,6 @@ public class SagaTaskInstance extends AuditDomain {
 
     public SagaTaskInstance(Long sagaInstanceId) {
         this.sagaInstanceId = sagaInstanceId;
-    }
-
-    public String getRefType() {
-        return refType;
-    }
-
-    public void setRefType(String refType) {
-        this.refType = refType;
-    }
-
-    public String getRefId() {
-        return refId;
-    }
-
-    public void setRefId(String refId) {
-        this.refId = refId;
     }
 
     public Long getId() {
@@ -186,22 +164,6 @@ public class SagaTaskInstance extends AuditDomain {
         this.retriedCount = retriedCount;
     }
 
-    public Integer getTimeoutSeconds() {
-        return timeoutSeconds;
-    }
-
-    public void setTimeoutSeconds(Integer timeoutSeconds) {
-        this.timeoutSeconds = timeoutSeconds;
-    }
-
-    public String getTimeoutPolicy() {
-        return timeoutPolicy;
-    }
-
-    public void setTimeoutPolicy(String timeoutPolicy) {
-        this.timeoutPolicy = timeoutPolicy;
-    }
-
     public String getConcurrentLimitPolicy() {
         return concurrentLimitPolicy;
     }
@@ -240,6 +202,14 @@ public class SagaTaskInstance extends AuditDomain {
 
     public void setActualEndTime(Date actualEndTime) {
         this.actualEndTime = actualEndTime;
+    }
+
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
     }
 
     @Override

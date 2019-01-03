@@ -27,10 +27,6 @@ public class SagaTask extends AuditDomain {
 
     private Integer maxRetryCount;
 
-    private Integer timeoutSeconds;
-
-    private String timeoutPolicy;
-
     private Integer concurrentLimitNum;
 
     private String concurrentLimitPolicy;
@@ -127,22 +123,6 @@ public class SagaTask extends AuditDomain {
         isEnabled = enabled;
     }
 
-    public Integer getTimeoutSeconds() {
-        return timeoutSeconds;
-    }
-
-    public void setTimeoutSeconds(Integer timeoutSeconds) {
-        this.timeoutSeconds = timeoutSeconds;
-    }
-
-    public String getTimeoutPolicy() {
-        return timeoutPolicy;
-    }
-
-    public void setTimeoutPolicy(String timeoutPolicy) {
-        this.timeoutPolicy = timeoutPolicy;
-    }
-
     public Integer getConcurrentLimitNum() {
         return concurrentLimitNum;
     }
@@ -185,8 +165,6 @@ public class SagaTask extends AuditDomain {
                 ", sagaCode='" + sagaCode + '\'' +
                 ", seq=" + seq +
                 ", maxRetryCount=" + maxRetryCount +
-                ", timeoutSeconds=" + timeoutSeconds +
-                ", timeoutPolicy='" + timeoutPolicy + '\'' +
                 ", concurrentLimitNum=" + concurrentLimitNum +
                 ", concurrentLimitPolicy='" + concurrentLimitPolicy + '\'' +
                 ", isEnabled=" + isEnabled +
