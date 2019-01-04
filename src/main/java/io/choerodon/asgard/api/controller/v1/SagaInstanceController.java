@@ -5,6 +5,7 @@ import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
 import io.choerodon.asgard.api.dto.StartInstanceDTO;
 import io.choerodon.asgard.api.service.SagaInstanceService;
 import io.choerodon.core.domain.Page;
+import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
@@ -17,10 +18,10 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
 import java.util.Map;
 
 @Controller
@@ -46,8 +47,11 @@ public class SagaInstanceController {
     @Permission(permissionWithin = true)
     @ResponseBody
     public ResponseEntity<SagaInstanceDTO> start(@PathVariable("code") String code,
-                                                 @RequestBody @Valid StartInstanceDTO dto) {
+                                                 @RequestBody StartInstanceDTO dto) {
         dto.setSagaCode(code);
+        if (dto.getRefId() == null || dto.getRefType() == null) {
+            throw new FeignException("error.startSaga.invalidDTO");
+        }
         return sagaInstanceService.start(dto);
     }
 
@@ -58,7 +62,10 @@ public class SagaInstanceController {
     @ApiOperation(value = "内部接口。预创建一个saga")
     @Permission(permissionWithin = true)
     @ResponseBody
-    public ResponseEntity<SagaInstanceDTO> preCreate(@RequestBody @Valid StartInstanceDTO dto) {
+    public ResponseEntity<SagaInstanceDTO> preCreate(@RequestBody StartInstanceDTO dto) {
+        if (dto.getRefId() == null || dto.getRefType() == null || StringUtils.isEmpty(dto.getSagaCode())) {
+            throw new FeignException("error.startSaga.invalidDTO");
+        }
         return sagaInstanceService.preCreate(dto);
     }
 

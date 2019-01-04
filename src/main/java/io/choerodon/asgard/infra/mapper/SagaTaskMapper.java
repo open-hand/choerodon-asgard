@@ -10,4 +10,6 @@ public interface SagaTaskMapper extends BaseMapper<SagaTask> {
 
     List<SagaTask> selectNextSeqSagaTasks(@Param("sagaCode") String sagaCode, @Param("seq") int seq);
 
+    List<SagaTask> selectFirstSeqSagaTasks(@Param("sagaCode") String sagaCode);
+
 }
