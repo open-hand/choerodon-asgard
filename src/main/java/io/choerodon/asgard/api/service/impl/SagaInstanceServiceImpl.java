@@ -211,6 +211,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     public ResponseEntity<SagaInstanceDTO> preCreate(StartInstanceDTO dto) {
         SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
                 SagaDefinition.InstanceStatus.UN_CONFIRMED.name(), new Date(), dto.getLevel(), dto.getSourceId());
+        instance.setCreatedOn(dto.getService());
         instance.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
         if (instanceMapper.insertSelective(instance) != 1) {
             throw new FeignException(DB_ERROR);
@@ -236,7 +237,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             dbInstance.setStatus(SagaDefinition.InstanceStatus.NON_CONSUMER.name());
             dbInstance.setEndTime(startTime);
             //该saga有task，则设置状态为RUNNING，并设置输入
-        }else {
+        } else {
             dbInstance.setInputDataId(jsonDataService.insertAndGetId(payloadJson));
             dbInstance.setStatus(SagaDefinition.InstanceStatus.RUNNING.name());
         }

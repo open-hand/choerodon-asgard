@@ -63,7 +63,8 @@ public class SagaInstanceController {
     @Permission(permissionWithin = true)
     @ResponseBody
     public ResponseEntity<SagaInstanceDTO> preCreate(@RequestBody StartInstanceDTO dto) {
-        if (dto.getRefId() == null || dto.getRefType() == null || StringUtils.isEmpty(dto.getSagaCode())) {
+        if (dto.getRefId() == null || dto.getRefType() == null
+                || StringUtils.isEmpty(dto.getSagaCode()) || StringUtils.isEmpty(dto.getService())) {
             throw new FeignException("error.startSaga.invalidDTO");
         }
         return sagaInstanceService.preCreate(dto);

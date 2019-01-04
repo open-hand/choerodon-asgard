@@ -44,6 +44,8 @@ public class SagaInstance extends AuditDomain {
 
     private String uuid;
 
+    private String createdOn;
+
     public SagaInstance() {
     }
 
@@ -194,6 +196,14 @@ public class SagaInstance extends AuditDomain {
         this.uuid = uuid;
     }
 
+    public String getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(String createdOn) {
+        this.createdOn = createdOn;
+    }
+
     @Override
     public String toString() {
         return "SagaInstance{" +
@@ -210,6 +220,7 @@ public class SagaInstance extends AuditDomain {
                 ", sourceId=" + sourceId +
                 ", userDetails='" + userDetails + '\'' +
                 ", uuid='" + uuid + '\'' +
+                ", createdOn='" + createdOn + '\'' +
                 '}';
     }
 }

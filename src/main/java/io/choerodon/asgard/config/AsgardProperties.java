@@ -8,9 +8,9 @@ import java.util.Map;
 @ConfigurationProperties("choerodon.asgard")
 public class AsgardProperties {
 
-    private Quartz quartz;
+    private Quartz quartz = new Quartz();
 
-    private Saga saga;
+    private Saga saga = new Saga();
 
     public Quartz getQuartz() {
         return quartz;
