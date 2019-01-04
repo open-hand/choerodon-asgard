@@ -26,6 +26,9 @@ public class StartInstanceDTO {
     @ApiModelProperty(value = "实力触发的组织/项目Id")
     private Long sourceId;
 
+    @ApiModelProperty(value = "uuid")
+    private String uuid;
+
     public String getSagaCode() {
         return sagaCode;
     }
@@ -72,5 +75,26 @@ public class StartInstanceDTO {
 
     public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    public String toString() {
+        return "StartInstanceDTO{" +
+                "sagaCode='" + sagaCode + '\'' +
+                ", input='" + input + '\'' +
+                ", refType='" + refType + '\'' +
+                ", refId='" + refId + '\'' +
+                ", level='" + level + '\'' +
+                ", sourceId=" + sourceId +
+                ", uuid='" + uuid + '\'' +
+                '}';
     }
 }

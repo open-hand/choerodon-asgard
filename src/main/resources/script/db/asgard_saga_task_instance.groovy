@@ -2,8 +2,8 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
     changeSet(id: '2018-07-04-create-table-asgard_saga_task_instance', author: 'jcalaz@163.com') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'ASGARD_SAGA_TASK_INSTANCE_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'ASGARD_SAGA_TASK_INSTANCE_S', startValue: "1")
         }
         createTable(tableName: "ASGARD_SAGA_TASK_INSTANCE") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
@@ -36,7 +36,7 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
                 constraints(nullable: false)
             }
 
-            column(name: 'CONCURRENT_LIMIT_POLICY', type: 'VARCHAR(32)', remarks: '并发策略。NONE,TYPE,TYPE_AND_ID', defaultValue: 'NONE'){
+            column(name: 'CONCURRENT_LIMIT_POLICY', type: 'VARCHAR(32)', remarks: '并发策略。NONE,TYPE,TYPE_AND_ID', defaultValue: 'NONE') {
                 constraints(nullable: false)
             }
 
@@ -61,6 +61,17 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
             column(name: "CREATION_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
             column(name: "LAST_UPDATED_BY", type: "BIGINT", defaultValue: "-1")
             column(name: "LAST_UPDATE_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
+        }
+    }
+    changeSet(id: '2018-12-19-drop-and-add-column', author: 'jcalaz@163.com') {
+        dropColumn(tableName: 'ASGARD_SAGA_TASK_INSTANCE', columnName: 'TIMEOUT_POLICY')
+        dropColumn(tableName: 'ASGARD_SAGA_TASK_INSTANCE', columnName: 'TIMEOUT_SECONDS')
+        dropColumn(tableName: 'ASGARD_SAGA_TASK_INSTANCE', columnName: 'REF_TYPE')
+        dropColumn(tableName: 'ASGARD_SAGA_TASK_INSTANCE', columnName: 'REF_ID')
+        addColumn(tableName: 'ASGARD_SAGA_TASK_INSTANCE') {
+            column(name: 'SERVICE', type: 'VARCHAR(64)', remarks: '该消息所属的服务') {
+                constraints(nullable: false)
+            }
         }
     }
 }

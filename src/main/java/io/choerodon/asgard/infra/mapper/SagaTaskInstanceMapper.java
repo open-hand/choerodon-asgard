@@ -1,14 +1,13 @@
 package io.choerodon.asgard.infra.mapper;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.ibatis.annotations.Param;
-
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.choerodon.mybatis.common.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Date;
+import java.util.List;
 
 public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
 
@@ -16,21 +15,18 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
      * 拉取并发策略为NONE, 状态为RUNNING的消息
      * 当数据库instance值为null或者与传入的instance参数相同，则可以查出
      */
-    List<SagaTaskInstanceDTO> pollBatchNoneLimit(@Param("sagaCode") String sagaCode,
-                                                 @Param("taskCode") String taskCode,
+    List<SagaTaskInstanceDTO> pollBatchNoneLimit(@Param("service") String service,
                                                  @Param("instance") String instance);
 
     /**
      * 拉取并发策略为TYPE_AND_ID, 状态为RUNNING的消息
      */
-    List<SagaTaskInstanceDTO> pollBatchTypeAndIdLimit(@Param("sagaCode") String sagaCode,
-                                                      @Param("taskCode") String taskCode);
+    List<SagaTaskInstanceDTO> pollBatchTypeAndIdLimit(@Param("service") String service);
 
     /**
      * 拉取并发策略为TYPE, 状态为RUNNING的消息
      */
-    List<SagaTaskInstanceDTO> pollBatchTypeLimit(@Param("sagaCode") String sagaCode,
-                                                 @Param("taskCode") String taskCode);
+    List<SagaTaskInstanceDTO> pollBatchTypeLimit(@Param("service") String service);
 
     /**
      * 设置消息的实例锁，并更新实际开始时间
@@ -52,17 +48,16 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
      */
     int unlockByInstance(@Param("instance") String instance);
 
-    List<SagaTaskInstanceDTO> selectAllBySagaInstanceId(@Param("sagaInstanceId") Long instanceId);
+    List<SagaTaskInstance> selectAllBySagaInstanceId(@Param("sagaInstanceId") Long instanceId);
 
     /**
      * 分页查询层级单位下事务实例
-     * @return
      */
     List<SagaTaskInstanceInfoDTO> fulltextSearchTaskInstance(@Param("sagaInstanceCode") String sagaInstanceCode,
-                                                         @Param("status") String status,
-                                                         @Param("taskInstanceCode") String taskInstanceCode,
-                                                         @Param("params") String params,
-                                                         @Param("level") String level,
-                                                         @Param("sourceId") Long sourceId);
+                                                             @Param("status") String status,
+                                                             @Param("taskInstanceCode") String taskInstanceCode,
+                                                             @Param("params") String params,
+                                                             @Param("level") String level,
+                                                             @Param("sourceId") Long sourceId);
 
 }

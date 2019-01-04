@@ -45,7 +45,7 @@ public class ConvertUtils {
         }
     }
 
-    public static QuartzTask convertQuartzTask(final ObjectMapper mapper, final PropertyTimedTask timedTask, final String service) {
+    public static QuartzTask convertQuartzTask(final ObjectMapper mapper, final PropertyTimedTask timedTask) {
         final QuartzTask task = new QuartzTask();
         task.setId(null);
         task.setName(timedTask.getName());

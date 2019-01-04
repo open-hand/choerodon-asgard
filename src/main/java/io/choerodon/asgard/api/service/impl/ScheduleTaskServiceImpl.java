@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.asgard.infra.utils.CommonUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +98,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             List<PropertyJobParam> propertyJobParams = objectMapper.readValue(method.getParams(), new TypeReference<List<PropertyJobParam>>() {
             });
             putDefaultParameter(propertyJobParams, dto, level, sourceId);
+            quartzTask.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
             quartzTask.setExecuteMethod(method.getCode());
             quartzTask.setId(null);
             quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
@@ -497,7 +499,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     @Override
     public void createTaskList(String service, List<PropertyTimedTask> scanTasks, String version) {
         //此处借用闲置属性cronexpression设置是否为一次执行：是返回"1",多次执行返回"0"
-        List<QuartzTask> collect = scanTasks.stream().map(t -> ConvertUtils.convertQuartzTask(objectMapper, t, service)).collect(Collectors.toList());
+        List<QuartzTask> collect = scanTasks.stream().map(t -> ConvertUtils.convertQuartzTask(objectMapper, t)).collect(Collectors.toList());
         collect.forEach(i -> {
             QuartzMethod method = getQuartzMethod(i);
             QuartzTask query = new QuartzTask();

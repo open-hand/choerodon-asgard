@@ -14,11 +14,7 @@ public final class SagaTaskInstanceBuilder {
     private Integer seq;
     private Integer maxRetryCount;
     private Integer retriedCount;
-    private Integer timeoutSeconds;
-    private String timeoutPolicy;
     private String exceptionMessage;
-    private String refType;
-    private String refId;
     private String concurrentLimitPolicy;
     private Integer concurrentLimitNum;
     private Date plannedStartTime;
@@ -87,28 +83,8 @@ public final class SagaTaskInstanceBuilder {
         return this;
     }
 
-    public SagaTaskInstanceBuilder withTimeoutSeconds(Integer timeoutSeconds) {
-        this.timeoutSeconds = timeoutSeconds;
-        return this;
-    }
-
-    public SagaTaskInstanceBuilder withTimeoutPolicy(String timeoutPolicy) {
-        this.timeoutPolicy = timeoutPolicy;
-        return this;
-    }
-
     public SagaTaskInstanceBuilder withExceptionMessage(String exceptionMessage) {
         this.exceptionMessage = exceptionMessage;
-        return this;
-    }
-
-    public SagaTaskInstanceBuilder withRefType(String refType) {
-        this.refType = refType;
-        return this;
-    }
-
-    public SagaTaskInstanceBuilder withRefId(String refId) {
-        this.refId = refId;
         return this;
     }
 
@@ -150,11 +126,7 @@ public final class SagaTaskInstanceBuilder {
         sagaTaskInstance.setSeq(seq);
         sagaTaskInstance.setMaxRetryCount(maxRetryCount);
         sagaTaskInstance.setRetriedCount(retriedCount);
-        sagaTaskInstance.setTimeoutSeconds(timeoutSeconds);
-        sagaTaskInstance.setTimeoutPolicy(timeoutPolicy);
         sagaTaskInstance.setExceptionMessage(exceptionMessage);
-        sagaTaskInstance.setRefType(refType);
-        sagaTaskInstance.setRefId(refId);
         sagaTaskInstance.setConcurrentLimitPolicy(concurrentLimitPolicy);
         sagaTaskInstance.setConcurrentLimitNum(concurrentLimitNum);
         sagaTaskInstance.setPlannedStartTime(plannedStartTime);

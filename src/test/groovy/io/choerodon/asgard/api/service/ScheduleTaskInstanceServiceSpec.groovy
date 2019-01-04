@@ -1,9 +1,9 @@
 package io.choerodon.asgard.api.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.UpdateTaskInstanceStatusDTO
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO
 import io.choerodon.asgard.api.service.impl.ScheduleTaskInstanceServiceImpl
+import io.choerodon.asgard.common.UpdateStatusDTO
 import io.choerodon.asgard.domain.QuartzTaskInstance
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper
 import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO
@@ -53,32 +53,6 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         1 * mockQuartzTaskInstanceMapper.fulltextSearch(status, taskName, exceptionMessage, params, level, sourceId)
     }
 
-    def "PollBatch"() {
-        given: ''
-        def methods = new HashSet<String>()
-        methods.add("method1")
-        def instance = "instance"
-
-        def list = new ArrayList<ScheduleInstanceConsumerDTO>()
-        def dto1 = new ScheduleInstanceConsumerDTO()
-        dto1.setId(1L)
-        dto1.setMethod("method1")
-        dto1.setInstanceLock("instanceLock")
-        dto1.setObjectVersionNumber(1L)
-        def dto2 = new ScheduleInstanceConsumerDTO()
-        dto2.setId(1L)
-        dto2.setMethod("method1")
-        dto2.setObjectVersionNumber(1L)
-        list.add(dto1)
-        list.add(dto2)
-        and: 'mock'
-        mockQuartzTaskInstanceMapper.pollBathByMethod(_) >> { return list }
-        mockQuartzTaskInstanceMapper.lockByInstanceAndUpdateStartTime(_, _, _, _) >> { return 1 }
-        when: '方法调用'
-        scheduleTaskInstanceService.pollBatch(methods, instance)
-        then: '无异常抛出'
-        noExceptionThrown()
-    }
 
     def "UpdateStatus[Exception]"() {
         given: 'mock'
@@ -91,12 +65,12 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         error.message == errorMsg
         where: '异常比对'
         dto                                                                                                                       | dbInstance                                                        | num || exceptionType  | errorMsg
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: null)                                                                | null                                                              | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.objectVersionNumberNull"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L)                                                                  | null                                                              | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.instanceNotExist"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'COMPLETED', output: "1")                                | new QuartzTaskInstance(id: 1L, status: "FAILED")                  | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.instanceWasFailed"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'COMPLETED', output: "1")                                | new QuartzTaskInstance(id: 1L)                                    | 0   || FeignException | "error.scheduleTaskInstanceService.updateCompleteStatusFailed"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1")                                   | new QuartzTaskInstance(id: 1L, retriedCount: 1, maxRetryCount: 2) | 0   || FeignException | "error.scheduleTaskInstanceService.updateFailedStatusFailed"
-        new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1", exceptionMessage: "exceptionMsg") | new QuartzTaskInstance(id: 1L, retriedCount: 2, maxRetryCount: 1) | 0   || FeignException | "error.scheduleTaskInstanceService.updateFailedStatusFailed"
+        new UpdateStatusDTO(objectVersionNumber: null)                                                                | null                                                              | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.objectVersionNumberNull"
+        new UpdateStatusDTO(objectVersionNumber: 1L)                                                                  | null                                                              | 0   || FeignException | "error.scheduleTaskInstanceService.updateStatus.instanceNotExist"
+        new UpdateStatusDTO(objectVersionNumber: 1L, status: 'COMPLETED', output: "1")                                | new QuartzTaskInstance(id: 1L, status: "FAILED")                  | 0 || FeignException | "error.scheduleTaskInstanceService.updateStatus.instanceWasFailed"
+        new UpdateStatusDTO(objectVersionNumber: 1L, status: 'COMPLETED', output: "1")                                | new QuartzTaskInstance(id: 1L)                                    | 0 || FeignException | "error.scheduleTaskInstanceService.updateCompleteStatusFailed"
+        new UpdateStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1")                                   | new QuartzTaskInstance(id: 1L, retriedCount: 1, maxRetryCount: 2) | 0 || FeignException | "error.scheduleTaskInstanceService.updateFailedStatusFailed"
+        new UpdateStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1", exceptionMessage: "exceptionMsg") | new QuartzTaskInstance(id: 1L, retriedCount: 2, maxRetryCount: 1) | 0 || FeignException | "error.scheduleTaskInstanceService.updateFailedStatusFailed"
     }
 
     def "UpdateStatus"() {
@@ -106,7 +80,7 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         }
         mockQuartzTaskInstanceMapper.updateByPrimaryKeySelective(_) >> { return 1 }
         when: '方法调用'
-        scheduleTaskInstanceService.updateStatus(new UpdateTaskInstanceStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1", exceptionMessage: "exceptionMsg"))
+        scheduleTaskInstanceService.updateStatus(new UpdateStatusDTO(objectVersionNumber: 1L, status: 'FAILED', output: "1", exceptionMessage: "exceptionMsg"))
         then: '抛出异常'
         noExceptionThrown()
     }

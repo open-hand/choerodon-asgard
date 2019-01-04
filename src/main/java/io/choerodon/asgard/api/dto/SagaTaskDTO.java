@@ -22,12 +22,6 @@ public class SagaTaskDTO {
     @ApiModelProperty(value = "最大重试次数")
     private Integer maxRetryCount;
 
-    @ApiModelProperty(value = "超时时间(s)")
-    private Integer timeoutSeconds;
-
-    @ApiModelProperty(value = "超时策略")
-    private String timeoutPolicy;
-
     @ApiModelProperty(value = "并发数")
     private Integer concurrentLimitNum;
 
@@ -95,22 +89,6 @@ public class SagaTaskDTO {
 
     public void setMaxRetryCount(Integer maxRetryCount) {
         this.maxRetryCount = maxRetryCount;
-    }
-
-    public Integer getTimeoutSeconds() {
-        return timeoutSeconds;
-    }
-
-    public void setTimeoutSeconds(Integer timeoutSeconds) {
-        this.timeoutSeconds = timeoutSeconds;
-    }
-
-    public String getTimeoutPolicy() {
-        return timeoutPolicy;
-    }
-
-    public void setTimeoutPolicy(String timeoutPolicy) {
-        this.timeoutPolicy = timeoutPolicy;
     }
 
     public Integer getConcurrentLimitNum() {

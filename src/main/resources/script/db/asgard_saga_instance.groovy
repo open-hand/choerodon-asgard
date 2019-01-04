@@ -2,8 +2,8 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
     changeSet(id: '2018-07-04-create-table-asgard_saga_instance', author: 'jcalaz@163.com') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'ASGARD_SAGA_INSTANCE_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'ASGARD_SAGA_INSTANCE_S', startValue: "1")
         }
         createTable(tableName: "ASGARD_SAGA_INSTANCE") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
@@ -35,6 +35,13 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
         addColumn(tableName: 'ASGARD_SAGA_INSTANCE') {
             column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'REF_ID')
             column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED', defaultValue: "0", remarks: '创建该实例的源id，projectId/organizarionId', afterColumn: 'FD_LEVEL')
+        }
+    }
+
+    changeSet(id: '2018-12-19-add-column', author: 'jcalaz@163.com') {
+        addColumn(tableName: 'ASGARD_SAGA_INSTANCE') {
+            column(name: 'uuid', type: 'CHAR(32)', remarks: 'uuid')
+            column(name: 'user_details', type: 'TEXT', remarks: '创建SAGA的userDetails信息')
         }
     }
 }

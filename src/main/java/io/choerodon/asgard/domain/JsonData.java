@@ -19,6 +19,8 @@ public class JsonData extends AuditDomain {
 
     private String data;
 
+    private String sha2;
+
     public JsonData() {
     }
 
@@ -42,4 +44,11 @@ public class JsonData extends AuditDomain {
         this.data = data;
     }
 
+    public String getSha2() {
+        return sha2;
+    }
+
+    public void setSha2(String sha2) {
+        this.sha2 = sha2;
+    }
 }

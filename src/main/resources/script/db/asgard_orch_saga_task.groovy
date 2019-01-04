@@ -59,4 +59,9 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
         addUniqueConstraint(tableName: 'ASGARD_ORCH_SAGA_TASK', columnNames: 'SAGA_CODE,CODE', constraintName: "UK_ASGARD_ORCH_SAGA_TASK_U1")
     }
 
+    changeSet(id: '2019-01-02-drop-column', author: 'jcalaz@163.com') {
+        dropColumn(tableName: 'ASGARD_ORCH_SAGA_TASK', columnName: 'TIMEOUT_POLICY')
+        dropColumn(tableName: 'ASGARD_ORCH_SAGA_TASK', columnName: 'TIMEOUT_SECONDS')
+    }
+
 }

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.SagaTaskMapper">
-    
+
+    <select id="selectNextSeqSagaTasks" resultType="io.choerodon.asgard.domain.SagaTask">
+        SELECT * FROM ASGARD_ORCH_SAGA_TASK
+        WHERE seq = (SELECT min(seq) FROM ASGARD_ORCH_SAGA_TASK WHERE saga_code = #{sagaCode} AND seq >  #{seq})
+        AND saga_code = #{sagaCode}
+    </select>
+
 </mapper>

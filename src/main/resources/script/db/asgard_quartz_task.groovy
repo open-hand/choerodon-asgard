@@ -65,4 +65,9 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
         }
     }
 
+    changeSet(id: '2018-01-03-add-column-user_details', author: 'flyleft') {
+        addColumn(tableName: 'ASGARD_QUARTZ_TASK') {
+            column(name: 'user_details', type: 'TEXT', remarks: '创建定时任务的userDetails信息')
+        }
+    }
 }

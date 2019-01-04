@@ -4,7 +4,7 @@ import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
-import io.choerodon.asgard.saga.dto.PollBatchDTO;
+import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -38,10 +38,10 @@ public class SagaTaskInstanceController {
         this.sagaTaskInstanceService = sagaTaskInstanceService;
     }
 
-    @PostMapping("/poll/batch")
+    @PostMapping("/poll")
     @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
-    public ResponseEntity<Set<SagaTaskInstanceDTO>> pollBatch(@RequestBody @Valid PollBatchDTO pollBatchDTO) {
+    public ResponseEntity<Set<SagaTaskInstanceDTO>> pollBatch(@RequestBody @Valid final PollSagaTaskInstanceDTO pollBatchDTO) {
         if (pollBatchDTO.getMaxPollSize() == null) {
             pollBatchDTO.setMaxPollSize(500);
         }
@@ -54,6 +54,20 @@ public class SagaTaskInstanceController {
     public void updateStatus(@PathVariable Long id, @RequestBody @Valid SagaTaskInstanceStatusDTO statusDTO) {
         statusDTO.setId(id);
         sagaTaskInstanceService.updateStatus(statusDTO);
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation(value = "内部接口。查询任务状态")
+    @Permission(permissionWithin = true)
+    public SagaTaskInstanceDTO query(@PathVariable long id) {
+        return sagaTaskInstanceService.query(id);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = " ")
+    @PutMapping("/{id}/failed")
+    public void forceFailed(@PathVariable long id) {
+        sagaTaskInstanceService.forceFailed(id);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

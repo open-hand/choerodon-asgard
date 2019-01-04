@@ -1,17 +1,12 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO
 import io.choerodon.asgard.api.service.SagaTaskInstanceService
-import io.choerodon.asgard.saga.dto.PollBatchDTO
-import io.choerodon.core.exception.ExceptionResponse
 import io.choerodon.core.iam.ResourceLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpMethod
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
