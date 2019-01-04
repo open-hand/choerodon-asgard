@@ -1,12 +1,5 @@
 package io.choerodon.asgard.api.service.impl;
 
-import static java.util.stream.Collectors.groupingBy;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,21 +25,24 @@ import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SagaInstanceService.class);
 
     public static final String DB_ERROR = "error.db.insertOrUpdate";
 
@@ -204,11 +200,26 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                 calendar.add(Calendar.DATE, 1);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOGGER.info("error.sagaInstanceService.queryFailedByDate.ParseException", e);
         }
         Map<String, Object> map = new HashMap<>();
         map.put("date", date);
         map.put("data", data);
         return map;
+    }
+
+    @Override
+    public ResponseEntity<SagaInstanceDTO> preCreate(StartInstanceDTO dto) {
+        return null;
+    }
+
+    @Override
+    public void confirm(String uuid, String payloadJson) {
+
+    }
+
+    @Override
+    public void cancel(String uuid) {
+
     }
 }

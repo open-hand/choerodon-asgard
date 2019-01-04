@@ -6,6 +6,7 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -59,6 +60,9 @@ public class CommonUtils {
     }
 
     public static CustomUserDetails readJsonAsUserDetails(final ObjectMapper objectMapper, final String json) {
+        if (StringUtils.isEmpty(json)) {
+            return null;
+        }
         try {
             return objectMapper.readValue(json, CustomUserDetails.class);
         } catch (IOException e) {

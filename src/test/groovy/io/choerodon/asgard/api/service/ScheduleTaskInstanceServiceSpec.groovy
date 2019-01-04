@@ -53,32 +53,6 @@ class ScheduleTaskInstanceServiceSpec extends Specification {
         1 * mockQuartzTaskInstanceMapper.fulltextSearch(status, taskName, exceptionMessage, params, level, sourceId)
     }
 
-    def "PollBatch"() {
-        given: ''
-        def methods = new HashSet<String>()
-        methods.add("method1")
-        def instance = "instance"
-
-        def list = new ArrayList<ScheduleInstanceConsumerDTO>()
-        def dto1 = new ScheduleInstanceConsumerDTO()
-        dto1.setId(1L)
-        dto1.setMethod("method1")
-        dto1.setInstanceLock("instanceLock")
-        dto1.setObjectVersionNumber(1L)
-        def dto2 = new ScheduleInstanceConsumerDTO()
-        dto2.setId(1L)
-        dto2.setMethod("method1")
-        dto2.setObjectVersionNumber(1L)
-        list.add(dto1)
-        list.add(dto2)
-        and: 'mock'
-        mockQuartzTaskInstanceMapper.pollBathByMethod(_) >> { return list }
-        mockQuartzTaskInstanceMapper.lockByInstanceAndUpdateStartTime(_, _, _, _) >> { return 1 }
-        when: '方法调用'
-        scheduleTaskInstanceService.pollBatch(methods, instance)
-        then: '无异常抛出'
-        noExceptionThrown()
-    }
 
     def "UpdateStatus[Exception]"() {
         given: 'mock'

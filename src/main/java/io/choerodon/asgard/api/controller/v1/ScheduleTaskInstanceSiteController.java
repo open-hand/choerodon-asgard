@@ -1,10 +1,11 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import io.choerodon.asgard.api.dto.PollScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.common.UpdateStatusDTO;
-import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
+import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
@@ -66,11 +67,11 @@ public class ScheduleTaskInstanceSiteController {
         return new ResponseEntity<>(scheduleTaskInstanceService.pagingQueryByTaskId(pageRequest, taskId, status, serviceInstanceId, params, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
     }
 
-    @PostMapping("/poll/batch")
+    @PostMapping("/poll")
     @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定method的定时任务消息列表")
-    public ResponseEntity<Set<ScheduleInstanceConsumerDTO>> pollBatch(@RequestBody Set<String> methods, @RequestParam String instance) {
-        return new ResponseEntity<>(scheduleTaskInstanceService.pollBatch(methods, instance), HttpStatus.OK);
+    public ResponseEntity<Set<PollScheduleTaskInstanceDTO>> pollBatch(@RequestBody PollScheduleInstanceDTO dto) {
+        return new ResponseEntity<>(scheduleTaskInstanceService.pollBatch(dto), HttpStatus.OK);
     }
 
     @PutMapping("/{id}/status")

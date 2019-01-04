@@ -50,18 +50,6 @@ class ScheduleTaskInstanceSiteControllerSpec extends Specification {
         1 * mockScheduleTaskInstanceService.pageQuery(_, status, taskName, exceptionMessage, params, _, _)
     }
 
-    def "PollBatch"() {
-        given: '参数准备'
-        def methods = new HashSet<String>()
-        methods.add("methods1")
-        def instance = "test-service:1000:20180911"
-        when: 'POST请求【内部接口。拉取指定method的定时任务消息列表】'
-        def response = restTemplate.postForEntity("/v1/schedules/tasks/instances/poll/batch?instance={instance}", methods, Set, instance)
-        then: '状态码验证成功；参数验证合法'
-        response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskInstanceService.pollBatch(_, _)
-    }
-
 
     def "pagingQueryByTaskId"() {
         given: 'queryParams准备'

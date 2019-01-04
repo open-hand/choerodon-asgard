@@ -57,18 +57,10 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
                 () -> methodMapper.fulltextSearch(code, service, method, description, params, level));
         Page<ScheduleMethodInfoDTO> pageBack = pageConvert(page);
         return new ResponseEntity<>(pageBack, HttpStatus.OK);
-
-//        return new ResponseEntity<>(PageHelper.doPageAndSort(
-//                pageRequest,
-//                () -> methodMapper.fulltextSearch(code, service, method, description, params)
-//                        .stream()
-//                        .map(t -> new ScheduleMethodInfoDTO(t.getId(), t.getCode(), t.getService(), t.getMethod(), t.getDescription(), discoveryClient.getInstances(t.getService()).size()))
-//                        .collect(Collectors.toList())),
-//                HttpStatus.OK);
     }
 
     public Page<ScheduleMethodInfoDTO> pageConvert(Page<QuartzMethod> page) {
-        List<ScheduleMethodInfoDTO> ScheduleMethodInfoDTOS = new ArrayList<>();
+        List<ScheduleMethodInfoDTO> scheduleMethodInfoDTOS = new ArrayList<>();
         Page<ScheduleMethodInfoDTO> pageBack = new Page<>();
         pageBack.setNumber(page.getNumber());
         pageBack.setNumberOfElements(page.getNumberOfElements());
@@ -78,10 +70,9 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
         if (page.getContent().isEmpty()) {
             return pageBack;
         } else {
-            page.getContent().forEach(t -> {
-                ScheduleMethodInfoDTOS.add(new ScheduleMethodInfoDTO(t.getId(), t.getCode(), t.getService(), t.getMethod(), t.getDescription(), discoveryClient.getInstances(t.getService()).size()));
-            });
-            pageBack.setContent(ScheduleMethodInfoDTOS);
+            page.getContent().forEach(t ->
+                    scheduleMethodInfoDTOS.add(new ScheduleMethodInfoDTO(t.getId(), t.getCode(), t.getService(), t.getMethod(), t.getDescription(), discoveryClient.getInstances(t.getService()).size())));
+            pageBack.setContent(scheduleMethodInfoDTOS);
             return pageBack;
         }
     }

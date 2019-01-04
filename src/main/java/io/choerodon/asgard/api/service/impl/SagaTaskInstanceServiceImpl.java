@@ -294,6 +294,28 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         taskInstanceMapper.updateByPrimaryKey(taskInstance);
     }
 
+    @Override
+    public void forceFailed(long id) {
+        SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(id);
+        if (taskInstance == null) {
+            throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
+        }
+        SagaInstance instance = instanceMapper.selectByPrimaryKey(taskInstance.getSagaInstanceId());
+        if (instance == null) {
+            throw new FeignException("error.sagaInstance.notExist");
+        }
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setIsolationLevel(ISOLATION_REPEATABLE_READ);
+        def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = transactionManager.getTransaction(def);
+        try {
+            updateStatusFailed(taskInstance, instance, "manual force failed");
+            transactionManager.commit(status);
+        } catch (Exception e) {
+            transactionManager.rollback(status);
+            throw e;
+        }
+    }
 
     @Override
     public ResponseEntity<Page<SagaTaskInstanceInfoDTO>> pageQuery(PageRequest pageRequest, String sagaInstanceCode, String status, String taskInstanceCode, String params, String level, Long sourceId) {

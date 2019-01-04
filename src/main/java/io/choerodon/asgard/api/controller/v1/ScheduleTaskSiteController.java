@@ -105,6 +105,6 @@ public class ScheduleTaskSiteController {
     @ApiOperation(value = "全局层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(@RequestBody String cron) {
-        return new ResponseEntity(TriggerUtils.getRecentThree(cron), HttpStatus.OK);
+        return new ResponseEntity<>(TriggerUtils.getRecentThree(cron), HttpStatus.OK);
     }
 }

@@ -1,11 +1,5 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import io.swagger.annotations.ApiOperation;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
 import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
 import io.choerodon.core.domain.Page;
@@ -17,6 +11,11 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/v1/sagas/organizations/{organization_id}/tasks/instances")
@@ -37,6 +36,13 @@ public class SagaTaskInstanceOrgController {
     @PutMapping("/{id}/unlock")
     public void unlockById(@PathVariable("organization_id") long orgId, @PathVariable long id) {
         sagaTaskInstanceService.unlockById(id);
+    }
+
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
+    @ApiOperation(value = "强制消息失败")
+    @PutMapping("/{id}/failed")
+    public void forceFailed(@PathVariable("organization_id") long orgI, @PathVariable long id) {
+        sagaTaskInstanceService.forceFailed(id);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})

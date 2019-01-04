@@ -1,9 +1,9 @@
 package io.choerodon.asgard.infra.mapper;
 
+import io.choerodon.asgard.api.dto.PollScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.domain.QuartzTaskInstance;
-import io.choerodon.asgard.schedule.dto.ScheduleInstanceConsumerDTO;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,7 +21,7 @@ public interface QuartzTaskInstanceMapper extends BaseMapper<QuartzTaskInstance>
                                                  @Param("level") String level,
                                                  @Param("sourceId") Long sourceId);
 
-    List<ScheduleInstanceConsumerDTO> pollBathByMethod(@Param("method") String method);
+    List<PollScheduleTaskInstanceDTO> pollBathByMethod(@Param("method") String method);
 
     int unlockByInstance(@Param("instance") String instance);
 

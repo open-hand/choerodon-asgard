@@ -14,6 +14,13 @@ public interface SagaInstanceService {
 
     ResponseEntity<SagaInstanceDTO> start(StartInstanceDTO dto);
 
+    ResponseEntity<SagaInstanceDTO> preCreate(StartInstanceDTO dto);
+
+    void confirm(String uuid, String payloadJson);
+
+    void cancel(String uuid);
+
+
     ResponseEntity<Page<SagaInstanceDTO>> pageQuery(PageRequest pageRequest, String sagaCode,
                                                     String status, String refType,
                                                     String refId, String params,String level,Long sourceId);

@@ -24,6 +24,8 @@ public interface SagaTaskInstanceService {
 
     void unlockById(long id);
 
+    void forceFailed(long id);
+
     ResponseEntity<Page<SagaTaskInstanceInfoDTO>> pageQuery(PageRequest pageRequest, String sagaInstanceCode,
                                                             String status, String taskInstanceCode,
                                                             String params, String level, Long sourceId);

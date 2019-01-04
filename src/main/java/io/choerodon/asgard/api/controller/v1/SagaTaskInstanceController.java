@@ -64,6 +64,13 @@ public class SagaTaskInstanceController {
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @ApiOperation(value = " ")
+    @PutMapping("/{id}/failed")
+    public void forceFailed(@PathVariable long id) {
+        sagaTaskInstanceService.forceFailed(id);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
     public void unlockById(@PathVariable long id) {

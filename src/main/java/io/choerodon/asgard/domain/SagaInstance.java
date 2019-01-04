@@ -42,6 +42,8 @@ public class SagaInstance extends AuditDomain {
 
     private String userDetails;
 
+    private String uuid;
+
     public SagaInstance() {
     }
 
@@ -184,6 +186,14 @@ public class SagaInstance extends AuditDomain {
         this.userDetails = userDetails;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     @Override
     public String toString() {
         return "SagaInstance{" +
@@ -199,6 +209,7 @@ public class SagaInstance extends AuditDomain {
                 ", level='" + level + '\'' +
                 ", sourceId=" + sourceId +
                 ", userDetails='" + userDetails + '\'' +
+                ", uuid='" + uuid + '\'' +
                 '}';
     }
 }

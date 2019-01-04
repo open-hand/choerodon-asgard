@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.choerodon.asgard.infra.utils.CommonUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +98,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             List<PropertyJobParam> propertyJobParams = objectMapper.readValue(method.getParams(), new TypeReference<List<PropertyJobParam>>() {
             });
             putDefaultParameter(propertyJobParams, dto, level, sourceId);
+            quartzTask.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
             quartzTask.setExecuteMethod(method.getCode());
             quartzTask.setId(null);
             quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());

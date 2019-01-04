@@ -1,16 +1,5 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import java.util.Map;
-import javax.validation.Valid;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
 import io.choerodon.asgard.api.dto.SagaInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
 import io.choerodon.asgard.api.dto.StartInstanceDTO;
@@ -23,6 +12,16 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
+
+import javax.validation.Valid;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/v1/sagas/instances")
@@ -50,6 +49,33 @@ public class SagaInstanceController {
                                                  @RequestBody @Valid StartInstanceDTO dto) {
         dto.setSagaCode(code);
         return sagaInstanceService.start(dto);
+    }
+
+    /**
+     * 内部接口。预创建一个SAGA
+     */
+    @PostMapping
+    @ApiOperation(value = "内部接口。预创建一个saga")
+    @Permission(permissionWithin = true)
+    @ResponseBody
+    public ResponseEntity<SagaInstanceDTO> preCreate(@RequestBody @Valid StartInstanceDTO dto) {
+        return sagaInstanceService.preCreate(dto);
+    }
+
+    @PutMapping("{uuid}/confirm")
+    @ApiOperation(value = "内部接口。确认创建saga")
+    @Permission(permissionWithin = true)
+    @ResponseBody
+    public void confirm(@PathVariable("uuid") String uuid, @RequestBody String json) {
+        sagaInstanceService.confirm(uuid, json);
+    }
+
+    @PutMapping("{uuid}/cancel")
+    @ApiOperation(value = "内部接口。取消创建saga")
+    @Permission(permissionWithin = true)
+    @ResponseBody
+    public void cancel(@PathVariable("uuid") String uuid) {
+        sagaInstanceService.cancel(uuid);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

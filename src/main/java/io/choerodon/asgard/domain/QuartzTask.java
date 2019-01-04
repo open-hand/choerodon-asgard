@@ -1,14 +1,14 @@
 package io.choerodon.asgard.domain;
 
-import java.util.Date;
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
+import io.choerodon.mybatis.domain.AuditDomain;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
-import io.choerodon.mybatis.domain.AuditDomain;
+import java.util.Date;
 
 @ModifyAudit
 @VersionAudit
@@ -49,6 +49,8 @@ public class QuartzTask extends AuditDomain {
     private String level;
 
     private Long sourceId;
+
+    private String userDetails;
 
     public Long getId() {
         return id;
@@ -178,6 +180,14 @@ public class QuartzTask extends AuditDomain {
         this.executeStrategy = executeStrategy;
     }
 
+    public String getUserDetails() {
+        return userDetails;
+    }
+
+    public void setUserDetails(String userDetails) {
+        this.userDetails = userDetails;
+    }
+
     @Override
     public String toString() {
         return "QuartzTask{" +
@@ -197,6 +207,7 @@ public class QuartzTask extends AuditDomain {
                 ", status='" + status + '\'' +
                 ", level='" + level + '\'' +
                 ", sourceId=" + sourceId +
+                ", userDetails='" + userDetails + '\'' +
                 '}';
     }
 }

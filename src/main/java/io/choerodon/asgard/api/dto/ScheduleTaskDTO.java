@@ -51,7 +51,6 @@ public class ScheduleTaskDTO {
     @ApiModelProperty(value = "cron-trigger的cron表达式")
     private String cronExpression;
 
-
     @ApiModelProperty(value = "执行策略")
     private String executeStrategy;
 
@@ -219,12 +218,12 @@ public class ScheduleTaskDTO {
         }
     }
 
-    public static enum TriggerEventStrategy {
+    public enum TriggerEventStrategy {
         STOP,
         SERIAL,
         PARALLEL;
 
-        private TriggerEventStrategy() {
+        TriggerEventStrategy() {
         }
     }
 }

@@ -40,9 +40,6 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
 
     changeSet(id: '2018-12-19-add-column', author: 'jcalaz@163.com') {
         addColumn(tableName: 'ASGARD_SAGA_INSTANCE') {
-            column(name: "is_confirmed", type: "TINYINT(1)", defaultValue: "0", remarks: '是否被确认') {
-                constraints(nullable: false)
-            }
             column(name: 'uuid', type: 'CHAR(32)', remarks: 'uuid')
             column(name: 'user_details', type: 'TEXT', remarks: '创建SAGA的userDetails信息')
         }

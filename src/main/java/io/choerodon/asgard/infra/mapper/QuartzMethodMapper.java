@@ -9,6 +9,7 @@ import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.mybatis.common.BaseMapper;
 
 public interface QuartzMethodMapper extends BaseMapper<QuartzMethod> {
+
     List<QuartzMethod> fulltextSearch(@Param("code") String code,
                                       @Param("service") String service,
                                       @Param("method") String method,
@@ -21,4 +22,6 @@ public interface QuartzMethodMapper extends BaseMapper<QuartzMethod> {
                                        @Param("level") String level);
 
     ScheduleMethodParamsDTO selectParamsById(@Param("id") Long id);
+
+
 }
