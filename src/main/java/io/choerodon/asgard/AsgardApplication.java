@@ -1,11 +1,13 @@
 package io.choerodon.asgard;
 
+import io.choerodon.asgard.config.AsgardProperties;
 import io.choerodon.asgard.infra.utils.SpringApplicationContextHelper;
 import io.choerodon.eureka.event.EurekaEventHandler;
 import io.choerodon.resource.annoation.EnableChoerodonResourceServer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableFeignClients
 @EnableEurekaClient
 @EnableChoerodonResourceServer
+@EnableConfigurationProperties(AsgardProperties.class)
 @EnableAsync
 public class AsgardApplication {
 

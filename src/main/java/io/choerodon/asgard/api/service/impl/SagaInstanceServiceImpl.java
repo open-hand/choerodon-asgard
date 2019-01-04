@@ -46,6 +46,8 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     public static final String DB_ERROR = "error.db.insertOrUpdate";
 
+    private static final String ERROR_CODE_SAGA_INSTANCE_NOT_EXIST = "error.sagaInstance.notExist";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final ModelMapper modelMapper = new ModelMapper();
@@ -85,33 +87,30 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     @Override
     @Transactional
     public ResponseEntity<SagaInstanceDTO> start(final StartInstanceDTO dto) {
-        SagaTask sagaTask = new SagaTask();
-        sagaTask.setIsEnabled(true);
-        sagaTask.setSagaCode(dto.getSagaCode());
-        List<SagaTask> sagaTasks = taskMapper.select(sagaTask);
-        if (sagaTasks.isEmpty()) {
+        List<SagaTask> firstSeqSagaTasks = taskMapper.selectFirstSeqSagaTasks(dto.getSagaCode());
+        if (firstSeqSagaTasks.isEmpty()) {
             Date date = new Date();
             SagaInstance instanceDO = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
                     SagaDefinition.InstanceStatus.NON_CONSUMER.name(), date, date, dto.getLevel(), dto.getSourceId());
-            instanceMapper.insertSelective(instanceDO);
-            return new ResponseEntity<>(modelMapper.map(instanceMapper.selectByPrimaryKey(instanceDO.getId()), SagaInstanceDTO.class), HttpStatus.OK);
+            if (instanceMapper.insertSelective(instanceDO) != 1) {
+                throw new FeignException(DB_ERROR);
+            }
+            return new ResponseEntity<>(modelMapper.map(instanceDO, SagaInstanceDTO.class), HttpStatus.OK);
         }
-
-        return new ResponseEntity<>(startInstanceAndTask(dto, sagaTasks), HttpStatus.OK);
+        return new ResponseEntity<>(startInstanceAndTask(dto, firstSeqSagaTasks), HttpStatus.OK);
     }
 
-    private SagaInstanceDTO startInstanceAndTask(final StartInstanceDTO dto, final List<SagaTask> sagaTasks) {
+    private SagaInstanceDTO startInstanceAndTask(final StartInstanceDTO dto, final List<SagaTask> firstSeqSagaTasks) {
         final Date startTime = new Date(System.currentTimeMillis());
         SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
-                SagaDefinition.TaskInstanceStatus.RUNNING.name(), startTime, dto.getLevel(), dto.getSourceId());
+                SagaDefinition.InstanceStatus.RUNNING.name(), startTime, dto.getLevel(), dto.getSourceId());
         instance.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
         instance.setInputDataId(jsonDataService.insertAndGetId(dto.getInput()));
-        instanceMapper.insertSelective(instance);
-        Map<Integer, List<SagaTask>> taskMap = sagaTasks.stream().collect(groupingBy(SagaTask::getSeq));
-        if (taskMap.size() > 0) {
-            addRunningTask(taskMap.entrySet().iterator().next().getValue(), instance, startTime);
+        if (instanceMapper.insertSelective(instance) != 1) {
+            throw new FeignException(DB_ERROR);
         }
-        return modelMapper.map(instanceMapper.selectByPrimaryKey(instance.getId()), SagaInstanceDTO.class);
+        addRunningTask(firstSeqSagaTasks, instance, startTime);
+        return modelMapper.map(instance, SagaInstanceDTO.class);
     }
 
     private void addRunningTask(final List<SagaTask> sagaTaskList, final SagaInstance instance, final Date startTime) {
@@ -140,7 +139,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     public ResponseEntity<String> query(Long id) {
         SagaInstance sagaInstance = instanceMapper.selectByPrimaryKey(id);
         if (sagaInstance == null) {
-            throw new CommonException("error.sagaInstance.notExist");
+            throw new CommonException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
         }
         SagaWithTaskInstanceDTO dto = modelMapper.map(sagaInstance, SagaWithTaskInstanceDTO.class);
         if (sagaInstance.getInputDataId() != null) {
@@ -194,7 +193,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                 date.add(format);
                 Long count = 0L;
                 if (days.contains(format)) {
-                    count = (Long)maps.get(days.indexOf(format)).get("count");
+                    count = (Long) maps.get(days.indexOf(format)).get("count");
                 }
                 data.add(count);
                 calendar.add(Calendar.DATE, 1);
@@ -210,16 +209,52 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public ResponseEntity<SagaInstanceDTO> preCreate(StartInstanceDTO dto) {
-        return null;
+        SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
+                SagaDefinition.InstanceStatus.UN_CONFIRMED.name(), new Date(), dto.getLevel(), dto.getSourceId());
+        instance.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
+        if (instanceMapper.insertSelective(instance) != 1) {
+            throw new FeignException(DB_ERROR);
+        }
+        return new ResponseEntity<>(modelMapper.map(instance, SagaInstanceDTO.class), HttpStatus.OK);
     }
 
+    @Transactional
     @Override
     public void confirm(String uuid, String payloadJson) {
-
+        //根据uuid查询saga实例
+        SagaInstance uuidQuery = new SagaInstance();
+        uuidQuery.setUuid(uuid);
+        SagaInstance dbInstance = instanceMapper.selectOne(uuidQuery);
+        if (dbInstance == null) {
+            throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
+        }
+        //查询seq为最小的task实例
+        List<SagaTask> firstSeqSagaTasks = taskMapper.selectFirstSeqSagaTasks(dbInstance.getSagaCode());
+        final Date startTime = new Date(System.currentTimeMillis());
+        //该saga没有task，则直接将状态设置为NON_CONSUMER
+        if (firstSeqSagaTasks.isEmpty()) {
+            dbInstance.setStatus(SagaDefinition.InstanceStatus.NON_CONSUMER.name());
+            dbInstance.setEndTime(startTime);
+            //该saga有task，则设置状态为RUNNING，并设置输入
+        }else {
+            dbInstance.setInputDataId(jsonDataService.insertAndGetId(payloadJson));
+            dbInstance.setStatus(SagaDefinition.InstanceStatus.RUNNING.name());
+        }
+        if (instanceMapper.updateByPrimaryKey(dbInstance) != 1) {
+            throw new FeignException(DB_ERROR);
+        }
+        //创建task实例
+        addRunningTask(firstSeqSagaTasks, dbInstance, startTime);
     }
 
     @Override
     public void cancel(String uuid) {
-
+        SagaInstance uuidQuery = new SagaInstance();
+        uuidQuery.setUuid(uuid);
+        SagaInstance dbInstance = instanceMapper.selectOne(uuidQuery);
+        if (dbInstance == null) {
+            throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
+        }
+        instanceMapper.deleteByPrimaryKey(dbInstance.getId());
     }
 }

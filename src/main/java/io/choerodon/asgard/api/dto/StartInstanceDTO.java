@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class StartInstanceDTO {
 
     @ApiModelProperty(value = "对应Saga 编码")
+    @NotNull(message = "error.startSaga.sagaCodeNull")
     private String sagaCode;
 
     @ApiModelProperty(value = "输入")
