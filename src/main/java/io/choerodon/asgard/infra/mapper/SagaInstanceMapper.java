@@ -1,14 +1,13 @@
 package io.choerodon.asgard.infra.mapper;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.annotations.Param;
-
 import io.choerodon.asgard.api.dto.SagaInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
 import io.choerodon.asgard.domain.SagaInstance;
 import io.choerodon.mybatis.common.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 public interface SagaInstanceMapper extends BaseMapper<SagaInstance> {
 
@@ -25,6 +24,8 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstance> {
 
     SagaInstanceDetailsDTO selectDetails(@Param("id") Long id);
 
-    List<Map<String,Object>> selectFailedTimes(@Param("begin") String begin,
-                              @Param("end") String end);
+    List<Map<String, Object>> selectFailedTimes(@Param("begin") String begin,
+                                                @Param("end") String end);
+
+    List<SagaInstance> selectUnConfirmedTimeOutInstance(@Param("timeOut") int unConfirmedTimeoutSeconds);
 }
