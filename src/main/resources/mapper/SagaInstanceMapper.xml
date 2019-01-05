@@ -114,7 +114,7 @@
 
 
     <select id="selectUnConfirmedTimeOutInstance" resultType="io.choerodon.asgard.domain.SagaInstance">
-        SELECT asgard_saga_task_instance.* FROM asgard_saga_task_instance
-        where status = 'UN_CONFIRMED' AND unix_timestamp(CREATION_DATE)  + #{timeOut} &lt; unix_timestamp(NOW())
+        SELECT asgard_saga_instance.* FROM asgard_saga_instance
+        where status = 'UN_CONFIRMED' AND unix_timestamp(CREATION_DATE)  + #{timeOut} &lt; unix_timestamp(#{now})
     </select>
 </mapper>

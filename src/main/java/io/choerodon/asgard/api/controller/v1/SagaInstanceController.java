@@ -28,6 +28,8 @@ import java.util.Map;
 @RequestMapping("/v1/sagas/instances")
 public class SagaInstanceController {
 
+    private static final String ERROR_INVALID_DTO = "error.startSaga.invalidDTO";
+
     private SagaInstanceService sagaInstanceService;
 
     public SagaInstanceController(SagaInstanceService sagaInstanceService) {
@@ -50,7 +52,7 @@ public class SagaInstanceController {
                                                  @RequestBody StartInstanceDTO dto) {
         dto.setSagaCode(code);
         if (dto.getRefId() == null || dto.getRefType() == null) {
-            throw new FeignException("error.startSaga.invalidDTO");
+            throw new FeignException(ERROR_INVALID_DTO);
         }
         return sagaInstanceService.start(dto);
     }
@@ -63,19 +65,21 @@ public class SagaInstanceController {
     @Permission(permissionWithin = true)
     @ResponseBody
     public ResponseEntity<SagaInstanceDTO> preCreate(@RequestBody StartInstanceDTO dto) {
-        if (dto.getRefId() == null || dto.getRefType() == null
-                || StringUtils.isEmpty(dto.getSagaCode()) || StringUtils.isEmpty(dto.getService())) {
-            throw new FeignException("error.startSaga.invalidDTO");
+        if (dto.getUuid() == null || StringUtils.isEmpty(dto.getSagaCode()) || StringUtils.isEmpty(dto.getService())) {
+            throw new FeignException(ERROR_INVALID_DTO);
         }
         return sagaInstanceService.preCreate(dto);
     }
 
-    @PutMapping("{uuid}/confirm")
+    @PostMapping("{uuid}/confirm")
     @ApiOperation(value = "内部接口。确认创建saga")
     @Permission(permissionWithin = true)
     @ResponseBody
-    public void confirm(@PathVariable("uuid") String uuid, @RequestBody String json) {
-        sagaInstanceService.confirm(uuid, json);
+    public void confirm(@PathVariable("uuid") String uuid, @RequestBody StartInstanceDTO dto) {
+        if (dto.getRefType() == null || dto.getRefId() == null || dto.getInput() == null) {
+            throw new FeignException(ERROR_INVALID_DTO);
+        }
+        sagaInstanceService.confirm(uuid, dto.getInput(), dto.getRefType(), dto.getRefId());
     }
 
     @PutMapping("{uuid}/cancel")

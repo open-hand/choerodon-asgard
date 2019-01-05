@@ -8,7 +8,7 @@ import io.choerodon.asgard.domain.SagaInstance;
 import io.choerodon.asgard.infra.feign.StatusQueryFeign;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.utils.JsonDecoder;
-import io.choerodon.asgard.saga.producer.ProducerBackCheckEndpoint;
+import io.choerodon.asgard.saga.dto.SagaStatusQueryDTO;
 import io.choerodon.feign.FeignRequestInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -57,7 +58,7 @@ public class SagaScheduledBackCheckStatusImpl {
     @PostConstruct
     public void backCheck() {
         scheduledExecutorService.scheduleWithFixedDelay(() ->
-                        instanceMapper.selectUnConfirmedTimeOutInstance(asgardProperties.getSaga().getUnConfirmedTimeoutSeconds())
+                        instanceMapper.selectUnConfirmedTimeOutInstance(asgardProperties.getSaga().getUnConfirmedTimeoutSeconds(), new Date())
                                 .forEach(this::query)
                 , 20000, asgardProperties.getSaga().getBackCheckIntervalMs(), TimeUnit.MILLISECONDS);
     }
@@ -73,11 +74,11 @@ public class SagaScheduledBackCheckStatusImpl {
                 .requestInterceptor(feignRequestInterceptor)
                 .decoder(jsonDecoder)
                 .target(StatusQueryFeign.class, "http://" + sagaInstance.getCreatedOn());
-        String status = query.getEventRecord(sagaInstance.getUuid());
-        if (ProducerBackCheckEndpoint.STATUS_CANCEL.equals(status)) {
-           sagaInstanceService.cancel(sagaInstance.getUuid());
-        } else if (ProducerBackCheckEndpoint.STATUS_CONFIRM.equals(status)) {
-            sagaInstanceService.confirm(sagaInstance.getUuid(), "{}");
+        SagaStatusQueryDTO status = query.getEventRecord(sagaInstance.getUuid());
+        if (SagaStatusQueryDTO.STATUS_CANCEL.equals(status.getStatus())) {
+            sagaInstanceService.cancel(sagaInstance.getUuid());
+        } else if (SagaStatusQueryDTO.STATUS_CONFIRM.equals(status.getStatus())) {
+            sagaInstanceService.confirm(sagaInstance.getUuid(), status.getPayload(), status.getRefType(), status.getRefId());
         }
     }
 

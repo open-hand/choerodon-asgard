@@ -64,8 +64,9 @@ public class SagaTaskInstance extends AuditDomain {
         this.taskCode = taskCode;
     }
 
-    public SagaTaskInstance(Long sagaInstanceId) {
+    public SagaTaskInstance(Long sagaInstanceId, Integer seq) {
         this.sagaInstanceId = sagaInstanceId;
+        this.seq = seq;
     }
 
     public Long getId() {

@@ -59,5 +59,4 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
                                                              @Param("params") String params,
                                                              @Param("level") String level,
                                                              @Param("sourceId") Long sourceId);
-
 }

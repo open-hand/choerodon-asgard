@@ -42,7 +42,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static io.choerodon.asgard.api.service.impl.SagaInstanceServiceImpl.DB_ERROR;
+import static io.choerodon.asgard.api.service.impl.SagaInstanceServiceImpl.ERROR_CODE_SAGA_INSTANCE_NOT_EXIST;
 import static java.util.stream.Collectors.groupingBy;
+import static org.springframework.transaction.TransactionDefinition.ISOLATION_READ_COMMITTED;
 import static org.springframework.transaction.TransactionDefinition.ISOLATION_REPEATABLE_READ;
 
 @Service
@@ -98,6 +100,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             pollBatchDTO.setRunningIds(Collections.emptySet());
         }
         final Set<SagaTaskInstanceDTO> returnList = ConcurrentHashMap.newKeySet();
+        //并发策略为NONE的消息拉取。
         taskInstanceMapper.pollBatchNoneLimit(pollBatchDTO.getService(), pollBatchDTO.getInstance()).parallelStream()
                 .forEach(t -> {
                     if (returnList.size() >= pollBatchDTO.getMaxPollSize()) {
@@ -168,10 +171,10 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         taskInstance.setObjectVersionNumber(statusDTO.getObjectVersionNumber());
         SagaInstance instance = instanceMapper.selectByPrimaryKey(taskInstance.getSagaInstanceId());
         if (instance == null) {
-            throw new FeignException("error.sagaInstance.notExist");
+            throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
         }
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setIsolationLevel(ISOLATION_REPEATABLE_READ);
+        def.setIsolationLevel(ISOLATION_READ_COMMITTED);
         def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
@@ -188,6 +191,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     private void updateStatusFailed(final SagaTaskInstance taskInstance, final SagaInstance instance, final String exeMsg) {
+        //如果已重试次数 >= 最大重试次数，则设置状态为失败，并设置saga实例状态为失败
         if (taskInstance.getRetriedCount() >= taskInstance.getMaxRetryCount()) {
             taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.FAILED.name());
             taskInstance.setExceptionMessage(exeMsg);
@@ -202,35 +206,37 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             if (instance.getCreatedBy() != 0) {
                 noticeService.sendSagaFailNotice(instance);
             }
+            //如果已重试次数 < 最大重试次数，则增加重试次数
         } else {
             taskInstanceMapper.increaseRetriedCount(taskInstance.getId());
         }
     }
 
     private void updateStatusCompleted(final SagaTaskInstance taskInstance, final String outputData, final SagaInstance instance) {
+        //更新task实例状态为完成
         taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name());
         taskInstance.setOutputDataId(jsonDataService.insertAndGetId(outputData));
         taskInstance.setActualEndTime(new Date());
         if (taskInstanceMapper.updateByPrimaryKeySelective(taskInstance) != 1) {
             throw new FeignException(DB_ERROR);
         }
-        Map<Integer, List<SagaTaskInstance>> seqTaskListMap = taskInstanceMapper
-                .select(new SagaTaskInstance(taskInstance.getSagaInstanceId()))
-                .stream().collect(groupingBy(SagaTaskInstance::getSeq));
-        long unFinishedCount = seqTaskListMap.get(taskInstance.getSeq()).stream()
-                .filter(t -> !SagaDefinition.InstanceStatus.COMPLETED.name().equals(t.getStatus())).count();
-        if (unFinishedCount > 0) {
+        List<SagaTaskInstance> sameSeqTasks = taskInstanceMapper.select(new SagaTaskInstance(taskInstance.getSagaInstanceId(), taskInstance.getSeq()));
+        //如果同seq下有未完成的实例则直接返回
+        if (sameSeqTasks.stream().anyMatch(t -> !SagaDefinition.InstanceStatus.COMPLETED.name().equals(t.getStatus()))) {
             return;
         }
-        startNextTaskInstance(seqTaskListMap, taskInstance, instance);
+        //如果没有未完成的实例，则继续执行更新SAGA实例状态或者创建下一个seq的task实例
+        startNextTaskInstance(sameSeqTasks, taskInstance, instance);
     }
 
-    private void startNextTaskInstance(final Map<Integer, List<SagaTaskInstance>> seqTaskListMap, final SagaTaskInstance taskInstance, final SagaInstance instance) {
+    private void startNextTaskInstance(final List<SagaTaskInstance> sameSeqTasks, final SagaTaskInstance taskInstance, final SagaInstance instance) {
         try {
-            final List<SagaTaskInstance> seqTaskInstances = seqTaskListMap.get(taskInstance.getSeq());
-            String nextInputJson = ConvertUtils.jsonMerge(ConvertUtils.convertToJsonMerge(seqTaskInstances, jsonDataMapper), objectMapper);
+            // merge此seq下所有task实例的输出结果为同一个json
+            String nextInputJson = ConvertUtils.jsonMerge(ConvertUtils.convertToJsonMerge(sameSeqTasks, jsonDataMapper), objectMapper);
             Long nextInputId = jsonDataService.insertAndGetId(nextInputJson);
+            // 查询下一步seq的task
             List<SagaTask> nextSeqTasks = sagaTaskMapper.selectNextSeqSagaTasks(instance.getSagaCode(), taskInstance.getSeq());
+            // 下一步seq的task为空则更新saga实例状态为完成
             if (nextSeqTasks.isEmpty()) {
                 instance.setStatus(SagaDefinition.InstanceStatus.COMPLETED.name());
                 instance.setEndTime(new Date());
@@ -240,6 +246,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                 }
                 return;
             }
+            // 下一步seq的task不为空则创建相应的task实例
             nextSeqTasks.forEach(t -> {
                 SagaTaskInstance sagaTaskInstance = modelMapper.map(t, SagaTaskInstance.class);
                 sagaTaskInstance.setSagaInstanceId(instance.getId());

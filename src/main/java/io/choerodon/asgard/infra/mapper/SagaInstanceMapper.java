@@ -6,6 +6,7 @@ import io.choerodon.asgard.domain.SagaInstance;
 import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -27,5 +28,5 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstance> {
     List<Map<String, Object>> selectFailedTimes(@Param("begin") String begin,
                                                 @Param("end") String end);
 
-    List<SagaInstance> selectUnConfirmedTimeOutInstance(@Param("timeOut") int unConfirmedTimeoutSeconds);
+    List<SagaInstance> selectUnConfirmedTimeOutInstance(@Param("timeOut") int unConfirmedTimeoutSeconds, @Param("now") Date now);
 }
