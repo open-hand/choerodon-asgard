@@ -30,6 +30,9 @@ public class StartInstanceDTO {
     @ApiModelProperty(value = "uuid")
     private String uuid;
 
+    @ApiModelProperty(value = "创建该saga实例的服务")
+    private String service;
+
     public String getSagaCode() {
         return sagaCode;
     }
@@ -86,6 +89,14 @@ public class StartInstanceDTO {
         this.uuid = uuid;
     }
 
+    public String getService() {
+        return service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
     @Override
     public String toString() {
         return "StartInstanceDTO{" +
@@ -96,6 +107,7 @@ public class StartInstanceDTO {
                 ", level='" + level + '\'' +
                 ", sourceId=" + sourceId +
                 ", uuid='" + uuid + '\'' +
+                ", service='" + service + '\'' +
                 '}';
     }
 }

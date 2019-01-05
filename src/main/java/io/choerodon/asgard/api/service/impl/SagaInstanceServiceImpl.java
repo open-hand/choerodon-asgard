@@ -44,9 +44,9 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaInstanceService.class);
 
-    public static final String DB_ERROR = "error.db.insertOrUpdate";
+    static final String DB_ERROR = "error.db.insertOrUpdate";
 
-    private static final String ERROR_CODE_SAGA_INSTANCE_NOT_EXIST = "error.sagaInstance.notExist";
+    static final String ERROR_CODE_SAGA_INSTANCE_NOT_EXIST = "error.sagaInstance.notExist";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -102,8 +102,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     private SagaInstanceDTO startInstanceAndTask(final StartInstanceDTO dto, final List<SagaTask> firstSeqSagaTasks) {
         final Date startTime = new Date(System.currentTimeMillis());
-        SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
-                SagaDefinition.InstanceStatus.RUNNING.name(), startTime, dto.getLevel(), dto.getSourceId());
+        SagaInstance instance = new SagaInstance(dto.getSagaCode(), SagaDefinition.InstanceStatus.RUNNING.name(),
+                startTime, dto.getLevel(), dto.getSourceId());
+        instance.setRefType(dto.getRefType());
+        instance.setRefId(dto.getRefId());
         instance.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
         instance.setInputDataId(jsonDataService.insertAndGetId(dto.getInput()));
         if (instanceMapper.insertSelective(instance) != 1) {
@@ -209,8 +211,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public ResponseEntity<SagaInstanceDTO> preCreate(StartInstanceDTO dto) {
-        SagaInstance instance = new SagaInstance(dto.getSagaCode(), dto.getRefType(), dto.getRefId(),
-                SagaDefinition.InstanceStatus.UN_CONFIRMED.name(), new Date(), dto.getLevel(), dto.getSourceId());
+        SagaInstance instance = new SagaInstance(dto.getSagaCode(), SagaDefinition.InstanceStatus.UN_CONFIRMED.name(),
+                new Date(), dto.getLevel(), dto.getSourceId());
+        instance.setCreatedOn(dto.getService());
+        instance.setUuid(dto.getUuid());
         instance.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
         if (instanceMapper.insertSelective(instance) != 1) {
             throw new FeignException(DB_ERROR);
@@ -220,7 +224,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Transactional
     @Override
-    public void confirm(String uuid, String payloadJson) {
+    public void confirm(String uuid, String payloadJson, String refType, String refId) {
         //根据uuid查询saga实例
         SagaInstance uuidQuery = new SagaInstance();
         uuidQuery.setUuid(uuid);
@@ -231,12 +235,14 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         //查询seq为最小的task实例
         List<SagaTask> firstSeqSagaTasks = taskMapper.selectFirstSeqSagaTasks(dbInstance.getSagaCode());
         final Date startTime = new Date(System.currentTimeMillis());
+        dbInstance.setRefType(refType);
+        dbInstance.setRefId(refId);
         //该saga没有task，则直接将状态设置为NON_CONSUMER
         if (firstSeqSagaTasks.isEmpty()) {
             dbInstance.setStatus(SagaDefinition.InstanceStatus.NON_CONSUMER.name());
             dbInstance.setEndTime(startTime);
             //该saga有task，则设置状态为RUNNING，并设置输入
-        }else {
+        } else {
             dbInstance.setInputDataId(jsonDataService.insertAndGetId(payloadJson));
             dbInstance.setStatus(SagaDefinition.InstanceStatus.RUNNING.name());
         }

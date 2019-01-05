@@ -22,7 +22,6 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
             column(name: "START_TIME", type: "DATETIME(3)", remarks: 'saga开始执行的时间')
             column(name: "END_TIME", type: "DATETIME(3)", remarks: 'saga执行结束的时间')
 
-
             column(name: "OBJECT_VERSION_NUMBER", type: "BIGINT", defaultValue: "1")
             column(name: "CREATED_BY", type: "BIGINT", defaultValue: "-1")
             column(name: "CREATION_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
@@ -41,7 +40,14 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
     changeSet(id: '2018-12-19-add-column', author: 'jcalaz@163.com') {
         addColumn(tableName: 'ASGARD_SAGA_INSTANCE') {
             column(name: 'uuid', type: 'CHAR(32)', remarks: 'uuid')
-            column(name: 'user_details', type: 'TEXT', remarks: '创建SAGA的userDetails信息')
+            column(name: 'user_details', type: 'TEXT', remarks: '创建该saga的userDetails信息')
+        }
+        addUniqueConstraint(tableName: 'ASGARD_SAGA_INSTANCE', columnNames: 'uuid', constraintName: 'UK_ASGARD_SAGA_INSTANCE_UUID')
+    }
+
+    changeSet(id: '2018-01-04-add-column-createdOn', author: 'jcalaz@163.com') {
+        addColumn(tableName: 'ASGARD_SAGA_INSTANCE') {
+            column(name: 'created_on', type: 'VARCHAR(48)', remarks: '创建该saga的服务，用于回查')
         }
     }
 }
