@@ -80,7 +80,7 @@
         WHERE instance_lock = #{instance} AND status = 'RUNNING'
     </update>
 
-    <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO">
+    <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.domain.SagaTaskInstance">
                 SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
