@@ -1,5 +1,6 @@
 package io.choerodon.asgard.infra.mapper;
 
+import io.choerodon.asgard.api.dto.PageSagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.domain.SagaTaskInstance;
@@ -48,7 +49,7 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
      */
     int unlockByInstance(@Param("instance") String instance);
 
-    List<SagaTaskInstance> selectAllBySagaInstanceId(@Param("sagaInstanceId") Long instanceId);
+    List<PageSagaTaskInstanceDTO> selectAllBySagaInstanceId(@Param("sagaInstanceId") Long instanceId);
 
     /**
      * 分页查询层级单位下事务实例

@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.choerodon.asgard.api.dto.PageSagaTaskInstanceDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -145,7 +146,7 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     @Override
-    public void registerOrgFailNotice(SagaTaskInstance sagaTaskInstance, SagaInstance sagaInstance, List<SagaTaskInstance> sagaTaskInstances) {
+    public void registerOrgFailNotice(SagaTaskInstance sagaTaskInstance, SagaInstance sagaInstance, List<PageSagaTaskInstanceDTO> sagaTaskInstances) {
         //feign查询负责人及其组织
         RegistrantInfoDTO registrantInfoDTO = iamFeignClient.queryRegistrantAndAdminId(new Long(sagaInstance.getRefId())).getBody();
 
@@ -172,12 +173,12 @@ public class NoticeServiceImpl implements NoticeService {
             sendNoticeAtSite(REGISTER_ABNORMAL_TEMPLATE, adminId, abnormalMap);
         } else {
             //如果同序列task全部完成/错误，则将所有错误task信息，发送异常邮件给admin
-            List<SagaTaskInstance> running = sagaTaskInstances.stream().filter(s ->
+            List<PageSagaTaskInstanceDTO> running = sagaTaskInstances.stream().filter(s ->
                     s.getStatus().equals(SagaDefinition.TaskInstanceStatus.WAIT_TO_BE_PULLED.name()) ||
                             s.getStatus().equals(SagaDefinition.TaskInstanceStatus.RUNNING.name()) ||
                             s.getStatus().equals(SagaDefinition.TaskInstanceStatus.QUEUE.name())).collect(Collectors.toList());
             if (running.isEmpty()) {
-                List<SagaTaskInstance> failed = sagaTaskInstances.stream().filter(s -> s.getStatus().equals(SagaDefinition.TaskInstanceStatus.FAILED.name())).collect(Collectors.toList());
+                List<PageSagaTaskInstanceDTO> failed = sagaTaskInstances.stream().filter(s -> s.getStatus().equals(SagaDefinition.TaskInstanceStatus.FAILED.name())).collect(Collectors.toList());
 
                 Map<String, Object> abnormalMap = new HashMap<>();
                 abnormalMap.put("userName", registrantInfoDTO.getRealName());
@@ -185,7 +186,7 @@ public class NoticeServiceImpl implements NoticeService {
                 abnormalMap.put("organizationName", registrantInfoDTO.getOrganizationName());
                 abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode() + ":" + sagaInstance.getId());
                 String sagaFailedTaskInstanceId = "";
-                for (SagaTaskInstance taskInstance : failed) {
+                for (PageSagaTaskInstanceDTO taskInstance : failed) {
                     sagaFailedTaskInstanceId += (taskInstance.getSagaCode() + ":" + taskInstance.getId() + " ");
                 }
                 abnormalMap.put("sagaTaskInstanceId", sagaFailedTaskInstanceId);
