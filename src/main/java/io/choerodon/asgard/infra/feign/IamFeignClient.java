@@ -1,14 +1,15 @@
 package io.choerodon.asgard.infra.feign;
 
-import io.choerodon.asgard.api.dto.*;
-import io.choerodon.asgard.infra.feign.fallback.IamFeignClientFallback;
-import io.choerodon.core.domain.Page;
-import io.choerodon.core.notify.NoticeSendDTO;
+import java.util.List;
+
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import io.choerodon.asgard.api.dto.*;
+import io.choerodon.asgard.infra.feign.fallback.IamFeignClientFallback;
+import io.choerodon.core.domain.Page;
+import io.choerodon.core.notify.NoticeSendDTO;
 
 
 /**
@@ -44,4 +45,7 @@ public interface IamFeignClient {
 
     @PostMapping("/users/ids")
     ResponseEntity<List<UserDTO>> listUsersByIds(@RequestBody Long[] ids);
+
+    @GetMapping(value = "/users/{id}/registrant")
+    ResponseEntity<RegistrantInfoDTO> queryRegistrantAndAdminId(@PathVariable(value = "id")  Long id);
 }

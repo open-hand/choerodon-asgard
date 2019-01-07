@@ -1,14 +1,15 @@
 package io.choerodon.asgard.infra.feign.fallback;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+
 import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.notify.NoticeSendDTO;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * @author dengyouquan
@@ -48,5 +49,11 @@ public class IamFeignClientFallback implements IamFeignClient {
     @Override
     public ResponseEntity<List<UserDTO>> listUsersByIds(Long[] ids) {
         throw new FeignException("error.feign.iam.listUsersByIds");
+    }
+
+
+    @Override
+    public ResponseEntity<RegistrantInfoDTO> queryRegistrantAndAdminId(Long id) {
+        throw new FeignException("error.feign.iam.queryRegistrantAndAdminId");
     }
 }
