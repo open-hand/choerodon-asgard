@@ -1,6 +1,5 @@
 package io.choerodon.asgard.config;
 
-import io.choerodon.asgard.infra.utils.JsonDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -21,9 +20,5 @@ public class SagaAutoConfig {
         return Executors.newScheduledThreadPool(1);
     }
 
-    @Bean
-    public JsonDecoder jsonDecoder() {
-        return new JsonDecoder();
-    }
 
 }
