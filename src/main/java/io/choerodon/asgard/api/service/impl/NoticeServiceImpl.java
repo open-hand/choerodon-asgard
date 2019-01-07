@@ -1,22 +1,27 @@
 package io.choerodon.asgard.api.service.impl;
 
-import io.choerodon.asgard.api.service.NoticeService;
-import io.choerodon.asgard.domain.QuartzTask;
-import io.choerodon.asgard.domain.QuartzTaskMember;
-import io.choerodon.asgard.domain.SagaInstance;
-import io.choerodon.asgard.infra.enums.BusinessTypeCode;
-import io.choerodon.asgard.infra.enums.MemberType;
-import io.choerodon.asgard.infra.feign.IamFeignClient;
-import io.choerodon.asgard.infra.feign.NotifyFeignClient;
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.core.notify.NoticeSendDTO;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import io.choerodon.asgard.api.dto.RegistrantInfoDTO;
+import io.choerodon.asgard.api.service.NoticeService;
+import io.choerodon.asgard.domain.QuartzTask;
+import io.choerodon.asgard.domain.QuartzTaskMember;
+import io.choerodon.asgard.domain.SagaInstance;
+import io.choerodon.asgard.domain.SagaTaskInstance;
+import io.choerodon.asgard.infra.enums.BusinessTypeCode;
+import io.choerodon.asgard.infra.enums.MemberType;
+import io.choerodon.asgard.infra.feign.IamFeignClient;
+import io.choerodon.asgard.infra.feign.NotifyFeignClient;
+import io.choerodon.asgard.saga.SagaDefinition;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.core.notify.NoticeSendDTO;
 
 /**
  * @author dengyouquan
@@ -31,6 +36,11 @@ public class NoticeServiceImpl implements NoticeService {
     private NotifyFeignClient notifyFeignClient;
 
     private IamFeignClient iamFeignClient;
+
+    public static final String TASK_ORG_REGISTER = "iam-register-organization";
+    public static final String REGISTER_FAILURE_TEMPLATE = "registerOrganization-failure";
+    public static final String REGISTER_ABNORMAL_TEMPLATE = "registerOrganization-abnormal";
+    public static final String REGISTER_SUCCESS_TEMPLATE = "registerOrganization-success";
 
     public NoticeServiceImpl(NotifyFeignClient notifyFeignClient, IamFeignClient iamFeignClient) {
         this.notifyFeignClient = notifyFeignClient;
@@ -131,5 +141,83 @@ public class NoticeServiceImpl implements NoticeService {
             users = iamFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(roleId, sourceId, false).getBody();
         }
         return users;
+    }
+
+
+    @Override
+    public void registerOrgFailNotice(SagaTaskInstance sagaTaskInstance, SagaInstance sagaInstance, List<SagaTaskInstance> sagaTaskInstances) {
+        //feign查询负责人及其组织
+        RegistrantInfoDTO registrantInfoDTO = iamFeignClient.queryRegistrantAndAdminId(new Long(sagaInstance.getRefId())).getBody();
+
+        List<Long> ids = new ArrayList<>();
+        ids.add(registrantInfoDTO.getId());
+
+        List<Long> adminId = new ArrayList<>();
+        adminId.add(registrantInfoDTO.getAdminId());
+        if (sagaTaskInstance.getSagaCode().equalsIgnoreCase(TASK_ORG_REGISTER)) {
+            //如果iam的sagatask错误，则发送失败邮件给负责人，发送异常邮件给admin
+
+            Map<String, Object> failereMap = new HashMap<>();
+            failereMap.put("userName", registrantInfoDTO.getRealName());
+            failereMap.put("organizationName", registrantInfoDTO.getOrganizationName());
+            sendNoticeAtSite(REGISTER_FAILURE_TEMPLATE, ids, failereMap);
+
+
+            Map<String, Object> abnormalMap = new HashMap<>();
+            abnormalMap.put("userName", registrantInfoDTO.getRealName());
+            abnormalMap.put("organizationId", registrantInfoDTO.getOrganizationId());
+            abnormalMap.put("organizationName", registrantInfoDTO.getOrganizationName());
+            abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode()+":"+sagaInstance.getId());
+            abnormalMap.put("sagaTaskInstanceId", sagaTaskInstance.getSagaCode() + ":" + sagaTaskInstance.getId());
+            sendNoticeAtSite(REGISTER_ABNORMAL_TEMPLATE, adminId, abnormalMap);
+        } else {
+            //如果同序列task全部完成/错误，则将所有错误task信息，发送异常邮件给admin
+            List<SagaTaskInstance> running = sagaTaskInstances.stream().filter(s ->
+                    s.getStatus().equals(SagaDefinition.TaskInstanceStatus.WAIT_TO_BE_PULLED.name()) ||
+                            s.getStatus().equals(SagaDefinition.TaskInstanceStatus.RUNNING.name()) ||
+                            s.getStatus().equals(SagaDefinition.TaskInstanceStatus.QUEUE.name())).collect(Collectors.toList());
+            if (running.isEmpty()) {
+                List<SagaTaskInstance> failed = sagaTaskInstances.stream().filter(s -> s.getStatus().equals(SagaDefinition.TaskInstanceStatus.FAILED.name())).collect(Collectors.toList());
+
+                Map<String, Object> abnormalMap = new HashMap<>();
+                abnormalMap.put("userName", registrantInfoDTO.getRealName());
+                abnormalMap.put("organizationId", registrantInfoDTO.getOrganizationId());
+                abnormalMap.put("organizationName", registrantInfoDTO.getOrganizationName());
+                abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode() + ":" + sagaInstance.getId());
+                String sagaFailedTaskInstanceId = "";
+                for (SagaTaskInstance taskInstance : failed) {
+                    sagaFailedTaskInstanceId += (taskInstance.getSagaCode() + ":" + taskInstance.getId() + " ");
+                }
+                abnormalMap.put("sagaTaskInstanceId", sagaFailedTaskInstanceId);
+                sendNoticeAtSite(REGISTER_ABNORMAL_TEMPLATE, adminId, abnormalMap);
+            }
+        }
+    }
+
+    @Override
+    public void registerOrgSuccessNotice(SagaInstance sagaInstance) {
+        RegistrantInfoDTO registrantInfoDTO = iamFeignClient.queryRegistrantAndAdminId(new Long(sagaInstance.getRefId())).getBody();
+        List<Long> ids = new ArrayList<>();
+        ids.add(registrantInfoDTO.getId());
+        Map<String, Object> successMap = new HashMap<>();
+        successMap.put("userName", registrantInfoDTO.getRealName());
+        successMap.put("organizationName", registrantInfoDTO.getOrganizationName());
+        sendNoticeAtSite(REGISTER_SUCCESS_TEMPLATE, ids, successMap);
+
+    }
+
+    private void sendNoticeAtSite(String code, List<Long> userIds, Map<String, Object> params) {
+        NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
+        noticeSendDTO.setCode(code);
+        noticeSendDTO.setSourceId(0L);
+        List<NoticeSendDTO.User> users = new ArrayList<>();
+        userIds.forEach(id -> {
+            NoticeSendDTO.User user = new NoticeSendDTO.User();
+            user.setId(id);
+            users.add(user);
+        });
+        noticeSendDTO.setTargetUsers(users);
+        noticeSendDTO.setParams(params);
+        notifyFeignClient.postNotice(noticeSendDTO);
     }
 }
