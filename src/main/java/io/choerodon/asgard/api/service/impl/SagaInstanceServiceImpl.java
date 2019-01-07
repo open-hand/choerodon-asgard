@@ -3,10 +3,7 @@ package io.choerodon.asgard.api.service.impl;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.api.dto.SagaInstanceDTO;
-import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
-import io.choerodon.asgard.api.dto.SagaWithTaskInstanceDTO;
-import io.choerodon.asgard.api.dto.StartInstanceDTO;
+import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.api.service.JsonDataService;
 import io.choerodon.asgard.api.service.SagaInstanceService;
 import io.choerodon.asgard.domain.SagaInstance;
@@ -150,10 +147,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         if (sagaInstance.getOutputDataId() != null) {
             dto.setOutput(jsonDataMapper.selectByPrimaryKey(sagaInstance.getOutputDataId()).getData());
         }
-        List<List<SagaTaskInstance>> list = new ArrayList<>(
+        List<List<PageSagaTaskInstanceDTO>> list = new ArrayList<>(
                 taskInstanceMapper.selectAllBySagaInstanceId(id)
                         .stream()
-                        .collect(groupingBy(SagaTaskInstance::getSeq)).values());
+                        .collect(groupingBy(PageSagaTaskInstanceDTO::getSeq)).values());
         dto.setTasks(list);
         try {
             return new ResponseEntity<>(objectMapper.writeValueAsString(dto), HttpStatus.OK);

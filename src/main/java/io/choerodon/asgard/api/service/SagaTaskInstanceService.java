@@ -1,17 +1,16 @@
 package io.choerodon.asgard.api.service;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.http.ResponseEntity;
-
+import io.choerodon.asgard.api.dto.PageSagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
-import io.choerodon.asgard.domain.SagaTaskInstance;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+
+import java.util.List;
+import java.util.Set;
 
 public interface SagaTaskInstanceService {
 
@@ -38,7 +37,6 @@ public interface SagaTaskInstanceService {
      *
      * @param sagaInatanceId 事务实例Id
      * @param seq            序列号
-     * @return
      */
-    List<SagaTaskInstance> queryByInstanceIdAndSeq(Long sagaInatanceId, Integer seq);
+    List<PageSagaTaskInstanceDTO> queryByInstanceIdAndSeq(Long sagaInatanceId, Integer seq);
 }
