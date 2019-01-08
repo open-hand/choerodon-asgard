@@ -80,4 +80,16 @@ public class RegistrantInfoDTO {
         this.adminId = adminId;
     }
 
+    @Override
+    public String toString() {
+        return "RegistrantInfoDTO{" +
+                "id=" + id +
+                ", loginName='" + loginName + '\'' +
+                ", email='" + email + '\'' +
+                ", realName='" + realName + '\'' +
+                ", organizationId=" + organizationId +
+                ", organizationName='" + organizationName + '\'' +
+                ", adminId=" + adminId +
+                '}';
+    }
 }

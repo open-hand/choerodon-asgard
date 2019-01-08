@@ -44,8 +44,8 @@ public class SagaInstanceDetailsDTO {
     private Integer rollback;
     @ApiModelProperty(value = "实例下失败的任务个数")
     private Integer failed;
-    @ApiModelProperty(value = "实例下在队列里的任务个数")
-    private Integer queue;
+    @ApiModelProperty(value = "实例下等待被拉取里的任务个数")
+    private Integer waitToBePulled;
 
     public Long getId() {
         return id;
@@ -151,11 +151,11 @@ public class SagaInstanceDetailsDTO {
         this.failed = failed;
     }
 
-    public Integer getQueue() {
-        return queue;
+    public Integer getWaitToBePulled() {
+        return waitToBePulled;
     }
 
-    public void setQueue(Integer queue) {
-        this.queue = queue;
+    public void setWaitToBePulled(Integer waitToBePulled) {
+        this.waitToBePulled = waitToBePulled;
     }
 }

@@ -149,7 +149,7 @@ public class NoticeServiceImpl implements NoticeService {
     public void registerOrgFailNotice(SagaTaskInstance sagaTaskInstance, SagaInstance sagaInstance, List<PageSagaTaskInstanceDTO> sagaTaskInstances) {
         //feign查询负责人及其组织
         RegistrantInfoDTO registrantInfoDTO = iamFeignClient.queryRegistrantAndAdminId(new Long(sagaInstance.getRefId())).getBody();
-
+        LOGGER.info("register failed,ref id:{},registrant info：{}",sagaInstance.getRefId(),registrantInfoDTO);
         List<Long> ids = new ArrayList<>();
         ids.add(registrantInfoDTO.getId());
 
@@ -187,7 +187,7 @@ public class NoticeServiceImpl implements NoticeService {
                 abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode() + ":" + sagaInstance.getId());
                 String sagaFailedTaskInstanceId = "";
                 for (PageSagaTaskInstanceDTO taskInstance : failed) {
-                    sagaFailedTaskInstanceId += (taskInstance.getSagaCode() + ":" + taskInstance.getId() + " ");
+                    sagaFailedTaskInstanceId += (taskInstance.getTaskCode() + ":" + taskInstance.getId() + " ");
                 }
                 abnormalMap.put("sagaTaskInstanceId", sagaFailedTaskInstanceId);
                 sendNoticeAtSite(REGISTER_ABNORMAL_TEMPLATE, adminId, abnormalMap);
