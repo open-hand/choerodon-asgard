@@ -94,7 +94,7 @@
             sum(CASE WHEN asti. STATUS = 'RUNNING' THEN 1 ELSE 0 END) AS RUNNING,
             sum(CASE WHEN asti. STATUS = 'ROLLBACK' THEN 1 ELSE 0 END) AS ROLLBACK,
             sum(CASE WHEN asti. STATUS = 'FAILED' THEN 1 ELSE 0 END) AS FAILED,
-            sum(CASE WHEN asti. STATUS = 'QUEUE' THEN 1 ELSE 0 END) AS QUEUE
+            sum(CASE WHEN asti. STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END) AS WAIT_TO_BE_PULLED
         FROM
             asgard_saga_instance asi
         LEFT JOIN asgard_orch_saga aos ON asi.SAGA_CODE = aos. CODE
