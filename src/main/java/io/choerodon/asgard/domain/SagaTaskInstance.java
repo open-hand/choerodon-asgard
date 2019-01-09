@@ -73,144 +73,162 @@ public class SagaTaskInstance extends AuditDomain {
         return id;
     }
 
-    public void setId(Long id) {
+    public SagaTaskInstance setId(Long id) {
         this.id = id;
+        return this;
     }
 
     public Long getSagaInstanceId() {
         return sagaInstanceId;
     }
 
-    public void setSagaInstanceId(Long sagaInstanceId) {
+    public SagaTaskInstance setSagaInstanceId(Long sagaInstanceId) {
         this.sagaInstanceId = sagaInstanceId;
+        return this;
     }
 
     public String getTaskCode() {
         return taskCode;
     }
 
-    public void setTaskCode(String taskCode) {
+    public SagaTaskInstance setTaskCode(String taskCode) {
         this.taskCode = taskCode;
+        return this;
     }
 
     public String getInstanceLock() {
         return instanceLock;
     }
 
-    public void setInstanceLock(String instanceLock) {
+    public SagaTaskInstance setInstanceLock(String instanceLock) {
         this.instanceLock = instanceLock;
+        return this;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public SagaTaskInstance setStatus(String status) {
         this.status = status;
+        return this;
     }
 
     public Long getInputDataId() {
         return inputDataId;
     }
 
-    public void setInputDataId(Long inputDataId) {
+    public SagaTaskInstance setInputDataId(Long inputDataId) {
         this.inputDataId = inputDataId;
+        return this;
     }
 
     public Long getOutputDataId() {
         return outputDataId;
     }
 
-    public void setOutputDataId(Long outputDataId) {
+    public SagaTaskInstance setOutputDataId(Long outputDataId) {
         this.outputDataId = outputDataId;
+        return this;
     }
 
     public Integer getSeq() {
         return seq;
     }
 
-    public void setSeq(Integer seq) {
+    public SagaTaskInstance setSeq(Integer seq) {
         this.seq = seq;
+        return this;
     }
 
     public Integer getMaxRetryCount() {
         return maxRetryCount;
     }
 
-    public void setMaxRetryCount(Integer maxRetryCount) {
+    public SagaTaskInstance setMaxRetryCount(Integer maxRetryCount) {
         this.maxRetryCount = maxRetryCount;
+        return this;
     }
 
     public String getExceptionMessage() {
         return exceptionMessage;
     }
 
-    public void setExceptionMessage(String exceptionMessage) {
+    public SagaTaskInstance setExceptionMessage(String exceptionMessage) {
         this.exceptionMessage = exceptionMessage;
+        return this;
     }
 
     public String getSagaCode() {
         return sagaCode;
     }
 
-    public void setSagaCode(String sagaCode) {
+    public SagaTaskInstance setSagaCode(String sagaCode) {
         this.sagaCode = sagaCode;
+        return this;
     }
 
     public Integer getRetriedCount() {
         return retriedCount;
     }
 
-    public void setRetriedCount(Integer retriedCount) {
+    public SagaTaskInstance setRetriedCount(Integer retriedCount) {
         this.retriedCount = retriedCount;
+        return this;
     }
 
     public String getConcurrentLimitPolicy() {
         return concurrentLimitPolicy;
     }
 
-    public void setConcurrentLimitPolicy(String concurrentLimitPolicy) {
+    public SagaTaskInstance setConcurrentLimitPolicy(String concurrentLimitPolicy) {
         this.concurrentLimitPolicy = concurrentLimitPolicy;
+        return this;
     }
 
     public Integer getConcurrentLimitNum() {
         return concurrentLimitNum;
     }
 
-    public void setConcurrentLimitNum(Integer concurrentLimitNum) {
+    public SagaTaskInstance setConcurrentLimitNum(Integer concurrentLimitNum) {
         this.concurrentLimitNum = concurrentLimitNum;
+        return this;
     }
 
     public Date getPlannedStartTime() {
         return plannedStartTime;
     }
 
-    public void setPlannedStartTime(Date plannedStartTime) {
+    public SagaTaskInstance setPlannedStartTime(Date plannedStartTime) {
         this.plannedStartTime = plannedStartTime;
+        return this;
     }
 
     public Date getActualStartTime() {
         return actualStartTime;
     }
 
-    public void setActualStartTime(Date actualStartTime) {
+    public SagaTaskInstance setActualStartTime(Date actualStartTime) {
         this.actualStartTime = actualStartTime;
+        return this;
     }
 
     public Date getActualEndTime() {
         return actualEndTime;
     }
 
-    public void setActualEndTime(Date actualEndTime) {
+    public SagaTaskInstance setActualEndTime(Date actualEndTime) {
         this.actualEndTime = actualEndTime;
+        return this;
     }
 
     public String getService() {
         return service;
     }
 
-    public void setService(String service) {
+    public SagaTaskInstance setService(String service) {
         this.service = service;
+        return this;
     }
 
     @Override

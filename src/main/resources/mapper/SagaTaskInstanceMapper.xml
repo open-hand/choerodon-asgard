@@ -150,4 +150,10 @@
         </if>
     </select>
 
+
+    <select id="selectBySagaInstanceIdAndSeqWithLock" resultType="io.choerodon.asgard.domain.SagaTaskInstance">
+         SELECT asti.* FROM asgard_saga_task_instance asti
+         WHERE asti.saga_instance_id = #{instanceId} AND asti.seq = #{seq} FOR UPDATE
+    </select>
+
 </mapper>

@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 import static io.choerodon.asgard.api.service.impl.SagaInstanceServiceImpl.DB_ERROR;
 import static io.choerodon.asgard.api.service.impl.SagaInstanceServiceImpl.ERROR_CODE_SAGA_INSTANCE_NOT_EXIST;
 import static java.util.stream.Collectors.groupingBy;
-import static org.springframework.transaction.TransactionDefinition.ISOLATION_READ_COMMITTED;
+import static org.springframework.transaction.TransactionDefinition.ISOLATION_READ_UNCOMMITTED;
 
 @Service
 public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
@@ -56,7 +56,8 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaTaskInstanceService.class);
 
     private final ModelMapper modelMapper = new ModelMapper();
-    public static final String ORG_REGISTER = "org-register";
+
+    private static final String ORG_REGISTER = "org-register";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -166,6 +167,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
 
     @Override
     public void updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
+        long start = System.currentTimeMillis();
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (taskInstance == null) {
             throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
@@ -176,25 +178,26 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
         }
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setIsolationLevel(ISOLATION_READ_COMMITTED);
+        def.setIsolationLevel(ISOLATION_READ_UNCOMMITTED);
         def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
             if (SagaDefinition.TaskInstanceStatus.COMPLETED.name().equalsIgnoreCase(statusDTO.getStatus())) {
                 updateStatusCompleted(taskInstance, statusDTO.getOutput(), instance);
             } else if (SagaDefinition.TaskInstanceStatus.FAILED.name().equalsIgnoreCase(statusDTO.getStatus())) {
-                updateStatusFailed(taskInstance, instance, statusDTO.getExceptionMessage());
+                updateStatusFailed(taskInstance, instance, statusDTO.getExceptionMessage(), false);
             }
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw e;
         }
+        LOGGER.info("time : {}", System.currentTimeMillis() - start);
     }
 
-    private void updateStatusFailed(final SagaTaskInstance taskInstance, final SagaInstance instance, final String exeMsg) {
+    private void updateStatusFailed(final SagaTaskInstance taskInstance, final SagaInstance instance, final String exeMsg, final boolean isForceFailed) {
         //如果已重试次数 >= 最大重试次数，则设置状态为失败，并设置saga实例状态为失败
-        if (taskInstance.getRetriedCount() >= taskInstance.getMaxRetryCount()) {
+        if (isForceFailed || taskInstance.getRetriedCount() >= taskInstance.getMaxRetryCount()) {
             taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.FAILED.name());
             taskInstance.setExceptionMessage(exeMsg);
             taskInstance.setInstanceLock(null);
@@ -219,14 +222,16 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     private void updateStatusCompleted(final SagaTaskInstance taskInstance, final String outputData, final SagaInstance instance) {
+        List<SagaTaskInstance> sameSeqTasks = taskInstanceMapper.selectBySagaInstanceIdAndSeqWithLock(taskInstance.getSagaInstanceId(), taskInstance.getSeq());
         //更新task实例状态为完成
-        taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name());
-        taskInstance.setOutputDataId(jsonDataService.insertAndGetId(outputData));
-        taskInstance.setActualEndTime(new Date());
+        taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.COMPLETED.name()).setOutputDataId(jsonDataService.insertAndGetId(outputData)).setActualEndTime(new Date());
         if (taskInstanceMapper.updateByPrimaryKeySelective(taskInstance) != 1) {
             throw new FeignException(DB_ERROR);
         }
-        List<SagaTaskInstance> sameSeqTasks = taskInstanceMapper.select(new SagaTaskInstance(taskInstance.getSagaInstanceId(), taskInstance.getSeq()));
+        sameSeqTasks.stream().filter(t -> t.getId().equals(taskInstance.getId())).forEach(i -> {
+            i.setStatus(taskInstance.getStatus());
+            i.setOutputDataId(taskInstance.getOutputDataId());
+        });
         //如果同seq下有未完成的实例则直接返回
         if (sameSeqTasks.stream().anyMatch(t -> !SagaDefinition.InstanceStatus.COMPLETED.name().equals(t.getStatus()))) {
             return;
@@ -296,7 +301,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         sagaInstance.setStatus(SagaDefinition.InstanceStatus.RUNNING.name());
         sagaInstance.setEndTime(null);
         instanceMapper.updateByPrimaryKey(sagaInstance);
-        taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.RUNNING.name());
+        taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.WAIT_TO_BE_PULLED.name());
         taskInstanceMapper.updateByPrimaryKeySelective(taskInstance);
     }
 
@@ -321,11 +326,11 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             throw new FeignException("error.sagaInstance.notExist");
         }
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setIsolationLevel(ISOLATION_READ_COMMITTED);
+        def.setIsolationLevel(ISOLATION_READ_UNCOMMITTED);
         def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
-            updateStatusFailed(taskInstance, instance, "manual force failed");
+            updateStatusFailed(taskInstance, instance, "manual force failed", true);
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
@@ -334,7 +339,8 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public ResponseEntity<Page<SagaTaskInstanceInfoDTO>> pageQuery(PageRequest pageRequest, String sagaInstanceCode, String status, String taskInstanceCode, String params, String level, Long sourceId) {
+    public ResponseEntity<Page<SagaTaskInstanceInfoDTO>> pageQuery(PageRequest pageRequest, String sagaInstanceCode,
+                                                                   String status, String taskInstanceCode, String params, String level, Long sourceId) {
         return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
                 () -> taskInstanceMapper.fulltextSearchTaskInstance(sagaInstanceCode, status, taskInstanceCode, params, level, sourceId)), HttpStatus.OK);
     }

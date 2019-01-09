@@ -1,21 +1,7 @@
 package io.choerodon.asgard.api.service.impl;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.infra.utils.CommonUtils;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.api.service.QuartzJobService;
@@ -28,6 +14,7 @@ import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMapper;
 import io.choerodon.asgard.infra.mapper.QuartzTaskMemberMapper;
+import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.asgard.property.PropertyJobParam;
@@ -41,6 +28,18 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
@@ -441,6 +440,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         List<QuartzTaskMember> members = getQuartzTaskMembersByTaskId(quartzTask.getId());
         ScheduleTaskDetailDTO detailDTO = new ScheduleTaskDetailDTO(quartzTaskDetail, objectMapper, lastStartTime, nextStartTime);
         detailDTO.setNotifyUser(getNotifyUser(members));
+        detailDTO.setExecuteStrategy(quartzTaskDetail.getExecuteStrategy());
         //设置方法描述
         QuartzMethod query = new QuartzMethod();
         query.setCode(detailDTO.getMethodCode());

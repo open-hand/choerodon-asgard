@@ -38,6 +38,7 @@
             aqt.name,
             aqt.description,
             aqt.start_time,
+            aqt.execute_strategy,
             aqt.end_time,
             aqt.trigger_type,
             aqt.simple_repeat_count,
