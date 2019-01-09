@@ -62,4 +62,8 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstance> {
                                                              @Param("sourceId") Long sourceId);
 
     List<SagaTaskInstance> selectBySagaInstanceIdAndSeqWithLock(@Param("instanceId") long sagaInstanceId, @Param("seq") int seq);
+
+    List<Long> selectCompletedIdByDate(@Param("fromNowSeconds") long fromNowSeconds, @Param("now") Date now);
+
+    int deleteBatchByIds(@Param("ids") List<Long> ids);
 }

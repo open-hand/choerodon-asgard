@@ -78,9 +78,16 @@ public class AsgardProperties {
 
 
     public static class Saga {
+
         private long backCheckIntervalMs = 1_000L;
 
         private int unConfirmedTimeoutSeconds = 300;
+
+        private long cleanExecuteIntervalMinutes = 10L;
+
+        private long cleanSagaBeforeNowMinutes = 10080L;
+
+        private boolean cleanEnabled = true;
 
         public long getBackCheckIntervalMs() {
             return backCheckIntervalMs;
@@ -96,6 +103,30 @@ public class AsgardProperties {
 
         public void setUnConfirmedTimeoutSeconds(int unConfirmedTimeoutSeconds) {
             this.unConfirmedTimeoutSeconds = unConfirmedTimeoutSeconds;
+        }
+
+        public long getCleanExecuteIntervalMinutes() {
+            return cleanExecuteIntervalMinutes;
+        }
+
+        public void setCleanExecuteIntervalMinutes(long cleanExecuteIntervalMinutes) {
+            this.cleanExecuteIntervalMinutes = cleanExecuteIntervalMinutes;
+        }
+
+        public long getCleanSagaBeforeNowMinutes() {
+            return cleanSagaBeforeNowMinutes;
+        }
+
+        public void setCleanSagaBeforeNowMinutes(long cleanSagaBeforeNowMinutes) {
+            this.cleanSagaBeforeNowMinutes = cleanSagaBeforeNowMinutes;
+        }
+
+        public boolean isCleanEnabled() {
+            return cleanEnabled;
+        }
+
+        public void setCleanEnabled(boolean cleanEnabled) {
+            this.cleanEnabled = cleanEnabled;
         }
     }
 

@@ -1,17 +1,7 @@
-package io.choerodon.asgard.api.service.impl;
-
-import java.util.Date;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.PostConstruct;
+package io.choerodon.asgard.api.timer;
 
 import feign.Client;
 import feign.hystrix.HystrixFeign;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
 import io.choerodon.asgard.api.service.SagaInstanceService;
 import io.choerodon.asgard.config.AsgardProperties;
 import io.choerodon.asgard.domain.SagaInstance;
@@ -20,11 +10,21 @@ import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.utils.JsonDecoder;
 import io.choerodon.asgard.saga.dto.SagaStatusQueryDTO;
 import io.choerodon.feign.FeignRequestInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 
-@Service
-public class SagaScheduledBackCheckStatusImpl {
+import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SagaScheduledBackCheckStatusImpl.class);
+/**
+ * 回查未被确认的saga实例的状态
+ */
+public class BackCheckSagaStatusTimer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BackCheckSagaStatusTimer.class);
 
     private ScheduledExecutorService scheduledExecutorService;
 
@@ -38,14 +38,14 @@ public class SagaScheduledBackCheckStatusImpl {
 
     private SagaInstanceService sagaInstanceService;
 
-    private final  JsonDecoder jsonDecoder = new JsonDecoder();
+    private final JsonDecoder jsonDecoder = new JsonDecoder();
 
-    public SagaScheduledBackCheckStatusImpl(@Qualifier("sagaBackCheckScheduledService") ScheduledExecutorService service,
-                                            SagaInstanceMapper instanceMapper,
-                                            AsgardProperties asgardProperties,
-                                            FeignRequestInterceptor feignRequestInterceptor,
-                                            Client client,
-                                            SagaInstanceService sagaInstanceService) {
+    public BackCheckSagaStatusTimer(@Qualifier("backCheckSagaStatusTimer") ScheduledExecutorService service,
+                                    SagaInstanceMapper instanceMapper,
+                                    AsgardProperties asgardProperties,
+                                    FeignRequestInterceptor feignRequestInterceptor,
+                                    Client client,
+                                    SagaInstanceService sagaInstanceService) {
         this.scheduledExecutorService = service;
         this.instanceMapper = instanceMapper;
         this.asgardProperties = asgardProperties;
