@@ -34,8 +34,6 @@ public class QuartzMethodServiceImpl implements QuartzMethodService {
                 }
             } else {
                 i.setId(dbSameMethod.getId());
-                i.setCode(dbSameMethod.getCode());
-                i.setDescription(dbSameMethod.getDescription());
                 i.setObjectVersionNumber(dbSameMethod.getObjectVersionNumber());
                 methodMapper.updateByPrimaryKeySelective(i);
             }
