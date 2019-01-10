@@ -36,12 +36,16 @@ public class CleanSagaDataTimer {
         }
         long fromNowSeconds = (Integer) minutesAgo * 1000L;
         List<Long> completedAndTimeOutInstanceIds = instanceMapper.selectCompletedIdByDate(fromNowSeconds, new Date());
-        int instanceNum = instanceMapper.deleteBatchByIds(completedAndTimeOutInstanceIds);
-        LOGGER.info("delete out-of-date data from ASGARD_SAGA_INSTANCE, num: {}, ids : {}", instanceNum, completedAndTimeOutInstanceIds);
+        if (!completedAndTimeOutInstanceIds.isEmpty()) {
+            int instanceNum = instanceMapper.deleteBatchByIds(completedAndTimeOutInstanceIds);
+            LOGGER.info("delete out-of-date data from ASGARD_SAGA_INSTANCE, num: {}, ids : {}", instanceNum, completedAndTimeOutInstanceIds);
+        }
 
         List<Long> completedAndTimeOutTaskInstanceIds = taskInstanceMapper.selectCompletedIdByDate(fromNowSeconds, new Date());
-        int taskInstanceNum = taskInstanceMapper.deleteBatchByIds(completedAndTimeOutTaskInstanceIds);
-        LOGGER.info("delete out-of-date data from ASGARD_SAGA_TASK_INSTANCE, num: {}, ids : {}", taskInstanceNum, completedAndTimeOutTaskInstanceIds);
+        if(!completedAndTimeOutTaskInstanceIds.isEmpty()) {
+            int taskInstanceNum = taskInstanceMapper.deleteBatchByIds(completedAndTimeOutTaskInstanceIds);
+            LOGGER.info("delete out-of-date data from ASGARD_SAGA_TASK_INSTANCE, num: {}, ids : {}", taskInstanceNum, completedAndTimeOutTaskInstanceIds);
+        }
     }
 
 
