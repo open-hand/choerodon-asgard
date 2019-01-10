@@ -26,6 +26,7 @@ public class CleanSagaDataTimer {
     }
 
     @JobTask(code = "cleanCompetedSagaData", maxRetryCount = 0,
+            description = "清理已完成的saga实例和task实例",
             params = @JobParam(name = "minutesAgo", type = Integer.class, defaultValue = "10080", description = "清理多久之前的消息(分钟)"))
     public void clean(Map<String, Object> data) {
         Object minutesAgo = data.get("minutesAgo");
