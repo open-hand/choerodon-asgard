@@ -28,11 +28,6 @@ public class SagaAutoConfig {
     }
 
 
-    @Bean(name = "cleanSagaDataTimerThread")
-    public ScheduledExecutorService cleanSagaDataTimerThread() {
-        return Executors.newScheduledThreadPool(1);
-    }
-
     @Bean
     public BackCheckSagaStatusTimer backCheckSagaStatusTimer(SagaInstanceMapper instanceMapper,
                                                              AsgardProperties asgardProperties,
@@ -45,9 +40,8 @@ public class SagaAutoConfig {
 
     @Bean
     public CleanSagaDataTimer cleanSagaDataTimer(SagaInstanceMapper instanceMapper,
-                                                 SagaTaskInstanceMapper taskInstanceMapper,
-                                                 AsgardProperties asgardProperties) {
-        return new CleanSagaDataTimer(cleanSagaDataTimerThread(), instanceMapper, taskInstanceMapper, asgardProperties);
+                                                 SagaTaskInstanceMapper taskInstanceMapper) {
+        return new CleanSagaDataTimer(instanceMapper, taskInstanceMapper);
     }
 
 

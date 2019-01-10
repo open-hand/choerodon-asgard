@@ -1,16 +1,15 @@
 package io.choerodon.asgard.api.timer;
 
-import io.choerodon.asgard.config.AsgardProperties;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
+import io.choerodon.asgard.schedule.annotation.JobParam;
+import io.choerodon.asgard.schedule.annotation.JobTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
 public class CleanSagaDataTimer {
 
@@ -20,32 +19,21 @@ public class CleanSagaDataTimer {
 
     private SagaTaskInstanceMapper taskInstanceMapper;
 
-    private ScheduledExecutorService scheduledExecutorService;
-
-    private AsgardProperties asgardProperties;
-
-    private final long fromNowSeconds;
-
-    public CleanSagaDataTimer(ScheduledExecutorService scheduledExecutorService,
-                              SagaInstanceMapper instanceMapper,
-                              SagaTaskInstanceMapper taskInstanceMapper,
-                              AsgardProperties asgardProperties) {
+    public CleanSagaDataTimer(SagaInstanceMapper instanceMapper,
+                              SagaTaskInstanceMapper taskInstanceMapper) {
         this.instanceMapper = instanceMapper;
         this.taskInstanceMapper = taskInstanceMapper;
-        this.scheduledExecutorService = scheduledExecutorService;
-        this.asgardProperties = asgardProperties;
-        this.fromNowSeconds = asgardProperties.getSaga().getCleanSagaBeforeNowMinutes() * 60L;
     }
 
-    @PostConstruct
-    public void cleanPostConstruct() {
-        if (asgardProperties.getSaga().isCleanEnabled()) {
-            scheduledExecutorService.scheduleWithFixedDelay(this::clean, 1,
-                    asgardProperties.getSaga().getCleanExecuteIntervalMinutes(), TimeUnit.MINUTES);
+    @JobTask(code = "cleanCompetedSagaData", maxRetryCount = 0,
+            params = @JobParam(name = "minutesAgo", type = Integer.class, defaultValue = "10080", description = "清理多久之前的消息(分钟)"))
+    public void clean(Map<String, Object> data) {
+        Object minutesAgo = data.get("minutesAgo");
+        if (minutesAgo == null) {
+            LOGGER.warn("error.cleanSagaDataTimer.fromNowMinutesNull");
+            return;
         }
-    }
-
-    private void clean() {
+        long fromNowSeconds = (Integer) minutesAgo * 1000L;
         List<Long> completedAndTimeOutInstanceIds = instanceMapper.selectCompletedIdByDate(fromNowSeconds, new Date());
         int instanceNum = instanceMapper.deleteBatchByIds(completedAndTimeOutInstanceIds);
         LOGGER.info("delete out-of-date data from ASGARD_SAGA_INSTANCE, num: {}, ids : {}", instanceNum, completedAndTimeOutInstanceIds);
