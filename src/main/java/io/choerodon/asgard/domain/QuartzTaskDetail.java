@@ -32,6 +32,8 @@ public class QuartzTaskDetail {
 
     private Long sourceId;
 
+    private String executeStrategy;
+
     public Long getId() {
         return id;
     }
@@ -150,5 +152,13 @@ public class QuartzTaskDetail {
 
     public void setSourceId(Long sourceId) {
         this.sourceId = sourceId;
+    }
+
+    public String getExecuteStrategy() {
+        return executeStrategy;
+    }
+
+    public void setExecuteStrategy(String executeStrategy) {
+        this.executeStrategy = executeStrategy;
     }
 }

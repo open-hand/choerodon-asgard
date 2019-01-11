@@ -78,6 +78,7 @@ public class AsgardProperties {
 
 
     public static class Saga {
+
         private long backCheckIntervalMs = 1_000L;
 
         private int unConfirmedTimeoutSeconds = 300;
@@ -97,6 +98,7 @@ public class AsgardProperties {
         public void setUnConfirmedTimeoutSeconds(int unConfirmedTimeoutSeconds) {
             this.unConfirmedTimeoutSeconds = unConfirmedTimeoutSeconds;
         }
+
     }
 
 

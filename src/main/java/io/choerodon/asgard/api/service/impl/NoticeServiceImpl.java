@@ -165,7 +165,7 @@ public class NoticeServiceImpl implements NoticeService {
 
 
             Map<String, Object> abnormalMap = new HashMap<>();
-            abnormalMap.put("userName", registrantInfoDTO.getRealName());
+            abnormalMap.put("registrant", registrantInfoDTO.getRealName());
             abnormalMap.put("organizationId", registrantInfoDTO.getOrganizationId());
             abnormalMap.put("organizationName", registrantInfoDTO.getOrganizationName());
             abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode()+":"+sagaInstance.getId());
@@ -181,7 +181,7 @@ public class NoticeServiceImpl implements NoticeService {
                 List<PageSagaTaskInstanceDTO> failed = sagaTaskInstances.stream().filter(s -> s.getStatus().equals(SagaDefinition.TaskInstanceStatus.FAILED.name())).collect(Collectors.toList());
 
                 Map<String, Object> abnormalMap = new HashMap<>();
-                abnormalMap.put("userName", registrantInfoDTO.getRealName());
+                abnormalMap.put("registrant", registrantInfoDTO.getRealName());
                 abnormalMap.put("organizationId", registrantInfoDTO.getOrganizationId());
                 abnormalMap.put("organizationName", registrantInfoDTO.getOrganizationName());
                 abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode() + ":" + sagaInstance.getId());

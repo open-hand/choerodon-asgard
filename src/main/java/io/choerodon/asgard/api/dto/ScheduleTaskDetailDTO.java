@@ -61,6 +61,9 @@ public class ScheduleTaskDetailDTO {
     @ApiModelProperty(value = "通知对象")
     private NotifyUser notifyUser;
 
+    @ApiModelProperty(value = "执行策略")
+    private String executeStrategy;
+
     public NotifyUser getNotifyUser() {
         return notifyUser;
     }
@@ -191,6 +194,14 @@ public class ScheduleTaskDetailDTO {
 
     public String getMethodDescription() {
         return methodDescription;
+    }
+
+    public String getExecuteStrategy() {
+        return executeStrategy;
+    }
+
+    public void setExecuteStrategy(String executeStrategy) {
+        this.executeStrategy = executeStrategy;
     }
 
     public void setMethodDescription(String methodDescription) {

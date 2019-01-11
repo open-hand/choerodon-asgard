@@ -29,4 +29,8 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstance> {
                                                 @Param("end") String end);
 
     List<SagaInstance> selectUnConfirmedTimeOutInstance(@Param("timeOut") int unConfirmedTimeoutSeconds, @Param("now") Date now);
+
+    List<Long> selectCompletedIdByDate(@Param("fromNowSeconds") long fromNowSeconds, @Param("now") Date now);
+
+    int deleteBatchByIds(@Param("ids") List<Long> ids);
 }

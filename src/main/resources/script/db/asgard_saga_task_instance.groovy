@@ -74,4 +74,11 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
             }
         }
     }
+
+    changeSet(id: '2018-01-09-create-index-INDEX_ASGARD_INSTANCE_ID_SEQ', author: 'flyleft') {
+        createIndex(tableName: 'ASGARD_SAGA_TASK_INSTANCE', indexName: 'INDEX_ASGARD_INSTANCE_ID_SEQ', unique: false) {
+            column(name: 'SAGA_INSTANCE_ID')
+            column(name: 'SEQ')
+        }
+    }
 }

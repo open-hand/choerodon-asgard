@@ -64,6 +64,9 @@
     <select id="selectFailedTimes" resultType="java.util.Map">
         <![CDATA[
 
+
+
+
             SELECT
                 DATE_FORMAT(start_time, '%Y-%m-%d') days,
                 COUNT(id) count
@@ -75,6 +78,9 @@
             AND #{end}
             GROUP BY
                 days
+
+
+
 
         ]]>
     </select>
@@ -115,6 +121,20 @@
 
     <select id="selectUnConfirmedTimeOutInstance" resultType="io.choerodon.asgard.domain.SagaInstance">
         SELECT asgard_saga_instance.* FROM asgard_saga_instance
-        where status = 'UN_CONFIRMED' AND unix_timestamp(CREATION_DATE)  + #{timeOut} &lt; unix_timestamp(#{now})
+        WHERE status = 'UN_CONFIRMED' AND unix_timestamp(CREATION_DATE)  + #{timeOut} &lt; unix_timestamp(#{now})
     </select>
+
+    <select id="selectCompletedIdByDate" resultType="java.lang.Long">
+        SELECT id FROM asgard_saga_instance
+        WHERE status = 'COMPLETED' AND unix_timestamp(LAST_UPDATE_DATE)  + #{fromNowSeconds} &lt; unix_timestamp(#{now})
+    </select>
+
+    <delete id="deleteBatchByIds" parameterType="java.util.List">
+        DELETE FROM asgard_saga_instance
+        WHERE id IN
+        <foreach item="item" collection="ids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
 </mapper>
