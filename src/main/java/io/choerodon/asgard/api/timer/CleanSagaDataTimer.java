@@ -34,7 +34,7 @@ public class CleanSagaDataTimer {
             LOGGER.warn("error.cleanSagaDataTimer.fromNowMinutesNull");
             return;
         }
-        long fromNowSeconds = (Integer) minutesAgo * 1000L;
+        long fromNowSeconds = (Integer) minutesAgo * 60L;
         List<Long> completedAndTimeOutInstanceIds = instanceMapper.selectCompletedIdByDate(fromNowSeconds, new Date());
         if (!completedAndTimeOutInstanceIds.isEmpty()) {
             int instanceNum = instanceMapper.deleteBatchByIds(completedAndTimeOutInstanceIds);
