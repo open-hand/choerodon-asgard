@@ -2,7 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.QuartzMethodMapper">
 
-    <select id="fulltextSearch" resultType="io.choerodon.asgard.domain.QuartzMethod">
+    <resultMap id="quartzMethod" type="io.choerodon.asgard.domain.QuartzMethod">
+        <id column="id" property="id"></id>
+        <result column="method" property="method"/>
+        <result column="MAX_RETRY_COUNT" property="maxRetryCount"/>
+        <result column="service" property="service"/>
+        <result column="params" property="params"/>
+        <result column="code" property="code"/>
+        <result column="description" property="description"/>
+        <result column="FD_LEVEL" property="level"/>
+    </resultMap>
+
+    <select id="fulltextSearch" resultMap="quartzMethod">
         SELECT
         *
         FROM asgard_quartz_method

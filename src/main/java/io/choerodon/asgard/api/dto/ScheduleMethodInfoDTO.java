@@ -15,6 +15,8 @@ public class ScheduleMethodInfoDTO {
     private String description;
     @ApiModelProperty(value = "在线实例数")
     private Integer onlineInstanceNum;
+    @ApiModelProperty(value = "层级")
+    private String level;
 
     public Long getId() {
         return id;
@@ -64,6 +66,14 @@ public class ScheduleMethodInfoDTO {
         this.onlineInstanceNum = onlineInstanceNum;
     }
 
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
     @Override
     public String toString() {
         return "ScheduleMethodInfoDTO{" +
@@ -73,6 +83,7 @@ public class ScheduleMethodInfoDTO {
                 ", method='" + method + '\'' +
                 ", description='" + description + '\'' +
                 ", onlineInstanceNum=" + onlineInstanceNum +
+                ", level='" + level + '\'' +
                 '}';
     }
 
@@ -83,5 +94,15 @@ public class ScheduleMethodInfoDTO {
         this.method = method;
         this.description = description;
         this.onlineInstanceNum = onlineInstanceNum;
+    }
+
+    public ScheduleMethodInfoDTO(Long id, String code, String service, String method, String description, Integer onlineInstanceNum, String level) {
+        this.id = id;
+        this.code = code;
+        this.service = service;
+        this.method = method;
+        this.description = description;
+        this.onlineInstanceNum = onlineInstanceNum;
+        this.level = level;
     }
 }
