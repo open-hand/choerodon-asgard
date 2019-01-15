@@ -29,4 +29,11 @@ public interface ScheduleMethodService {
      * @return 服务列表
      */
     List<String> getServices(String level);
+
+    /**
+     * 删除指定Id的可执行程序
+     *
+     * @param id 可执行程序Id
+     */
+    void delete(Long id);
 }

@@ -71,7 +71,7 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
             return pageBack;
         } else {
             page.getContent().forEach(t ->
-                    scheduleMethodInfoDTOS.add(new ScheduleMethodInfoDTO(t.getId(), t.getCode(), t.getService(), t.getMethod(), t.getDescription(), discoveryClient.getInstances(t.getService()).size())));
+                    scheduleMethodInfoDTOS.add(new ScheduleMethodInfoDTO(t.getId(), t.getCode(), t.getService(), t.getMethod(), t.getDescription(), discoveryClient.getInstances(t.getService()).size(), t.getLevel())));
             pageBack.setContent(scheduleMethodInfoDTOS);
             return pageBack;
         }
@@ -153,5 +153,13 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
         List<String> list = new ArrayList<>();
         methodMapper.select(method).forEach(m -> list.add(m.getService()));
         return list.stream().distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public void delete(Long id) {
+        if (methodMapper.selectByPrimaryKey(id) == null) {
+            throw new CommonException("error.scheduleMethod.notExist");
+        }
+        methodMapper.deleteByPrimaryKey(id);
     }
 }

@@ -49,7 +49,7 @@ public class ScheduleMethodSiteController {
                                                                    @RequestParam(name = "params", required = false) String params,
                                                                    @ApiIgnore
                                                                    @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, ResourceLevel.SITE.value());
+        return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, null);
     }
 
 
@@ -80,5 +80,13 @@ public class ScheduleMethodSiteController {
     @GetMapping("/code/{code}")
     public ResponseEntity<Long> getMethodIdByCode(@PathVariable String code) {
         return new ResponseEntity<>(scheduleMethodService.getMethodIdByCode(code), HttpStatus.OK);
+    }
+
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
+    @ApiOperation(value = "删除平台层可执行程序")
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable Long id) {
+        scheduleMethodService.delete(id);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
