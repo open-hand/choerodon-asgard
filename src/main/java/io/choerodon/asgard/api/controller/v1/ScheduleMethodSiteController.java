@@ -46,10 +46,11 @@ public class ScheduleMethodSiteController {
                                                                    @RequestParam(name = "service", required = false) String service,
                                                                    @RequestParam(name = "method", required = false) String method,
                                                                    @RequestParam(name = "description", required = false) String description,
+                                                                   @RequestParam(name = "level",required = false) String level,
                                                                    @RequestParam(name = "params", required = false) String params,
                                                                    @ApiIgnore
                                                                    @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, null);
+        return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, level);
     }
 
 
