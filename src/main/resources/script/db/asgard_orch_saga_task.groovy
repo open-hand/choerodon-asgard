@@ -64,4 +64,9 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
         dropColumn(tableName: 'ASGARD_ORCH_SAGA_TASK', columnName: 'TIMEOUT_SECONDS')
     }
 
+    changeSet(id: '2019-01-21create-index', author: 'longhe1996@icloud.com') {
+        createIndex(tableName: 'ASGARD_ORCH_SAGA_TASK', indexName: 'NK_ASGARD_ORCH_SAGA_TASK_N1', unique: false) {
+            column(name: 'CODE')
+        }
+    }
 }
