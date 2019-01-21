@@ -105,26 +105,27 @@
     <select id="fulltextSearchTaskInstance" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO">
         SELECT
         asti.ID,
-        asi.ID AS sagaInstanceId,
+        asti.saga_instance_id AS sagaInstanceId,
         concat(
         concat(asti.TASK_CODE, '-'),
         asti.ID
         ) AS taskInstanceCode,
         concat(
-        concat(asi.SAGA_CODE, '-'),
-        asi.ID
+        concat(asti.saga_code, '-'),
+        asti.saga_instance_id
         ) AS sagaInstanceCode,
         aost.DESCRIPTION,
         asti. STATUS,
         asti.MAX_RETRY_COUNT,
         asti.RETRIED_COUNT,
         asti.PLANNED_START_TIME,
-        asti.ACTUAL_END_TIME as actualEndTime
+        asti.ACTUAL_END_TIME AS actualEndTime
         FROM
-        asgard_saga_task_instance asti
-        LEFT JOIN asgard_saga_instance asi ON asti.SAGA_INSTANCE_ID = asi.ID
-        LEFT JOIN asgard_orch_saga_task aost ON asti.TASK_CODE=aost.CODE
-        WHERE 1 = 1
+        asgard_saga_instance asi
+        INNER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
+        LEFT JOIN asgard_orch_saga_task aost ON asti.TASK_CODE = aost. CODE
+        WHERE
+        1 = 1
         <if test="level != null">
             AND asi.FD_LEVEL=#{level}
         </if>
