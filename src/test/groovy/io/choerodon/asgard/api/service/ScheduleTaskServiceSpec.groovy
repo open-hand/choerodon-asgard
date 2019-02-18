@@ -22,7 +22,6 @@ import io.choerodon.core.exception.CommonException
 import io.choerodon.core.iam.ResourceLevel
 import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import io.choerodon.mybatis.pagehelper.domain.Sort
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -152,9 +151,11 @@ class ScheduleTaskServiceSpec extends Specification {
 
         and: 'mock'
         mockTaskMapper.selectByPrimaryKey(_) >> {
-            return new QuartzTask(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site")
+            return new QuartzTask(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site", cronExpression: "1 * * * * ?")
         }
         mockTaskMapper.updateByPrimaryKey(_) >> { return 1 }
+        mockInstanceMapper.selectLastInstance(_) >> { return new QuartzTaskInstance() }
+        mockInstanceMapper.updateByPrimaryKey(_) >> { return 1 }
 
         when: '方法调用'
         scheduleTaskService.enable(id, objectVersionNumber, "site", 0L)
@@ -170,7 +171,6 @@ class ScheduleTaskServiceSpec extends Specification {
         and: 'mock'
         mockTaskMapper.selectByPrimaryKey(_) >> { return dto }
         mockTaskMapper.updateByPrimaryKey(_) >> { return 0 }
-
         when: '方法调用'
         scheduleTaskService.enable(id, objectVersionNumber, "site", 0L)
         then: '结果分析'

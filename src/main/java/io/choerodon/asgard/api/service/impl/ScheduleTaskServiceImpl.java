@@ -1,7 +1,20 @@
 package io.choerodon.asgard.api.service.impl;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.api.service.QuartzJobService;
@@ -28,18 +41,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
@@ -271,6 +272,13 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             if (taskMapper.updateByPrimaryKey(quartzTask) != 1) {
                 throw new CommonException("error.scheduleTask.enableTaskFailed");
             }
+            //更新下次执行时间
+            QuartzTask task = taskMapper.selectByPrimaryKey(id);
+            QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(id);
+            lastInstance.setPlannedNextTime(TriggerUtils.getStartTime(task.getCronExpression()));
+            if (instanceMapper.updateByPrimaryKey(lastInstance) != 1) {
+                throw new CommonException("error.scheduleTask.enableTask.update.next.time.Failed");
+            }
             quartzJobService.resumeJob(id);
             List<QuartzTaskMember> noticeMembers = getQuartzTaskMembersByTaskId(quartzTask.getId());
             noticeService.sendNotice(quartzTask, noticeMembers, "启用");
@@ -355,7 +363,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params, String level, Long sourceId) {
+    public ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description,
+                                                         String params, String level, Long sourceId) {
         Page<QuartzTask> page = PageHelper.doPageAndSort(pageRequest,
                 () -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
         Page<QuartzTaskDTO> pageBack = pageConvert(page);
