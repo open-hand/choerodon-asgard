@@ -3,12 +3,12 @@ package io.choerodon.asgard.api.service.impl;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import io.choerodon.asgard.api.dto.PageSagaTaskInstanceDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import io.choerodon.asgard.api.dto.PageSagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.RegistrantInfoDTO;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.domain.QuartzTask;
@@ -149,7 +149,7 @@ public class NoticeServiceImpl implements NoticeService {
     public void registerOrgFailNotice(SagaTaskInstance sagaTaskInstance, SagaInstance sagaInstance, List<PageSagaTaskInstanceDTO> sagaTaskInstances) {
         //feign查询负责人及其组织
         RegistrantInfoDTO registrantInfoDTO = iamFeignClient.queryRegistrantAndAdminId(new Long(sagaInstance.getRefId())).getBody();
-        LOGGER.info("register failed,ref id:{},registrant info：{}",sagaInstance.getRefId(),registrantInfoDTO);
+        LOGGER.info("register failed,ref id:{},registrant info：{}", sagaInstance.getRefId(), registrantInfoDTO);
         List<Long> ids = new ArrayList<>();
         ids.add(registrantInfoDTO.getId());
 
@@ -159,6 +159,7 @@ public class NoticeServiceImpl implements NoticeService {
             //如果iam的sagatask错误，则发送失败邮件给负责人，发送异常邮件给admin
 
             Map<String, Object> failereMap = new HashMap<>();
+            failereMap.put("email", registrantInfoDTO.getEmail());
             failereMap.put("userName", registrantInfoDTO.getRealName());
             failereMap.put("organizationName", registrantInfoDTO.getOrganizationName());
             sendNoticeAtSite(REGISTER_FAILURE_TEMPLATE, ids, failereMap);
@@ -168,7 +169,7 @@ public class NoticeServiceImpl implements NoticeService {
             abnormalMap.put("registrant", registrantInfoDTO.getRealName());
             abnormalMap.put("organizationId", registrantInfoDTO.getOrganizationId());
             abnormalMap.put("organizationName", registrantInfoDTO.getOrganizationName());
-            abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode()+":"+sagaInstance.getId());
+            abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode() + ":" + sagaInstance.getId());
             abnormalMap.put("sagaTaskInstanceId", sagaTaskInstance.getSagaCode() + ":" + sagaTaskInstance.getId());
             sendNoticeAtSite(REGISTER_ABNORMAL_TEMPLATE, adminId, abnormalMap);
         } else {
@@ -203,6 +204,7 @@ public class NoticeServiceImpl implements NoticeService {
         Map<String, Object> successMap = new HashMap<>();
         successMap.put("userName", registrantInfoDTO.getRealName());
         successMap.put("organizationName", registrantInfoDTO.getOrganizationName());
+        successMap.put("email", registrantInfoDTO.getEmail());
         sendNoticeAtSite(REGISTER_SUCCESS_TEMPLATE, ids, successMap);
 
     }
