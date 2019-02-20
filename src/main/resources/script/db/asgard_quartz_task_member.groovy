@@ -24,6 +24,6 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_member.groovy') {
             column(name: "LAST_UPDATED_BY", type: "BIGINT", defaultValue: "-1")
             column(name: "LAST_UPDATE_DATE", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
-        addUniqueConstraint(tableName: 'ASGARD_QUARTZ_TASK_MEMBER', columnNames: 'TASK_ID, MEMBER_TYPE, MEMBER_ID', constraintName: 'UK_ASGARD_QUARTZ_TASK_MEMBER_U1')
+        addUniqueConstraint(tableName: 'ASGARD_QUARTZ_TASK_MEMBER', columnNames: 'TASK_ID, MEMBER_TYPE, MEMBER_ID', constraintName: 'UK_QUARTZ_TASK_MEMBER_U1')
     }
 }
