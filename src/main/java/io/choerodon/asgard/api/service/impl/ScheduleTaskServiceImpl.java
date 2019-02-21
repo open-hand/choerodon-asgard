@@ -275,9 +275,18 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             //更新下次执行时间
             QuartzTask task = taskMapper.selectByPrimaryKey(id);
             QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(id);
-            lastInstance.setPlannedNextTime(TriggerUtils.getStartTime(task.getCronExpression()));
-            if (instanceMapper.updateByPrimaryKey(lastInstance) != 1) {
-                throw new CommonException("error.scheduleTask.enableTask.update.next.time.Failed");
+            if (lastInstance != null) {
+                QuartzTaskInstance instance = new QuartzTaskInstance();
+                instance.setId(lastInstance.getId());
+                instance.setObjectVersionNumber(lastInstance.getObjectVersionNumber());
+                if (quartzTask.getTriggerType().equalsIgnoreCase(TriggerType.CRON.getValue())) {
+                    instance.setPlannedNextTime(TriggerUtils.getStartTime(task.getCronExpression()));
+                } else {
+                    instance.setPlannedNextTime(new Date());
+                }
+                if (instanceMapper.updateByPrimaryKeySelective(instance) != 1) {
+                    throw new CommonException("error.scheduleTask.enableTask.update.next.time.Failed");
+                }
             }
             quartzJobService.resumeJob(id);
             List<QuartzTaskMember> noticeMembers = getQuartzTaskMembersByTaskId(quartzTask.getId());
