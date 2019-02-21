@@ -3,14 +3,14 @@
 <mapper namespace="io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper">
 
     <select id="selectLastInstance" resultType="io.choerodon.asgard.domain.QuartzTaskInstance">
-     SELECT id, status, actual_start_time,planned_next_time, execute_result FROM asgard_quartz_task_instance
+     SELECT id, status, actual_start_time,planned_next_time, execute_result,object_version_number FROM asgard_quartz_task_instance
      WHERE task_id = #{taskId}
      ORDER BY CREATION_DATE DESC
      LIMIT 1
     </select>
 
     <select id="selectLastInstance" databaseId="mysql" resultType="io.choerodon.asgard.domain.QuartzTaskInstance">
-     SELECT id, status, actual_start_time,planned_next_time, execute_result FROM asgard_quartz_task_instance
+     SELECT id, status, actual_start_time,planned_next_time, execute_result,object_version_number FROM asgard_quartz_task_instance
      WHERE task_id = #{taskId}
      ORDER BY CREATION_DATE DESC
      LIMIT 1
