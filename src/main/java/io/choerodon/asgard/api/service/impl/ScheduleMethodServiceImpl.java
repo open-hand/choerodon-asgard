@@ -88,9 +88,6 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
         if (method == null) {
             throw new CommonException("error.scheduleMethod.notExist");
         }
-        if (!level.equals(method.getLevel())) {
-            throw new CommonException("error.scheduleMethod.levelNotMatch");
-        }
         ScheduleMethodParamsDTO scheduleMethodParamsDTO = methodMapper.selectParamsById(id);
         return markDefaultField(new ScheduleMethodParamsDTO(scheduleMethodParamsDTO.getId(), scheduleMethodParamsDTO.getParamsJson(), objectMapper)
                 , method.getLevel());
