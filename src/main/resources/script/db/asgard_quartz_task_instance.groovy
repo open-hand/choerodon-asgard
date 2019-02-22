@@ -67,6 +67,6 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
     }
 
     changeSet(id: '2018-11-30-resize-column-task_name', author: 'longhe1996@icloud.com') {
-        renameColumn(columnDataType: 'VARCHAR(255)', newColumnName: "TASK_NAME", oldColumnName: "TASK_NAME", remarks: '任务名', tableName: 'ASGARD_QUARTZ_TASK_INSTANCE')
+        modifyDataType(columnName: "TASK_NAME", newDataType: "VARCHAR(255)", tableName: "ASGARD_QUARTZ_TASK_INSTANCE")
     }
 }

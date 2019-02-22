@@ -54,7 +54,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
     }
 
     changeSet(id: '2018-11-30-resize-column-name', author: 'longhe1996@icloud.com') {
-        renameColumn(columnDataType: 'VARCHAR(255)', newColumnName: "NAME", oldColumnName: "NAME", remarks: '任务名', tableName: 'ASGARD_QUARTZ_TASK')
+        modifyDataType(columnName: "NAME", newDataType: "VARCHAR(255)", tableName: "ASGARD_QUARTZ_TASK")
     }
 
     changeSet(id: '2018-12-05-add-column-strategy', author: 'longhe1996@icloud.com') {

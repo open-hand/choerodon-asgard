@@ -151,11 +151,11 @@ class ScheduleTaskServiceSpec extends Specification {
 
         and: 'mock'
         mockTaskMapper.selectByPrimaryKey(_) >> {
-            return new QuartzTask(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site", cronExpression: "1 * * * * ?")
+            return new QuartzTask(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site", cronExpression: "1 * * * * ?",triggerType: "cron-trigger")
         }
         mockTaskMapper.updateByPrimaryKey(_) >> { return 1 }
         mockInstanceMapper.selectLastInstance(_) >> { return new QuartzTaskInstance() }
-        mockInstanceMapper.updateByPrimaryKey(_) >> { return 1 }
+        mockInstanceMapper.updateByPrimaryKeySelective(_) >> { return 1 }
 
         when: '方法调用'
         scheduleTaskService.enable(id, objectVersionNumber, "site", 0L)
