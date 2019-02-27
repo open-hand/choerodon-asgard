@@ -150,7 +150,17 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         List<List<PageSagaTaskInstanceDTO>> list = new ArrayList<>(
                 taskInstanceMapper.selectAllBySagaInstanceId(id)
                         .stream()
-                        .collect(groupingBy(PageSagaTaskInstanceDTO::getSeq)).values());
+                        .collect(groupingBy(PageSagaTaskInstanceDTO::getSeq)).values().stream().sorted((List<PageSagaTaskInstanceDTO> list1, List<PageSagaTaskInstanceDTO> list2) -> {
+                    PageSagaTaskInstanceDTO o1 = list1.get(0);
+                    PageSagaTaskInstanceDTO o2 = list2.get(0);
+                    if (o1.getSeq() > o1.getSeq()) {
+                        return 1;
+                    } else if (o1.getSeq() < o2.getSeq()) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }).collect(Collectors.toList()));
         dto.setTasks(list);
         try {
             return new ResponseEntity<>(objectMapper.writeValueAsString(dto), HttpStatus.OK);
