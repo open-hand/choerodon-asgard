@@ -2,7 +2,7 @@ package io.choerodon.asgard.infra.feign;
 
 import java.util.List;
 
-import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
