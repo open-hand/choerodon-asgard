@@ -40,6 +40,7 @@ public class SagaTaskServiceImpl implements SagaTaskService {
                 }
             } else {
                 i.setId(dbSagaTask.getId());
+                i.setIsEnabled(true);
                 i.setObjectVersionNumber(dbSagaTask.getObjectVersionNumber());
                 if (sagaTaskMapper.updateByPrimaryKeySelective(i) == 1) {
                     LOGGER.info("update saga task: {}", i);
