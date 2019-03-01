@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +24,7 @@ public class SagaTaskServiceImpl implements SagaTaskService {
 
     @Override
     public void createSagaTaskList(final List<SagaTask> sagaTaskList, final String service) {
+        List<SagaTask> copyTaskList = new ArrayList<>(sagaTaskList);
         SagaTask serviceSagaTask = new SagaTask();
         serviceSagaTask.setService(service);
         List<SagaTask> dbTasks = sagaTaskMapper.select(serviceSagaTask);
@@ -47,7 +49,7 @@ public class SagaTaskServiceImpl implements SagaTaskService {
                 }
             }
         });
-        disableSagaTask(dbTasks, sagaTaskList);
+        disableSagaTask(dbTasks, copyTaskList);
     }
 
     private void disableSagaTask(final List<SagaTask> dbTasks, final List<SagaTask> sagaTaskList) {
