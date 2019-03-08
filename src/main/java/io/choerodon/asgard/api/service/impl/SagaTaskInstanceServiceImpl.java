@@ -167,7 +167,6 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
 
     @Override
     public void updateStatus(final SagaTaskInstanceStatusDTO statusDTO) {
-        long start = System.currentTimeMillis();
         SagaTaskInstance taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (taskInstance == null) {
             throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
@@ -192,7 +191,6 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             transactionManager.rollback(status);
             throw e;
         }
-        LOGGER.info("time : {}", System.currentTimeMillis() - start);
     }
 
     private void updateStatusFailed(final SagaTaskInstance taskInstance, final SagaInstance instance, final String exeMsg, final boolean isForceFailed) {
