@@ -57,7 +57,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
 
     private final ModelMapper modelMapper = new ModelMapper();
 
-    private static final String ORG_REGISTER = "org-register";
+    private static final String ORG_REGISTER = "register-org";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -207,8 +207,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             instance.setEndTime(new Date());
             instanceMapper.updateByPrimaryKeySelective(instance);
             if (instance.getSagaCode().equalsIgnoreCase(ORG_REGISTER)) {
-                List<PageSagaTaskInstanceDTO> sagaTaskInstances = queryByInstanceIdAndSeq(instance.getId(), taskInstance.getSeq());
-                noticeService.registerOrgFailNotice(taskInstance, instance, sagaTaskInstances);
+                noticeService.registerOrgFailNotice(taskInstance, instance);
             }
             if (instance.getCreatedBy() != 0) {
                 noticeService.sendSagaFailNotice(instance);
@@ -252,9 +251,6 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                 instance.setOutputDataId(nextInputId);
                 if (instanceMapper.updateByPrimaryKeySelective(instance) != 1) {
                     throw new FeignException("error.updateStatusCompleted.updateInstanceFailed");
-                }
-                if (instance.getSagaCode().equalsIgnoreCase(ORG_REGISTER)) {
-                    noticeService.registerOrgSuccessNotice(instance);
                 }
                 return;
             }
