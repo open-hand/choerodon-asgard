@@ -142,7 +142,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void registerOrgFailNotice(SagaTaskInstance sagaTaskInstance, SagaInstance sagaInstance) {
         //feign查询负责人及其组织
-        RegistrantInfoDTO registrantInfoDTO = iamFeignClient.queryRegistrantAndAdminId(new Long(sagaInstance.getRefId())).getBody();
+        RegistrantInfoDTO registrantInfoDTO = iamFeignClient.queryRegistrantAndAdminId(sagaInstance.getRefId()).getBody();
         LOGGER.info("register failed,ref id:{},registrant info：{}", sagaInstance.getRefId(), registrantInfoDTO);
 
         List<Long> adminId = new ArrayList<>();
