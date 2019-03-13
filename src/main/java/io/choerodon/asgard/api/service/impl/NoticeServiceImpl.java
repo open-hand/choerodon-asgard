@@ -153,7 +153,7 @@ public class NoticeServiceImpl implements NoticeService {
         abnormalMap.put("organizationId", registrantInfoDTO.getOrganizationId());
         abnormalMap.put("organizationName", registrantInfoDTO.getOrganizationName());
         abnormalMap.put("sagaInstanceId", sagaInstance.getSagaCode() + ":" + sagaInstance.getId());
-        abnormalMap.put("sagaTaskInstanceId", sagaTaskInstance.getSagaCode() + ":" + sagaTaskInstance.getId());
+        abnormalMap.put("sagaTaskInstanceId", sagaTaskInstance.getTaskCode() + ":" + sagaTaskInstance.getId());
         sendNoticeAtSite(REGISTER_ABNORMAL_TEMPLATE, adminId, abnormalMap);
     }
 
