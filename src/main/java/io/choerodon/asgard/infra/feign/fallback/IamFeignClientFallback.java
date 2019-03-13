@@ -53,7 +53,7 @@ public class IamFeignClientFallback implements IamFeignClient {
 
 
     @Override
-    public ResponseEntity<RegistrantInfoDTO> queryRegistrantAndAdminId(Long id) {
+    public ResponseEntity<RegistrantInfoDTO> queryRegistrantAndAdminId(String orgCode) {
         throw new FeignException("error.feign.iam.queryRegistrantAndAdminId");
     }
 }

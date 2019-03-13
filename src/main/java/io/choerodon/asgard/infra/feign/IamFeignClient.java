@@ -46,6 +46,6 @@ public interface IamFeignClient {
     @PostMapping("/users/ids")
     ResponseEntity<List<UserDTO>> listUsersByIds(@RequestBody Long[] ids);
 
-    @GetMapping(value = "/users/{id}/registrant")
-    ResponseEntity<RegistrantInfoDTO> queryRegistrantAndAdminId(@PathVariable(value = "id")  Long id);
+    @GetMapping(value = "/users/registrant")
+    ResponseEntity<RegistrantInfoDTO> queryRegistrantAndAdminId(@RequestParam(value = "org_code")  String orgCode);
 }
