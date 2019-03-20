@@ -5,6 +5,8 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.persistence.Column;
+
 public class SagaInstanceDetailsDTO {
 
     @ApiModelProperty(value = "主键ID")
@@ -37,14 +39,19 @@ public class SagaInstanceDetailsDTO {
     private Date endTime;
 
     @ApiModelProperty(value = "实例下完成的任务个数")
+    @Column(name = "completed_count")
     private Integer completed;
     @ApiModelProperty(value = "实例下运行的任务个数")
+    @Column(name = "running_count")
     private Integer running;
     @ApiModelProperty(value = "实例下回滚的任务个数")
+    @Column(name = "rollback_count")
     private Integer rollback;
     @ApiModelProperty(value = "实例下失败的任务个数")
+    @Column(name = "failed_count")
     private Integer failed;
     @ApiModelProperty(value = "实例下在队列里的任务个数")
+    @Column(name = "queue_count")
     private Integer queue;
 
     public Long getId() {

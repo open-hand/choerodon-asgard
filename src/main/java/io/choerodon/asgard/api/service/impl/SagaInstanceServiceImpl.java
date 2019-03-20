@@ -3,10 +3,7 @@ package io.choerodon.asgard.api.service.impl;
 import static java.util.stream.Collectors.groupingBy;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -180,7 +177,13 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public Map<String, Integer> statistics(String level, Long sourceId) {
-        return instanceMapper.statisticsByStatus(level, sourceId);
+        Map<String, Integer> map = instanceMapper.statisticsByStatus(level, sourceId);
+        Map<String, Integer> convertMap = new HashMap<>(10);
+        convertMap.put("FAILED", map.get("FAILED_COUNT"));
+        convertMap.put("RUNNING", map.get("RUNNING_COUNT"));
+        convertMap.put("COMPLETED", map.get("COMPLETED_COUNT"));
+        convertMap.put("ROLLBACK", map.get("ROLLBACK_COUNT"));
+        return convertMap;
     }
 
     @Override
