@@ -37,15 +37,15 @@ public class SagaInstanceDetailsDTO {
     private Date endTime;
 
     @ApiModelProperty(value = "实例下完成的任务个数")
-    private Integer completed;
+    private Integer completedCount;
     @ApiModelProperty(value = "实例下运行的任务个数")
-    private Integer running;
+    private Integer runningCount;
     @ApiModelProperty(value = "实例下回滚的任务个数")
-    private Integer rollback;
+    private Integer rollbackCount;
     @ApiModelProperty(value = "实例下失败的任务个数")
-    private Integer failed;
+    private Integer failedCount;
     @ApiModelProperty(value = "实例下等待被拉取里的任务个数")
-    private Integer waitToBePulled;
+    private Integer waitToBePulledCount;
 
     public Long getId() {
         return id;
@@ -119,43 +119,43 @@ public class SagaInstanceDetailsDTO {
         this.level = level;
     }
 
-    public Integer getCompleted() {
-        return completed;
+    public Integer getCompletedCount() {
+        return completedCount;
     }
 
-    public void setCompleted(Integer completed) {
-        this.completed = completed;
+    public void setCompletedCount(Integer completedCount) {
+        this.completedCount = completedCount;
     }
 
-    public Integer getRunning() {
-        return running;
+    public Integer getRunningCount() {
+        return runningCount;
     }
 
-    public void setRunning(Integer running) {
-        this.running = running;
+    public void setRunningCount(Integer runningCount) {
+        this.runningCount = runningCount;
     }
 
-    public Integer getRollback() {
-        return rollback;
+    public Integer getRollbackCount() {
+        return rollbackCount;
     }
 
-    public void setRollback(Integer rollback) {
-        this.rollback = rollback;
+    public void setRollbackCount(Integer rollbackCount) {
+        this.rollbackCount = rollbackCount;
     }
 
-    public Integer getFailed() {
-        return failed;
+    public Integer getFailedCount() {
+        return failedCount;
     }
 
-    public void setFailed(Integer failed) {
-        this.failed = failed;
+    public void setFailedCount(Integer failedCount) {
+        this.failedCount = failedCount;
     }
 
-    public Integer getWaitToBePulled() {
-        return waitToBePulled;
+    public Integer getWaitToBePulledCount() {
+        return waitToBePulledCount;
     }
 
-    public void setWaitToBePulled(Integer waitToBePulled) {
-        this.waitToBePulled = waitToBePulled;
+    public void setWaitToBePulledCount(Integer waitToBePulledCount) {
+        this.waitToBePulledCount = waitToBePulledCount;
     }
 }

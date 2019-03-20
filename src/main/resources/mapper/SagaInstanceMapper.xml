@@ -43,12 +43,12 @@
 
     <select id="statisticsByStatus" resultType="java.util.Map">
         select
-        sum(case when STATUS='FAILED' then 1 else 0 end) as FAILED,
-        sum(case when STATUS='RUNNING' then 1 else 0 end) as RUNNING,
+        sum(case when STATUS='FAILED' then 1 else 0 end) as FAILED_COUNT,
+        sum(case when STATUS='RUNNING' then 1 else 0 end) as RUNNING_COUNT,
         sum(case when STATUS='COMPLETED' then 1
         when STATUS='NON_CONSUMER' then 1
-        else 0 end) as COMPLETED,
-        sum(case when STATUS='ROLLBACK' then 1 else 0 end) as ROLLBACK
+        else 0 end) as COMPLETED_COUNT,
+        sum(case when STATUS='ROLLBACK' then 1 else 0 end) as ROLLBACK_COUNT
         FROM asgard_saga_instance
         WHERE
         1=1
@@ -97,11 +97,11 @@
             asi.REF_ID AS REF_ID,
             asi.START_TIME AS START_TIME,
             asi.END_TIME AS END_TIME,
-            sum(CASE WHEN asti. STATUS = 'COMPLETED' THEN 1 ELSE 0 END) AS COMPLETED,
-            sum(CASE WHEN asti. STATUS = 'RUNNING' THEN 1 ELSE 0 END) AS RUNNING,
-            sum(CASE WHEN asti. STATUS = 'ROLLBACK' THEN 1 ELSE 0 END) AS ROLLBACK,
-            sum(CASE WHEN asti. STATUS = 'FAILED' THEN 1 ELSE 0 END) AS FAILED,
-            sum(CASE WHEN asti. STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END) AS WAIT_TO_BE_PULLED
+            sum(CASE WHEN asti. STATUS = 'COMPLETED' THEN 1 ELSE 0 END) AS COMPLETED_COUNT,
+            sum(CASE WHEN asti. STATUS = 'RUNNING' THEN 1 ELSE 0 END) AS RUNNING_COUNT,
+            sum(CASE WHEN asti. STATUS = 'ROLLBACK' THEN 1 ELSE 0 END) AS ROLLBACK_COUNT,
+            sum(CASE WHEN asti. STATUS = 'FAILED' THEN 1 ELSE 0 END) AS FAILED_COUNT,
+            sum(CASE WHEN asti. STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END) AS WAIT_TO_BE_PULLED_COUNT
         FROM
             asgard_saga_instance asi
         LEFT JOIN asgard_orch_saga aos ON asi.SAGA_CODE = aos. CODE
