@@ -32,6 +32,7 @@ public interface ScheduleTaskService {
 
     void checkName(String name, String level, Long sourceId);
 
+    void checkNameAllLevel(String name);
     /**
      * 自定义创建定时任务
      *
