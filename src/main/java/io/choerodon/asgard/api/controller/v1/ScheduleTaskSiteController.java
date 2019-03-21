@@ -97,7 +97,8 @@ public class ScheduleTaskSiteController {
     @ApiOperation(value = "全局层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@RequestBody String name) {
-        scheduleTaskService.checkName(name, ResourceLevel.SITE.value(), 0L);
+//        scheduleTaskService.checkName(name, ResourceLevel.SITE.value(), 0L);
+        scheduleTaskService.checkNameAllLevel(name);
         return new ResponseEntity(HttpStatus.OK);
     }
 

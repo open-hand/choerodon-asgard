@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import io.choerodon.asgard.api.dto.*;
@@ -510,6 +511,16 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     public void checkName(String name, String level, Long sourceId) {
         List<Long> ids = taskMapper.selectTaskIdByName(name, level, sourceId);
         if (!ids.isEmpty()) {
+            throw new CommonException("error.scheduleTask.name.exist");
+        }
+    }
+
+    @Override
+    public void checkNameAllLevel(String name) {
+        QuartzTask task = new QuartzTask();
+        task.setName(name);
+        List<QuartzTask> select = taskMapper.select(task);
+        if(!CollectionUtils.isEmpty(select)){
             throw new CommonException("error.scheduleTask.name.exist");
         }
     }

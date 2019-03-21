@@ -112,7 +112,8 @@ public class ScheduleTaskProjectController {
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("project_id") long projectId,
                                 @RequestBody String name) {
-        scheduleTaskService.checkName(name, ResourceLevel.PROJECT.value(), projectId);
+//        scheduleTaskService.checkName(name, ResourceLevel.PROJECT.value(), projectId);
+        scheduleTaskService.checkNameAllLevel(name);
         return new ResponseEntity(HttpStatus.OK);
     }
 
