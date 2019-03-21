@@ -20,7 +20,14 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 15000
+            timeoutInMilliseconds: 20000
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
+notify-service:
+  ribbon:
+    MaxAutoRetries: 0
+    MaxAutoRetriesNextServer: 0
 mybatis:
   mapperLocations: classpath*:/mapper/*.xml
   configuration: # 数据库下划线转驼峰配置
