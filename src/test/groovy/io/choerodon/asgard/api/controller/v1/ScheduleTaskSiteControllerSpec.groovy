@@ -182,7 +182,7 @@ class ScheduleTaskSiteControllerSpec extends Specification {
         def response = restTemplate.postForEntity("/v1/schedules/tasks/check", name, String)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.checkName(name, _, _)
+//        1 * mockScheduleTaskService.checkName(name, _, _)
     }
 
     def "Cron"() {
