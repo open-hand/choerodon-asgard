@@ -13,8 +13,8 @@ import java.util.HashMap;
  * @author dengyouquan
  **/
 public class ScheduleTaskValidator {
-    public ScheduleTaskValidator() {
-        throw new IllegalStateException();
+
+    private ScheduleTaskValidator() {
     }
 
     public static void validatorCreate(ScheduleTaskDTO dto) {

@@ -32,6 +32,8 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
 
     public static final String DEFAULT = "default";
     public static final String FIELD_NAME = "name";
+
+    private static final String SCHEDULE_METHOD_NOT_EXIST_EXCEPTION = "error.scheduleMethod.notExist";
     private QuartzMethodMapper methodMapper;
 
     @Autowired
@@ -86,7 +88,7 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
     public ScheduleMethodParamsDTO getParams(Long id, String level) {
         QuartzMethod method = methodMapper.selectByPrimaryKey(id);
         if (method == null) {
-            throw new CommonException("error.scheduleMethod.notExist");
+            throw new CommonException(SCHEDULE_METHOD_NOT_EXIST_EXCEPTION);
         }
         ScheduleMethodParamsDTO scheduleMethodParamsDTO = methodMapper.selectParamsById(id);
         return markDefaultField(new ScheduleMethodParamsDTO(scheduleMethodParamsDTO.getId(), scheduleMethodParamsDTO.getParamsJson(), objectMapper)
@@ -106,19 +108,13 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
         List<Map<String, Object>> maps = scheduleMethodParamsDTO.getParamsList();
         if (ResourceLevel.ORGANIZATION.value().equals(level)) {
             maps.forEach(map -> {
-                if (Arrays.asList(DefaultAutowiredField.organizationDefaultField()).contains(map.get(FIELD_NAME).toString())) {
-                    map.put(DEFAULT, true);
-                } else {
-                    map.put(DEFAULT, false);
-                }
+                boolean contains = Arrays.asList(DefaultAutowiredField.organizationDefaultField()).contains(map.get(FIELD_NAME).toString());
+                map.put(DEFAULT, contains);
             });
         } else if (ResourceLevel.PROJECT.value().equals(level)) {
             maps.forEach(map -> {
-                if (Arrays.asList(DefaultAutowiredField.projectDefaultField()).contains(map.get(FIELD_NAME).toString())) {
-                    map.put(DEFAULT, true);
-                } else {
-                    map.put(DEFAULT, false);
-                }
+                boolean contains = Arrays.asList(DefaultAutowiredField.projectDefaultField()).contains(map.get(FIELD_NAME).toString());
+                map.put(DEFAULT, contains);
             });
         } else if (ResourceLevel.SITE.value().equals(level)) {
             maps.forEach(map -> map.put(DEFAULT, false));
@@ -138,7 +134,7 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
         t.setCode(code);
         QuartzMethod method = methodMapper.selectOne(t);
         if (method == null) {
-            throw new CommonException("error.scheduleMethod.notExist");
+            throw new CommonException(SCHEDULE_METHOD_NOT_EXIST_EXCEPTION);
         }
         return method.getId();
     }
@@ -155,7 +151,7 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
     @Override
     public void delete(Long id) {
         if (methodMapper.selectByPrimaryKey(id) == null) {
-            throw new CommonException("error.scheduleMethod.notExist");
+            throw new CommonException(SCHEDULE_METHOD_NOT_EXIST_EXCEPTION);
         }
         methodMapper.deleteByPrimaryKey(id);
     }

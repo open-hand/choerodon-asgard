@@ -91,13 +91,7 @@ public class SagaServiceImpl implements SagaService {
                         .sorted((List<SagaTaskDTO> list1, List<SagaTaskDTO> list2) -> {
                             SagaTaskDTO o1 = list1.get(0);
                             SagaTaskDTO o2 = list2.get(0);
-                            if (o1.getSeq() > o1.getSeq()) {
-                                return 1;
-                            }else if (o1.getSeq() < o2.getSeq()) {
-                                return -1;
-                            }else {
-                                return 0;
-                            }
+                            return o1.getSeq().compareTo(o2.getSeq());
                         }).collect(Collectors.toList()));
         try {
             for (int i = 0; i < list.size(); i++) {
