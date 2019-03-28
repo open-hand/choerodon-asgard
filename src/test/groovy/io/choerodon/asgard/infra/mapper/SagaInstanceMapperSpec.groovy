@@ -65,7 +65,7 @@ class SagaInstanceMapperSpec extends Specification {
         null       || null        || null      || null    || 'fs_code'   || 1
         null       || null        || null      || null    || 'fs_type'   || 1
         null       || null        || null      || null    || 'fs_id'     || 1
-        null       || null        || null      || null    || 'fs_status' || 1
+        null       || null        || null      || null    || 'fs_status' || 0
         null       || null        || null      || null    || 'fs_test'   || 0
     }
 
