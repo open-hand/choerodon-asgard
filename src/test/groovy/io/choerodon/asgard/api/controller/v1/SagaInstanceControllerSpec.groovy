@@ -6,11 +6,17 @@ import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO
 import io.choerodon.asgard.api.dto.SagaWithTaskInstanceDTO
 import io.choerodon.asgard.api.dto.StartInstanceDTO
 import io.choerodon.asgard.api.service.SagaInstanceService
-import io.choerodon.core.exception.ExceptionResponse
+import io.choerodon.asgard.api.service.impl.SagaInstanceServiceImpl
+import io.choerodon.asgard.domain.SagaInstance
+import io.choerodon.asgard.domain.SagaTask
+import io.choerodon.asgard.infra.mapper.SagaInstanceMapper
+import io.choerodon.asgard.infra.mapper.SagaTaskMapper
+import io.choerodon.core.iam.ResourceLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
+import org.springframework.transaction.annotation.Transactional
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -21,6 +27,10 @@ class SagaInstanceControllerSpec extends Specification {
 
     @Autowired
     TestRestTemplate testRestTemplate
+    @Autowired
+    private SagaInstanceMapper sagaInstanceMapper
+    @Autowired
+    private SagaInstanceService sagaInstanceService
 
     @Autowired
     SagaInstanceController sagaInstanceController
@@ -119,5 +129,67 @@ class SagaInstanceControllerSpec extends Specification {
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
         1 * sagaInstanceService.statistics(null, null)
+    }
+
+    @Transactional
+    def "preCreate"() {
+        given:
+        StartInstanceDTO dto = new StartInstanceDTO()
+        dto.setUuid("uuid")
+        dto.setSagaCode("code")
+        dto.setService("service")
+        dto.setLevel(ResourceLevel.PROJECT.value())
+        dto.setSourceId(1L)
+
+        and:
+        SagaInstanceController controller = new SagaInstanceController(sagaInstanceService)
+
+        when:
+        def result = controller.preCreate(dto)
+
+        then:
+        result.statusCode.is2xxSuccessful()
+    }
+
+    def "confirm"() {
+        given:
+        StartInstanceDTO dto = new StartInstanceDTO()
+        dto.setRefId("ref")
+        dto.setInput("input")
+        dto.setRefType("type")
+
+        and:
+        SagaInstanceMapper mapper = Mock(SagaInstanceMapper)
+        SagaTaskMapper sagaTaskMapper = Mock(SagaTaskMapper)
+        SagaInstanceService service = new SagaInstanceServiceImpl(sagaTaskMapper, mapper, null, null, null)
+        SagaInstanceController controller = new SagaInstanceController(service)
+
+        when:
+        controller.confirm("uuid", dto)
+
+        then:
+        1 * mapper.selectOne(_) >> Mock(SagaInstance)
+        1 * mapper.updateByPrimaryKey(_) >> 1
+        1 * sagaTaskMapper.selectFirstSeqSagaTasks(_) >> new ArrayList<SagaTask>()
+    }
+
+    def "queryFailedByDate"() {
+        given:
+        SagaInstanceMapper mapper = Mock(SagaInstanceMapper)
+        List<Map<String, Object>> list = new ArrayList<>()
+        Map<String, Object> map = new HashMap<>()
+        map.put("days", new Object())
+        list << map
+        mapper.selectFailedTimes(_, _) >> list
+        and:
+        SagaInstanceService service = new SagaInstanceServiceImpl(null, mapper, null, null, null)
+        SagaInstanceController controller = new SagaInstanceController(service)
+
+        when:
+        def result = controller.queryFailedByDate("2019-03-15", "2019-03-20")
+
+        then:
+        result.statusCode.is2xxSuccessful()
+
     }
 }

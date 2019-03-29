@@ -30,7 +30,7 @@ public class TriggerUtils {
         if (TriggerType.CRON.getValue().equals(task.getTriggerType())) {
             String cron = task.getCronExpression();
             if (cron.split(" ").length == 7) {
-                cron = cron.substring(0, cron.lastIndexOf(" "));
+                cron = cron.substring(0, cron.lastIndexOf(' '));
             }
             CronTrigger c = new CronTrigger(cron, TimeZone.getDefault());
             SimpleTriggerContext t = new SimpleTriggerContext();

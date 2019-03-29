@@ -1,7 +1,8 @@
 package io.choerodon.asgard.api.dto;
 
 import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.NotEmpty;
+
+import javax.validation.constraints.NotEmpty;
 
 public class SagaTaskInstanceStatusDTO {
 
