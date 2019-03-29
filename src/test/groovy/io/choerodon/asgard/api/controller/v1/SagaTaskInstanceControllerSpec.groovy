@@ -3,7 +3,9 @@ package io.choerodon.asgard.api.controller.v1
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO
 import io.choerodon.asgard.api.service.SagaTaskInstanceService
-import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO
+import io.choerodon.asgard.api.service.impl.SagaTaskInstanceServiceImpl
+import io.choerodon.asgard.domain.SagaTaskInstance
+import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper
 import io.choerodon.core.exception.ExceptionResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -139,5 +141,18 @@ class SagaTaskInstanceControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
         1 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, params, null, null)
         0 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, wrongParam, null, null)
+    }
+
+    def "query"() {
+        given:
+        SagaTaskInstanceMapper sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
+        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null, null)
+        SagaTaskInstanceController controller = new SagaTaskInstanceController(sagaTaskInstanceService)
+
+        when:
+        def result = controller.query(1L)
+        then:
+        1 * sagaTaskInstanceMapper.selectByPrimaryKey(_) >> Mock(SagaTaskInstance)
+        result != null
     }
 }
