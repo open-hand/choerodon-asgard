@@ -1,12 +1,19 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
+import io.choerodon.asgard.api.service.NoticeService
 import io.choerodon.asgard.api.service.SagaTaskInstanceService
+import io.choerodon.asgard.api.service.impl.SagaTaskInstanceServiceImpl
+import io.choerodon.asgard.domain.SagaInstance
+import io.choerodon.asgard.domain.SagaTaskInstance
+import io.choerodon.asgard.infra.mapper.SagaInstanceMapper
+import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper
 import io.choerodon.core.iam.ResourceLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import
+import org.springframework.jdbc.datasource.DataSourceTransactionManager
 import spock.lang.Specification
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -20,6 +27,8 @@ class SagaTaskInstanceOrgControllerSpec extends Specification {
 
     @Autowired
     TestRestTemplate testRestTemplate
+    @Autowired
+    DataSourceTransactionManager transactionManager
 
 
     def "测试 组织层分页查询SagaTask实例列表"() {
@@ -29,7 +38,7 @@ class SagaTaskInstanceOrgControllerSpec extends Specification {
         def taskInstanceCode = 'taskInstanceCode'
         def params = 'params'
         def wrongParam = 'param'
-        def orgId=1
+        def orgId = 1
 
         and: 'mock sagaTaskInstanceService'
         def sagaTaskInstanceService = Mock(SagaTaskInstanceService)
@@ -38,11 +47,51 @@ class SagaTaskInstanceOrgControllerSpec extends Specification {
         when: "调用查询事务列表接口"
         def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/tasks/instances?sagaInstanceCode={sagaInstanceCode}" +
                 "&status={status}&taskInstanceCode={taskInstanceCode}&params={params}",
-                String, orgId,sagaInstanceCode, status, taskInstanceCode, params)
+                String, orgId, sagaInstanceCode, status, taskInstanceCode, params)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
         1 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, params, ResourceLevel.ORGANIZATION.value(), orgId)
-        0 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, wrongParam,  ResourceLevel.ORGANIZATION.value(), orgId)
+        0 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, wrongParam, ResourceLevel.ORGANIZATION.value(), orgId)
+    }
+
+    def "unlockById"() {
+        given:
+        SagaTaskInstanceMapper sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
+        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null, null)
+        SagaTaskInstanceOrgController controller = new SagaTaskInstanceOrgController(sagaTaskInstanceService)
+
+        when:
+        controller.unlockById(1L, 1L)
+
+        then:
+        1 * sagaTaskInstanceMapper.selectByPrimaryKey(_) >> Mock(SagaTaskInstance)
+        1 * sagaTaskInstanceMapper.updateByPrimaryKey(_)
+    }
+
+    def "forceFailed"() {
+        given:
+        SagaTaskInstanceMapper sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
+        SagaInstanceMapper sagaInstanceMapper = Mock(SagaInstanceMapper)
+        NoticeService noticeService = Mock(NoticeService)
+        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, sagaInstanceMapper, null, transactionManager, noticeService, null, null)
+        SagaTaskInstanceOrgController controller = new SagaTaskInstanceOrgController(sagaTaskInstanceService)
+
+        and:
+        SagaTaskInstance sagaTaskInstance = Mock(SagaTaskInstance)
+        SagaInstance sagaInstance = Mock(SagaInstance)
+
+        when:
+        controller.forceFailed(1L, 1L)
+
+        then:
+        1 * sagaTaskInstanceMapper.selectByPrimaryKey(_) >> sagaTaskInstance
+        1 * sagaInstanceMapper.selectByPrimaryKey(_) >> sagaInstance
+        1 * sagaTaskInstanceMapper.updateByPrimaryKey(_) >> 1
+        1 * sagaInstanceMapper.updateByPrimaryKeySelective(_) >> 1
+        1 * sagaInstance.getSagaCode() >> "register-org"
+        1 * noticeService.registerOrgFailNotice(_, _)
+        1 * sagaInstance.getCreatedBy() >> 1
+        1 * noticeService.sendSagaFailNotice(_)
     }
 }
