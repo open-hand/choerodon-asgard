@@ -33,3 +33,16 @@ gitlabci/.generated
 
 /bin
 src/main/resources/application-default.yml
+
+## front_end ignore
+
+# dist directory
+src/main/resources/lib
+
+# npm
+node_modules
+npm-debug.log
+yarn-error.log
+yarn.lock
+package-lock.json
+

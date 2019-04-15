@@ -1,0 +1,35 @@
+{
+  "name": "asgard",
+  "routeName": "asgard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./react/src/app/iam/containers/IAMIndex.js",
+  "dependencies": {
+    "choerodon-boot-combine": "0.0.21"
+  },
+  "scripts": {
+    "start": "choerodon-hap-front-boot start --config ./react/config.js",
+    "dist": "choerodon-hap-front-boot dist --config ./react/config.js",
+    "lint-staged": "lint-staged",
+    "lint-staged:es": "eslint"
+  },
+  "author": "",
+  "license": "ISC",
+  "lint-staged": {
+    "react/**/*.{js,jsx}": [
+      "npm run lint-staged:es"
+    ],
+    "react/**/*.scss": "stylelint --syntax scss"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "peerDependencies": {},
+  "servicesConfig": [],
+  "c7nConfig": {
+    "projectType": "choerodon",
+    "buildType": "single"
+  }
+}
