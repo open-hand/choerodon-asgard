@@ -3,13 +3,14 @@ package io.choerodon.asgard.api.controller.v1;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class ScheduleTaskInstanceOrgController {
         this.scheduleTaskInstanceService = scheduleTaskInstanceService;
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @GetMapping
     @ApiOperation(value = "组织层分页查询任务实例列表")
     @CustomPageRequest
@@ -48,7 +49,7 @@ public class ScheduleTaskInstanceOrgController {
         return scheduleTaskInstanceService.pageQuery(pageRequest, status, taskName, exceptionMessage, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @GetMapping("/{taskId}")
     @ApiOperation(value = "组织层分页查询任务日志")
     @CustomPageRequest

@@ -2,6 +2,8 @@ package io.choerodon.asgard.api.controller.v1;
 
 import java.util.List;
 
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -19,7 +21,6 @@ import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 
 @RestController
 @RequestMapping("/v1/schedules/organizations/{organization_id}/methods")
@@ -36,7 +37,7 @@ public class ScheduleMethodOrgController {
         this.scheduleMethodService = scheduleMethodService;
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @GetMapping
     @ApiOperation(value = "组织层分页查询执行方法列表")
     @CustomPageRequest
@@ -52,7 +53,7 @@ public class ScheduleMethodOrgController {
         return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, ResourceLevel.ORGANIZATION.value());
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "组织层根据服务名获取方法")
     @GetMapping("/service")
     public ResponseEntity<List<ScheduleMethodDTO>> getMethodByService(@PathVariable("organization_id") long orgId,
@@ -60,7 +61,7 @@ public class ScheduleMethodOrgController {
         return new ResponseEntity<>(scheduleMethodService.getMethodByService(service, ResourceLevel.ORGANIZATION.value()), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @GetMapping("/{id}")
     @ApiOperation(value = "组织层查看可执行程序详情")
     public ResponseEntity<ScheduleMethodParamsDTO> getParams(@PathVariable("organization_id") long orgId,
@@ -68,7 +69,7 @@ public class ScheduleMethodOrgController {
         return new ResponseEntity<>(scheduleMethodService.getParams(id, ResourceLevel.ORGANIZATION.value()), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "组织层搜索有可执行任务的服务名")
     @GetMapping("/services")
     public ResponseEntity<List<String>> getServices(@PathVariable("organization_id") long orgId) {

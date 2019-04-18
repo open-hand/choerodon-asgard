@@ -3,6 +3,8 @@ package io.choerodon.asgard.api.controller.v1;
 import java.util.List;
 import javax.validation.Valid;
 
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -23,7 +25,6 @@ import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 
 @RestController
 @RequestMapping("/v1/schedules/organizations/{organization_id}/tasks")
@@ -40,7 +41,7 @@ public class ScheduleTaskOrgController {
         this.scheduleTaskService = scheduleTaskService;
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "组织层创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTask> create(@PathVariable("organization_id") long orgId,
@@ -49,7 +50,7 @@ public class ScheduleTaskOrgController {
         return new ResponseEntity<>(scheduleTaskService.create(dto, ResourceLevel.ORGANIZATION.value(), orgId), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "组织层启用任务")
     @PutMapping("/{id}/enable")
     public void enable(@PathVariable("organization_id") long orgId,
@@ -57,7 +58,7 @@ public class ScheduleTaskOrgController {
         scheduleTaskService.enable(id, objectVersionNumber, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "组织层停用任务")
     @PutMapping("/{id}/disable")
     public void disable(@PathVariable("organization_id") long orgId,
@@ -73,7 +74,7 @@ public class ScheduleTaskOrgController {
         scheduleTaskService.disableByLevelAndSourceId(ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "组织层删除任务")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("organization_id") long orgId,
@@ -81,7 +82,7 @@ public class ScheduleTaskOrgController {
         scheduleTaskService.delete(id, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @GetMapping
     @ApiOperation(value = "组织层分页查询定时任务")
     @CustomPageRequest
@@ -96,7 +97,7 @@ public class ScheduleTaskOrgController {
         return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @GetMapping("/{id}")
     @ApiOperation(value = "组织层查看任务详情")
     public ResponseEntity<ScheduleTaskDetailDTO> getTaskDetail(@PathVariable("organization_id") long orgId,
@@ -105,7 +106,7 @@ public class ScheduleTaskOrgController {
 
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "组织层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("organization_id") long orgId,
@@ -114,7 +115,7 @@ public class ScheduleTaskOrgController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "组织层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(@PathVariable("organization_id") long orgId,

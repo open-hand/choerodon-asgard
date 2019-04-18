@@ -3,6 +3,8 @@ package io.choerodon.asgard.api.controller.v1;
 import java.util.List;
 import javax.validation.Valid;
 
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -24,7 +26,6 @@ import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 
 @RestController
 @RequestMapping("/v1/schedules/tasks")
@@ -41,7 +42,7 @@ public class ScheduleTaskSiteController {
         this.scheduleTaskService = scheduleTaskService;
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTask> create(@RequestBody @Valid ScheduleTaskDTO dto) {
@@ -49,14 +50,14 @@ public class ScheduleTaskSiteController {
         return new ResponseEntity<>(scheduleTaskService.create(dto, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层启用任务")
     @PutMapping("/{id}/enable")
     public void enable(@PathVariable long id, @RequestParam long objectVersionNumber) {
         scheduleTaskService.enable(id, objectVersionNumber, ResourceLevel.SITE.value(), 0L);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层停用任务")
     @PutMapping("/{id}/disable")
     public void disable(@PathVariable long id, @RequestParam long objectVersionNumber) {
@@ -64,14 +65,14 @@ public class ScheduleTaskSiteController {
         scheduleTaskService.disable(id, objectVersionNumber, false);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层删除任务")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable long id) {
         scheduleTaskService.delete(id, ResourceLevel.SITE.value(), 0L);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "全局层分页查询定时任务")
     @CustomPageRequest
@@ -85,7 +86,7 @@ public class ScheduleTaskSiteController {
         return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.SITE.value(), 0L);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
     @ApiOperation(value = "全局层查看任务详情")
     public ResponseEntity<ScheduleTaskDetailDTO> getTaskDetail(@PathVariable long id) {
@@ -93,7 +94,7 @@ public class ScheduleTaskSiteController {
 
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@RequestBody String name) {
@@ -101,7 +102,7 @@ public class ScheduleTaskSiteController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(@RequestBody String cron) {

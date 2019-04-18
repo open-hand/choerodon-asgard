@@ -2,6 +2,8 @@ package io.choerodon.asgard.api.controller.v1;
 
 import java.util.List;
 
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,6 @@ import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 
 @RestController
 @RequestMapping("/v1/schedules/methods")
@@ -37,7 +38,7 @@ public class ScheduleMethodSiteController {
         this.scheduleMethodService = scheduleMethodService;
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "全局层分页查询执行方法列表")
     @CustomPageRequest
@@ -54,14 +55,14 @@ public class ScheduleMethodSiteController {
     }
 
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层根据服务名获取方法")
     @GetMapping("/service")
     public ResponseEntity<List<ScheduleMethodDTO>> getMethodByService(@RequestParam(value = "service") String service) {
         return new ResponseEntity<>(scheduleMethodService.getMethodByService(service, ResourceLevel.SITE.value()), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
     @ApiOperation(value = "全局层查看可执行程序详情")
     public ResponseEntity<ScheduleMethodParamsDTO> getParams(@PathVariable long id) {
@@ -69,7 +70,7 @@ public class ScheduleMethodSiteController {
     }
 
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层搜索有可执行任务的服务名")
     @GetMapping("/services")
     public ResponseEntity<List<String>> getServices() {
@@ -83,7 +84,7 @@ public class ScheduleMethodSiteController {
         return new ResponseEntity<>(scheduleMethodService.getMethodIdByCode(code), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
     @ApiOperation(value = "删除平台层可执行程序")
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
