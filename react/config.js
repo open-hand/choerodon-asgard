@@ -1,5 +1,9 @@
 const config = {
-  server: 'https://api.choerodon.com.cn',
+  // use for c7n start
+  server: 'http://api.staging.saas.hand-china.com',
+  master: 'choerodon-front-master',
+  projectType: 'choerodon',
+  buildType: 'single',
   dashboard: {},
 };
 

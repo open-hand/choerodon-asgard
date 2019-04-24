@@ -5,7 +5,8 @@
   "description": "",
   "main": "./react/src/app/iam/containers/IAMIndex.js",
   "dependencies": {
-    "choerodon-boot-combine": "0.0.21"
+    "choerodon-boot-combine": "0.1.0",
+    "choerodon-front-master": "^0.1.0"
   },
   "scripts": {
     "start": "choerodon-hap-front-boot start --config ./react/config.js",
@@ -26,10 +27,5 @@
       "pre-commit": "lint-staged"
     }
   },
-  "peerDependencies": {},
-  "servicesConfig": [],
-  "c7nConfig": {
-    "projectType": "choerodon",
-    "buildType": "single"
-  }
+  "peerDependencies": {}
 }
