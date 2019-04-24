@@ -5,15 +5,15 @@ import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,21 +63,21 @@ public class SagaTaskInstanceController {
         return sagaTaskInstanceService.query(id);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = " ")
     @PutMapping("/{id}/failed")
     public void forceFailed(@PathVariable long id) {
         sagaTaskInstanceService.forceFailed(id);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
     public void unlockById(@PathVariable long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
     public void unlockByInstance(@RequestParam(value = "instance", required = false) String instance) {
@@ -87,7 +87,7 @@ public class SagaTaskInstanceController {
         sagaTaskInstanceService.unlockByInstance(instance);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "手动重试消息")
     @PutMapping("/{id}/retry")
     public void retry(@PathVariable long id) {
@@ -95,7 +95,7 @@ public class SagaTaskInstanceController {
     }
 
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "平台层分页查询SagaTask实例列表")
     @CustomPageRequest

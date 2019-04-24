@@ -6,6 +6,8 @@ import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
@@ -13,7 +15,6 @@ import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -39,7 +40,7 @@ public class ScheduleTaskInstanceSiteController {
         this.scheduleTaskInstanceService = scheduleTaskInstanceService;
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "全局层分页查询任务实例列表")
     @CustomPageRequest
@@ -53,7 +54,7 @@ public class ScheduleTaskInstanceSiteController {
         return scheduleTaskInstanceService.pageQuery(pageRequest, status, taskName, exceptionMessage, params, ResourceLevel.SITE.value(), 0L);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{taskId}")
     @ApiOperation(value = "全局层分页查询任务日志")
     @CustomPageRequest

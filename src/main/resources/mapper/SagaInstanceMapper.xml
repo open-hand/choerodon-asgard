@@ -23,7 +23,14 @@
             AND concat(concat(saga_code, '-'), id) LIKE concat(concat('%',#{sagaCode}),'%')
         </if>
         <if test="status != null">
-            AND status = #{status}
+            <choose>
+                <when test="status == 'COMPLETED'">
+                    AND (status = #{status} OR status = 'NON_CONSUMER')
+                </when>
+                <otherwise>
+                    AND status = #{status}
+                </otherwise>
+            </choose>
         </if>
         <if test="refType != null">
             AND ref_type LIKE concat(concat('%',#{refType}),'%')
@@ -65,8 +72,6 @@
 
 
 
-
-
             SELECT
                 DATE_FORMAT(start_time, '%Y-%m-%d') days,
                 COUNT(id) count
@@ -78,8 +83,6 @@
             AND #{end}
             GROUP BY
                 days
-
-
 
 
 

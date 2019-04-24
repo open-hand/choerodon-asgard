@@ -4,15 +4,15 @@ import io.choerodon.asgard.api.dto.SagaInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
 import io.choerodon.asgard.api.dto.StartInstanceDTO;
 import io.choerodon.asgard.api.service.SagaInstanceService;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.http.HttpStatus;
@@ -90,7 +90,7 @@ public class SagaInstanceController {
         sagaInstanceService.cancel(uuid);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "平台层查询事务实例列表")
     @CustomPageRequest
@@ -105,28 +105,28 @@ public class SagaInstanceController {
         return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, null, null);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "查询某个事务实例运行详情")
     public ResponseEntity<String> query(@PathVariable("id") Long id) {
         return sagaInstanceService.query(id);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/{id}/details", produces = "application/json")
     @ApiOperation(value = "查询事务实例的具体信息")
     public ResponseEntity<SagaInstanceDetailsDTO> queryDetails(@PathVariable("id") Long id) {
         return new ResponseEntity<>(sagaInstanceService.queryDetails(id), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/statistics", produces = "application/json")
     @ApiOperation(value = "统计全平台各个事务实例状态下的实例个数")
     public ResponseEntity<Map> statistics() {
         return new ResponseEntity<>(sagaInstanceService.statistics(null, null), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER, InitRoleCode.SITE_ADMINISTRATOR})
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER, InitRoleCode.SITE_ADMINISTRATOR})
     @ApiOperation("根据日期查询事务失败的次数")
     @GetMapping("/failed/count")
     public ResponseEntity<Map<String, Object>> queryFailedByDate(@RequestParam(value = "begin_date")
