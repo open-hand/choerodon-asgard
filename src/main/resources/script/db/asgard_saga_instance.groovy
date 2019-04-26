@@ -50,4 +50,11 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
             column(name: 'created_on', type: 'VARCHAR(48)', remarks: '创建该saga的服务，用于回查')
         }
     }
+
+    changeSet(id: '2019-04-26-create-index-IDX_CREATION_DATE', author: 'qiang.zeng') {
+        createIndex(tableName: "ASGARD_SAGA_INSTANCE", indexName: "IDX_CREATION_DATE") {
+            column(name: "CREATION_DATE", type: "DATETIME")
+        }
+    }
+
 }
