@@ -81,4 +81,12 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
             column(name: 'SEQ')
         }
     }
+
+    changeSet(id: '2019-04-26-create-index-IDX_SERVICE_STATUS_CONCURRENT', author: 'qiang.zeng') {
+        createIndex(tableName: "ASGARD_SAGA_TASK_INSTANCE", indexName: "IDX_SERVICE_STATUS_CONCURRENT") {
+            column(name: 'SERVICE', type: 'VARCHAR(64)')
+            column(name: 'STATUS', type: 'VARCHAR(32)')
+            column(name: 'CONCURRENT_LIMIT_POLICY', type: 'VARCHAR(32)')
+        }
+    }
 }
