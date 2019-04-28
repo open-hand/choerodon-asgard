@@ -14,7 +14,7 @@ build:
     - kaniko -c $PWD/src/main/docker -f $PWD/src/main/docker/Dockerfile -d ${DOCKER_REGISTRY}/${GROUP_NAME}/${PROJECT_NAME}:${CI_COMMIT_TAG}
   only:
     variables:
-      - $COMBINE != "true"
+      - $COMBINE == null
 build-combine:
   stage: build
   script:
