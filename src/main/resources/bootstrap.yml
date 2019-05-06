@@ -15,7 +15,7 @@ spring:
   mvc:
     static-path-pattern: /**
   resources:
-    static-locations: file:/dist
+    static-locations: classpath:/static,classpath:/public,classpath:/resources,classpath:/META-INF/resources,file:/dist
 management:
   server:
     port: 18081
