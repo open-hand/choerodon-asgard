@@ -1,19 +1,18 @@
 package io.choerodon.asgard.api.eventhandler
 
 import io.choerodon.asgard.api.service.RegisterInstanceService
-import io.choerodon.eureka.event.EurekaEventPayload
 import spock.lang.Specification
 
-class EurekaEventObserverSpec extends Specification {
+class ActuatorSagaHandlerSpec extends Specification {
 
     def "test receiveDownEvent"() {
         given: 'mock RegisterInstanceService'
         def service = Mock(RegisterInstanceService)
-        def observer = new EurekaEventObserver(service)
-
+        def handler = new ActuatorSagaHandler()
+        handler.registerInstanceService = service
         when:
-        observer.receiveDownEvent(new EurekaEventPayload())
+        handler.refreshAsgard('{"service": "test", "version": "1.0.0", "asgard": {}}')
         then:
-        1 * service.instanceDownConsumer(_)
+        1 * service.propertyDataConsume(_, '1.0.0')
     }
 }

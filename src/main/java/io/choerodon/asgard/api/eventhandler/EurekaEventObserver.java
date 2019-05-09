@@ -16,7 +16,7 @@ public class EurekaEventObserver extends AbstractEurekaEventObserver {
 
     @Override
     public void receiveUpEvent(EurekaEventPayload payload) {
-        registerInstanceService.instanceUpConsumer(payload);
+        //registerInstanceService.instanceUpConsumer(payload); 使用Saga统一刷新数据了
     }
 
     @Override

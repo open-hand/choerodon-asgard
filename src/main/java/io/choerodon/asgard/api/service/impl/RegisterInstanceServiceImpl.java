@@ -81,7 +81,8 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     }
 
 
-    private void propertyDataConsume(final PropertyData propertyData, final String version) {
+    @Override
+    public void propertyDataConsume(final PropertyData propertyData, final String version) {
         propertyData.getSagas().stream()
                 .map(t -> ConvertUtils.convertSaga(modelMapper, t, propertyData.getService()))
                 .forEach(sagaService::create);
