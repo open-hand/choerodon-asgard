@@ -3,14 +3,15 @@ package io.choerodon.asgard.api.controller.v1;
 import java.util.List;
 import javax.validation.Valid;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.constant.PageConstant;
 import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
@@ -19,12 +20,8 @@ import io.choerodon.asgard.api.service.ScheduleTaskService;
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 
 @RestController
@@ -81,14 +78,14 @@ public class ScheduleTaskProjectController {
     @ApiOperation(value = "项目层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<Page<QuartzTaskDTO>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                           @RequestParam(value = "status", required = false) String status,
-                                                           @RequestParam(name = "name", required = false) String name,
-                                                           @RequestParam(name = "description", required = false) String description,
-                                                           @RequestParam(name = "params", required = false) String params,
-                                                           @ApiIgnore
-                                                           @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
+    public ResponseEntity<PageInfo<QuartzTaskDTO>> pagingQuery(@PathVariable("project_id") long projectId,
+                                                               @RequestParam(value = "status", required = false) String status,
+                                                               @RequestParam(name = "name", required = false) String name,
+                                                               @RequestParam(name = "description", required = false) String description,
+                                                               @RequestParam(name = "params", required = false) String params,
+                                                               @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                               @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+        return scheduleTaskService.pageQuery(page,size, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})

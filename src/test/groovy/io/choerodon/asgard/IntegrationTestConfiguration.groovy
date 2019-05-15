@@ -44,7 +44,6 @@ class IntegrationTestConfiguration {
 
     @PostConstruct
     void init() {
-        mockDoPageAndSort()
         liquibaseExecutor.execute()
         setTestRestTemplateJWT()
     }
@@ -76,13 +75,4 @@ class IntegrationTestConfiguration {
         }
         return jwtToken
     }
-
-    private static void mockDoPageAndSort() {
-        def cp = new ClassPool(true)
-        def ctClass = cp.get('io.choerodon.mybatis.pagehelper.PageHelper')
-        def ctMethod = ctClass.getDeclaredMethod("doPageAndSort")
-        ctMethod.setBody("{ \$2.doSelect(); return null; }")
-        ctClass.toClass()
-    }
-
 }

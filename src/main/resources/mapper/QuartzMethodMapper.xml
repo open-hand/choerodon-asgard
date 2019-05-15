@@ -41,6 +41,7 @@
             description LIKE concat(concat('%',#{params}),'%')
             )
         </if>
+        order by id desc
     </select>
 
     <select id="selectByService" resultType="io.choerodon.asgard.domain.QuartzMethod">

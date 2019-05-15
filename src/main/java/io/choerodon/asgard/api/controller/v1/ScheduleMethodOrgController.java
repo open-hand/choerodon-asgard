@@ -2,25 +2,21 @@ package io.choerodon.asgard.api.controller.v1;
 
 import java.util.List;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.constant.PageConstant;
 import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import io.choerodon.asgard.api.dto.ScheduleMethodDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodInfoDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
 import io.choerodon.asgard.api.service.ScheduleMethodService;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.swagger.annotation.CustomPageRequest;
 
 @RestController
 @RequestMapping("/v1/schedules/organizations/{organization_id}/methods")
@@ -40,17 +36,16 @@ public class ScheduleMethodOrgController {
     @Permission(type = ResourceType.ORGANIZATION)
     @GetMapping
     @ApiOperation(value = "组织层分页查询执行方法列表")
-    @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<Page<ScheduleMethodInfoDTO>> pagingQuery(@PathVariable("organization_id") long orgId,
-                                                                   @RequestParam(value = "code", required = false) String code,
-                                                                   @RequestParam(name = "service", required = false) String service,
-                                                                   @RequestParam(name = "method", required = false) String method,
-                                                                   @RequestParam(name = "description", required = false) String description,
-                                                                   @RequestParam(name = "params", required = false) String params,
-                                                                   @ApiIgnore
-                                                                   @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, ResourceLevel.ORGANIZATION.value());
+    public ResponseEntity<PageInfo<ScheduleMethodInfoDTO>> pagingQuery(@PathVariable("organization_id") long orgId,
+                                                                       @RequestParam(value = "code", required = false) String code,
+                                                                       @RequestParam(name = "service", required = false) String service,
+                                                                       @RequestParam(name = "method", required = false) String method,
+                                                                       @RequestParam(name = "description", required = false) String description,
+                                                                       @RequestParam(name = "params", required = false) String params,
+                                                                       @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                                       @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+        return scheduleMethodService.pageQuery(page, size, code, service, method, description, params, ResourceLevel.ORGANIZATION.value());
     }
 
     @Permission(type = ResourceType.ORGANIZATION)

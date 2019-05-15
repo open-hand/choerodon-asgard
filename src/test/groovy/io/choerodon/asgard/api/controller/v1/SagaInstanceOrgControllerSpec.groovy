@@ -44,8 +44,8 @@ class SagaInstanceOrgControllerSpec extends Specification {
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
-        1 * sagaInstanceService.pageQuery(_, sagaCode, status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId)
-        0 * sagaInstanceService.pageQuery(_, sagaCode, status, refType, refId, wrongParam, ResourceLevel.ORGANIZATION.value(), orgId)
+        1 * sagaInstanceService.pageQuery(_, _, sagaCode, status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId)
+        0 * sagaInstanceService.pageQuery(_, _, sagaCode, status, refType, refId, wrongParam, ResourceLevel.ORGANIZATION.value(), orgId)
     }
 
     def "测试 查询某个事务实例运行详情接口"() {
@@ -59,7 +59,7 @@ class SagaInstanceOrgControllerSpec extends Specification {
         sagaInstanceController.setSagaInstanceService(sagaInstanceService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/{id}", SagaWithTaskInstanceDTO,orgId, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/{id}", SagaWithTaskInstanceDTO, orgId, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
@@ -78,7 +78,7 @@ class SagaInstanceOrgControllerSpec extends Specification {
         sagaInstanceController.setSagaInstanceService(sagaInstanceService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/{id}/details", SagaInstanceDetailsDTO,orgId, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/{id}/details", SagaInstanceDetailsDTO, orgId, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
@@ -94,7 +94,7 @@ class SagaInstanceOrgControllerSpec extends Specification {
         def orgId = 1
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/statistics", Map,orgId)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/statistics", Map, orgId)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()

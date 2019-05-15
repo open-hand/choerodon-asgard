@@ -1,11 +1,9 @@
 package io.choerodon.asgard.api.controller.v1
 
+import com.github.pagehelper.PageInfo
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO
 import io.choerodon.asgard.api.service.ScheduleMethodService
-import io.choerodon.core.domain.Page
-import io.choerodon.mybatis.pagehelper.domain.PageRequest
-import io.choerodon.mybatis.pagehelper.domain.Sort
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -43,15 +41,11 @@ class ScheduleMethodSiteControllerSpec extends Specification {
         queryParams.put("description", description)
         queryParams.put("params", params)
 
-        and: "构造pageRequest"
-        def order = new Sort.Order("id")
-        def pageRequest = new PageRequest(0, 20, new Sort(order))
-
         when: '对接口【分页查询执行方法列表】发送GET请求'
-        def entity = restTemplate.getForEntity("/v1/schedules/methods", Page, queryParams, pageRequest)
+        def entity = restTemplate.getForEntity("/v1/schedules/methods", PageInfo, queryParams, 1, 20)
         then: '状态码正确；方法参数调用成功'
         entity.statusCode.is2xxSuccessful()
-        1 * mockScheduleMethodService.pageQuery(_, _, _, _, _, _, _)
+        1 * mockScheduleMethodService.pageQuery(_, _, _, _, _, _, _, _)
     }
 
     def "GetMethodByService"() {

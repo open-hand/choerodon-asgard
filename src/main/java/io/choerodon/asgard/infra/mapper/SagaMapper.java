@@ -2,13 +2,13 @@ package io.choerodon.asgard.infra.mapper;
 
 import io.choerodon.asgard.api.dto.SagaDTO;
 import io.choerodon.asgard.domain.Saga;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-public interface SagaMapper extends BaseMapper<Saga> {
+public interface SagaMapper extends Mapper<Saga> {
 
     @Select("select count(*) from asgard_orch_saga where code = #{code}")
     boolean existByCode(@Param("code") String code);

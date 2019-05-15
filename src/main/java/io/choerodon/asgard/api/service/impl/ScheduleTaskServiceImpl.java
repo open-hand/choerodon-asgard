@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +38,10 @@ import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.asgard.property.PropertyTimedTask;
 import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
@@ -90,7 +90,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public QuartzTask create(final ScheduleTaskDTO dto, String level, Long sourceId) {
         QuartzTask quartzTask = modelMapper.map(dto, QuartzTask.class);
         QuartzMethod method = methodMapper.selectByPrimaryKey(dto.getMethodId());
@@ -134,7 +134,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
      */
     private List<QuartzTaskMember> insertNoticeMember(final ScheduleTaskDTO dto, final String level, final QuartzTask quartzTask) {
         List<QuartzTaskMember> quartzTaskMembers = new ArrayList<>();
-        if (dto.getNotifyUser() == null) return quartzTaskMembers;
+        if (dto.getNotifyUser() == null) {
+            return quartzTaskMembers;
+        }
         //判断是否为空，为了单测
         Long currentUserId = DetailsHelper.getUserDetails() != null ? DetailsHelper.getUserDetails().getUserId() : null;
         if (dto.getNotifyUser().getAdministrator()) {
@@ -373,48 +375,35 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description,
-                                                         String params, String level, Long sourceId) {
-        Page<QuartzTask> page = PageHelper.doPageAndSort(pageRequest,
-                () -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
-        Page<QuartzTaskDTO> pageBack = pageConvert(page);
-        return new ResponseEntity<>(pageBack, HttpStatus.OK);
-    }
-
-    public Page<QuartzTaskDTO> pageConvert(Page<QuartzTask> page) {
-        List<QuartzTaskDTO> quartzTaskDTOS = new ArrayList<>();
-        Page<QuartzTaskDTO> pageBack = new Page<>();
-        pageBack.setNumber(page.getNumber());
-        pageBack.setNumberOfElements(page.getNumberOfElements());
-        pageBack.setSize(page.getSize());
-        pageBack.setTotalElements(page.getTotalElements());
-        pageBack.setTotalPages(page.getTotalPages());
-        if (page.getContent().isEmpty()) {
-            return pageBack;
-        } else {
-            page.getContent().forEach(t -> {
-                Date lastStartTime = null;
-                Date nextStartTime;
-                QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(t.getId());
-                if (lastInstance != null) {
-                    lastStartTime = lastInstance.getActualStartTime();
-                    nextStartTime = lastInstance.getPlannedNextTime();
+    public ResponseEntity<PageInfo<QuartzTaskDTO>> pageQuery(int page, int size, String status, String name, String description,
+                                                             String params, String level, Long sourceId) {
+        PageInfo<QuartzTask> result = PageHelper.startPage(page,size).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
+        List<QuartzTask> quartzTasks = result.getList();
+        Page<QuartzTaskDTO> resultPage = new Page<>(page,size);
+        resultPage.setTotal(result.getTotal());
+        List<QuartzTaskDTO> quartzTaskList = new ArrayList<>();
+        quartzTasks.forEach(q -> {
+            Date lastStartTime = null;
+            Date nextStartTime;
+            QuartzTaskInstance lastInstance = instanceMapper.selectLastInstance(q.getId());
+            if (lastInstance != null) {
+                lastStartTime = lastInstance.getActualStartTime();
+                nextStartTime = lastInstance.getPlannedNextTime();
+            } else {
+                // 初次执行 开始时间已过，TriggerType 为 Cron ，则设当前时间的最近执行时间为下次执行时间 ；否则 设 开始时间 为 下次执行时间
+                if (q.getStartTime().getTime() < new Date().getTime() && TriggerType.CRON.getValue().equals(q.getTriggerType())) {
+                    nextStartTime = TriggerUtils.getStartTime(q.getCronExpression());
                 } else {
-                    // 初次执行 开始时间已过，TriggerType 为 Cron ，则设当前时间的最近执行时间为下次执行时间 ；否则 设 开始时间 为 下次执行时间
-                    if (t.getStartTime().getTime() < new Date().getTime() && TriggerType.CRON.getValue().equals(t.getTriggerType())) {
-                        nextStartTime = TriggerUtils.getStartTime(t.getCronExpression());
-                    } else {
-                        nextStartTime = t.getStartTime();
-                    }
+                    nextStartTime = q.getStartTime();
                 }
-                if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(t.getStatus())) {
-                    nextStartTime = null;
-                }
-                quartzTaskDTOS.add(new QuartzTaskDTO(t.getId(), t.getName(), t.getDescription(), lastStartTime, nextStartTime, t.getStatus(), t.getObjectVersionNumber()));
-            });
-            pageBack.setContent(quartzTaskDTOS);
-            return pageBack;
-        }
+            }
+            if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(q.getStatus())) {
+                nextStartTime = null;
+            }
+            quartzTaskList.add(new QuartzTaskDTO(q.getId(), q.getName(), q.getDescription(), lastStartTime, nextStartTime, q.getStatus(), q.getObjectVersionNumber()));
+        });
+        resultPage.addAll(quartzTaskList);
+        return new ResponseEntity<>(resultPage.toPageInfo(), HttpStatus.OK);
     }
 
     @Override
@@ -520,7 +509,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         QuartzTask task = new QuartzTask();
         task.setName(name);
         List<QuartzTask> select = taskMapper.select(task);
-        if(!CollectionUtils.isEmpty(select)){
+        if (!CollectionUtils.isEmpty(select)) {
             throw new CommonException("error.scheduleTask.name.exist");
         }
     }

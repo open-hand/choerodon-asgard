@@ -44,8 +44,8 @@ class SagaInstanceProjectControllerSpec extends Specification {
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
-        1 * sagaInstanceService.pageQuery(_, sagaCode, status, refType, refId, params, ResourceLevel.PROJECT.value(), projectId)
-        0 * sagaInstanceService.pageQuery(_, sagaCode, status, refType, refId, wrongParam, ResourceLevel.PROJECT.value(), projectId)
+        1 * sagaInstanceService.pageQuery(_, _, sagaCode, status, refType, refId, params, ResourceLevel.PROJECT.value(), projectId)
+        0 * sagaInstanceService.pageQuery(_, _, sagaCode, status, refType, refId, wrongParam, ResourceLevel.PROJECT.value(), projectId)
     }
 
     def "测试 查询某个事务实例运行详情接口"() {
@@ -59,7 +59,7 @@ class SagaInstanceProjectControllerSpec extends Specification {
         sagaInstanceController.setSagaInstanceService(sagaInstanceService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/projects/{project_id}/instances/{id}", SagaWithTaskInstanceDTO,projectId, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/projects/{project_id}/instances/{id}", SagaWithTaskInstanceDTO, projectId, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
@@ -78,7 +78,7 @@ class SagaInstanceProjectControllerSpec extends Specification {
         sagaInstanceController.setSagaInstanceService(sagaInstanceService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/projects/{project_id}/instances/{id}/details", SagaInstanceDetailsDTO,projectId, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/projects/{project_id}/instances/{id}/details", SagaInstanceDetailsDTO, projectId, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
@@ -94,7 +94,7 @@ class SagaInstanceProjectControllerSpec extends Specification {
         def projectId = 1
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/projects/{project_id}/instances/statistics", Map,projectId)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/projects/{project_id}/instances/statistics", Map, projectId)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()

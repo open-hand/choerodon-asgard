@@ -17,11 +17,8 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskMemberMapper
 import io.choerodon.asgard.property.PropertyTimedTask
 import io.choerodon.asgard.schedule.QuartzDefinition
-import io.choerodon.core.domain.Page
 import io.choerodon.core.exception.CommonException
 import io.choerodon.core.iam.ResourceLevel
-import io.choerodon.mybatis.pagehelper.domain.PageRequest
-import io.choerodon.mybatis.pagehelper.domain.Sort
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpStatus
@@ -268,98 +265,12 @@ class ScheduleTaskServiceSpec extends Specification {
         quartzTask.setStatus("RUNNING")
         quartzTask.setName("name")
         taskList.add(quartzTask)
-        and: "构造pageRequest"
-        def order = new Sort.Order("id")
-        def pageRequest = new PageRequest(1, 20, new Sort(order))
         and: "mock"
         mockTaskMapper.fulltextSearch(_, _, _, _, _, _) >> { return taskList }
         when: '调用方法'
-        scheduleTaskService.pageQuery(pageRequest, status, name, description, params, "site", 0L)
+        scheduleTaskService.pageQuery(1,20, status, name, description, params, "site", 0L)
         then: '无异常抛出'
-        thrown(NullPointerException)
-    }
-
-    def "pageConvert"() {
-        given: "参数准备"
-        def name = "name"
-        def objectVersionNumber = 1L
-        def status = "ENABLE"
-        def description = "description"
-        def startTime = new Date()
-        QuartzTask quartzTask = new QuartzTask()
-        quartzTask.setId(1L)
-        quartzTask.setName(name)
-        quartzTask.setDescription(description)
-        quartzTask.setObjectVersionNumber(objectVersionNumber)
-        quartzTask.setStatus(status)
-        quartzTask.setStartTime(startTime)
-
-        List<QuartzTask> list = new ArrayList<>()
-        list.add(quartzTask)
-
-        def page = new Page<QuartzTask>()
-        page.setNumber(1)
-        page.setNumberOfElements(1)
-        page.setTotalPages(1)
-        page.setTotalElements(1L)
-
-        when: "方法调用"
-        scheduleTaskService.pageConvert(page)
-
-        then: "结果分析"
         noExceptionThrown()
-
-        and: "content添加"
-        page.setContent(list)
-        and: "mock"
-        mockInstanceMapper.selectLastInstance(_) >> { return null }
-
-        when: "方法调用"
-        def convert2 = scheduleTaskService.pageConvert(page)
-
-        then: "结果分析"
-        noExceptionThrown()
-        convert2.getContent().size() == list.size()
-    }
-
-    def "pageConvert[lastInstance!=null]"() {
-        given: "参数准备"
-        def name = "name"
-        def objectVersionNumber = 1L
-        def status = "ENABLE"
-        def description = "description"
-        def startTime = new Date()
-        QuartzTask quartzTask = new QuartzTask()
-        quartzTask.setId(1L)
-        quartzTask.setName(name)
-        quartzTask.setDescription(description)
-        quartzTask.setObjectVersionNumber(objectVersionNumber)
-        quartzTask.setStatus(status)
-        quartzTask.setStartTime(startTime)
-
-        List<QuartzTask> list = new ArrayList<>()
-        list.add(quartzTask)
-
-        def page = new Page<QuartzTask>()
-        page.setNumber(1)
-        page.setNumberOfElements(1)
-        page.setTotalPages(1)
-        page.setTotalElements(1L)
-
-        and: "content添加"
-        page.setContent(list)
-
-        and: "mock"
-        mockInstanceMapper.selectLastInstance(_) >> {
-            return new QuartzTaskInstance(actualStartTime: new Date(), plannedNextTime: new Date())
-        }
-
-        when: "方法调用"
-        def convert = scheduleTaskService.pageConvert(page)
-
-        then: "结果分析"
-        noExceptionThrown()
-        convert.getContent().size() == list.size()
     }
 
     def "Finish"() {
