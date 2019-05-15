@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { axios, store } from 'choerodon-boot-combine';
+import { axios, store } from '@choerodon/boot';
 import querystring from 'query-string';
 
 // @store('SagaStore')
@@ -56,7 +56,7 @@ class SagaStore {
     params,
   ) {
     const queryObj = {
-      page: current - 1,
+      page: current,
       size: pageSize,
       code,
       description,

@@ -1,11 +1,10 @@
 const config = {
-  // use for c7n start
-  server: 'http://api.staging.saas.hand-china.com',
-  master: 'choerodon-front-master',
+  server: 'http://api.c7nf.choerodon.staging.saas.hand-china.com',
+  master: '@choerodon/master',
   projectType: 'choerodon',
   buildType: 'single',
   dashboard: {},
-  resourcesLevel: ['site', 'origanization', 'project', 'user'],
+  resourcesLevel: ['site', 'organization', 'project', 'user'],
 };
 
 module.exports = config;

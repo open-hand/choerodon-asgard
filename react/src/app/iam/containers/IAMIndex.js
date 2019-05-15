@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
-import { asyncLocaleProvider, asyncRouter, nomatch } from 'choerodon-boot-combine';
+import { asyncLocaleProvider, asyncRouter, nomatch } from '@choerodon/boot';
 
 const taskDetail = asyncRouter(() => import('./global/task-detail'));
 const executionRecord = asyncRouter(() => import('./global/execution-record'));

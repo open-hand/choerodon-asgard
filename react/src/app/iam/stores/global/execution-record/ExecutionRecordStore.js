@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { axios, store } from 'choerodon-boot-combine';
+import { axios, store } from '@choerodon/boot';
 import querystring from 'query-string';
 
 // @store('ExecutionRecordStore')
@@ -21,7 +21,7 @@ class ExecutionRecordStore {
     params, type, id,
   ) {
     const queryObj = {
-      page: current - 1,
+      page: current,
       size: pageSize,
       status,
       taskName,

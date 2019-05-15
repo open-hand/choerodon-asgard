@@ -35,6 +35,7 @@ gitlabci/.generated
 src/main/resources/application-default.yml
 
 ## front_end ignore
+lib
 
 # dist directory
 src/main/resources/lib

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Select, Table, Tooltip, Modal, Form, Input, Popover, Icon, Tabs } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page, Permission, Action } from 'choerodon-boot-combine';
+import { axios, Content, Header, Page, Permission, Action } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import ExecutableProgramStore from '../../../stores/global/executable-program';
 import jsonFormat from '../../../common/json-format';
@@ -114,9 +114,9 @@ export default class ExecutableProgram extends Component {
       ExecutableProgramStore.setData(data.content);
       this.setState({
         pagination: {
-          current: data.number + 1,
-          pageSize: data.size,
-          total: data.totalElements,
+          current: data.pageNum,
+          pageSize: data.pageSize,
+          total: data.total,
         },
         loading: false,
         sort,
