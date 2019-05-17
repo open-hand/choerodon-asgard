@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SagaInstanceEventPublisher {
-    final public static String SAGA_INSTANCE_TOPIC="saga_instance";
-    final public static String TAST_INSTANCE_PREFIX="TASK";
-    final public static String QUARTZ_INSTANCE_PREFIX="QUARTZ";
-    final public static String PLACEHOLDER="#";
+     public static final String SAGA_INSTANCE_TOPIC="saga_instance";
+     public static final String TAST_INSTANCE_PREFIX="TASK";
+     public static final String QUARTZ_INSTANCE_PREFIX="QUARTZ";
+     public static final String PLACEHOLDER="#";
     private StringRedisTemplate stringRedisTemplate;
 
     public SagaInstanceEventPublisher(StringRedisTemplate stringRedisTemplate){
