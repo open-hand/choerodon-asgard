@@ -48,7 +48,8 @@ public class ScheduleTaskInstanceSiteV2Controller {
     @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定method的定时任务消息列表")
     public DeferredResult<ResponseEntity<Set<PollScheduleTaskInstanceDTO>>> pollBatch(@RequestBody PollScheduleInstanceDTO dto) {
-        LOGGER.info("poll from %s",dto.getService());
+        LOGGER.info("poll ScheduleTaskInstance from {}",dto.getService());
+
         DeferredResult<ResponseEntity<Set<PollScheduleTaskInstanceDTO>>> deferredResult = new DeferredResult<>(60000l);
         deferredResult.onTimeout(() -> {
                     deferredResult.setResult(new ResponseEntity<>(ConcurrentHashMap.newKeySet(), HttpStatus.OK));

@@ -43,7 +43,7 @@ public class SagaTaskInstanceV2Controller {
     @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
     public DeferredResult<ResponseEntity<Set<SagaTaskInstanceDTO>>> pollBatch(@RequestBody @Valid final PollSagaTaskInstanceDTO pollBatchDTO) {
-        LOGGER.info("poll from %s",pollBatchDTO.getService());
+        LOGGER.info("poll SagaTaskInstance from {}",pollBatchDTO.getService());
 
         if (pollBatchDTO.getMaxPollSize() == null) {
             pollBatchDTO.setMaxPollSize(500);
