@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.dto.PollScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
@@ -7,20 +8,15 @@ import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
 import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.constant.PageConstant;
 import io.choerodon.base.enums.ResourceType;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -43,29 +39,27 @@ public class ScheduleTaskInstanceSiteController {
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "全局层分页查询任务实例列表")
-    @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<Page<ScheduleTaskInstanceDTO>> pagingQuery(@RequestParam(value = "status", required = false) String status,
-                                                                     @RequestParam(name = "taskName", required = false) String taskName,
-                                                                     @RequestParam(name = "exceptionMessage", required = false) String exceptionMessage,
-                                                                     @RequestParam(name = "params", required = false) String params,
-                                                                     @ApiIgnore
-                                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return scheduleTaskInstanceService.pageQuery(pageRequest, status, taskName, exceptionMessage, params, ResourceLevel.SITE.value(), 0L);
+    public ResponseEntity<PageInfo<ScheduleTaskInstanceDTO>> pagingQuery(@RequestParam(value = "status", required = false) String status,
+                                                                         @RequestParam(name = "taskName", required = false) String taskName,
+                                                                         @RequestParam(name = "exceptionMessage", required = false) String exceptionMessage,
+                                                                         @RequestParam(name = "params", required = false) String params,
+                                                                         @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                                         @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+        return scheduleTaskInstanceService.pageQuery(page, size, status, taskName, exceptionMessage, params, ResourceLevel.SITE.value(), 0L);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{taskId}")
     @ApiOperation(value = "全局层分页查询任务日志")
-    @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<Page<ScheduleTaskInstanceLogDTO>> pagingQueryByTaskId(@PathVariable long taskId,
-                                                                                @RequestParam(value = "status", required = false) String status,
-                                                                                @RequestParam(name = "serviceInstanceId", required = false) String serviceInstanceId,
-                                                                                @RequestParam(name = "params", required = false) String params,
-                                                                                @ApiIgnore
-                                                                                @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return new ResponseEntity<>(scheduleTaskInstanceService.pagingQueryByTaskId(pageRequest, taskId, status, serviceInstanceId, params, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
+    public ResponseEntity<PageInfo<ScheduleTaskInstanceLogDTO>> pagingQueryByTaskId(@PathVariable long taskId,
+                                                                                    @RequestParam(value = "status", required = false) String status,
+                                                                                    @RequestParam(name = "serviceInstanceId", required = false) String serviceInstanceId,
+                                                                                    @RequestParam(name = "params", required = false) String params,
+                                                                                    @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                                                    @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+        return new ResponseEntity<>(scheduleTaskInstanceService.pagingQueryByTaskId(page, size, taskId, status, serviceInstanceId, params, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
     }
 
     @PostMapping("/poll")

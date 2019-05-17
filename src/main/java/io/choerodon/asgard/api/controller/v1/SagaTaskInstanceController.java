@@ -1,25 +1,21 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.constant.PageConstant;
 import io.choerodon.base.enums.ResourceType;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -98,14 +94,13 @@ public class SagaTaskInstanceController {
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "平台层分页查询SagaTask实例列表")
-    @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<Page<SagaTaskInstanceInfoDTO>> pagingQuery(@RequestParam(value = "sagaInstanceCode", required = false) String sagaInstanceCode,
-                                                                     @RequestParam(name = "status", required = false) String status,
-                                                                     @RequestParam(name = "taskInstanceCode", required = false) String taskInstanceCode,
-                                                                     @RequestParam(name = "params", required = false) String params,
-                                                                     @ApiIgnore
-                                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return sagaTaskInstanceService.pageQuery(pageRequest, sagaInstanceCode, status, taskInstanceCode, params, null, null);
+    public ResponseEntity<PageInfo<SagaTaskInstanceInfoDTO>> pagingQuery(@RequestParam(value = "sagaInstanceCode", required = false) String sagaInstanceCode,
+                                                                         @RequestParam(name = "status", required = false) String status,
+                                                                         @RequestParam(name = "taskInstanceCode", required = false) String taskInstanceCode,
+                                                                         @RequestParam(name = "params", required = false) String params,
+                                                                         @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                                         @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+        return sagaTaskInstanceService.pageQuery(page, size, sagaInstanceCode, status, taskInstanceCode, params, null, null);
     }
 }

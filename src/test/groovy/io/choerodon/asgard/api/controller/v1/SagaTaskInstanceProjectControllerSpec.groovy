@@ -29,7 +29,7 @@ class SagaTaskInstanceProjectControllerSpec extends Specification {
         def taskInstanceCode = 'taskInstanceCode'
         def params = 'params'
         def wrongParam = 'param'
-        def projectId=1
+        def projectId = 1
 
         and: 'mock sagaTaskInstanceService'
         def sagaTaskInstanceService = Mock(SagaTaskInstanceService)
@@ -38,11 +38,11 @@ class SagaTaskInstanceProjectControllerSpec extends Specification {
         when: "调用查询事务列表接口"
         def entity = testRestTemplate.getForEntity("/v1/sagas/projects/{project_id}/tasks/instances?sagaInstanceCode={sagaInstanceCode}" +
                 "&status={status}&taskInstanceCode={taskInstanceCode}&params={params}",
-                String, projectId,sagaInstanceCode, status, taskInstanceCode, params)
+                String, projectId, sagaInstanceCode, status, taskInstanceCode, params)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
-        1 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, params, ResourceLevel.PROJECT.value(), projectId)
-        0 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, wrongParam,  ResourceLevel.PROJECT.value(), projectId)
+        1 * sagaTaskInstanceService.pageQuery(_, _, sagaInstanceCode, status, taskInstanceCode, params, ResourceLevel.PROJECT.value(), projectId)
+        0 * sagaTaskInstanceService.pageQuery(_, _, sagaInstanceCode, status, taskInstanceCode, wrongParam, ResourceLevel.PROJECT.value(), projectId)
     }
 }

@@ -7,7 +7,6 @@ import io.choerodon.asgard.domain.SagaTask
 import io.choerodon.asgard.infra.mapper.SagaMapper
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper
 import io.choerodon.core.exception.CommonException
-import io.choerodon.mybatis.pagehelper.domain.PageRequest
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
 import spock.lang.Specification
@@ -54,7 +53,7 @@ class SagaServiceSpec extends Specification {
         def sagaService = new SagaServiceImpl(mockSagaMapper, null)
 
         when: '调用pagingQuery方法'
-        sagaService.pagingQuery(new PageRequest(), '', '', '', '')
+        sagaService.pagingQuery(1, 20, '', '', '', '')
 
         then: 'sagaMapper的fulltextSearch方法被调用'
         1 * mockSagaMapper.fulltextSearch(_, _, _, _)

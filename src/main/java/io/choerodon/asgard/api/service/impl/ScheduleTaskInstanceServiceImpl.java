@@ -1,6 +1,8 @@
 package io.choerodon.asgard.api.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.dto.PollScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
@@ -12,10 +14,7 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -43,10 +42,16 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
     }
 
     @Override
-    public ResponseEntity<Page<ScheduleTaskInstanceDTO>> pageQuery(PageRequest pageRequest, String status, String taskName,
-                                                                   String exceptionMessage, String params, String level, Long sourceId) {
-        return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
-                () -> instanceMapper.fulltextSearch(status, taskName, exceptionMessage, params, level, sourceId)), HttpStatus.OK);
+    public ResponseEntity<PageInfo<ScheduleTaskInstanceDTO>> pageQuery(int page, int size, String status, String taskName,
+                                                                       String exceptionMessage, String params, String level, Long sourceId) {
+
+
+        return new ResponseEntity<>(
+                PageHelper
+                        .startPage(page, size)
+                        .doSelectPageInfo(
+                                () -> instanceMapper.
+                                        fulltextSearch(status, taskName, exceptionMessage, params, level, sourceId)), HttpStatus.OK);
     }
 
 
@@ -140,9 +145,11 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
     }
 
     @Override
-    public Page<ScheduleTaskInstanceLogDTO> pagingQueryByTaskId(PageRequest pageRequest, Long taskId, String status, String serviceInstanceId, String params, String level, Long sourceId) {
-        return PageHelper.doPageAndSort(pageRequest,
-                () -> instanceMapper.selectByTaskId(taskId, status, serviceInstanceId, params, level, sourceId));
+    public PageInfo<ScheduleTaskInstanceLogDTO> pagingQueryByTaskId(int page, int size, Long taskId, String status, String serviceInstanceId, String params, String level, Long sourceId) {
+        return PageHelper
+                .startPage(page,size)
+                .doSelectPageInfo(
+                        () -> instanceMapper.selectByTaskId(taskId, status, serviceInstanceId, params, level, sourceId));
     }
 
     @Override

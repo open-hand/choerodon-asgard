@@ -77,8 +77,8 @@ class SagaInstanceControllerSpec extends Specification {
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
-        1 * sagaInstanceService.pageQuery(_, sagaCode, status, refType, refId, params, _, _)
-        0 * sagaInstanceService.pageQuery(_, sagaCode, status, refType, refId, wrongParam, _, _)
+        1 * sagaInstanceService.pageQuery(_, _, sagaCode, status, refType, refId, params, _, _)
+        0 * sagaInstanceService.pageQuery(_, _, sagaCode, status, refType, refId, wrongParam, _, _)
     }
 
     def "测试 查询某个事务实例运行详情接口"() {

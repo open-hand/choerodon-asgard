@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.controller.v1
 
+import com.github.pagehelper.PageInfo
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO
 import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO
@@ -160,10 +161,10 @@ class ScheduleTaskOrgControllerSpec extends Specification {
         query.put("params", params)
 
         when: 'GET请求【分页查询任务实例列表】'
-        def response = restTemplate.getForEntity(BASE_PATH, Page, query)
+        def response = restTemplate.getForEntity(BASE_PATH, PageInfo, query)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.pageQuery(_, _, _, _, _, _, _)
+        1 * mockScheduleTaskService.pageQuery(_,_, _, _, _, _, _, _)
     }
 
     def "GetTaskDetail"() {

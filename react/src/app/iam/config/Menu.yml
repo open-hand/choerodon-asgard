@@ -1,0 +1,166 @@
+# 任务调度
+"task-dispatch":
+  icon: task_schedule
+  sort: 3
+  site:
+    - "task-detail":
+        icon: subject
+        Routes: /iam/task-detail
+        sort: 1
+        permission:
+          - 'asgard-service.schedule-task-site.pagingQuery'
+          - 'asgard-service.schedule-task-site.create'
+          - 'asgard-service.schedule-task-site.enable'
+          - 'asgard-service.schedule-task-site.disable'
+          - 'asgard-service.schedule-task-site.delete'
+          - 'asgard-service.schedule-task-site.getTaskDetail'
+    - "execution-record":
+        icon: work_log
+        Routes: /iam/execution-record
+        sort: 2
+        permission:
+          - 'asgard-service.schedule-task-instance-site.pagingQuery'
+    - "task-classname":
+        icon: classname
+        Routes: /iam/executable-program
+        sort: 3
+        permission:
+          - 'asgard-service.schedule-method-site.pagingQuery'
+          - 'asgard-service.schedule-method-site.getParams'
+
+# 事务管理
+"global-transaction":
+  icon: developer_board
+  sort: 4
+  delete: true
+  site:
+    - "saga":
+        icon: saga_define
+        Routes: /iam/saga
+        sort: 1
+        delete: true
+        permission:
+          - 'asgard-service.saga.pagingQuery'
+          - 'asgard-service.saga.query'
+    - "saga-instance":
+        icon: instance_outline
+        Routes: /iam/saga-instance
+        sort: 2
+        delete: true
+        permission:
+          - 'asgard-service.saga-instance.pagingQuery'
+          - 'asgard-service.saga-instance.query'
+          - 'asgard-service.saga-instance.statistics'
+          - 'asgard-service.saga-instance.queryDetails'
+
+# 平台统计
+"statistics":
+  icon: bar_chart
+  sort: 5
+  site:
+    - "saga":
+        icon: saga_define
+        Routes: /iam/saga
+        sort: 1
+        permission:
+          - 'asgard-service.saga.pagingQuery'
+          - 'asgard-service.saga.query'
+    - "saga-instance":
+        icon: instance_outline
+        Routes: /iam/saga-instance
+        sort: 2
+        permission:
+          - 'asgard-service.saga-instance.pagingQuery'
+          - 'asgard-service.saga-instance.query'
+          - 'asgard-service.saga-instance.statistics'
+          - 'asgard-service.saga-instance.queryDetails'
+
+# 组织设置
+"rentsetting":
+  icon: IAM
+  sort: 2
+  organization:
+    - "saga-instance-organization":
+        icon: instance_outline
+        Routes: /iam/saga-instance
+        sort: 9
+        permission:
+        - 'asgard-service.saga-instance-org.pagingQuery'
+        - 'asgard-service.saga-instance-org.statistics'
+        - 'asgard-service.saga-instance-org.query'
+        - 'asgard-service.saga-instance-org.queryDetails'
+
+# 组织层任务调度
+"task-dispatch-organization":
+  icon: task_schedule
+  sort: 4
+  organization:
+    - "task-detail-organization":
+        icon: subject
+        Routes: /iam/task-detail
+        sort: 1
+        permission:
+          - 'asgard-service.schedule-task-org.pagingQuery'
+          - 'asgard-service.schedule-task-org.create'
+          - 'asgard-service.schedule-task-org.enable'
+          - 'asgard-service.schedule-task-org.disable'
+          - 'asgard-service.schedule-task-org.delete'
+          - 'asgard-service.schedule-task-org.getTaskDetail'
+    - "execution-record-organization":
+        icon: work_log
+        Routes: /iam/execution-record
+        sort: 2
+        permission:
+          - 'asgard-service.schedule-task-instance-org.pagingQuery'
+    - "task-classname-organization":
+        icon: classname
+        Routes: /iam/executable-program
+        sort: 3
+        permission:
+          - 'asgard-service.schedule-method-org.pagingQuery'
+          - 'asgard-service.schedule-method-org.getParams'
+
+# 项目设置
+"prosetting":
+  icon: IAM
+  sort: 6
+  project:
+    - "saga-instance-project":
+        icon: instance_outline
+        Routes: /iam/saga-instance
+        sort: 3
+        permission:
+        - 'asgard-service.saga-instance-project.pagingQuery'
+        - 'asgard-service.saga-instance-project.statistics'
+        - 'asgard-service.saga-instance-project.query'
+        - 'asgard-service.saga-instance-project.queryDetails'
+
+# 项目层任务调度
+"task-dispatch-project":
+  icon: task_schedule
+  sort: 7
+  project:
+    - "task-detail-project":
+        icon: subject
+        Routes: /iam/task-detail
+        sort: 1
+        permission:
+          - 'asgard-service.schedule-task-project.pagingQuery'
+          - 'asgard-service.schedule-task-project.create'
+          - 'asgard-service.schedule-task-project.enable'
+          - 'asgard-service.schedule-task-project.disable'
+          - 'asgard-service.schedule-task-project.delete'
+          - 'asgard-service.schedule-task-project.getTaskDetail'
+    - "execution-record-project":
+        icon: work_log
+        Routes: /iam/execution-record
+        sort: 2
+        permission:
+          - 'asgard-service.schedule-task-instance-project.pagingQuery'
+    - "task-classname-project":
+        icon: classname
+        Routes: /iam/executable-program
+        sort: 3
+        permission:
+          - 'asgard-service.schedule-method-project.pagingQuery'
+          - 'asgard-service.schedule-method-project.getParams'

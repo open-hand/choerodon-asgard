@@ -1,10 +1,9 @@
 package io.choerodon.asgard.api.service;
 
+import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.dto.SagaInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
 import io.choerodon.asgard.api.dto.StartInstanceDTO;
-import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
@@ -20,9 +19,9 @@ public interface SagaInstanceService {
     void cancel(String uuid);
 
 
-    ResponseEntity<Page<SagaInstanceDTO>> pageQuery(PageRequest pageRequest, String sagaCode,
-                                                    String status, String refType,
-                                                    String refId, String params, String level, Long sourceId);
+    ResponseEntity<PageInfo<SagaInstanceDTO>> pageQuery(int page, int size, String sagaCode,
+                                                        String status, String refType,
+                                                        String refId, String params, String level, Long sourceId);
 
     ResponseEntity<String> query(Long id);
 

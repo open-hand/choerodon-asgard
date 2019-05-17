@@ -2,14 +2,14 @@ package io.choerodon.asgard.infra.mapper;
 
 import java.util.List;
 
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.domain.QuartzTaskDetail;
-import io.choerodon.mybatis.common.BaseMapper;
 
-public interface QuartzTaskMapper extends BaseMapper<QuartzTask> {
+public interface QuartzTaskMapper extends Mapper<QuartzTask> {
 
     @Select("SELECT id FROM asgard_quartz_task WHERE name = #{taskName} AND fd_level = #{level} AND source_id= #{sourceId}")
     List<Long> selectTaskIdByName(@Param("taskName") String taskName, @Param("level") String level, @Param("sourceId") Long sourceId);

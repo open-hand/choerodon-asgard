@@ -163,7 +163,7 @@ class ScheduleTaskProjectControllerSpec extends Specification {
         def response = restTemplate.getForEntity(BASE_PATH, Page, query)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
-        1 * mockScheduleTaskService.pageQuery(_, _, _, _, _, _, _)
+        1 * mockScheduleTaskService.pageQuery(_, _, _, _, _, _, _, _)
     }
 
     def "GetTaskDetail"() {
