@@ -1,6 +1,7 @@
 package io.choerodon.asgard.api.service.impl;
 
 import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
+import io.choerodon.asgard.api.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.api.service.QuartzRealJobService;
 import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.api.service.ScheduleTaskService;
@@ -33,12 +34,14 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
 
     private ScheduleTaskService scheduleTaskService;
     private ScheduleTaskInstanceService scheduleTaskInstanceService;
+    private SagaInstanceEventPublisher sagaInstanceEventPublisher;
 
     public QuartzRealJobServiceImpl(QuartzTaskMapper taskMapper,
                                     QuartzTaskInstanceMapper instanceMapper,
                                     QuartzMethodMapper methodMapper,
                                     ScheduleTaskService scheduleTaskService,
-                                    ScheduleTaskInstanceService scheduleTaskInstanceService) {
+                                    ScheduleTaskInstanceService scheduleTaskInstanceService,
+                                    SagaInstanceEventPublisher sagaInstanceEventPublisher) {
         this.taskMapper = taskMapper;
         this.instanceMapper = instanceMapper;
         this.methodMapper = methodMapper;
@@ -116,6 +119,8 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
         taskInstance.setMaxRetryCount(db.getMaxRetryCount());
         if (instanceMapper.insert(taskInstance) != 1) {
             LOGGER.warn("taskInstance insert error when createInstance {}", task);
+        }else{
+            sagaInstanceEventPublisher.sagaTaskInstanceEvent(db.getService());
         }
     }
 
