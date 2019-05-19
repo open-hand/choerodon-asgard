@@ -8,6 +8,7 @@ import io.choerodon.asgard.api.dto.PageSagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
 import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
+import io.choerodon.asgard.api.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.api.service.JsonDataService;
 import io.choerodon.asgard.api.service.NoticeService;
 import io.choerodon.asgard.api.service.SagaTaskInstanceService;
@@ -67,6 +68,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private NoticeService noticeService;
     private JsonDataService jsonDataService;
     private SagaTaskMapper sagaTaskMapper;
+    private SagaInstanceEventPublisher sagaInstanceEventPublisher;
 
     public SagaTaskInstanceServiceImpl(SagaTaskInstanceMapper taskInstanceMapper,
                                        SagaInstanceMapper instanceMapper,
@@ -74,7 +76,8 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                                        DataSourceTransactionManager transactionManager,
                                        NoticeService noticeService,
                                        SagaTaskMapper sagaTaskMapper,
-                                       JsonDataService jsonDataService) {
+                                       JsonDataService jsonDataService,
+                                       SagaInstanceEventPublisher sagaInstanceEventPublisher) {
         this.taskInstanceMapper = taskInstanceMapper;
         this.instanceMapper = instanceMapper;
         this.jsonDataMapper = jsonDataMapper;
@@ -82,6 +85,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         this.noticeService = noticeService;
         this.jsonDataService = jsonDataService;
         this.sagaTaskMapper = sagaTaskMapper;
+        this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         modelMapper.addMappings(new PropertyMap<SagaTask, SagaTaskInstance>() {
             @Override
@@ -214,6 +218,11 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             //如果已重试次数 < 最大重试次数，则增加重试次数
         } else {
             taskInstanceMapper.increaseRetriedCount(taskInstance.getId());
+            //如果可重试，则通知相应的服务来立即拉取信息
+            SagaTask example = new SagaTask();
+            example.setSagaCode(taskInstance.getSagaCode());
+            example.setCode(taskInstance.getTaskCode());
+            sagaInstanceEventPublisher.sagaTaskInstanceEvent(sagaTaskMapper.selectOne(example).getService());
         }
     }
 
@@ -262,6 +271,9 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                 sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.WAIT_TO_BE_PULLED.name());
                 if (taskInstanceMapper.insertSelective(sagaTaskInstance) != 1) {
                     throw new FeignException(DB_ERROR);
+                }else{
+                    //通知相应的服务来立即拉取信息
+                    sagaInstanceEventPublisher.sagaTaskInstanceEvent(t.getService());
                 }
             });
         } catch (IOException e) {
@@ -296,6 +308,11 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         instanceMapper.updateByPrimaryKey(sagaInstance);
         taskInstance.setStatus(SagaDefinition.TaskInstanceStatus.WAIT_TO_BE_PULLED.name());
         taskInstanceMapper.updateByPrimaryKeySelective(taskInstance);
+        //通知相应的服务来立即拉取信息
+        SagaTask example = new SagaTask();
+        example.setSagaCode(taskInstance.getSagaCode());
+        example.setCode(taskInstance.getTaskCode());
+        sagaInstanceEventPublisher.sagaTaskInstanceEvent(sagaTaskMapper.selectOne(example).getService());
     }
 
     @Override

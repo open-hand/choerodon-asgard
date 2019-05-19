@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.dto.*;
+import io.choerodon.asgard.api.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.api.service.JsonDataService;
 import io.choerodon.asgard.api.service.SagaInstanceService;
 import io.choerodon.asgard.domain.SagaInstance;
@@ -53,13 +54,15 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     private SagaTaskInstanceMapper taskInstanceMapper;
     private JsonDataMapper jsonDataMapper;
     private JsonDataService jsonDataService;
+    private SagaInstanceEventPublisher sagaInstanceEventPublisher;
 
 
     public SagaInstanceServiceImpl(SagaTaskMapper taskMapper,
                                    SagaInstanceMapper instanceMapper,
                                    SagaTaskInstanceMapper taskInstanceMapper,
                                    JsonDataService jsonDataService,
-                                   JsonDataMapper jsonDataMapper) {
+                                   JsonDataMapper jsonDataMapper,
+                                   SagaInstanceEventPublisher sagaInstanceEventPublisher) {
         this.taskMapper = taskMapper;
         this.instanceMapper = instanceMapper;
         this.taskInstanceMapper = taskInstanceMapper;
@@ -67,6 +70,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         this.jsonDataMapper = jsonDataMapper;
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
         modelMapper.addMappings(new PropertyMap<SagaTask, SagaTaskInstance>() {
             @Override
             protected void configure() {
@@ -120,6 +124,9 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.WAIT_TO_BE_PULLED.name());
             if (taskInstanceMapper.insertSelective(sagaTaskInstance) != 1) {
                 throw new FeignException(DB_ERROR);
+            }
+            else{
+                sagaInstanceEventPublisher.sagaTaskInstanceEvent(t.getService());
             }
         });
     }
