@@ -111,9 +111,9 @@ export default class SagaInstance extends Component {
     }
     SagaInstanceStore.loadData(pagination, filters, sort, params, this.sagaInstanceType, type).then((data) => {
       if (type === 'task') {
-        SagaInstanceStore.setTaskData(data.content);
+        SagaInstanceStore.setTaskData(data.list);
       } else {
-        SagaInstanceStore.setData(data.content);
+        SagaInstanceStore.setData(data.list);
       }
       SagaInstanceStore.loadStatistics();
       this.setState({

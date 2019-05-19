@@ -5,7 +5,7 @@
   site:
     - "task-detail":
         icon: subject
-        Routes: /iam/task-detail
+        Routes: /asgard/task-detail
         sort: 1
         permission:
           - 'asgard-service.schedule-task-site.pagingQuery'
@@ -16,13 +16,13 @@
           - 'asgard-service.schedule-task-site.getTaskDetail'
     - "execution-record":
         icon: work_log
-        Routes: /iam/execution-record
+        Routes: /asgard/execution-record
         sort: 2
         permission:
           - 'asgard-service.schedule-task-instance-site.pagingQuery'
     - "task-classname":
         icon: classname
-        Routes: /iam/executable-program
+        Routes: /asgard/executable-program
         sort: 3
         permission:
           - 'asgard-service.schedule-method-site.pagingQuery'
@@ -36,7 +36,7 @@
   site:
     - "saga":
         icon: saga_define
-        Routes: /iam/saga
+        Routes: /asgard/saga
         sort: 1
         delete: true
         permission:
@@ -44,7 +44,7 @@
           - 'asgard-service.saga.query'
     - "saga-instance":
         icon: instance_outline
-        Routes: /iam/saga-instance
+        Routes: /asgard/saga-instance
         sort: 2
         delete: true
         permission:
@@ -60,14 +60,14 @@
   site:
     - "saga":
         icon: saga_define
-        Routes: /iam/saga
+        Routes: /asgard/saga
         sort: 1
         permission:
           - 'asgard-service.saga.pagingQuery'
           - 'asgard-service.saga.query'
     - "saga-instance":
         icon: instance_outline
-        Routes: /iam/saga-instance
+        Routes: /asgard/saga-instance
         sort: 2
         permission:
           - 'asgard-service.saga-instance.pagingQuery'
@@ -82,7 +82,7 @@
   organization:
     - "saga-instance-organization":
         icon: instance_outline
-        Routes: /iam/saga-instance
+        Routes: /asgard/saga-instance
         sort: 9
         permission:
         - 'asgard-service.saga-instance-org.pagingQuery'
@@ -97,7 +97,7 @@
   organization:
     - "task-detail-organization":
         icon: subject
-        Routes: /iam/task-detail
+        Routes: /asgard/task-detail
         sort: 1
         permission:
           - 'asgard-service.schedule-task-org.pagingQuery'
@@ -108,13 +108,13 @@
           - 'asgard-service.schedule-task-org.getTaskDetail'
     - "execution-record-organization":
         icon: work_log
-        Routes: /iam/execution-record
+        Routes: /asgard/execution-record
         sort: 2
         permission:
           - 'asgard-service.schedule-task-instance-org.pagingQuery'
     - "task-classname-organization":
         icon: classname
-        Routes: /iam/executable-program
+        Routes: /asgard/executable-program
         sort: 3
         permission:
           - 'asgard-service.schedule-method-org.pagingQuery'
@@ -127,7 +127,7 @@
   project:
     - "saga-instance-project":
         icon: instance_outline
-        Routes: /iam/saga-instance
+        Routes: /asgard/saga-instance
         sort: 3
         permission:
         - 'asgard-service.saga-instance-project.pagingQuery'
@@ -142,7 +142,7 @@
   project:
     - "task-detail-project":
         icon: subject
-        Routes: /iam/task-detail
+        Routes: /asgard/task-detail
         sort: 1
         permission:
           - 'asgard-service.schedule-task-project.pagingQuery'
@@ -153,13 +153,13 @@
           - 'asgard-service.schedule-task-project.getTaskDetail'
     - "execution-record-project":
         icon: work_log
-        Routes: /iam/execution-record
+        Routes: /asgard/execution-record
         sort: 2
         permission:
           - 'asgard-service.schedule-task-instance-project.pagingQuery'
     - "task-classname-project":
         icon: classname
-        Routes: /iam/executable-program
+        Routes: /asgard/executable-program
         sort: 3
         permission:
           - 'asgard-service.schedule-method-project.pagingQuery'

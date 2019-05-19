@@ -54,8 +54,8 @@ export default class SagaImg extends Component {
 
 
   getSidebarContainer() {
-    const content = document.body.getElementsByClassName('ant-modal-sidebar')[0];
-    return content.getElementsByClassName('ant-modal-body')[0];
+    const content = document.body.getElementsByClassName('c7n-modal-sidebar')[0];
+    return content.getElementsByClassName('c7n-modal-body')[0];
   }
 
   addScrollEventListener() {

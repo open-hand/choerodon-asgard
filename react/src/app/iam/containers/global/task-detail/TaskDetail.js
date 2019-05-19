@@ -133,7 +133,7 @@ export default class TaskDetail extends Component {
     }
 
     TaskDetailStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
-      TaskDetailStore.setData(data.content);
+      TaskDetailStore.setData(data.list);
       this.setState({
         pagination: {
           current: data.pageNum,
@@ -206,7 +206,7 @@ export default class TaskDetail extends Component {
     }
 
     TaskDetailStore.loadLogData(logPagination, logFilters, logSort, logParams, TaskDetailStore.currentTask.id, type, id).then((data) => {
-      TaskDetailStore.setLog(data.content);
+      TaskDetailStore.setLog(data.list);
       this.setState({
         logPagination: {
           current: data.pageNum,

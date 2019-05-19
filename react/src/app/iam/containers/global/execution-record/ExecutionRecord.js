@@ -102,7 +102,7 @@ export default class ExecutionRecord extends Component {
       return;
     }
     ExecutionRecordStore.loadData(pagination, filters, sort, params, type, id).then((data) => {
-      ExecutionRecordStore.setData(data.content);
+      ExecutionRecordStore.setData(data.list);
       this.setState({
         pagination: {
           current: data.pageNum,
