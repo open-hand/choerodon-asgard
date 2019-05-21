@@ -2,25 +2,22 @@ package io.choerodon.asgard.api.controller.v1;
 
 import java.util.List;
 
+import com.github.pagehelper.PageInfo;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.constant.PageConstant;
+import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import io.choerodon.asgard.api.dto.ScheduleMethodDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodInfoDTO;
 import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
 import io.choerodon.asgard.api.service.ScheduleMethodService;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.pagehelper.annotation.SortDefault;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import io.choerodon.mybatis.pagehelper.domain.Sort;
-import io.choerodon.swagger.annotation.CustomPageRequest;
-import io.choerodon.swagger.annotation.Permission;
 
 @RestController
 @RequestMapping("/v1/schedules/projects/{project_id}/methods")
@@ -37,23 +34,22 @@ public class ScheduleMethodProjectController {
         this.scheduleMethodService = scheduleMethodService;
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping
     @ApiOperation(value = "项目层分页查询执行方法列表")
-    @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<Page<ScheduleMethodInfoDTO>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                                   @RequestParam(value = "code", required = false) String code,
-                                                                   @RequestParam(name = "service", required = false) String service,
-                                                                   @RequestParam(name = "method", required = false) String method,
-                                                                   @RequestParam(name = "description", required = false) String description,
-                                                                   @RequestParam(name = "params", required = false) String params,
-                                                                   @ApiIgnore
-                                                                   @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, ResourceLevel.PROJECT.value());
+    public ResponseEntity<PageInfo<ScheduleMethodInfoDTO>> pagingQuery(@PathVariable("project_id") long projectId,
+                                                                       @RequestParam(value = "code", required = false) String code,
+                                                                       @RequestParam(name = "service", required = false) String service,
+                                                                       @RequestParam(name = "method", required = false) String method,
+                                                                       @RequestParam(name = "description", required = false) String description,
+                                                                       @RequestParam(name = "params", required = false) String params,
+                                                                       @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                                       @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+        return scheduleMethodService.pageQuery(page, size, code, service, method, description, params, ResourceLevel.PROJECT.value());
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层根据服务名获取方法")
     @GetMapping("/service")
     public ResponseEntity<List<ScheduleMethodDTO>> getMethodByService(@PathVariable("project_id") long projectId,
@@ -61,7 +57,7 @@ public class ScheduleMethodProjectController {
         return new ResponseEntity<>(scheduleMethodService.getMethodByService(service, ResourceLevel.PROJECT.value()), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping("/{id}")
     @ApiOperation(value = "项目层查看可执行程序详情")
     public ResponseEntity<ScheduleMethodParamsDTO> getParams(@PathVariable("project_id") long projectId,
@@ -70,7 +66,7 @@ public class ScheduleMethodProjectController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层搜索有可执行任务的服务名")
     @GetMapping("/services")
     public ResponseEntity<List<String>> getServices(@PathVariable("project_id") long projectId) {

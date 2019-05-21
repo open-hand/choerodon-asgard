@@ -3,14 +3,14 @@ package io.choerodon.asgard.infra.mapper;
 import io.choerodon.asgard.api.dto.SagaInstanceDTO;
 import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
 import io.choerodon.asgard.domain.SagaInstance;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public interface SagaInstanceMapper extends BaseMapper<SagaInstance> {
+public interface SagaInstanceMapper extends Mapper<SagaInstance> {
 
     List<SagaInstanceDTO> fulltextSearchInstance(@Param("sagaCode") String sagaCode,
                                                  @Param("status") String status,

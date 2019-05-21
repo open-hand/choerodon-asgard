@@ -42,8 +42,8 @@ class SagaControllerSpec extends Specification {
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
-        1 * sagaService.pagingQuery(_, code, description, service, params)
-        0 * sagaService.pagingQuery(_, code, description, service, notParams)
+        1 * sagaService.pagingQuery(_,_, code, description, service, params)
+        0 * sagaService.pagingQuery(_,_, code, description, service, notParams)
     }
 
     def "测试 查询某个事务的定义详情"() {

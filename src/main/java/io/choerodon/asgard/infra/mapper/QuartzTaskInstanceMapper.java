@@ -4,13 +4,13 @@ import io.choerodon.asgard.api.dto.PollScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO;
 import io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO;
 import io.choerodon.asgard.domain.QuartzTaskInstance;
-import io.choerodon.mybatis.common.BaseMapper;
+import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
 
-public interface QuartzTaskInstanceMapper extends BaseMapper<QuartzTaskInstance> {
+public interface QuartzTaskInstanceMapper extends Mapper<QuartzTaskInstance> {
 
     QuartzTaskInstance selectLastInstance(@Param("taskId") long taskId);
 

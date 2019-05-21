@@ -51,8 +51,8 @@ class SagaTaskInstanceOrgControllerSpec extends Specification {
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
-        1 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, params, ResourceLevel.ORGANIZATION.value(), orgId)
-        0 * sagaTaskInstanceService.pageQuery(_, sagaInstanceCode, status, taskInstanceCode, wrongParam, ResourceLevel.ORGANIZATION.value(), orgId)
+        1 * sagaTaskInstanceService.pageQuery(_,_, sagaInstanceCode, status, taskInstanceCode, params, ResourceLevel.ORGANIZATION.value(), orgId)
+        0 * sagaTaskInstanceService.pageQuery(_,_, sagaInstanceCode, status, taskInstanceCode, wrongParam, ResourceLevel.ORGANIZATION.value(), orgId)
     }
 
     def "unlockById"() {

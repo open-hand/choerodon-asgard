@@ -2,6 +2,7 @@ package io.choerodon.asgard.api.service;
 
 import java.util.List;
 
+import com.github.pagehelper.PageInfo;
 import org.springframework.http.ResponseEntity;
 
 import io.choerodon.asgard.api.dto.QuartzTaskDTO;
@@ -10,7 +11,6 @@ import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.property.PropertyTimedTask;
 import io.choerodon.core.domain.Page;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 public interface ScheduleTaskService {
 
@@ -20,19 +20,20 @@ public interface ScheduleTaskService {
 
     void disable(long id, Long objectVersionNumber, boolean executeWithIn);
 
-    void disableByLevelAndSourceId(String level,long sourceId);
+    void disableByLevelAndSourceId(String level, long sourceId);
 
     void delete(long id, String level, Long sourceId);
 
     void finish(long id);
 
-    ResponseEntity<Page<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params, String level, Long sourceId);
+    ResponseEntity<PageInfo<QuartzTaskDTO>> pageQuery(int page, int size, String status, String name, String description, String params, String level, Long sourceId);
 
     ScheduleTaskDetailDTO getTaskDetail(Long id, String level, Long sourceId);
 
     void checkName(String name, String level, Long sourceId);
 
     void checkNameAllLevel(String name);
+
     /**
      * 自定义创建定时任务
      *

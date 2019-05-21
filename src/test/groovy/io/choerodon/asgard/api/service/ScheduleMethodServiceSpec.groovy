@@ -5,10 +5,7 @@ import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO
 import io.choerodon.asgard.api.service.impl.ScheduleMethodServiceImpl
 import io.choerodon.asgard.domain.QuartzMethod
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper
-import io.choerodon.core.domain.Page
 import io.choerodon.core.exception.CommonException
-import io.choerodon.mybatis.pagehelper.domain.PageRequest
-import io.choerodon.mybatis.pagehelper.domain.Sort
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.cloud.client.discovery.DiscoveryClient
@@ -36,10 +33,6 @@ class ScheduleMethodServiceSpec extends Specification {
         def description = "description"
         def params = "params"
 
-        and: "构造pageRequest"
-        def order = new Sort.Order("id")
-        def pageRequest = new PageRequest(1, 2, new Sort(order))
-
         and: "构造mock返回结果"
         def quartzMethod01 = new QuartzMethod()
         quartzMethod01.setId(1L)
@@ -56,53 +49,9 @@ class ScheduleMethodServiceSpec extends Specification {
         mockMethodMapper.fulltextSearch(_, _, _, _, _) >> { return list }
         dc.getInstances(_) >> { new ArrayList<>() }
         when: "方法调用"
-        scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, "site")
-        then: "结果分析"
-        thrown(NullPointerException)
-    }
-
-    def "pageConvert"() {
-        given: "参数准备"
-        def code = "code"
-        def service = "service"
-        def method = "method"
-        def description = "description"
-        QuartzMethod quartzMethod = new QuartzMethod()
-        quartzMethod.setId(1L)
-        quartzMethod.setCode(code)
-        quartzMethod.setService(service)
-        quartzMethod.setMethod(method)
-        quartzMethod.setDescription(description)
-
-        List<QuartzMethod> list = new ArrayList<>()
-        list.add(quartzMethod)
-
-        def page = new Page<QuartzMethod>()
-        page.setNumber(1)
-        page.setNumberOfElements(1)
-        page.setTotalPages(1)
-        page.setTotalElements(1L)
-
-        and: "mock"
-        DiscoveryClient dc = Mock(DiscoveryClient)
-        scheduleMethodService.setDiscoveryClient(dc)
-        dc.getInstances(_) >> { new ArrayList<>() }
-
-        when: "方法调用"
-        scheduleMethodService.pageConvert(page)
-
+        scheduleMethodService.pageQuery(1,2, code, service, method, description, params, "site")
         then: "结果分析"
         noExceptionThrown()
-
-        and: "content添加"
-        page.setContent(list)
-
-        when: "方法调用"
-        def convert2 = scheduleMethodService.pageConvert(page)
-
-        then: "结果分析"
-        noExceptionThrown()
-        convert2.getContent().size() == list.size()
     }
 
     def "GetMethodByService"() {

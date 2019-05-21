@@ -3,7 +3,10 @@ package io.choerodon.asgard.api.service.impl;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.dto.*;
+import io.choerodon.asgard.api.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.api.service.JsonDataService;
 import io.choerodon.asgard.api.service.SagaInstanceService;
 import io.choerodon.asgard.domain.SagaInstance;
@@ -15,11 +18,8 @@ import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -54,13 +54,15 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     private SagaTaskInstanceMapper taskInstanceMapper;
     private JsonDataMapper jsonDataMapper;
     private JsonDataService jsonDataService;
+    private SagaInstanceEventPublisher sagaInstanceEventPublisher;
 
 
     public SagaInstanceServiceImpl(SagaTaskMapper taskMapper,
                                    SagaInstanceMapper instanceMapper,
                                    SagaTaskInstanceMapper taskInstanceMapper,
                                    JsonDataService jsonDataService,
-                                   JsonDataMapper jsonDataMapper) {
+                                   JsonDataMapper jsonDataMapper,
+                                   SagaInstanceEventPublisher sagaInstanceEventPublisher) {
         this.taskMapper = taskMapper;
         this.instanceMapper = instanceMapper;
         this.taskInstanceMapper = taskInstanceMapper;
@@ -68,6 +70,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         this.jsonDataMapper = jsonDataMapper;
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
+        this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
         modelMapper.addMappings(new PropertyMap<SagaTask, SagaTaskInstance>() {
             @Override
             protected void configure() {
@@ -122,16 +125,21 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             if (taskInstanceMapper.insertSelective(sagaTaskInstance) != 1) {
                 throw new FeignException(DB_ERROR);
             }
+            else{
+                sagaInstanceEventPublisher.sagaTaskInstanceEvent(t.getService());
+            }
         });
     }
 
     @Override
-    public ResponseEntity<Page<SagaInstanceDTO>> pageQuery(PageRequest pageRequest, String sagaCode,
-                                                           String status, String refType,
-                                                           String refId, String params, String level, Long sourceId) {
-
-        return new ResponseEntity<>(PageHelper.doPageAndSort(pageRequest,
-                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
+    public ResponseEntity<PageInfo<SagaInstanceDTO>> pageQuery(int page, int size, String sagaCode,
+                                                               String status, String refType,
+                                                               String refId, String params, String level, Long sourceId) {
+        return new ResponseEntity<>(
+                PageHelper
+                        .startPage(page, size)
+                        .doSelectPageInfo(
+                                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
     }
 
     @Override

@@ -3,6 +3,11 @@ spring:
     url: jdbc:mysql://localhost:3306/asgard_service?useUnicode=true&characterEncoding=utf-8&useSSL=false
     username: choerodon
     password: 123456
+  # 配置redis，作为asgard服务的通知消息队列
+  redis:
+    host: localhost
+    port: 6379
+    database: 7
 eureka:
   instance:
     preferIpAddress: true
@@ -57,3 +62,5 @@ choerodon:
     consumer:
       enabled: true
       poll-interval-ms: 10000
+db:
+  type: mysql

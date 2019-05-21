@@ -68,6 +68,7 @@
             status LIKE concat(concat('%',#{params}),'%')
             )
         </if>
+        order by id desc
     </select>
 
     <select id="pollBathByMethod" resultType="io.choerodon.asgard.api.dto.PollScheduleTaskInstanceDTO"
@@ -151,5 +152,7 @@
             status LIKE concat(concat('%',#{params}),'%')
             )
         </if>
+
+        order by aqti.id desc
     </select>
 </mapper>

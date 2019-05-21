@@ -1,9 +1,10 @@
 package io.choerodon.asgard.domain;
 
-import io.choerodon.mybatis.annotation.ModifyAudit;
-import io.choerodon.mybatis.annotation.VersionAudit;
+
+import io.choerodon.mybatis.entity.BaseDTO;
 
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
@@ -11,12 +12,10 @@ import java.util.Objects;
 /**
  * @author dengyouquan
  **/
-@ModifyAudit
-@VersionAudit
 @Table(name = "ASGARD_QUARTZ_TASK_MEMBER")
-public class QuartzTaskMember {
+public class QuartzTaskMember extends BaseDTO {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long taskId;
     private String memberType;

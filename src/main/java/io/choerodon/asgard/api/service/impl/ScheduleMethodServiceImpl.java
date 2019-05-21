@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpStatus;
@@ -21,11 +24,8 @@ import io.choerodon.asgard.api.service.ScheduleMethodService;
 import io.choerodon.asgard.domain.QuartzMethod;
 import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
-import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.pagehelper.PageHelper;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
 @Service
 public class ScheduleMethodServiceImpl implements ScheduleMethodService {
@@ -54,29 +54,23 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
     }
 
     @Override
-    public ResponseEntity<Page<ScheduleMethodInfoDTO>> pageQuery(PageRequest pageRequest, String code, String service, String method, String description, String params, String level) {
-        Page<QuartzMethod> page = PageHelper.doPageAndSort(pageRequest,
-                () -> methodMapper.fulltextSearch(code, service, method, description, params, level));
-        Page<ScheduleMethodInfoDTO> pageBack = pageConvert(page);
-        return new ResponseEntity<>(pageBack, HttpStatus.OK);
-    }
-
-    public Page<ScheduleMethodInfoDTO> pageConvert(Page<QuartzMethod> page) {
-        List<ScheduleMethodInfoDTO> scheduleMethodInfoDTOS = new ArrayList<>();
-        Page<ScheduleMethodInfoDTO> pageBack = new Page<>();
-        pageBack.setNumber(page.getNumber());
-        pageBack.setNumberOfElements(page.getNumberOfElements());
-        pageBack.setSize(page.getSize());
-        pageBack.setTotalElements(page.getTotalElements());
-        pageBack.setTotalPages(page.getTotalPages());
-        if (page.getContent().isEmpty()) {
-            return pageBack;
-        } else {
-            page.getContent().forEach(t ->
-                    scheduleMethodInfoDTOS.add(new ScheduleMethodInfoDTO(t.getId(), t.getCode(), t.getService(), t.getMethod(), t.getDescription(), discoveryClient.getInstances(t.getService()).size(), t.getLevel())));
-            pageBack.setContent(scheduleMethodInfoDTOS);
-            return pageBack;
-        }
+    public ResponseEntity<PageInfo<ScheduleMethodInfoDTO>> pageQuery(int page, int size, String code, String service, String method, String description, String params, String level) {
+        PageInfo<QuartzMethod> pageInfo =
+                PageHelper
+                        .startPage(page, size)
+                        .doSelectPageInfo(
+                                () -> methodMapper.fulltextSearch(code, service, method, description, params, level));
+        List<QuartzMethod> result = pageInfo.getList();
+        List<ScheduleMethodInfoDTO> scheduleMethodInfos = new ArrayList<>();
+        result.forEach(r ->
+                scheduleMethodInfos.add(
+                        new ScheduleMethodInfoDTO(r.getId(), r.getCode(),
+                                r.getService(), r.getMethod(), r.getDescription(),
+                                discoveryClient.getInstances(r.getService()).size(), r.getLevel())));
+        Page<ScheduleMethodInfoDTO> pageResult = new Page<>(page, size);
+        pageResult.setTotal(pageInfo.getTotal());
+        pageResult.addAll(scheduleMethodInfos);
+        return new ResponseEntity<>(pageResult.toPageInfo(), HttpStatus.OK);
     }
 
     @Override

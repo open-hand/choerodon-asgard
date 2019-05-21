@@ -10,7 +10,7 @@ image:
 
 preJob:
   timeout: 300
-  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.2
+  image: registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.4
   preConfig:
     enable: true
     configFile: application.yml
@@ -32,7 +32,15 @@ deployment:
 
 env:
   open:
-    ## register-server 
+    PRO_API_HOST: gateway.choerodon.com.cn
+    PRO_AGILE_HOST: minio.staging.saas.hand-china.com/agile-service/
+    PRO_CLIENT_ID: agile
+    PRO_LOCAL: true
+    PRO_TITLE_NAME: Choerodon
+    PRO_HEADER_TITLE_NAME: Choerodon
+    PRO_COOKIE_SERVER: choerodon.com.cn
+    PRO_HTTP: http
+    ## register-server
     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://register-server.io-choerodon:8000/eureka/
     ## config-server
     SPRING_CLOUD_CONFIG_ENABLED: true
