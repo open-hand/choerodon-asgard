@@ -133,13 +133,13 @@ export default class TaskCreate extends Component {
     }
     switch (type) {
       case 'organization':
-        backPath = `/iam/task-detail?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
+        backPath = `/asgard/task-detail?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
         break;
       case 'project':
-        backPath = `/iam/task-detail?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
+        backPath = `/asgard/task-detail?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
         break;
       case 'site':
-        backPath = '/iam/task-detail';
+        backPath = '/asgard/task-detail';
         break;
       default:
         break;

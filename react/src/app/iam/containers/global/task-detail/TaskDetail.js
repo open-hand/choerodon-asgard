@@ -344,13 +344,13 @@ export default class TaskDetail extends Component {
     let createUrl;
     switch (type) {
       case 'organization':
-        createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
+        createUrl = `/asgard/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
         break;
       case 'project':
-        createUrl = `/iam/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
+        createUrl = `/asgard/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
         break;
       case 'site':
-        createUrl = '/iam/task-detail/create';
+        createUrl = '/asgard/task-detail/create';
         break;
       default:
         break;

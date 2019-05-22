@@ -18,7 +18,7 @@
 }
 
 .c7n-task-detail-sidebar {
-  &.ant-modal-sidebar .ant-modal-body {
+  &.c7n-modal-sidebar .c7n-modal-body {
     height: calc(100% - 121px);
   }
 
@@ -118,7 +118,7 @@
   display: block;
 }
 
-.ant-input-focus + .c7n-taskdetail-text-icon {
+.c7n-input-focus + .c7n-taskdetail-text-icon {
   display: block;
 }
 
@@ -128,7 +128,7 @@
     .c7n-iam-select-tip {
       right: 291px;
     }
-    .ant-select-arrow {
+    .c7n-select-arrow {
       position: absolute !important;
       right: 20px;
       bottom: 0;
@@ -142,7 +142,7 @@
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
     padding: 32px;
 
-    .ant-select-dropdown--multiple {
+    .c7n-select-dropdown--multiple {
       display: none;
     }
   }
@@ -172,7 +172,7 @@
 
       &-select {
         margin-top: 13px;
-        .ant-select-selection__placeholder {
+        .c7n-select-selection__placeholder {
           color: rgba(0, 0, 0, 0.6);
         }
       }
@@ -251,7 +251,7 @@
       }
 
       &-select {
-        .ant-select-underline {
+        .c7n-select-underline {
           display: none;
         }
       }
@@ -262,7 +262,7 @@
         margin-bottom: 20px;
         font-size: 14px;
 
-        .ant-col-21 {
+        .c7n-col-21 {
           color: rgba(0, 0, 0, 0.65);
         }
 
@@ -309,22 +309,22 @@
 }
 
 .c7n-iam-create-task-modal {
-  .ant-modal-title {
+  .c7n-modal-title {
     margin-bottom: 20px;
   }
 
-  .ant-table-body {
+  .c7n-table-body {
     height: 330px;
     overflow-y: scroll;
   }
 
-  .ant-table-placeholder {
+  .c7n-table-placeholder {
     bottom: 300px;
   }
 }
 
 .c7n-iam-create-task-page {
-  .ant-tooltip-inner {
+  .c7n-tooltip-inner {
     max-width: 530px;
   }
 }
