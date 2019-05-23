@@ -28,31 +28,6 @@
           - 'asgard-service.schedule-method-site.pagingQuery'
           - 'asgard-service.schedule-method-site.getParams'
 
-# 事务管理
-"global-transaction":
-  icon: developer_board
-  sort: 4
-  delete: true
-  site:
-    - "saga":
-        icon: saga_define
-        Routes: /asgard/saga
-        sort: 1
-        delete: true
-        permission:
-          - 'asgard-service.saga.pagingQuery'
-          - 'asgard-service.saga.query'
-    - "saga-instance":
-        icon: instance_outline
-        Routes: /asgard/saga-instance
-        sort: 2
-        delete: true
-        permission:
-          - 'asgard-service.saga-instance.pagingQuery'
-          - 'asgard-service.saga-instance.query'
-          - 'asgard-service.saga-instance.statistics'
-          - 'asgard-service.saga-instance.queryDetails'
-
 # 平台统计
 "statistics":
   icon: bar_chart
