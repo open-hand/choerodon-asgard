@@ -32,7 +32,7 @@ Thumbs.db
 gitlabci/.generated
 
 /bin
-src/main/resources/application-default.yml
+application-default.yml
 
 ## front_end ignore
 lib
