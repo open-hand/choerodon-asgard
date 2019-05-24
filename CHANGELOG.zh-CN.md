@@ -2,6 +2,25 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+## [0.17.0] - 2019-05-24
+
+### 新增
+
+- 初始化菜单使用excel通过sagaTask初始化
+- 0.16.0升级到0.17.0，旧的菜单数据迁移修复
+- 通过spring提供的DeferredResult实现长轮询服务端推送消息
+- 添加默认的静态资源位置
+
+### 修改
+
+- choerodon-starter-mybatis-mapper更换为choerodon-starter-mybatis依赖
+- 修改choerodon-framework-parent依赖
+- 修改gitlab.ci打包逻辑，支持前后端一起打包
+- 修改dbtool版本为0.6.4
+- 修改镜像拉取策略为IfNotPresent
+- 修改单元测试 jwt header
+- 调整poll的日志信息
+
 ## [0.16.0] - 2019-04-19
 
 ### 更新
