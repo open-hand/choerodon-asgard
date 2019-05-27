@@ -38,6 +38,12 @@ mybatis:
   configuration: # 数据库下划线转驼峰配置
     mapUnderscoreToCamelCase: true
 choerodon:
+  saga:
+    consumer:
+      enabled: true # 启动消费端
+      thread-num: 2 # saga消息消费线程池大小
+      max-poll-size: 200 # 每次拉取消息最大数量
+      poll-interval-ms: 1000 # 拉取间隔，默认1000毫秒
   asgard:
     quartz:
       auto-startup: true

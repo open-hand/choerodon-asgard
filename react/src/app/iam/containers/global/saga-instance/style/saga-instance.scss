@@ -55,7 +55,7 @@
     }
   }
   &-sidebar {
-    &.ant-modal-sidebar .ant-modal-body {
+    &.c7n-modal-sidebar .c7n-modal-body {
       height: calc(100% - 121px);
     }
   }
@@ -67,11 +67,11 @@
   }
   // 修改事务实例中列表的展开箭头
   &-table {
-    tr.ant-table-expanded-row,
-    tr.ant-table-expanded-row:hover {
+    tr.c7n-table-expanded-row,
+    tr.c7n-table-expanded-row:hover {
       background: #fff;
     }
-    .ant-table-row-expand-icon-cell {
+    .c7n-table-row-expand-icon-cell {
       position: relative;
       padding: 5px 9px;
       text-align: left;
@@ -84,7 +84,7 @@
         height: 60%;
         border-right: 1px solid rgba(0, 0, 0, .12);
       }
-      .ant-table-row-expand-icon {
+      .c7n-table-row-expand-icon {
         width: 18px;
         font-size: 18px;
         &:before {
@@ -134,7 +134,7 @@
     .c7n-saga-sync-icon i {
       font-size: 32px;
       color: #3f51b5;
-      animation: ant-progress-rotate 1.4s linear infinite;
+      animation: c7n-progress-rotate 1.4s linear infinite;
     }
   }
 }
