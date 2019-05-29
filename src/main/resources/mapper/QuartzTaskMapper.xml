@@ -29,7 +29,11 @@
             status LIKE concat(concat('%',#{params}),'%')
             )
         </if>
-        order by id desc
+        order by case status
+            when 'ENABLE' then 1
+            when 'FINISHED' then 2
+            when 'DISABLE' then 3
+        end
     </select>
 
     <select id="selectTaskById" resultType="io.choerodon.asgard.domain.QuartzTaskDetail">
