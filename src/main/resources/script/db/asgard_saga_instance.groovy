@@ -57,4 +57,9 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
         }
     }
 
+    changeSet(id: '2019-06-18-create-index-IDX_SOURCE_ID', author: 'qiang.zeng') {
+        createIndex(tableName: "ASGARD_SAGA_INSTANCE", indexName: "IDX_SOURCE_ID") {
+            column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED')
+        }
+    }
 }
