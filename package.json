@@ -1,15 +1,15 @@
 {
   "name": "@choerodon/asgard",
   "routeName": "asgard",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "",
   "main": "./lib/src/app/iam/containers/IAMIndex.js",
   "files": [
     "lib"
   ],
   "dependencies": {
-    "@choerodon/boot": "0.17.x",
-    "@choerodon/master": "0.17.x"
+    "@choerodon/boot": "0.18.x",
+    "@choerodon/master": "0.18.x"
   },
   "devDependencies": {
     "babel-preset-env": "^1.7.0",
