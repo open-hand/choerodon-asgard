@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import io.choerodon.base.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -375,11 +376,11 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<QuartzTaskDTO>> pageQuery(int page, int size, String status, String name, String description,
+    public ResponseEntity<PageInfo<QuartzTaskDTO>> pageQuery(PageRequest pageRequest, String status, String name, String description,
                                                              String params, String level, Long sourceId) {
-        PageInfo<QuartzTask> result = PageHelper.startPage(page,size).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
+        PageInfo<QuartzTask> result = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
         List<QuartzTask> quartzTasks = result.getList();
-        Page<QuartzTaskDTO> resultPage = new Page<>(page,size);
+        Page<QuartzTaskDTO> resultPage = new Page<>(pageRequest.getPage(), pageRequest.getSize());
         resultPage.setTotal(result.getTotal());
         List<QuartzTaskDTO> quartzTaskList = new ArrayList<>();
         quartzTasks.forEach(q -> {

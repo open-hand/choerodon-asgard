@@ -5,8 +5,10 @@ import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.constant.PageConstant;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
+import io.choerodon.mybatis.annotation.SortDefault;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,7 @@ import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/v1/schedules/projects/{project_id}/tasks")
@@ -83,9 +86,9 @@ public class ScheduleTaskProjectController {
                                                                @RequestParam(name = "name", required = false) String name,
                                                                @RequestParam(name = "description", required = false) String description,
                                                                @RequestParam(name = "params", required = false) String params,
-                                                               @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                               @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
-        return scheduleTaskService.pageQuery(page,size, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
+                                                               @ApiIgnore
+                                                               @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
+        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})

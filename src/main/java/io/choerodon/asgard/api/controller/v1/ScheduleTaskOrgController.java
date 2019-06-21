@@ -5,8 +5,11 @@ import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.constant.PageConstant;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
+import io.choerodon.mybatis.annotation.SortDefault;
+import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,7 @@ import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.iam.ResourceLevel;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/v1/schedules/organizations/{organization_id}/tasks")
@@ -81,15 +85,16 @@ public class ScheduleTaskOrgController {
     @Permission(type = ResourceType.ORGANIZATION)
     @GetMapping
     @ApiOperation(value = "组织层分页查询定时任务")
+    @CustomPageRequest
     @ResponseBody
     public ResponseEntity<PageInfo<QuartzTaskDTO>> pagingQuery(@PathVariable("organization_id") long orgId,
                                                                @RequestParam(value = "status", required = false) String status,
                                                                @RequestParam(name = "name", required = false) String name,
                                                                @RequestParam(name = "description", required = false) String description,
                                                                @RequestParam(name = "params", required = false) String params,
-                                                               @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                               @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
-        return scheduleTaskService.pageQuery(page, size, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
+                                                               @ApiIgnore
+                                                               @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
+        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(type = ResourceType.ORGANIZATION)

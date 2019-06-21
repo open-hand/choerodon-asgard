@@ -17,6 +17,7 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskMemberMapper
 import io.choerodon.asgard.property.PropertyTimedTask
 import io.choerodon.asgard.schedule.QuartzDefinition
+import io.choerodon.base.domain.PageRequest
 import io.choerodon.core.exception.CommonException
 import io.choerodon.core.iam.ResourceLevel
 import org.springframework.boot.test.context.SpringBootTest
@@ -148,7 +149,7 @@ class ScheduleTaskServiceSpec extends Specification {
 
         and: 'mock'
         mockTaskMapper.selectByPrimaryKey(_) >> {
-            return new QuartzTask(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site", cronExpression: "1 * * * * ?",triggerType: "cron-trigger")
+            return new QuartzTask(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site", cronExpression: "1 * * * * ?", triggerType: "cron-trigger")
         }
         mockTaskMapper.updateByPrimaryKey(_) >> { return 1 }
         mockInstanceMapper.selectLastInstance(_) >> { return new QuartzTaskInstance() }
@@ -268,7 +269,8 @@ class ScheduleTaskServiceSpec extends Specification {
         and: "mock"
         mockTaskMapper.fulltextSearch(_, _, _, _, _, _) >> { return taskList }
         when: '调用方法'
-        scheduleTaskService.pageQuery(1,20, status, name, description, params, "site", 0L)
+        PageRequest pageRequest = new PageRequest(1, 20)
+        scheduleTaskService.pageQuery(pageRequest, status, name, description, params, "site", 0L)
         then: '无异常抛出'
         noExceptionThrown()
     }
