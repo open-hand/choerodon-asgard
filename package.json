@@ -1,17 +1,21 @@
 {
   "name": "@choerodon/asgard",
   "routeName": "asgard",
-  "version": "0.18.0",
+  "version": "0.18.2",
   "description": "",
   "main": "./lib/src/app/iam/containers/IAMIndex.js",
   "files": [
     "lib"
   ],
-  "dependencies": {
+  "peerDependencies": {
     "@choerodon/boot": "0.18.x",
     "@choerodon/master": "0.18.x"
   },
+  "dependencies": {
+  },
   "devDependencies": {
+    "@choerodon/boot": "0.18.x",
+    "@choerodon/master": "0.18.x",
     "babel-preset-env": "^1.7.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
@@ -36,6 +40,5 @@
     "hooks": {
       "pre-commit": "lint-staged"
     }
-  },
-  "peerDependencies": {}
+  }
 }
