@@ -1186,7 +1186,7 @@ export default class TaskCreate extends Component {
     // 防止标签闪烁
     this.setState({ loading: true });
     TaskDetailStore.loadUserDatas(pagination, sort, userParams, type, id).then((data) => {
-      TaskDetailStore.setUserData(data.content.slice());
+      TaskDetailStore.setUserData(data.list.slice());
       this.setState({
         pagination: {
           current: data.pageNum,
