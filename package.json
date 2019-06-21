@@ -1,7 +1,7 @@
 {
   "name": "@choerodon/asgard",
   "routeName": "asgard",
-  "version": "0.18.3",
+  "version": "0.18.0",
   "description": "",
   "main": "./lib/src/app/iam/containers/IAMIndex.js",
   "files": [
