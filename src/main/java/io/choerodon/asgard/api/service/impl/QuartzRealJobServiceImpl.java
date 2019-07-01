@@ -47,6 +47,7 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
         this.methodMapper = methodMapper;
         this.scheduleTaskService = scheduleTaskService;
         this.scheduleTaskInstanceService = scheduleTaskInstanceService;
+        this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
     }
 
     @Override
@@ -62,11 +63,11 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
             isLastInstanceCompleted = !QuartzDefinition.InstanceStatus.COMPLETED.name().equals(lastInstance.getStatus());
         }
         if (isStop && isLastInstanceCompleted) {
-                if (QuartzDefinition.InstanceStatus.RUNNING.name().equals(lastInstance.getStatus())) {
-                    scheduleTaskInstanceService.failed(lastInstance.getId(), "定时任务未被执行");
-                }
-                scheduleTaskService.disable(taskId, null, true);
-                return;
+            if (QuartzDefinition.InstanceStatus.RUNNING.name().equals(lastInstance.getStatus())) {
+                scheduleTaskInstanceService.failed(lastInstance.getId(), "定时任务未被执行");
+            }
+            scheduleTaskService.disable(taskId, null, true);
+            return;
         }
         createInstance(taskId, lastInstance);
         //若无下次执行计划，则结束任务
@@ -119,8 +120,8 @@ public class QuartzRealJobServiceImpl implements QuartzRealJobService {
         taskInstance.setMaxRetryCount(db.getMaxRetryCount());
         if (instanceMapper.insert(taskInstance) != 1) {
             LOGGER.warn("taskInstance insert error when createInstance {}", task);
-        }else{
-            sagaInstanceEventPublisher.sagaTaskInstanceEvent(db.getService());
+        } else {
+            sagaInstanceEventPublisher.quartzInstanceEvent(db.getService());
         }
     }
 
