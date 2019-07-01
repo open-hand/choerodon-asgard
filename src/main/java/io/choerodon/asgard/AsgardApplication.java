@@ -52,17 +52,16 @@ public class AsgardApplication {
     }
 
 
-    /*
-    * 实现Asgard Client长连接查询可执行的任务，当有任务时直接返回，没有任务，则等待，直到超时或接收到新任务的通知消息。
-    * 新任务的通知消息通过redis来发送和接收
-    * 发送消息的点有：
-    * 1，SagaTaskInstance创建，Retry,标记为等待执行
-    * 2，QuartzTaskInstance创建
-    * */
+    /**
+     * 实现Asgard Client长连接查询可执行的任务，当有任务时直接返回，没有任务，则等待，直到超时或接收到新任务的通知消息。
+     * 新任务的通知消息通过redis来发送和接收
+     * 发送消息的点有：
+     * 1，SagaTaskInstance创建，Retry,标记为等待执行
+     * 2，QuartzTaskInstance创建
+     */
     @Bean
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-                                            MessageListenerAdapter sagaInstanceAdapter
-                                            ) {
+                                            MessageListenerAdapter sagaInstanceAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(sagaInstanceAdapter, new PatternTopic(SagaInstanceEventPublisher.SAGA_INSTANCE_TOPIC));
@@ -70,21 +69,21 @@ public class AsgardApplication {
     }
 
     @Bean
-    SagaInstanceHandler sagaInstanceHandler(){
+    SagaInstanceHandler sagaInstanceHandler() {
         return new SagaInstanceHandler();
     }
 
     @Bean
     MessageListenerAdapter sagaInstanceAdapter(SagaInstanceHandler sagaInstanceHandler) {
-     MessageListenerAdapter sagaInstanceAdapter = new MessageListenerAdapter(sagaInstanceHandler, "onMessage");
-     StringRedisSerializer stringRedisSerializer = this.stringRedisSerializer();
+        MessageListenerAdapter sagaInstanceAdapter = new MessageListenerAdapter(sagaInstanceHandler, "onMessage");
+        StringRedisSerializer stringRedisSerializer = this.stringRedisSerializer();
         sagaInstanceAdapter.setSerializer(stringRedisSerializer);
-     return sagaInstanceAdapter;
+        return sagaInstanceAdapter;
     }
 
 
-    private StringRedisSerializer stringRedisSerializer(){
-      return new StringRedisSerializer();
+    private StringRedisSerializer stringRedisSerializer() {
+        return new StringRedisSerializer();
     }
 
 
