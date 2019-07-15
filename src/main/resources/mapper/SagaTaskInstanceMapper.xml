@@ -103,53 +103,88 @@
 
 
     <select id="fulltextSearchTaskInstance" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO">
-        SELECT
+        select
         asti.ID,
-        asti.saga_instance_id AS sagaInstanceId,
-        concat(
-        concat(asti.TASK_CODE, '-'),
-        asti.ID
-        ) AS taskInstanceCode,
-        concat(
-        concat(asti.saga_code, '-'),
-        asti.saga_instance_id
-        ) AS sagaInstanceCode,
+        asti.saga_instance_id as sagaInstanceId,
+        concat( concat(asti.TASK_CODE, '-'), asti.ID ) as taskInstanceCode,
+        concat( concat(asti.saga_code, '-'), asti.saga_instance_id ) as sagaInstanceCode,
         aost.DESCRIPTION,
-        asti. STATUS,
+        asti.STATUS,
         asti.MAX_RETRY_COUNT,
         asti.RETRIED_COUNT,
         asti.PLANNED_START_TIME,
-        asti.ACTUAL_END_TIME AS actualEndTime
-        FROM
-        asgard_saga_instance asi
-        INNER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
-        LEFT JOIN asgard_orch_saga_task aost ON asti.TASK_CODE = aost. CODE
-        WHERE
-        1 = 1
-        <if test="level != null">
-            AND asi.FD_LEVEL=#{level}
-        </if>
-        <if test="sourceId != null">
-            AND asi.SOURCE_ID=#{sourceId}
-        </if>
-        <if test="sagaInstanceCode != null">
-            AND concat(concat(asi.SAGA_CODE, '-'),asi.ID) LIKE concat(concat('%',#{sagaInstanceCode}),'%')
-        </if>
-        <if test="status != null">
-            AND asti.status LIKE concat(concat('%',#{status}),'%')
-        </if>
-        <if test="taskInstanceCode != null">
-            AND concat(concat(asti.TASK_CODE, '-'),asti.ID) LIKE concat(concat('%',#{taskInstanceCode}),'%')
-        </if>
-        <if test="params != null">
-            AND(
-            concat(concat(asi.SAGA_CODE, '-'), asi.ID) LIKE concat(concat('%',#{params}),'%') OR
-            concat(concat(asti.TASK_CODE, '-'), asti.ID) LIKE concat(concat('%',#{params}),'%') OR
-            asti.status LIKE concat(concat('%',#{params}),'%') OR
-            aost.DESCRIPTION LIKE concat(concat('%',#{params}),'%')
-            )
-        </if>
+        asti.ACTUAL_END_TIME as actualEndTime
+        from
+        asgard_saga_task_instance asti
+        left join asgard_saga_instance asi on
+        asti.SAGA_INSTANCE_ID = asi.ID
+        left join asgard_orch_saga_task aost on
+        asti.TASK_CODE = aost.CODE
+        <where>
+            <if test="level != null">
+                AND asi.FD_LEVEL=#{level}
+            </if>
+            <if test="sourceId != null">
+                AND asi.SOURCE_ID=#{sourceId}
+            </if>
+            <if test="sagaInstanceCode != null">
+                AND concat(concat(asi.SAGA_CODE, '-'),asi.ID) LIKE concat(concat('%',#{sagaInstanceCode}),'%')
+            </if>
+            <if test="status != null">
+                AND asti.status LIKE concat(concat('%',#{status}),'%')
+            </if>
+            <if test="taskInstanceCode != null">
+                AND concat(concat(asti.TASK_CODE, '-'),asti.ID) LIKE concat(concat('%',#{taskInstanceCode}),'%')
+            </if>
+            <if test="params != null">
+                AND (
+                concat(concat(asi.SAGA_CODE, '-'), asi.ID) LIKE concat(concat('%',#{params}),'%') OR
+                concat(concat(asti.TASK_CODE, '-'), asti.ID) LIKE concat(concat('%',#{params}),'%') OR
+                asti.status LIKE concat(concat('%',#{params}),'%') OR
+                aost.DESCRIPTION LIKE concat(concat('%',#{params}),'%')
+                )
+            </if>
+        </where>
         order by asti.id desc
+    </select>
+
+    <select id="fulltextSearchTaskInstance_COUNT" resultType="long">
+        select
+            count(*)
+        from
+        asgard_saga_task_instance asti
+        <if test="level != null || sourceId != null || sagaInstanceCode != null || status != null || taskInstanceCode != null || params != null">
+            left join asgard_saga_instance asi on
+            asti.SAGA_INSTANCE_ID = asi.ID
+            left join asgard_orch_saga_task aost on
+            asti.TASK_CODE = aost.CODE
+
+        </if>
+        <where>
+            <if test="params != null">
+                AND (
+                concat(concat(asi.SAGA_CODE, '-'), asi.ID) LIKE concat(concat('%',#{params}),'%') OR
+                concat(concat(asti.TASK_CODE, '-'), asti.ID) LIKE concat(concat('%',#{params}),'%') OR
+                asti.status LIKE concat(concat('%',#{params}),'%') OR
+                aost.DESCRIPTION LIKE concat(concat('%',#{params}),'%')
+                )
+            </if>
+            <if test="level != null">
+                AND asi.FD_LEVEL=#{level}
+            </if>
+            <if test="sourceId != null">
+                AND asi.SOURCE_ID=#{sourceId}
+            </if>
+            <if test="sagaInstanceCode != null">
+                AND concat(concat(asi.SAGA_CODE, '-'),asi.ID) LIKE concat(concat('%',#{sagaInstanceCode}),'%')
+            </if>
+            <if test="status != null">
+                AND asti.status LIKE concat(concat('%',#{status}),'%')
+            </if>
+            <if test="taskInstanceCode != null">
+                AND concat(concat(asti.TASK_CODE, '-'),asti.ID) LIKE concat(concat('%',#{taskInstanceCode}),'%')
+            </if>
+        </where>
     </select>
 
 
