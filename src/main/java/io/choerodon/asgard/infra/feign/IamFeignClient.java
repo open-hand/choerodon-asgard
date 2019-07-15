@@ -2,11 +2,15 @@ package io.choerodon.asgard.infra.feign;
 
 import java.util.List;
 
+import io.choerodon.asgard.api.vo.Organization;
+import io.choerodon.asgard.api.vo.Project;
+import io.choerodon.asgard.api.vo.RegistrantInfo;
+import io.choerodon.asgard.api.vo.Role;
+import io.choerodon.asgard.api.vo.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.infra.feign.fallback.IamFeignClientFallback;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.notify.NoticeSendDTO;
@@ -18,10 +22,10 @@ import io.choerodon.core.notify.NoticeSendDTO;
 @FeignClient(value = "iam-service", path = "/v1", fallback = IamFeignClientFallback.class)
 public interface IamFeignClient {
     @GetMapping(value = "/organizations/{organization_id}")
-    ResponseEntity<OrganizationDTO> queryOrganization(@PathVariable(name = "organization_id") Long id);
+    ResponseEntity<Organization> queryOrganization(@PathVariable(name = "organization_id") Long id);
 
     @GetMapping(value = "/projects/{project_id}")
-    ResponseEntity<ProjectDTO> queryProject(@PathVariable(name = "project_id") Long id);
+    ResponseEntity<Project> queryProject(@PathVariable(name = "project_id") Long id);
 
     @PostMapping(value = "/site/role_members/users")
     ResponseEntity<Page<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnSiteLevel(
@@ -41,11 +45,11 @@ public interface IamFeignClient {
             @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
 
     @GetMapping(value = "/roles")
-    ResponseEntity<RoleDTO> queryByCode(@RequestParam(value = "code") String code);
+    ResponseEntity<Role> queryByCode(@RequestParam(value = "code") String code);
 
     @PostMapping("/users/ids")
-    ResponseEntity<List<UserDTO>> listUsersByIds(@RequestBody Long[] ids);
+    ResponseEntity<List<User>> listUsersByIds(@RequestBody Long[] ids);
 
     @GetMapping(value = "/users/registrant")
-    ResponseEntity<RegistrantInfoDTO> queryRegistrantAndAdminId(@RequestParam(value = "org_code")  String orgCode);
+    ResponseEntity<RegistrantInfo> queryRegistrantAndAdminId(@RequestParam(value = "org_code")  String orgCode);
 }

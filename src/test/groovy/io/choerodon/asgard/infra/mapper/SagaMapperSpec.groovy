@@ -1,7 +1,7 @@
 package io.choerodon.asgard.infra.mapper
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.domain.Saga
+import io.choerodon.asgard.infra.dto.SagaDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -20,7 +20,7 @@ class SagaMapperSpec extends Specification {
 
     def '测试 插入方法'() {
         given: '创建一个对象'
-        def saga = new Saga()
+        def saga = new SagaDTO()
         saga.setCode('test-saga')
 
         when: '调用mapper的插入方法'
@@ -38,7 +38,7 @@ class SagaMapperSpec extends Specification {
 
     def '测试 existByCode方法'() {
         given: '数据库插入一条测试数据'
-        def saga = new Saga()
+        def saga = new SagaDTO()
         saga.setCode('existByCode')
         sagaMapper.insert(saga)
 
@@ -52,7 +52,7 @@ class SagaMapperSpec extends Specification {
 
     def '测试 fulltextSearch方法'() {
         given: '准备查询数据'
-        def dbData = new Saga('fs_saga', 'asgard-service', 'saga测试code', '{}', 'INPUT_SCHEMA')
+        def dbData = new SagaDTO('fs_saga', 'asgard-service', 'saga测试code', '{}', 'INPUT_SCHEMA')
         sagaMapper.insert(dbData)
 
         expect: '期望的结果数量'

@@ -1,8 +1,8 @@
 package io.choerodon.asgard.infra.utils
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.domain.QuartzTask
-import io.choerodon.asgard.domain.QuartzTaskInstance
+import io.choerodon.asgard.infra.dto.QuartzTaskDTO
+import io.choerodon.asgard.infra.dto.QuartzTaskInstanceDTO
 import io.choerodon.core.exception.CommonException
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -19,11 +19,11 @@ class TriggerUtilsSpec extends Specification {
         then: "结果分析"
         noExceptionThrown()
         where: "分支覆盖"
-        task                                                                                                          | instance
-        new QuartzTask(triggerType: "cron-trigger", cronExpression: "* * 1 * * ?", endTime: null)                     | new QuartzTaskInstance(plannedStartTime: new Date())
-        new QuartzTask(triggerType: "cron-trigger", cronExpression: "* * 1 * * ? ?", endTime: null)                   | new QuartzTaskInstance(plannedStartTime: new Date())
-        new QuartzTask(triggerType: "cron-trigger", cronExpression: "* * 1 * * ?", endTime: new Date())               | new QuartzTaskInstance(plannedStartTime: new Date())
-        new QuartzTask(triggerType: "simple-trigger", simpleRepeatInterval: 10L, simpleRepeatIntervalUnit: "SECONDS") | new QuartzTaskInstance(plannedStartTime: new Date())
+        task                                                                                            | instance
+        new QuartzTaskDTO(triggerType: "cron-trigger", cronExpression: "* * 1 * * ?", endTime: null)    | new QuartzTaskInstanceDTO(plannedStartTime: new Date())
+        new QuartzTaskDTO(triggerType: "cron-trigger", cronExpression: "* * 1 * * ? ?", endTime: null)     | new QuartzTaskInstanceDTO(plannedStartTime: new Date())
+        new QuartzTaskDTO(triggerType: "cron-trigger", cronExpression: "* * 1 * * ?", endTime: new Date()) | new QuartzTaskInstanceDTO(plannedStartTime: new Date())
+        new QuartzTaskDTO(triggerType: "simple-trigger", simpleRepeatInterval: 10L, simpleRepeatIntervalUnit: "SECONDS") | new QuartzTaskInstanceDTO(plannedStartTime: new Date())
     }
 
     def "GetRecentThree"() {

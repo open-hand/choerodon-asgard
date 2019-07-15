@@ -1,8 +1,8 @@
 package io.choerodon.asgard;
 
-import io.choerodon.asgard.api.eventhandler.SagaInstanceEventPublisher;
-import io.choerodon.asgard.api.eventhandler.SagaInstanceHandler;
-import io.choerodon.asgard.config.AsgardProperties;
+import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
+import io.choerodon.asgard.app.eventhandler.SagaInstanceHandler;
+import io.choerodon.asgard.infra.config.AsgardProperties;
 import io.choerodon.asgard.infra.utils.SpringApplicationContextHelper;
 import io.choerodon.eureka.event.EurekaEventHandler;
 import io.choerodon.resource.annoation.EnableChoerodonResourceServer;

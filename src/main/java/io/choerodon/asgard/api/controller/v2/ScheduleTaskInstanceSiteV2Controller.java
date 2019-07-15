@@ -1,10 +1,9 @@
 package io.choerodon.asgard.api.controller.v2;
 
-import io.choerodon.asgard.api.dto.PollScheduleTaskInstanceDTO;
-import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.api.eventhandler.SagaInstanceEventPublisher;
-import io.choerodon.asgard.api.eventhandler.SagaInstanceHandler;
-import io.choerodon.asgard.api.service.ScheduleTaskInstanceService;
+import io.choerodon.asgard.api.vo.PollScheduleTaskInstance;
+import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
+import io.choerodon.asgard.app.eventhandler.SagaInstanceHandler;
+import io.choerodon.asgard.app.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
 import io.choerodon.base.annotation.Permission;
 import io.swagger.annotations.Api;
@@ -47,16 +46,16 @@ public class ScheduleTaskInstanceSiteV2Controller {
     @PostMapping("/poll")
     @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定method的定时任务消息列表")
-    public DeferredResult<ResponseEntity<Set<PollScheduleTaskInstanceDTO>>> pollBatch(@RequestBody PollScheduleInstanceDTO dto) {
+    public DeferredResult<ResponseEntity<Set<PollScheduleTaskInstance>>> pollBatch(@RequestBody PollScheduleInstanceDTO dto) {
         LOGGER.info("poll ScheduleTaskInstance from {}",dto.getService());
 
-        DeferredResult<ResponseEntity<Set<PollScheduleTaskInstanceDTO>>> deferredResult = new DeferredResult<>(60000l);
+        DeferredResult<ResponseEntity<Set<PollScheduleTaskInstance>>> deferredResult = new DeferredResult<>(60000l);
         deferredResult.onTimeout(() -> {
                     deferredResult.setResult(new ResponseEntity<>(ConcurrentHashMap.newKeySet(), HttpStatus.OK));
                     sagaInstanceHandler.removeDeferredResult(SagaInstanceEventPublisher.QUARTZ_INSTANCE_PREFIX,dto.getService(), deferredResult);
                 }
         );
-        Set<PollScheduleTaskInstanceDTO> pollBatch = scheduleTaskInstanceService.pollBatch(dto);
+        Set<PollScheduleTaskInstance> pollBatch = scheduleTaskInstanceService.pollBatch(dto);
         if (pollBatch.size() > 0) {
             deferredResult.setResult(new ResponseEntity<>(pollBatch, HttpStatus.OK));
         } else {

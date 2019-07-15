@@ -1,7 +1,7 @@
 package io.choerodon.asgard.api.validator;
 
-import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
-import io.choerodon.asgard.api.dto.TriggerType;
+import io.choerodon.asgard.api.vo.ScheduleTask;
+import io.choerodon.asgard.infra.enums.TriggerType;
 import io.choerodon.core.exception.CommonException;
 import org.quartz.CronExpression;
 import org.springframework.util.StringUtils;
@@ -17,7 +17,7 @@ public class ScheduleTaskValidator {
     private ScheduleTaskValidator() {
     }
 
-    public static void validatorCreate(ScheduleTaskDTO dto) {
+    public static void validatorCreate(ScheduleTask dto) {
         if (dto.getParams() == null) {
             dto.setParams(new HashMap<>(0));
         }

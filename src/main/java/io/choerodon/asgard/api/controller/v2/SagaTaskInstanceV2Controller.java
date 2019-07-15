@@ -1,9 +1,9 @@
 package io.choerodon.asgard.api.controller.v2;
 
-import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.api.eventhandler.SagaInstanceHandler;
-import io.choerodon.asgard.api.eventhandler.SagaInstanceEventPublisher;
-import io.choerodon.asgard.api.service.SagaTaskInstanceService;
+import io.choerodon.asgard.api.vo.SagaTaskInstance;
+import io.choerodon.asgard.app.eventhandler.SagaInstanceHandler;
+import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
+import io.choerodon.asgard.app.service.SagaTaskInstanceService;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.base.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
@@ -42,19 +42,19 @@ public class SagaTaskInstanceV2Controller {
     @PostMapping("/poll")
     @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
-    public DeferredResult<ResponseEntity<Set<SagaTaskInstanceDTO>>> pollBatch(@RequestBody @Valid final PollSagaTaskInstanceDTO pollBatchDTO) {
+    public DeferredResult<ResponseEntity<Set<SagaTaskInstance>>> pollBatch(@RequestBody @Valid final PollSagaTaskInstanceDTO pollBatchDTO) {
         LOGGER.info("poll SagaTaskInstance from {}",pollBatchDTO.getService());
 
         if (pollBatchDTO.getMaxPollSize() == null) {
             pollBatchDTO.setMaxPollSize(500);
         }
-        DeferredResult<ResponseEntity<Set<SagaTaskInstanceDTO>>> deferredResult = new DeferredResult<>(60000l);
+        DeferredResult<ResponseEntity<Set<SagaTaskInstance>>> deferredResult = new DeferredResult<>(60000l);
         deferredResult.onTimeout(() -> {
                     deferredResult.setResult(new ResponseEntity<>(ConcurrentHashMap.newKeySet(), HttpStatus.OK));
                     sagaInstanceHandler.removeDeferredResult(SagaInstanceEventPublisher.TAST_INSTANCE_PREFIX,pollBatchDTO.getService(), deferredResult);
                 }
         );
-        Set<SagaTaskInstanceDTO> pollBatch = sagaTaskInstanceService.pollBatch(pollBatchDTO);
+        Set<SagaTaskInstance> pollBatch = sagaTaskInstanceService.pollBatch(pollBatchDTO);
         if (pollBatch.size() > 0) {
             deferredResult.setResult(new ResponseEntity<>(pollBatch, HttpStatus.OK));
         } else {

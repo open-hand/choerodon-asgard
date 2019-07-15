@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper">
 
-    <select id="pollBatchNoneLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
+    <select id="pollBatchNoneLimit" resultType="io.choerodon.asgard.api.vo.SagaTaskInstance" flushCache="true">
         SELECT
         asti.id, asti.saga_code, asti.task_code,
         asti.instance_lock, jd.data AS input,
@@ -19,7 +19,7 @@
         ORDER BY asti.id
     </select>
 
-    <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
+    <select id="pollBatchTypeAndIdLimit" resultType="io.choerodon.asgard.api.vo.SagaTaskInstance" flushCache="true">
         SELECT
         asti.id, asti.saga_code, asti.task_code,
         asti.instance_lock, jd.data AS input,
@@ -34,7 +34,7 @@
         ORDER BY asti.id
     </select>
 
-    <select id="pollBatchTypeLimit" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceDTO" flushCache="true">
+    <select id="pollBatchTypeLimit" resultType="io.choerodon.asgard.api.vo.SagaTaskInstance" flushCache="true">
         SELECT
         asti.id, asti.saga_code, asti.task_code,
         asti.instance_lock, jd.data AS input,
@@ -80,7 +80,7 @@
         WHERE instance_lock = #{instance} AND status = 'RUNNING'
     </update>
 
-    <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.api.dto.PageSagaTaskInstanceDTO">
+    <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.api.vo.PageSagaTaskInstance">
                 SELECT
         asti.id, asti.saga_instance_id,
         asti.task_code, asti.status,
@@ -102,7 +102,7 @@
     </select>
 
 
-    <select id="fulltextSearchTaskInstance" resultType="io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO">
+    <select id="fulltextSearchTaskInstance" resultType="io.choerodon.asgard.api.vo.SagaTaskInstanceInfo">
         SELECT
         asti.ID,
         asti.saga_instance_id AS sagaInstanceId,
@@ -153,7 +153,7 @@
     </select>
 
 
-    <select id="selectBySagaInstanceIdAndSeqWithLock" resultType="io.choerodon.asgard.domain.SagaTaskInstance">
+    <select id="selectBySagaInstanceIdAndSeqWithLock" resultType="io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO">
          SELECT asti.* FROM asgard_saga_task_instance asti
          WHERE asti.saga_instance_id = #{instanceId} AND asti.seq = #{seq} FOR UPDATE
     </select>

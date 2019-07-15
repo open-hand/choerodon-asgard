@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.SagaInstanceMapper">
 
-    <select id="fulltextSearchInstance" resultType="io.choerodon.asgard.api.dto.SagaInstanceDTO">
+    <select id="fulltextSearchInstance" resultType="io.choerodon.asgard.api.vo.SagaInstance">
         SELECT
         id,
         concat(concat(saga_code,'-'),id) saga_code,
@@ -90,7 +90,7 @@
         ]]>
     </select>
 
-    <select id="selectDetails" resultType="io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO">
+    <select id="selectDetails" resultType="io.choerodon.asgard.api.vo.SagaInstanceDetails">
         SELECT
             asi.ID AS ID,
             asi.SAGA_CODE AS SAGA_CODE,
@@ -124,7 +124,7 @@
     </select>
 
 
-    <select id="selectUnConfirmedTimeOutInstance" resultType="io.choerodon.asgard.domain.SagaInstance">
+    <select id="selectUnConfirmedTimeOutInstance" resultType="io.choerodon.asgard.infra.dto.SagaInstanceDTO">
         SELECT asgard_saga_instance.* FROM asgard_saga_instance
         WHERE status = 'UN_CONFIRMED' AND unix_timestamp(CREATION_DATE)  + #{timeOut} &lt; unix_timestamp(#{now})
     </select>

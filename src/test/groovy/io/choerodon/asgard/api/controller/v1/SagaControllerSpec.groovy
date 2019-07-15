@@ -1,8 +1,8 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.SagaWithTaskDTO
-import io.choerodon.asgard.api.service.SagaService
+import io.choerodon.asgard.api.vo.SagaWithTask
+import io.choerodon.asgard.app.service.SagaService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -56,7 +56,7 @@ class SagaControllerSpec extends Specification {
         sagaController.setSagaService(sagaService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/{id}", SagaWithTaskDTO, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/{id}", SagaWithTask, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()

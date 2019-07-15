@@ -4,6 +4,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
+import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.base.domain.Sort;
@@ -16,12 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.asgard.api.dto.QuartzTaskDTO;
-import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
-import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
-import io.choerodon.asgard.api.service.ScheduleTaskService;
+import io.choerodon.asgard.api.vo.QuartzTask;
+import io.choerodon.asgard.api.vo.ScheduleTask;
+import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
+import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
-import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
@@ -45,7 +45,7 @@ public class ScheduleTaskSiteController {
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层创建定时任务")
     @PostMapping
-    public ResponseEntity<QuartzTask> create(@RequestBody @Valid ScheduleTaskDTO dto) {
+    public ResponseEntity<QuartzTaskDTO> create(@RequestBody @Valid ScheduleTask dto) {
         ScheduleTaskValidator.validatorCreate(dto);
         return new ResponseEntity<>(scheduleTaskService.create(dto, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
     }
@@ -77,11 +77,11 @@ public class ScheduleTaskSiteController {
     @ApiOperation(value = "全局层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<PageInfo<QuartzTaskDTO>> pagingQuery(@RequestParam(value = "status", required = false) String status,
-                                                               @RequestParam(name = "name", required = false) String name,
-                                                               @RequestParam(name = "description", required = false) String description,
-                                                               @RequestParam(name = "params", required = false) String params,
-                                                               @ApiIgnore
+    public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@RequestParam(value = "status", required = false) String status,
+                                                            @RequestParam(name = "name", required = false) String name,
+                                                            @RequestParam(name = "description", required = false) String description,
+                                                            @RequestParam(name = "params", required = false) String params,
+                                                            @ApiIgnore
                                                                @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
         return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.SITE.value(), 0L);
     }
@@ -89,7 +89,7 @@ public class ScheduleTaskSiteController {
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
     @ApiOperation(value = "全局层查看任务详情")
-    public ResponseEntity<ScheduleTaskDetailDTO> getTaskDetail(@PathVariable long id) {
+    public ResponseEntity<ScheduleTaskDetail> getTaskDetail(@PathVariable long id) {
         return new ResponseEntity<>(scheduleTaskService.getTaskDetail(id, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
 
     }

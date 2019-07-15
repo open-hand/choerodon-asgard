@@ -1,10 +1,10 @@
 package io.choerodon.asgard.infra.mapper;
 
-import io.choerodon.asgard.domain.QuartzTaskMember;
+import io.choerodon.asgard.infra.dto.QuartzTaskMemberDTO;
 import io.choerodon.mybatis.common.Mapper;
 
 /**
  * @author dengyouquan
  **/
-public interface QuartzTaskMemberMapper extends Mapper<QuartzTaskMember> {
+public interface QuartzTaskMemberMapper extends Mapper<QuartzTaskMemberDTO> {
 }

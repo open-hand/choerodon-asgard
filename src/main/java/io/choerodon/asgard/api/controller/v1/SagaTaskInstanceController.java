@@ -1,10 +1,10 @@
 package io.choerodon.asgard.api.controller.v1;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
-import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO;
-import io.choerodon.asgard.api.service.SagaTaskInstanceService;
+import io.choerodon.asgard.api.vo.SagaTaskInstance;
+import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
+import io.choerodon.asgard.api.vo.SagaTaskInstanceStatus;
+import io.choerodon.asgard.app.service.SagaTaskInstanceService;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.constant.PageConstant;
@@ -37,7 +37,7 @@ public class SagaTaskInstanceController {
     @PostMapping("/poll")
     @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
-    public ResponseEntity<Set<SagaTaskInstanceDTO>> pollBatch(@RequestBody @Valid final PollSagaTaskInstanceDTO pollBatchDTO) {
+    public ResponseEntity<Set<SagaTaskInstance>> pollBatch(@RequestBody @Valid final PollSagaTaskInstanceDTO pollBatchDTO) {
         if (pollBatchDTO.getMaxPollSize() == null) {
             pollBatchDTO.setMaxPollSize(500);
         }
@@ -47,7 +47,7 @@ public class SagaTaskInstanceController {
     @PutMapping("/{id}/status")
     @ApiOperation(value = "内部接口。更新任务的执行状态")
     @Permission(permissionWithin = true)
-    public void updateStatus(@PathVariable Long id, @RequestBody @Valid SagaTaskInstanceStatusDTO statusDTO) {
+    public void updateStatus(@PathVariable Long id, @RequestBody @Valid SagaTaskInstanceStatus statusDTO) {
         statusDTO.setId(id);
         sagaTaskInstanceService.updateStatus(statusDTO);
     }
@@ -55,7 +55,7 @@ public class SagaTaskInstanceController {
     @GetMapping("/{id}")
     @ApiOperation(value = "内部接口。查询任务状态")
     @Permission(permissionWithin = true)
-    public SagaTaskInstanceDTO query(@PathVariable long id) {
+    public SagaTaskInstance query(@PathVariable long id) {
         return sagaTaskInstanceService.query(id);
     }
 
@@ -95,12 +95,12 @@ public class SagaTaskInstanceController {
     @GetMapping
     @ApiOperation(value = "平台层分页查询SagaTask实例列表")
     @ResponseBody
-    public ResponseEntity<PageInfo<SagaTaskInstanceInfoDTO>> pagingQuery(@RequestParam(value = "sagaInstanceCode", required = false) String sagaInstanceCode,
-                                                                         @RequestParam(name = "status", required = false) String status,
-                                                                         @RequestParam(name = "taskInstanceCode", required = false) String taskInstanceCode,
-                                                                         @RequestParam(name = "params", required = false) String params,
-                                                                         @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                                         @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pagingQuery(@RequestParam(value = "sagaInstanceCode", required = false) String sagaInstanceCode,
+                                                                      @RequestParam(name = "status", required = false) String status,
+                                                                      @RequestParam(name = "taskInstanceCode", required = false) String taskInstanceCode,
+                                                                      @RequestParam(name = "params", required = false) String params,
+                                                                      @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                                      @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
         return sagaTaskInstanceService.pageQuery(page, size, sagaInstanceCode, status, taskInstanceCode, params, null, null);
     }
 }

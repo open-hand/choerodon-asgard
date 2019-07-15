@@ -1,10 +1,10 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.SagaTaskInstanceStatusDTO
-import io.choerodon.asgard.api.service.SagaTaskInstanceService
-import io.choerodon.asgard.api.service.impl.SagaTaskInstanceServiceImpl
-import io.choerodon.asgard.domain.SagaTaskInstance
+import io.choerodon.asgard.api.vo.SagaTaskInstanceStatus
+import io.choerodon.asgard.app.service.SagaTaskInstanceService
+import io.choerodon.asgard.app.service.impl.SagaTaskInstanceServiceImpl
+import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper
 import io.choerodon.core.exception.ExceptionResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,9 +29,9 @@ class SagaTaskInstanceControllerSpec extends Specification {
 
     def "测试 更新任务的执行状态方法"() {
         given: '创建更新状态的SagaTaskInstanceStatusDTO'
-        def statusDTO = new SagaTaskInstanceStatusDTO()
+        def status = new SagaTaskInstanceStatus()
         def id = 10L
-        def body = new HttpEntity<SagaTaskInstanceStatusDTO>(statusDTO)
+        def body = new HttpEntity<SagaTaskInstanceStatus>(status)
 
         and: 'mock sagaTaskInstanceService'
         def sagaTaskInstanceService = Mock(SagaTaskInstanceService)
@@ -47,7 +47,7 @@ class SagaTaskInstanceControllerSpec extends Specification {
         0 * sagaTaskInstanceService.updateStatus(_)
 
         when: '用合法的DTO调用接口'
-        statusDTO.setStatus("status")
+        status.setStatus("status")
         def validEntity = testRestTemplate.exchange("/v1/sagas/tasks/instances/{id}/status",
                 HttpMethod.PUT, body, String, id)
         then: '验证状态码；验证错误状态码正确'
@@ -146,13 +146,13 @@ class SagaTaskInstanceControllerSpec extends Specification {
     def "query"() {
         given:
         SagaTaskInstanceMapper sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
-        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null, null)
+        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null, null, null)
         SagaTaskInstanceController controller = new SagaTaskInstanceController(sagaTaskInstanceService)
 
         when:
         def result = controller.query(1L)
         then:
-        1 * sagaTaskInstanceMapper.selectByPrimaryKey(_) >> Mock(SagaTaskInstance)
+        1 * sagaTaskInstanceMapper.selectByPrimaryKey(_) >> Mock(SagaTaskInstanceDTO)
         result != null
     }
 }
