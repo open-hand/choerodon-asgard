@@ -2,10 +2,14 @@ package io.choerodon.asgard.infra.feign.fallback;
 
 import java.util.List;
 
+import io.choerodon.asgard.api.vo.Organization;
+import io.choerodon.asgard.api.vo.Project;
+import io.choerodon.asgard.api.vo.RegistrantInfo;
+import io.choerodon.asgard.api.vo.Role;
+import io.choerodon.asgard.api.vo.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import io.choerodon.asgard.api.dto.*;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
@@ -17,12 +21,12 @@ import io.choerodon.core.notify.NoticeSendDTO;
 @Component
 public class IamFeignClientFallback implements IamFeignClient {
     @Override
-    public ResponseEntity<OrganizationDTO> queryOrganization(Long id) {
+    public ResponseEntity<Organization> queryOrganization(Long id) {
         throw new FeignException("error.feign.iam.queryOrganization");
     }
 
     @Override
-    public ResponseEntity<ProjectDTO> queryProject(Long id) {
+    public ResponseEntity<Project> queryProject(Long id) {
         throw new FeignException("error.iam.queryProject");
     }
 
@@ -42,18 +46,18 @@ public class IamFeignClientFallback implements IamFeignClient {
     }
 
     @Override
-    public ResponseEntity<RoleDTO> queryByCode(String code) {
+    public ResponseEntity<Role> queryByCode(String code) {
         throw new FeignException("error.feign.iam.queryByCode");
     }
 
     @Override
-    public ResponseEntity<List<UserDTO>> listUsersByIds(Long[] ids) {
+    public ResponseEntity<List<User>> listUsersByIds(Long[] ids) {
         throw new FeignException("error.feign.iam.listUsersByIds");
     }
 
 
     @Override
-    public ResponseEntity<RegistrantInfoDTO> queryRegistrantAndAdminId(String orgCode) {
+    public ResponseEntity<RegistrantInfo> queryRegistrantAndAdminId(String orgCode) {
         throw new FeignException("error.feign.iam.queryRegistrantAndAdminId");
     }
 }

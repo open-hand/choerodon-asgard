@@ -1,8 +1,8 @@
 package io.choerodon.asgard.api.controller.v1;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.dto.SagaTaskInstanceInfoDTO;
-import io.choerodon.asgard.api.service.SagaTaskInstanceService;
+import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
+import io.choerodon.asgard.app.service.SagaTaskInstanceService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.constant.PageConstant;
 import io.choerodon.base.enums.ResourceType;
@@ -65,13 +65,13 @@ public class SagaTaskInstanceProjController {
     @GetMapping
     @ApiOperation(value = "项目层分页查询SagaTask实例列表")
     @ResponseBody
-    public ResponseEntity<PageInfo<SagaTaskInstanceInfoDTO>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                                         @RequestParam(value = "sagaInstanceCode", required = false) String sagaInstanceCode,
-                                                                         @RequestParam(name = "status", required = false) String status,
-                                                                         @RequestParam(name = "taskInstanceCode", required = false) String taskInstanceCode,
-                                                                         @RequestParam(name = "params", required = false) String params,
-                                                                         @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                                         @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pagingQuery(@PathVariable("project_id") long projectId,
+                                                                      @RequestParam(value = "sagaInstanceCode", required = false) String sagaInstanceCode,
+                                                                      @RequestParam(name = "status", required = false) String status,
+                                                                      @RequestParam(name = "taskInstanceCode", required = false) String taskInstanceCode,
+                                                                      @RequestParam(name = "params", required = false) String params,
+                                                                      @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                                      @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
         return sagaTaskInstanceService.pageQuery(page, size, sagaInstanceCode, status, taskInstanceCode, params, ResourceLevel.PROJECT.value(), projectId);
     }
 }

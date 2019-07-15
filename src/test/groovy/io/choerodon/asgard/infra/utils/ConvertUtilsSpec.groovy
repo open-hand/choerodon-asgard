@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.JsonMergeDTO
-import io.choerodon.asgard.domain.JsonData
-import io.choerodon.asgard.domain.SagaTaskInstance
+import io.choerodon.asgard.api.vo.JsonMerge
+import io.choerodon.asgard.api.vo.SagaTaskInstance
+import io.choerodon.asgard.infra.dto.JsonDataDTO
+import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO
 import io.choerodon.asgard.infra.mapper.JsonDataMapper
 import io.choerodon.asgard.property.PropertyJobParam
 import io.choerodon.asgard.property.PropertyJobTask
@@ -83,12 +84,12 @@ class ConvertUtilsSpec extends Specification {
 
     def '测试 convertToJsonMerge方法'() {
         given: '创建一个SagaTaskInstance的集合，并数据库插入json数据'
-        def jsonData1 = new JsonData(JsonOutput.toJson([name: 'John2', id: 2, pass: 'valJest']))
-        def jsonData2 = new JsonData(JsonOutput.toJson([id: 23, value: 'valJest']))
+        def jsonData1 = new JsonDataDTO(JsonOutput.toJson([name: 'John2', id: 2, pass: 'valJest']))
+        def jsonData2 = new JsonDataDTO(JsonOutput.toJson([id: 23, value: 'valJest']))
         jsonDataMapper.insert(jsonData1)
         jsonDataMapper.insert(jsonData2)
-        def list = [new SagaTaskInstance('code1', jsonData1.getId()), new SagaTaskInstance('code2', jsonData2.getId())]
-        def emptyDataIdslist = [new SagaTaskInstance('code1', null), new SagaTaskInstance('code2', jsonData2.getId())]
+        def list = [new SagaTaskInstanceDTO('code1', jsonData1.getId()), new SagaTaskInstanceDTO('code2', jsonData2.getId())]
+        def emptyDataIdslist = [new SagaTaskInstanceDTO('code1', null), new SagaTaskInstanceDTO('code2', jsonData2.getId())]
 
         when: '调用convertToJsonMerge方法'
         def jsonMergeDTOS = ConvertUtils.convertToJsonMerge(list, jsonDataMapper)
@@ -107,10 +108,10 @@ class ConvertUtilsSpec extends Specification {
         given: '创建几个JsonMergeDTO'
         def objectMapper = new ObjectMapper()
         def jsonSlurper = new JsonSlurper()
-        def data1 = new JsonMergeDTO('code1', JsonOutput.toJson([name: 'John1', pass: 'valJest']))
-        def data2 = new JsonMergeDTO('code2', JsonOutput.toJson([name: 'John2', id: 2]))
-        def data3 = new JsonMergeDTO('code3', 'false')
-        def data4 = new JsonMergeDTO('code4', objectMapper.writeValueAsString(['one', 'two'] as String[]))
+        def data1 = new JsonMerge('code1', JsonOutput.toJson([name: 'John1', pass: 'valJest']))
+        def data2 = new JsonMerge('code2', JsonOutput.toJson([name: 'John2', id: 2]))
+        def data3 = new JsonMerge('code3', 'false')
+        def data4 = new JsonMerge('code4', objectMapper.writeValueAsString(['one', 'two'] as String[]))
 
         when: '执行jsonMerge'
         def map1 = jsonSlurper.parseText(ConvertUtils.jsonMerge([data1, data2], objectMapper))

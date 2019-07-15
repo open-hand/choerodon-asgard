@@ -2,7 +2,7 @@ package io.choerodon.asgard.api.controller.v1
 
 import com.github.pagehelper.PageInfo
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.service.ScheduleTaskInstanceService
+import io.choerodon.asgard.app.service.ScheduleTaskInstanceService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

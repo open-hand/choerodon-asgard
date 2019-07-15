@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.SagaMapper">
 
-    <select id="fulltextSearch" resultType="io.choerodon.asgard.api.dto.SagaDTO">
+    <select id="fulltextSearch" resultType="io.choerodon.asgard.api.vo.Saga">
         SELECT
         id,
         code,

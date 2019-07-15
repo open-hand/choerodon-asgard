@@ -1,9 +1,9 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO
-import io.choerodon.asgard.api.dto.SagaWithTaskInstanceDTO
-import io.choerodon.asgard.api.service.SagaInstanceService
+import io.choerodon.asgard.api.vo.SagaInstanceDetails
+import io.choerodon.asgard.api.vo.SagaWithTaskInstance
+import io.choerodon.asgard.app.service.SagaInstanceService
 import io.choerodon.core.iam.ResourceLevel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -59,7 +59,7 @@ class SagaInstanceOrgControllerSpec extends Specification {
         sagaInstanceController.setSagaInstanceService(sagaInstanceService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/{id}", SagaWithTaskInstanceDTO, orgId, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/{id}", SagaWithTaskInstance, orgId, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
@@ -78,7 +78,7 @@ class SagaInstanceOrgControllerSpec extends Specification {
         sagaInstanceController.setSagaInstanceService(sagaInstanceService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/{id}/details", SagaInstanceDetailsDTO, orgId, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/organizations/{organization_id}/instances/{id}/details", SagaInstanceDetails, orgId, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()

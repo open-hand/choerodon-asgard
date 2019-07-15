@@ -1,14 +1,13 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.SagaInstanceDTO
-import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO
-import io.choerodon.asgard.api.dto.SagaWithTaskInstanceDTO
-import io.choerodon.asgard.api.dto.StartInstanceDTO
-import io.choerodon.asgard.api.service.SagaInstanceService
-import io.choerodon.asgard.api.service.impl.SagaInstanceServiceImpl
-import io.choerodon.asgard.domain.SagaInstance
-import io.choerodon.asgard.domain.SagaTask
+import io.choerodon.asgard.api.vo.SagaInstanceDetails
+import io.choerodon.asgard.api.vo.SagaWithTaskInstance
+import io.choerodon.asgard.api.vo.StartInstance
+import io.choerodon.asgard.app.service.SagaInstanceService
+import io.choerodon.asgard.app.service.impl.SagaInstanceServiceImpl
+import io.choerodon.asgard.infra.dto.SagaInstanceDTO
+import io.choerodon.asgard.infra.dto.SagaTaskDTO
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper
 import io.choerodon.core.iam.ResourceLevel
@@ -38,7 +37,7 @@ class SagaInstanceControllerSpec extends Specification {
     def "测试 开始saga接口"() {
         given: "创建请求DTO"
         def code = "code"
-        def dto = new StartInstanceDTO()
+        def dto = new StartInstance()
         dto.setInput("in")
         dto.setRefId("id")
         dto.setRefType("type")
@@ -50,7 +49,7 @@ class SagaInstanceControllerSpec extends Specification {
         when: "用合法的DTO调用开始saga接口"
         def entity = testRestTemplate.postForEntity(
                 "/v1/sagas/instances/{code}",
-                dto, SagaInstanceDTO, code)
+                dto, io.choerodon.asgard.api.vo.SagaInstance, code)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
@@ -91,7 +90,7 @@ class SagaInstanceControllerSpec extends Specification {
         sagaInstanceController.setSagaInstanceService(sagaInstanceService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/instances/{id}", SagaWithTaskInstanceDTO, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/instances/{id}", SagaWithTaskInstance, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
@@ -109,7 +108,7 @@ class SagaInstanceControllerSpec extends Specification {
         sagaInstanceController.setSagaInstanceService(sagaInstanceService)
 
         when: "调用查询事务列表接口"
-        def entity = testRestTemplate.getForEntity("/v1/sagas/instances/{id}/details", SagaInstanceDetailsDTO, id)
+        def entity = testRestTemplate.getForEntity("/v1/sagas/instances/{id}/details", SagaInstanceDetails, id)
 
         then: "验证状态码成功；验证查询参数生效"
         entity.statusCode.is2xxSuccessful()
@@ -134,7 +133,7 @@ class SagaInstanceControllerSpec extends Specification {
     @Transactional
     def "preCreate"() {
         given:
-        StartInstanceDTO dto = new StartInstanceDTO()
+        StartInstance dto = new StartInstance()
         dto.setUuid("uuid")
         dto.setSagaCode("code")
         dto.setService("service")
@@ -153,7 +152,7 @@ class SagaInstanceControllerSpec extends Specification {
 
     def "confirm"() {
         given:
-        StartInstanceDTO dto = new StartInstanceDTO()
+        StartInstance dto = new StartInstance()
         dto.setRefId("ref")
         dto.setInput("input")
         dto.setRefType("type")
@@ -161,16 +160,16 @@ class SagaInstanceControllerSpec extends Specification {
         and:
         SagaInstanceMapper mapper = Mock(SagaInstanceMapper)
         SagaTaskMapper sagaTaskMapper = Mock(SagaTaskMapper)
-        SagaInstanceService service = new SagaInstanceServiceImpl(sagaTaskMapper, mapper, null, null, null)
+        SagaInstanceService service = new SagaInstanceServiceImpl(sagaTaskMapper, mapper, null, null, null, null)
         SagaInstanceController controller = new SagaInstanceController(service)
 
         when:
         controller.confirm("uuid", dto)
 
         then:
-        1 * mapper.selectOne(_) >> Mock(SagaInstance)
+        1 * mapper.selectOne(_) >> Mock(SagaInstanceDTO)
         1 * mapper.updateByPrimaryKey(_) >> 1
-        1 * sagaTaskMapper.selectFirstSeqSagaTasks(_) >> new ArrayList<SagaTask>()
+        1 * sagaTaskMapper.selectFirstSeqSagaTasks(_) >> new ArrayList<SagaTaskDTO>()
     }
 
     def "queryFailedByDate"() {
@@ -182,7 +181,7 @@ class SagaInstanceControllerSpec extends Specification {
         list << map
         mapper.selectFailedTimes(_, _) >> list
         and:
-        SagaInstanceService service = new SagaInstanceServiceImpl(null, mapper, null, null, null)
+        SagaInstanceService service = new SagaInstanceServiceImpl(null, mapper, null, null, null, null)
         SagaInstanceController controller = new SagaInstanceController(service)
 
         when:
