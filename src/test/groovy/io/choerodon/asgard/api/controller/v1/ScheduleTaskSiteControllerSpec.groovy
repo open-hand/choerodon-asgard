@@ -1,10 +1,10 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.ScheduleTaskDTO
-import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO
-import io.choerodon.asgard.api.service.ScheduleTaskService
-import io.choerodon.asgard.domain.QuartzTask
+import io.choerodon.asgard.api.vo.QuartzTask
+import io.choerodon.asgard.api.vo.ScheduleTask
+import io.choerodon.asgard.api.vo.ScheduleTaskDetail
+import io.choerodon.asgard.app.service.ScheduleTaskService
 import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -35,77 +35,77 @@ class ScheduleTaskSiteControllerSpec extends Specification {
 
     def "Create"() {
         given: '参数准备'
-        def scheduleTaskDTO = new ScheduleTaskDTO()
-        scheduleTaskDTO.setMethodId(1L)
-        scheduleTaskDTO.setName("name")
-        scheduleTaskDTO.setTriggerType("invalid")
+        def scheduleTask = new ScheduleTask()
+        scheduleTask.setMethodId(1L)
+        scheduleTask.setName("name")
+        scheduleTask.setTriggerType("invalid")
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         Date endTime = simpleDateFormat.parse("2018-08-08 08:08:00")
-        scheduleTaskDTO.setEndTime(endTime)
+        scheduleTask.setEndTime(endTime)
 
-        def inVaildScheduleTaskDTO = new ScheduleTaskDTO()
-        inVaildScheduleTaskDTO.setName("")
+        def inVaildScheduleTask = new ScheduleTask()
+        inVaildScheduleTask.setName("")
 
         when: 'POST请求【创建定时任务】-参数不合法'
-        def response = restTemplate.postForEntity("/v1/schedules/tasks", inVaildScheduleTaskDTO, QuartzTask)
+        def response = restTemplate.postForEntity("/v1/schedules/tasks", inVaildScheduleTask, QuartzTask)
         then: '状态码验证通过；验证方法参数不生效；验证异常正确抛出'
         response.statusCode.is2xxSuccessful()
         0 * mockScheduleTaskService.create(_, _, _)
 
         when: 'POST请求【创建定时任务】-结束时间为过去时间'
-        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
+        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTask, Object)
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.endTime.cantbefore.now"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO)
+        0 * mockScheduleTaskService.create(scheduleTask)
 
         when: 'POST请求【创建定时任务】-invalidTriggerType'
-        scheduleTaskDTO.setEndTime(null)
-        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
+        scheduleTask.setEndTime(null)
+        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTask, Object)
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.invalidTriggerType"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO)
+        0 * mockScheduleTaskService.create(scheduleTask)
 
         when: 'POST请求【创建定时任务】-repeatCountOrRepeatIntervalNull'
-        scheduleTaskDTO.setTriggerType("simple-trigger")
-        scheduleTaskDTO.setSimpleRepeatCount(1)
-        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
+        scheduleTask.setTriggerType("simple-trigger")
+        scheduleTask.setSimpleRepeatCount(1)
+        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTask, Object)
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.repeatCountOrRepeatIntervalNull"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO, _, _)
+        0 * mockScheduleTaskService.create(scheduleTask, _, _)
 
         when: 'POST请求【创建定时任务】-repeatCountOrRepeatIntervalUnitNull'
-        scheduleTaskDTO.setTriggerType("simple-trigger")
-        scheduleTaskDTO.setSimpleRepeatInterval(10L)
-        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
+        scheduleTask.setTriggerType("simple-trigger")
+        scheduleTask.setSimpleRepeatInterval(10L)
+        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTask, Object)
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.repeatCountOrRepeatIntervalUnitNull"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO)
+        0 * mockScheduleTaskService.create(scheduleTask)
 
         when: 'POST请求【创建定时任务】-cronExpressionEmpty'
-        scheduleTaskDTO.setTriggerType("cron-trigger")
-        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
+        scheduleTask.setTriggerType("cron-trigger")
+        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTask, Object)
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.cronExpressionEmpty"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO, _, _)
+        0 * mockScheduleTaskService.create(scheduleTask, _, _)
 
         when: 'POST请求【创建定时任务】-cronExpressionInvalid'
-        scheduleTaskDTO.setTriggerType("cron-trigger")
-        scheduleTaskDTO.setCronExpression("invalidCronExpression")
-        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, Object)
+        scheduleTask.setTriggerType("cron-trigger")
+        scheduleTask.setCronExpression("invalidCronExpression")
+        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTask, Object)
         then: '状态码验证通过；验证方法参数不生效；验证失败code返回正确'
         response.statusCode.is2xxSuccessful()
         response.body.get("code") == "error.scheduleTask.cronExpressionInvalid"
-        0 * mockScheduleTaskService.create(scheduleTaskDTO, _, _)
+        0 * mockScheduleTaskService.create(scheduleTask, _, _)
 
         when: 'POST请求【创建定时任务】'
-        scheduleTaskDTO.setTriggerType("cron-trigger")
-        scheduleTaskDTO.setCronExpression("23,34 * * * * ?")
-        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTaskDTO, QuartzTask)
+        scheduleTask.setTriggerType("cron-trigger")
+        scheduleTask.setCronExpression("23,34 * * * * ?")
+        response = restTemplate.postForEntity("/v1/schedules/tasks", scheduleTask, QuartzTask)
         then: '状态码验证通过；验证方法参数生效'
         response.statusCode.is2xxSuccessful()
         1 * mockScheduleTaskService.create(_, _, _)
@@ -169,7 +169,7 @@ class ScheduleTaskSiteControllerSpec extends Specification {
         given: "参数准备"
         def id = 1L
         when: 'GET请求【查看任务详情】'
-        def response = restTemplate.getForEntity("/v1/schedules/tasks/{id}", ScheduleTaskDetailDTO, id)
+        def response = restTemplate.getForEntity("/v1/schedules/tasks/{id}", ScheduleTaskDetail, id)
         then: '状态码验证成功；参数验证合法'
         response.statusCode.is2xxSuccessful()
         1 * mockScheduleTaskService.getTaskDetail(id, _, _)

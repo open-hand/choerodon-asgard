@@ -2,26 +2,26 @@ package io.choerodon.asgard.infra.mapper;
 
 import java.util.List;
 
+import io.choerodon.asgard.api.vo.ScheduleMethodParams;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO;
-import io.choerodon.asgard.domain.QuartzMethod;
+import io.choerodon.asgard.infra.dto.QuartzMethodDTO;
 
-public interface QuartzMethodMapper extends Mapper<QuartzMethod> {
+public interface QuartzMethodMapper extends Mapper<QuartzMethodDTO> {
 
-    List<QuartzMethod> fulltextSearch(@Param("code") String code,
-                                      @Param("service") String service,
-                                      @Param("method") String method,
-                                      @Param("description") String description,
-                                      @Param("params") String params,
-                                      @Param("level") String level);
+    List<QuartzMethodDTO> fulltextSearch(@Param("code") String code,
+                                         @Param("service") String service,
+                                         @Param("method") String method,
+                                         @Param("description") String description,
+                                         @Param("params") String params,
+                                         @Param("level") String level);
 
 
-    List<QuartzMethod> selectByService(@Param("service") String service,
-                                       @Param("level") String level);
+    List<QuartzMethodDTO> selectByService(@Param("service") String service,
+                                          @Param("level") String level);
 
-    ScheduleMethodParamsDTO selectParamsById(@Param("id") Long id);
+    ScheduleMethodParams selectParamsById(@Param("id") Long id);
 
 
 }

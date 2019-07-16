@@ -4,6 +4,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
+import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.base.domain.Sort;
@@ -15,12 +16,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.asgard.api.dto.QuartzTaskDTO;
-import io.choerodon.asgard.api.dto.ScheduleTaskDTO;
-import io.choerodon.asgard.api.dto.ScheduleTaskDetailDTO;
-import io.choerodon.asgard.api.service.ScheduleTaskService;
+import io.choerodon.asgard.api.vo.QuartzTask;
+import io.choerodon.asgard.api.vo.ScheduleTask;
+import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
+import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
-import io.choerodon.asgard.domain.QuartzTask;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
@@ -45,8 +45,8 @@ public class ScheduleTaskProjectController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层创建定时任务")
     @PostMapping
-    public ResponseEntity<QuartzTask> create(@PathVariable("project_id") long projectId,
-                                             @RequestBody @Valid ScheduleTaskDTO dto) {
+    public ResponseEntity<QuartzTaskDTO> create(@PathVariable("project_id") long projectId,
+                                                @RequestBody @Valid ScheduleTask dto) {
         ScheduleTaskValidator.validatorCreate(dto);
         return new ResponseEntity<>(scheduleTaskService.create(dto, ResourceLevel.PROJECT.value(), projectId), HttpStatus.OK);
     }
@@ -81,12 +81,12 @@ public class ScheduleTaskProjectController {
     @ApiOperation(value = "项目层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<PageInfo<QuartzTaskDTO>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                               @RequestParam(value = "status", required = false) String status,
-                                                               @RequestParam(name = "name", required = false) String name,
-                                                               @RequestParam(name = "description", required = false) String description,
-                                                               @RequestParam(name = "params", required = false) String params,
-                                                               @ApiIgnore
+    public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@PathVariable("project_id") long projectId,
+                                                            @RequestParam(value = "status", required = false) String status,
+                                                            @RequestParam(name = "name", required = false) String name,
+                                                            @RequestParam(name = "description", required = false) String description,
+                                                            @RequestParam(name = "params", required = false) String params,
+                                                            @ApiIgnore
                                                                @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
         return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
     }
@@ -94,8 +94,8 @@ public class ScheduleTaskProjectController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping("/{id}")
     @ApiOperation(value = "项目层查看任务详情")
-    public ResponseEntity<ScheduleTaskDetailDTO> getTaskDetail(@PathVariable("project_id") long projectId,
-                                                               @PathVariable long id) {
+    public ResponseEntity<ScheduleTaskDetail> getTaskDetail(@PathVariable("project_id") long projectId,
+                                                            @PathVariable long id) {
         return new ResponseEntity<>(scheduleTaskService.getTaskDetail(id, ResourceLevel.PROJECT.value(), projectId), HttpStatus.OK);
 
     }

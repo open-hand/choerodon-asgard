@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.SagaTaskMapper">
 
-    <select id="selectNextSeqSagaTasks" resultType="io.choerodon.asgard.domain.SagaTask">
+    <select id="selectNextSeqSagaTasks" resultType="io.choerodon.asgard.infra.dto.SagaTaskDTO">
         SELECT * FROM ASGARD_ORCH_SAGA_TASK
         WHERE seq = (SELECT min(seq) FROM ASGARD_ORCH_SAGA_TASK WHERE saga_code = #{sagaCode} AND seq >  #{seq} AND is_enabled = 1)
         AND saga_code = #{sagaCode} AND is_enabled = 1
     </select>
 
-    <select id="selectFirstSeqSagaTasks" resultType="io.choerodon.asgard.domain.SagaTask">
+    <select id="selectFirstSeqSagaTasks" resultType="io.choerodon.asgard.infra.dto.SagaTaskDTO">
         SELECT * FROM ASGARD_ORCH_SAGA_TASK
         WHERE seq = (SELECT min(seq) FROM ASGARD_ORCH_SAGA_TASK WHERE saga_code = #{sagaCode} AND is_enabled = 1)
         AND saga_code = #{sagaCode} AND is_enabled = 1

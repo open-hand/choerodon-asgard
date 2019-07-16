@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.QuartzMethodMapper">
 
-    <resultMap id="quartzMethod" type="io.choerodon.asgard.domain.QuartzMethod">
+    <resultMap id="quartzMethod" type="io.choerodon.asgard.infra.dto.QuartzMethodDTO">
         <id column="id" property="id"></id>
         <result column="method" property="method"/>
         <result column="MAX_RETRY_COUNT" property="maxRetryCount"/>
@@ -44,7 +44,7 @@
         order by id desc
     </select>
 
-    <select id="selectByService" resultType="io.choerodon.asgard.domain.QuartzMethod">
+    <select id="selectByService" resultType="io.choerodon.asgard.infra.dto.QuartzMethodDTO">
         SELECT
         *
         FROM asgard_quartz_method
@@ -54,7 +54,7 @@
         </if>
     </select>
 
-    <select id="selectParamsById" resultType="io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO">
+    <select id="selectParamsById" resultType="io.choerodon.asgard.api.vo.ScheduleMethodParams">
         SELECT
           id,
 	      params as paramsJson

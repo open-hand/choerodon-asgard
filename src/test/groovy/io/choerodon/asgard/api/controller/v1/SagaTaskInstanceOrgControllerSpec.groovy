@@ -1,11 +1,13 @@
 package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.service.NoticeService
-import io.choerodon.asgard.api.service.SagaTaskInstanceService
-import io.choerodon.asgard.api.service.impl.SagaTaskInstanceServiceImpl
-import io.choerodon.asgard.domain.SagaInstance
-import io.choerodon.asgard.domain.SagaTaskInstance
+import io.choerodon.asgard.api.vo.SagaInstance
+import io.choerodon.asgard.api.vo.SagaTaskInstance
+import io.choerodon.asgard.app.service.NoticeService
+import io.choerodon.asgard.app.service.SagaTaskInstanceService
+import io.choerodon.asgard.app.service.impl.SagaTaskInstanceServiceImpl
+import io.choerodon.asgard.infra.dto.SagaInstanceDTO
+import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper
 import io.choerodon.core.iam.ResourceLevel
@@ -58,14 +60,14 @@ class SagaTaskInstanceOrgControllerSpec extends Specification {
     def "unlockById"() {
         given:
         SagaTaskInstanceMapper sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
-        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null, null)
+        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, null, null, null, null, null, null, null)
         SagaTaskInstanceOrgController controller = new SagaTaskInstanceOrgController(sagaTaskInstanceService)
 
         when:
         controller.unlockById(1L, 1L)
 
         then:
-        1 * sagaTaskInstanceMapper.selectByPrimaryKey(_) >> Mock(SagaTaskInstance)
+        1 * sagaTaskInstanceMapper.selectByPrimaryKey(_) >> Mock(SagaTaskInstanceDTO)
         1 * sagaTaskInstanceMapper.updateByPrimaryKey(_)
     }
 
@@ -74,12 +76,12 @@ class SagaTaskInstanceOrgControllerSpec extends Specification {
         SagaTaskInstanceMapper sagaTaskInstanceMapper = Mock(SagaTaskInstanceMapper)
         SagaInstanceMapper sagaInstanceMapper = Mock(SagaInstanceMapper)
         NoticeService noticeService = Mock(NoticeService)
-        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, sagaInstanceMapper, null, transactionManager, noticeService, null, null)
+        SagaTaskInstanceService sagaTaskInstanceService = new SagaTaskInstanceServiceImpl(sagaTaskInstanceMapper, sagaInstanceMapper, null, transactionManager, noticeService, null, null, null)
         SagaTaskInstanceOrgController controller = new SagaTaskInstanceOrgController(sagaTaskInstanceService)
 
         and:
-        SagaTaskInstance sagaTaskInstance = Mock(SagaTaskInstance)
-        SagaInstance sagaInstance = Mock(SagaInstance)
+        SagaTaskInstanceDTO sagaTaskInstance = Mock(SagaTaskInstanceDTO)
+        SagaInstanceDTO sagaInstance = Mock(SagaInstanceDTO)
 
         when:
         controller.forceFailed(1L, 1L)
