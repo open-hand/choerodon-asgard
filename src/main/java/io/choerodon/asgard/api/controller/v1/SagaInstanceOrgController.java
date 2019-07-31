@@ -12,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.asgard.api.dto.SagaInstanceDTO;
-import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
-import io.choerodon.asgard.api.service.SagaInstanceService;
+import io.choerodon.asgard.api.vo.SagaInstance;
+import io.choerodon.asgard.api.vo.SagaInstanceDetails;
+import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 
@@ -36,14 +36,14 @@ public class SagaInstanceOrgController {
     @GetMapping
     @ApiOperation(value = "组织层查询事务实例列表")
     @ResponseBody
-    public ResponseEntity<PageInfo<SagaInstanceDTO>> pagingQuery(@PathVariable("organization_id") long orgId,
-                                                                 @RequestParam(value = "sagaCode", required = false) String sagaCode,
-                                                                 @RequestParam(name = "status", required = false) String status,
-                                                                 @RequestParam(name = "refType", required = false) String refType,
-                                                                 @RequestParam(name = "refId", required = false) String refId,
-                                                                 @RequestParam(name = "params", required = false) String params,
-                                                                 @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                                 @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+    public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@PathVariable("organization_id") long orgId,
+                                                              @RequestParam(value = "sagaCode", required = false) String sagaCode,
+                                                              @RequestParam(name = "status", required = false) String status,
+                                                              @RequestParam(name = "refType", required = false) String refType,
+                                                              @RequestParam(name = "refId", required = false) String refId,
+                                                              @RequestParam(name = "params", required = false) String params,
+                                                              @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                              @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
         return sagaInstanceService.pageQuery(page, size, sagaCode, status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
@@ -58,8 +58,8 @@ public class SagaInstanceOrgController {
     @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/{id}/details", produces = "application/json")
     @ApiOperation(value = "查询事务实例的具体信息")
-    public ResponseEntity<SagaInstanceDetailsDTO> queryDetails(@PathVariable("organization_id") long orgId,
-                                                               @PathVariable("id") Long id) {
+    public ResponseEntity<SagaInstanceDetails> queryDetails(@PathVariable("organization_id") long orgId,
+                                                            @PathVariable("id") Long id) {
         return new ResponseEntity<>(sagaInstanceService.queryDetails(id), HttpStatus.OK);
     }
 

@@ -1,10 +1,10 @@
 package io.choerodon.asgard.api.controller.v1;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.dto.SagaInstanceDTO;
-import io.choerodon.asgard.api.dto.SagaInstanceDetailsDTO;
-import io.choerodon.asgard.api.dto.StartInstanceDTO;
-import io.choerodon.asgard.api.service.SagaInstanceService;
+import io.choerodon.asgard.api.vo.SagaInstance;
+import io.choerodon.asgard.api.vo.SagaInstanceDetails;
+import io.choerodon.asgard.api.vo.StartInstance;
+import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.constant.PageConstant;
 import io.choerodon.base.enums.ResourceType;
@@ -44,8 +44,8 @@ public class SagaInstanceController {
     @ApiOperation(value = "内部接口。开始一个saga")
     @Permission(permissionWithin = true)
     @ResponseBody
-    public ResponseEntity<SagaInstanceDTO> start(@PathVariable("code") String code,
-                                                 @RequestBody StartInstanceDTO dto) {
+    public ResponseEntity<SagaInstance> start(@PathVariable("code") String code,
+                                              @RequestBody StartInstance dto) {
         dto.setSagaCode(code);
         if (dto.getRefId() == null || dto.getRefType() == null) {
             throw new FeignException(ERROR_INVALID_DTO);
@@ -60,7 +60,7 @@ public class SagaInstanceController {
     @ApiOperation(value = "内部接口。预创建一个saga")
     @Permission(permissionWithin = true)
     @ResponseBody
-    public ResponseEntity<SagaInstanceDTO> preCreate(@RequestBody StartInstanceDTO dto) {
+    public ResponseEntity<SagaInstance> preCreate(@RequestBody StartInstance dto) {
         if (dto.getUuid() == null || StringUtils.isEmpty(dto.getSagaCode()) || StringUtils.isEmpty(dto.getService())) {
             throw new FeignException(ERROR_INVALID_DTO);
         }
@@ -71,7 +71,7 @@ public class SagaInstanceController {
     @ApiOperation(value = "内部接口。确认创建saga")
     @Permission(permissionWithin = true)
     @ResponseBody
-    public void confirm(@PathVariable("uuid") String uuid, @RequestBody StartInstanceDTO dto) {
+    public void confirm(@PathVariable("uuid") String uuid, @RequestBody StartInstance dto) {
         if (dto.getRefType() == null || dto.getRefId() == null || dto.getInput() == null) {
             throw new FeignException(ERROR_INVALID_DTO);
         }
@@ -90,13 +90,13 @@ public class SagaInstanceController {
     @GetMapping
     @ApiOperation(value = "平台层查询事务实例列表")
     @ResponseBody
-    public ResponseEntity<PageInfo<SagaInstanceDTO>> pagingQuery(@RequestParam(value = "sagaCode", required = false) String sagaCode,
-                                                                 @RequestParam(name = "status", required = false) String status,
-                                                                 @RequestParam(name = "refType", required = false) String refType,
-                                                                 @RequestParam(name = "refId", required = false) String refId,
-                                                                 @RequestParam(name = "params", required = false) String params,
-                                                                 @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                                 @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+    public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@RequestParam(value = "sagaCode", required = false) String sagaCode,
+                                                              @RequestParam(name = "status", required = false) String status,
+                                                              @RequestParam(name = "refType", required = false) String refType,
+                                                              @RequestParam(name = "refId", required = false) String refId,
+                                                              @RequestParam(name = "params", required = false) String params,
+                                                              @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                              @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
         return sagaInstanceService.pageQuery(page, size, sagaCode, status, refType, refId, params, null, null);
     }
 
@@ -110,7 +110,7 @@ public class SagaInstanceController {
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/{id}/details", produces = "application/json")
     @ApiOperation(value = "查询事务实例的具体信息")
-    public ResponseEntity<SagaInstanceDetailsDTO> queryDetails(@PathVariable("id") Long id) {
+    public ResponseEntity<SagaInstanceDetails> queryDetails(@PathVariable("id") Long id) {
         return new ResponseEntity<>(sagaInstanceService.queryDetails(id), HttpStatus.OK);
     }
 

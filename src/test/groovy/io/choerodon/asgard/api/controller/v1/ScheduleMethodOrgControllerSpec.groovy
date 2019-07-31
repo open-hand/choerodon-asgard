@@ -2,8 +2,8 @@ package io.choerodon.asgard.api.controller.v1
 
 import com.github.pagehelper.PageInfo
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.api.dto.ScheduleMethodParamsDTO
-import io.choerodon.asgard.api.service.ScheduleMethodService
+import io.choerodon.asgard.api.vo.ScheduleMethodParams
+import io.choerodon.asgard.app.service.ScheduleMethodService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -66,7 +66,7 @@ class ScheduleMethodOrgControllerSpec extends Specification {
         def id = 1L
 
         when: '对接口【查看可执行程序详情】发送GET请求'
-        def entity = restTemplate.getForEntity(BASE_PATH + "/{id}", ScheduleMethodParamsDTO, id)
+        def entity = restTemplate.getForEntity(BASE_PATH + "/{id}", ScheduleMethodParams, id)
 
         then: '状态码正确；方法参数调用成功'
         entity.statusCode.is2xxSuccessful()

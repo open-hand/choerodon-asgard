@@ -2,21 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper">
 
-    <select id="selectLastInstance" resultType="io.choerodon.asgard.domain.QuartzTaskInstance">
+    <select id="selectLastInstance" resultType="io.choerodon.asgard.infra.dto.QuartzTaskInstanceDTO">
      SELECT id, status, actual_start_time,planned_next_time, execute_result,object_version_number FROM asgard_quartz_task_instance
      WHERE task_id = #{taskId}
      ORDER BY CREATION_DATE DESC
      LIMIT 1
     </select>
 
-    <select id="selectLastInstance" databaseId="mysql" resultType="io.choerodon.asgard.domain.QuartzTaskInstance">
+    <select id="selectLastInstance" databaseId="mysql" resultType="io.choerodon.asgard.infra.dto.QuartzTaskInstanceDTO">
      SELECT id, status, actual_start_time,planned_next_time, execute_result,object_version_number FROM asgard_quartz_task_instance
      WHERE task_id = #{taskId}
      ORDER BY CREATION_DATE DESC
      LIMIT 1
     </select>
 
-    <select id="selectLastInstance" databaseId="oracle" resultType="io.choerodon.asgard.domain.QuartzTaskInstance">
+    <select id="selectLastInstance" databaseId="oracle" resultType="io.choerodon.asgard.infra.dto.QuartzTaskInstanceDTO">
     <![CDATA[
 
 
@@ -30,7 +30,7 @@
         ]]>
     </select>
 
-    <select id="fulltextSearch" resultType="io.choerodon.asgard.api.dto.ScheduleTaskInstanceDTO">
+    <select id="fulltextSearch" resultType="io.choerodon.asgard.api.vo.ScheduleTaskInstance">
         SELECT
         id,
         status,
@@ -71,7 +71,7 @@
         order by id desc
     </select>
 
-    <select id="pollBathByMethod" resultType="io.choerodon.asgard.api.dto.PollScheduleTaskInstanceDTO"
+    <select id="pollBathByMethod" resultType="io.choerodon.asgard.api.vo.PollScheduleTaskInstance"
             flushCache="true">
         SELECT
         aqti.id, aqti.execute_method AS method, aqti.execute_params,
@@ -99,7 +99,7 @@
     </update>
 
 
-    <select id="selectByTaskId" resultType="io.choerodon.asgard.api.dto.ScheduleTaskInstanceLogDTO">
+    <select id="selectByTaskId" resultType="io.choerodon.asgard.api.vo.ScheduleTaskInstanceLog">
         SELECT
         aqti.ID AS id,
         aqti. STATUS AS STATUS,

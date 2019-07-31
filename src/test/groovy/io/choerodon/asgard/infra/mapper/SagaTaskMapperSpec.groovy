@@ -1,7 +1,7 @@
 package io.choerodon.asgard.infra.mapper
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.domain.SagaTask
+import io.choerodon.asgard.infra.dto.SagaTaskDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
@@ -20,7 +20,7 @@ class SagaTaskMapperSpec extends Specification {
 
     def '测试 插入方法'() {
         given: '创建一个对象'
-        def sagaTask = new SagaTask()
+        def sagaTask = new SagaTaskDTO()
         sagaTask.setCode('test_code')
         sagaTask.setSagaCode('test_saga_code')
         sagaTask.setSeq(1)

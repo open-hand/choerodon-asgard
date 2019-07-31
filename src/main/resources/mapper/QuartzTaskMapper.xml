@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.asgard.infra.mapper.QuartzTaskMapper">
 
-    <select id="fulltextSearch" resultType="io.choerodon.asgard.domain.QuartzTask">
+    <select id="fulltextSearch" resultType="io.choerodon.asgard.infra.dto.QuartzTaskDTO">
         SELECT
         *
         FROM asgard_quartz_task
@@ -36,7 +36,7 @@
         end, id desc
     </select>
 
-    <select id="selectTaskById" resultType="io.choerodon.asgard.domain.QuartzTaskDetail">
+    <select id="selectTaskById" resultType="io.choerodon.asgard.api.vo.QuartzTaskDetail">
         SELECT
             aqt.id,
             aqt.execute_params AS params,

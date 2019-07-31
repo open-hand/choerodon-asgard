@@ -1,7 +1,7 @@
 package io.choerodon.asgard.infra.mapper
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.domain.SagaInstance
+import io.choerodon.asgard.infra.dto.SagaInstanceDTO
 import io.choerodon.asgard.saga.SagaDefinition
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -22,7 +22,7 @@ class SagaInstanceMapperSpec extends Specification {
 
     def '测试 插入方法'() {
         given: '创建一个对象'
-        def sagaInstance = new SagaInstance()
+        def sagaInstance = new SagaInstanceDTO()
         sagaInstance.setSagaCode('test-code')
         sagaInstance.setSourceId(0L)
         sagaInstance.setLevel("site")
@@ -47,7 +47,7 @@ class SagaInstanceMapperSpec extends Specification {
     @Unroll
     def '测试 fulltextSearch方法'() {
         given: '准备查询数据'
-        def dbData = new SagaInstance('fs_code', 'fs_type', 'fs_id', 'fs_status', new Date(), new Date())
+        def dbData = new SagaInstanceDTO('fs_code', 'fs_type', 'fs_id', 'fs_status', new Date(), new Date())
         dbData.setSourceId(0L)
         dbData.setLevel("site")
         sagaInstanceMapper.insert(dbData)

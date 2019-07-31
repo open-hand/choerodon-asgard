@@ -8,14 +8,14 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import io.choerodon.asgard.infra.dto.QuartzTaskInstanceDTO;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.scheduling.support.SimpleTriggerContext;
 
-import io.choerodon.asgard.api.dto.TriggerType;
-import io.choerodon.asgard.domain.QuartzTask;
-import io.choerodon.asgard.domain.QuartzTaskInstance;
+import io.choerodon.asgard.infra.enums.TriggerType;
+import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.core.exception.CommonException;
 
 public class TriggerUtils {
@@ -24,7 +24,7 @@ public class TriggerUtils {
 
     }
 
-    public static Date getNextFireTime(final QuartzTask task, final QuartzTaskInstance taskInstance) {
+    public static Date getNextFireTime(final QuartzTaskDTO task, final QuartzTaskInstanceDTO taskInstance) {
         Date nextDate;
         Date lastFiredTime = taskInstance.getPlannedStartTime();
         if (TriggerType.CRON.getValue().equals(task.getTriggerType())) {

@@ -9,9 +9,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.asgard.api.dto.SagaDTO;
-import io.choerodon.asgard.api.dto.SagaWithTaskDTO;
-import io.choerodon.asgard.api.service.SagaService;
+import io.choerodon.asgard.api.vo.Saga;
+import io.choerodon.asgard.api.vo.SagaWithTask;
+import io.choerodon.asgard.app.service.SagaService;
 import io.choerodon.core.iam.InitRoleCode;
 
 @RestController
@@ -32,19 +32,19 @@ public class SagaController {
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "查询事务列表")
-    public ResponseEntity<PageInfo<SagaDTO>> pagingQuery(@RequestParam(required = false, name = "code") String code,
-                                                         @RequestParam(required = false, name = "description") String description,
-                                                         @RequestParam(required = false, name = "service") String service,
-                                                         @RequestParam(required = false, name = "params") String params,
-                                                         @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                         @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+    public ResponseEntity<PageInfo<Saga>> pagingQuery(@RequestParam(required = false, name = "code") String code,
+                                                      @RequestParam(required = false, name = "description") String description,
+                                                      @RequestParam(required = false, name = "service") String service,
+                                                      @RequestParam(required = false, name = "params") String params,
+                                                      @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                      @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
         return sagaService.pagingQuery(page, size, code, description, service, params);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
     @ApiOperation(value = "查询某个事务的定义详情")
-    public ResponseEntity<SagaWithTaskDTO> query(@PathVariable("id") Long id) {
+    public ResponseEntity<SagaWithTask> query(@PathVariable("id") Long id) {
         return sagaService.query(id);
     }
 
