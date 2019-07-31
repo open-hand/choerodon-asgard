@@ -36,7 +36,7 @@ public class SagaInstanceOrgController {
     @GetMapping
     @ApiOperation(value = "组织层查询事务实例列表")
     @ResponseBody
-    public ResponseEntity<PageInfo<SagaInstance>> pagingQuery(@PathVariable("organization_id") long orgId,
+    public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@PathVariable("organization_id") long orgId,
                                                               @RequestParam(value = "sagaCode", required = false) String sagaCode,
                                                               @RequestParam(name = "status", required = false) String status,
                                                               @RequestParam(name = "refType", required = false) String refType,

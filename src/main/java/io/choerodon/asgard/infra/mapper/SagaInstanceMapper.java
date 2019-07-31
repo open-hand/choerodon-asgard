@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface SagaInstanceMapper extends Mapper<SagaInstanceDTO> {
 
-    List<SagaInstance> fulltextSearchInstance(@Param("sagaCode") String sagaCode,
+    List<SagaInstanceDetails> fulltextSearchInstance(@Param("sagaCode") String sagaCode,
                                               @Param("status") String status,
                                               @Param("refType") String refType,
                                               @Param("refId") String refId,

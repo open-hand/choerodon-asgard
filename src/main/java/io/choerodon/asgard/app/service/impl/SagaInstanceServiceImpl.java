@@ -136,7 +136,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaInstance>> pageQuery(int page, int size, String sagaCode,
+    public ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(int page, int size, String sagaCode,
                                                             String status, String refType,
                                                             String refId, String params, String level, Long sourceId) {
         return new ResponseEntity<>(

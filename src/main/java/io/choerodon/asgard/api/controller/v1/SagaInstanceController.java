@@ -90,7 +90,7 @@ public class SagaInstanceController {
     @GetMapping
     @ApiOperation(value = "平台层查询事务实例列表")
     @ResponseBody
-    public ResponseEntity<PageInfo<SagaInstance>> pagingQuery(@RequestParam(value = "sagaCode", required = false) String sagaCode,
+    public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@RequestParam(value = "sagaCode", required = false) String sagaCode,
                                                               @RequestParam(name = "status", required = false) String status,
                                                               @RequestParam(name = "refType", required = false) String refType,
                                                               @RequestParam(name = "refId", required = false) String refId,
