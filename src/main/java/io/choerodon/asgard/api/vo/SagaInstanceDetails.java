@@ -13,6 +13,9 @@ public class SagaInstanceDetails {
     @ApiModelProperty(value = "对应Saga编码")
     private String sagaCode;
 
+    @ApiModelProperty(value = "当前Saga 实例的状态")
+    private String status;
+
     @ApiModelProperty(value = "对应Saga描述")
     private String description;
 
@@ -157,5 +160,13 @@ public class SagaInstanceDetails {
 
     public void setWaitToBePulledCount(Integer waitToBePulledCount) {
         this.waitToBePulledCount = waitToBePulledCount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
