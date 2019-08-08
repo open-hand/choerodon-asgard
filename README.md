@@ -1,24 +1,22 @@
 # asgard-service
+“asgaard -service”是一个任务调度服务，通过“saga”实现微服务之间的数据一致性
+## 特征
+实现数据最终一致性
 
-The `asgard-service` is a task scheduling service, and support taskOutputJsonData consistency through `saga`
-
-## Feature
-
-
-## Requirements
+## 要求
 
 
-## Installation and Getting Started
+## 安装与启动
  
-  * `register-service` is required.
+  * 必须注册到`register-service`注册中心上
   
-  * The following example shows a typical Maven command to run a Spring Boot application: 
-  
+  * 下面的例子展示了一个运行Spring Boot应用程序的典型Maven命令:
+
   ```java
     mvn spring-boot:run
   ```
 
-## Dependencies
+## 依赖
 
 ## Links
 
