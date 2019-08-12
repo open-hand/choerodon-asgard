@@ -25,7 +25,9 @@ public class SagaTaskServiceImpl implements SagaTaskService {
     @Override
     public void createSagaTaskList(final List<SagaTaskDTO> sagaTaskList, final String service) {
         List<SagaTaskDTO> copyTaskList = new ArrayList<>(sagaTaskList);
-        List<SagaTaskDTO> dbTasks = sagaTaskMapper.selectAll();
+        SagaTaskDTO serviceSagaTask = new SagaTaskDTO();
+        serviceSagaTask.setService(service);
+        List<SagaTaskDTO> dbTasks = sagaTaskMapper.select(serviceSagaTask);
         sagaTaskList.forEach(i -> {
             if (StringUtils.isEmpty(i.getCode()) || StringUtils.isEmpty(i.getService()) || i.getSeq() == null) {
                 return;

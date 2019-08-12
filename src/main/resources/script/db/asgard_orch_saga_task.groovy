@@ -69,4 +69,9 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
             column(name: 'CODE')
         }
     }
+
+    changeSet(id: '2019-08-12-update-unique-constraints', author: 'xausky@163.com') {
+        dropUniqueConstraint(constraintName: 'UK_ASGARD_ORCH_SAGA_TASK_U1', tableName: 'ASGARD_ORCH_SAGA_TASK')
+        addUniqueConstraint(tableName: 'ASGARD_ORCH_SAGA_TASK', columnNames: 'SAGA_CODE,CODE,SERVICE', constraintName: "UK_ASGARD_ORCH_SAGA_TASK_U1")
+    }
 }
