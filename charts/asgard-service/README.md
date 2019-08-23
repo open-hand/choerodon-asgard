@@ -49,8 +49,6 @@ Parameter | Description	| Default
 `env.open.SPRING_REDIS_PORT` | redis端口 | `6379`
 `env.open.SPRING_REDIS_DATABASE` | redis db | `7`
 `env.open.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` | 注册服务地址 | `http://register-server:8000/eureka/`
-
-
 `service.port` | service端口 | `18080`
 `metrics.path` | 收集应用的指标数据路径 | ``
 `metrics.group` | 性能指标应用分组 | `spring-boot`
