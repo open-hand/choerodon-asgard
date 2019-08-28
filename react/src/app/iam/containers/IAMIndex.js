@@ -1,14 +1,14 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
-import { asyncLocaleProvider, asyncRouter, nomatch } from '@choerodon/boot';
+import { asyncLocaleProvider, asyncRouter, nomatch } from '@choerodon/master';
 
 const taskDetail = asyncRouter(() => import('./global/task-detail'));
 const executionRecord = asyncRouter(() => import('./global/execution-record'));
 const executableProgram = asyncRouter(() => import('./global/executable-program'));
 const saga = asyncRouter(() => import('./global/saga'));
 const sagaInstance = asyncRouter(() => import('./global/saga-instance'));
-
+// saga 事务管理
 @inject('AppState')
 class IAMIndex extends React.Component {
   render() {

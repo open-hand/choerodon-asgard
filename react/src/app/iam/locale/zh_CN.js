@@ -218,16 +218,16 @@ const pageDetail = {
   'global.mailsetting.link': `${docServer}/user-guide/system-configuration/message/email-config/`,
 
   // 事务定义
-  'global.saga.title': '平台"{name}"的事务定义',
-  'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
-  'global.saga.link': `${docServer}/user-guide/microservice-development/global-transaction/saga/`,
+  'global.saga.title': '事务定义',
+  // 'global.saga.description': '事务定义用于维护不同微服务间的数据一致性。您可以查看每个事务定义的详情。',
+  // 'global.saga.link': `${docServer}/user-guide/microservice-development/global-transaction/saga/`,
 
   'global.saga.detail.title': '查看事务定义"{name}"的详情',
   'global.saga.detail.description': '您可以在此查看事务定义图、事务定义Json。',
   'global.saga.detail.link': `${docServer}/user-guide/microservice-development/global-transaction/saga/`,
 
   // 事务实例
-  'global.saga-instance.title': '平台"{name}"的事务实例',
+  'global.saga-instance.title': '事务实例',
   'global.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
   'global.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
 
@@ -316,7 +316,7 @@ const pageDetail = {
 
   // 组织事务实例
   'organization.saga-instance.header.title': '组织事务实例',
-  'organization.saga-instance.title': '组织"{name}"的事务实例',
+  'organization.saga-instance.title': '事务实例',
   'organization.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
   'organization.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
 
@@ -517,7 +517,7 @@ const pageDetail = {
 
   // 项目事务实例
   'project.saga-instance.header.title': '项目事务实例',
-  'project.saga-instance.title': '项目"{name}"的事务实例',
+  'project.saga-instance.title': '事务实例',
   'project.saga-instance.description': '事务实例属于事务定义，您可以查看事务实例的运行情况并查看事务实例中每个任务的运行情况。',
   'project.saga-instance.link': `${docServer}/user-guide/microservice-development/global-transaction/saga-instance/`,
 
@@ -1228,10 +1228,10 @@ const zh_CN = {
   // 事务定义
   'global.saga.header.title': '事务定义',
   'global.saga.code': '编码',
-  'global.saga.service': '所属微服务',
+  'global.saga.service': '定义的服务',
   'global.saga.desc': '描述',
   'global.saga.detail': '事务定义详情',
-  'global.saga.img': '事务定义图',
+  'global.saga.img': '图',
   'global.saga.json': 'Json',
   'global.saga.task.run.title': '任务运行情况',
   'global.saga.task.code': '任务编码',
@@ -1275,6 +1275,7 @@ const zh_CN = {
   'global.saga-instance.saga': '所属事务实例',
   'global.saga-instance.reftype': '关联业务类型',
   'global.saga-instance.refid': '关联业务ID',
+  'global.saga-instance.progress': '进度条',
 
   // 仪表盘配置
   'global.dashboard-setting.header.title': '仪表盘配置',
@@ -1728,6 +1729,14 @@ const zh_CN = {
   'saga-instance.overview': '事务实例状态总览',
   'saga-instance.code': '实例状态总览',
   'saga-instance.saga.instance': '事务实例',
+  'saga-instance.saga.instance.id': 'ID',
+  'saga-instance.saga.instance.sagaCode': '所属事务定义',
+  'saga-instance.saga.instance.description': '描述',
+  'saga-instance.saga.instance.service': '所属微服务',
+  'saga-instance.saga.instance.level': '触发层级',
+  'saga-instance.saga.instance.level.site': '全局',
+  'saga-instance.saga.instance.level.project': '项目层',
+  'saga-instance.saga.instance.level.organization': '组织层',
   'saga-instance.task.retry-count': '重试次数',
 
 

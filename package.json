@@ -8,14 +8,14 @@
     "lib"
   ],
   "peerDependencies": {
-    "@choerodon/boot": "0.18.x",
-    "@choerodon/master": "0.18.x"
+    "@choerodon/boot": "0.20.x",
+    "@choerodon/master": "0.20.x"
   },
   "dependencies": {
   },
   "devDependencies": {
-    "@choerodon/boot": "0.18.x",
-    "@choerodon/master": "0.18.x",
+    "@choerodon/boot": "0.20.x",
+    "@choerodon/master": "0.20.x",
     "babel-preset-env": "^1.7.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",

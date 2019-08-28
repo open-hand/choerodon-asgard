@@ -81,7 +81,10 @@
     ],
     "react/prop-types": "off",
     "react/require-default-props": "off",
-    "react/sort-comp": "off"
+    "react/sort-comp": "off",
+    "react/state-in-constructor":"off",
+    "react/jsx-fragments":"off",
+    "react/jsx-props-no-spreading":"off"
   },
   "globals": {
     "Choerodon": true

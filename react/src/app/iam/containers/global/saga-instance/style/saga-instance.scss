@@ -1,19 +1,24 @@
 .c7n-saga-instance {
   .c7n-saga-expand-circle {
     position: relative;
+
     svg {
       cursor: pointer;
     }
   }
+
   .c7n-saga-expand-row {
     line-height: 20px;
     margin-bottom: 6px;
+
     div:nth-child(2) {
       color: rgba(0, 0, 0, 0.65);
     }
+
     div:nth-child(4) {
       color: rgba(0, 0, 0, 0.65);
     }
+
     &-divider {
       border-bottom: 1px solid rgba(0, 0, 0, .12);
       margin-top: 24px;
@@ -21,60 +26,76 @@
       margin-bottom: 10px;
     }
   }
+
   &-status {
     color: white;
     padding: 2px 5px;
     border-radius: 2px;
+
     &.failed {
       background: #f44336;
     }
+
     &.running {
       background: #4d90fe;
     }
+
     &.completed {
       background: #00bfa5;
     }
+
     &.queue {
       background: #ffb100;
     }
   }
+
   &-btns {
     margin-bottom: 24px;
+
     .text {
       display: inline-block;
       margin-right: 15px;
     }
+
     button:nth-child(2) {
       border-radius: 2px 0 0 2px;
     }
+
     button:nth-child(3) {
       border-radius: 0 2px 2px 0;
     }
+
     button.active {
       background: rgba(140, 158, 255, 0.2);
     }
   }
+
   &-sidebar {
     &.c7n-modal-sidebar .c7n-modal-body {
       height: calc(100% - 121px);
     }
   }
+
   &-refid {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 150px;
     overflow: hidden;
   }
+
   // 修改事务实例中列表的展开箭头
   &-table {
+
     tr.c7n-table-expanded-row,
     tr.c7n-table-expanded-row:hover {
       background: #fff;
     }
+
     .c7n-table-row-expand-icon-cell {
       position: relative;
       padding: 5px 9px;
       text-align: left;
+
       &:after {
         content: ' ';
         position: absolute;
@@ -84,12 +105,62 @@
         height: 60%;
         border-right: 1px solid rgba(0, 0, 0, .12);
       }
+
       .c7n-table-row-expand-icon {
         width: 18px;
         font-size: 18px;
+
         &:before {
           content: '\E5CF';
         }
+      }
+    }
+
+    &-tooltip {
+      &-item {
+        display: flex;
+        margin-bottom: 2px;
+
+        &-title {
+          width: 100px;
+
+          &:after {
+            content: '：';
+          }
+        }
+
+        &-value {
+          flex: 1;
+        }
+      }
+    }
+
+    &-progress {
+      width: 100px;
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, .06);
+
+      &-completedCount {
+        background: #00bfa5;
+      }
+
+      &-failedCount {
+        background: #f44336;
+      }
+
+      &-rollbackCount {
+        background: #b8b8b8;
+      }
+
+      &-runningCount {
+        background: #4d90fe;
+      }
+
+      &-waitToBePulledCount {
+        background: #ffb100;
       }
     }
   }
@@ -97,11 +168,13 @@
 
 .c7n-saga-status-wrap {
   display: flex;
+
   > div {
     > p {
       margin-bottom: 24px;
     }
   }
+
   .c7n-saga-status-content {
     margin-left: auto;
     display: flex;
@@ -143,12 +216,15 @@
   &-completed {
     border-left-color: #00bfa5 !important;
   }
+
   &-running {
     border-left-color: #4d90fe !important;
   }
+
   &-stopped {
     border-left-color: #cecece !important;
   }
+
   &-failed {
     border-left-color: #f44336 !important;
   }
@@ -175,6 +251,7 @@
   transform: rotate(-90deg);
   transform-origin: center;
 }
+
 .c7n-saga-circle-running {
   fill: none;
   stroke: #4d90fe;
@@ -182,6 +259,7 @@
   transform: rotate(-90deg);
   transform-origin: center;
 }
+
 .c7n-saga-circle-queue {
   fill: none;
   stroke: #ffb100;
@@ -189,13 +267,16 @@
   transform: rotate(-90deg);
   transform-origin: center;
 }
+
 .c7n-saga-circle-error {
   fill: none;
 }
+
 .c7n-saga-circle-num {
   text-anchor: middle;
   font-size: 18px;
 }
+
 .c7n-saga-circle-text {
   text-anchor: middle;
   font-size: 12px;
@@ -209,19 +290,24 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
+
   &-error {
     background: #f44336;
   }
+
   &-completed {
     background: #00bfa5;
   }
+
   &-running {
     background: #4d90fe;
   }
+
   &-queue {
     background: #ffb100;
   }
 }
+
 .c7n-iam-link-icon {
   font-size: 13px;
 }

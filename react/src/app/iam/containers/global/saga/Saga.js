@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import get from 'lodash/get';
 import { inject, observer } from 'mobx-react';
 import { Button, Table, Tooltip, Modal, Tabs } from 'choerodon-ui';
-import { Content, Header, Page } from '@choerodon/boot';
+import { Content, Header, Page } from '@choerodon/master';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import SagaImg from './SagaImg';
 import jsonFormat from '../../../common/json-format';
@@ -133,10 +133,10 @@ export default class Saga extends Component {
         dataIndex: 'code',
         filters: [],
         filteredValue: filters.code || [],
-        render: text => (
-          <MouseOverWrapper text={text} width={0.2}>
+        render: (text, record) => (
+          <span onClick={this.openSidebar.bind(this, record.id)} style={{ cursor: 'pointer' }}>
             {text}
-          </MouseOverWrapper>
+          </span>
         ),
       },
       {
@@ -153,31 +153,10 @@ export default class Saga extends Component {
         dataIndex: 'description',
         filters: [],
         filteredValue: filters.description || [],
-        render: text => (
+        render: (text) => (
           <MouseOverWrapper text={text} width={0.3}>
             {text}
           </MouseOverWrapper>
-        ),
-      },
-      {
-        title: '',
-        width: '100px',
-        key: 'action',
-        align: 'right',
-        render: (text, record) => (
-          <div>
-            <Tooltip
-              title={<FormattedMessage id="detail" />}
-              placement="bottom"
-            >
-              <Button
-                icon="find_in_page"
-                size="small"
-                shape="circle"
-                onClick={this.openSidebar.bind(this, record.id)}
-              />
-            </Tooltip>
-          </div>
         ),
       },
     ];
@@ -206,22 +185,9 @@ export default class Saga extends Component {
           'asgard-service.saga.pagingQuery',
           'asgard-service.saga.query',
         ]}
-      >
-        <Header title={<FormattedMessage id={`${intlPrefix}.header.title`} />}>
-          <Button
-            icon="refresh"
-            onClick={() => {
-              this.setState(this.getInitState(), () => {
-                this.reload();
-              });
-            }}
-          >
-            <FormattedMessage id="refresh" />
-          </Button>
-        </Header>
+      >        
         <Content
-          code={intlPrefix}
-          values={{ name: get(AppState, 'getSiteInfo.systemName', 'Choerodon') }}
+          title={<FormattedMessage id={`${intlPrefix}.title`} />}          
         >
           {this.renderTable()}
           <Sidebar
@@ -234,9 +200,7 @@ export default class Saga extends Component {
             destroyOnClose
           >
             <Content
-              className="sidebar-content"
-              code={`${intlPrefix}.detail`}
-              values={{ name: data.code }}
+              className="sidebar-content"              
             >
               <Tabs activeKey={showJson ? 'json' : 'img'} onChange={this.handleTabChange}>
                 <TabPane tab={<FormattedMessage id={`${intlPrefix}.img`} />} key="img" />
@@ -244,8 +208,7 @@ export default class Saga extends Component {
               </Tabs>
               {showJson
                 ? (<div className="c7n-saga-detail-json" style={{ margin: 0 }}><pre><code id="json">{jsonFormat(data)}</code></pre></div>)
-                : (<SagaImg data={data} />)
-              }
+                : (<SagaImg data={data} />)}
             </Content>
           </Sidebar>
         </Content>

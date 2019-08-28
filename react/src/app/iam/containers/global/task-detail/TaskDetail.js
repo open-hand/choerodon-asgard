@@ -1,9 +1,10 @@
+/* eslint-disable max-classes-per-file */
 import React, { Component } from 'react';
 import { observable, action, configure } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { Button, Table, Tooltip, Modal, Tabs, Col, Row } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Content, Header, Page, Permission } from '@choerodon/boot';
+import { Content, Header, Page, Permission } from '@choerodon/master';
 import classnames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import TaskDetailStore from '../../../stores/global/task-detail';
@@ -527,7 +528,7 @@ export default class TaskDetail extends Component {
       dataIndex: 'name',
       key: 'name',
       width: '50%',
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.4}>
           {text}
         </MouseOverWrapper>
@@ -537,7 +538,7 @@ export default class TaskDetail extends Component {
       dataIndex: 'value',
       key: 'value',
       width: '50%',
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.4}>
           {text}
         </MouseOverWrapper>
@@ -559,7 +560,7 @@ export default class TaskDetail extends Component {
         text: '完成',
       }],
       filteredValue: logFilters.status || [],
-      render: text => (<StatusTag name={formatMessage({ id: text.toLowerCase() })} colorCode={text} />),
+      render: (text) => (<StatusTag name={formatMessage({ id: text.toLowerCase() })} colorCode={text} />),
     }, {
       title: <FormattedMessage id={`${intlPrefix}.instance.id`} />,
       dataIndex: 'serviceInstanceId',
@@ -623,7 +624,7 @@ export default class TaskDetail extends Component {
                           {info.notifyUser.assigner.length ? (
                             <div className="c7n-task-detail-row-inform-person-informlist-name-container">
                               {
-                                info.notifyUser.assigner.map(item => (
+                                info.notifyUser.assigner.map((item) => (
                                   <div key={item.loginName}>
                                     <span>{item.loginName}{item.realName}</span>
                                     <span>、</span>
@@ -653,8 +654,7 @@ export default class TaskDetail extends Component {
               rowKey="id"
               filterBarPlaceholder={formatMessage({ id: 'filtertable' })}
             />
-          )
-        }
+          )}
       </Content>
     );
   }
@@ -703,7 +703,7 @@ export default class TaskDetail extends Component {
       width: '20%',
       filters: [],
       filteredValue: filters.name || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
@@ -715,7 +715,7 @@ export default class TaskDetail extends Component {
       key: 'description',
       filters: [],
       filteredValue: filters.description || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
@@ -743,7 +743,7 @@ export default class TaskDetail extends Component {
         text: intl.formatMessage({ id: 'finished' }),
       }],
       filteredValue: filters.status || [],
-      render: status => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
+      render: (status) => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
     }, {
       title: '',
       key: 'action',

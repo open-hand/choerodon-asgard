@@ -1,8 +1,9 @@
+/* eslint-disable max-classes-per-file */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Table, Tooltip, Input, Popover, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page, Permission, Action } from '@choerodon/boot';
+import { axios, Content, Header, Page, Permission, Action } from '@choerodon/master';
 import { withRouter } from 'react-router-dom';
 import ExecutionRecordStore from '../../../stores/global/execution-record';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
@@ -151,7 +152,7 @@ export default class ExecutionRecord extends Component {
         text: '完成',
       }],
       filteredValue: filters.status || [],
-      render: text => (<StatusTag name={intl.formatMessage({ id: text.toLowerCase() })} colorCode={text} />),
+      render: (text) => (<StatusTag name={intl.formatMessage({ id: text.toLowerCase() })} colorCode={text} />),
     }, {
       title: <FormattedMessage id="name" />,
       dataIndex: 'taskName',
@@ -159,7 +160,7 @@ export default class ExecutionRecord extends Component {
       width: '11%',
       filters: [],
       filteredValue: filters.taskName || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.1}>
           {text}
         </MouseOverWrapper>
@@ -171,7 +172,7 @@ export default class ExecutionRecord extends Component {
       width: '11%',
       filters: [],
       filteredValue: filters.exceptionMessage || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.1}>
           {text}
         </MouseOverWrapper>
