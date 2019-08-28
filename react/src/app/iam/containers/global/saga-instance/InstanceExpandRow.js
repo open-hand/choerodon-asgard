@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Row, Col, Tooltip, Modal, Popover } from 'choerodon-ui';
-import { axios } from '@choerodon/boot';
+import { axios } from '@choerodon/master';
 import { injectIntl } from 'react-intl';
 
 @injectIntl
@@ -86,7 +86,7 @@ export default class InstanceExpandRow extends Component {
     const { id, sagaCode, description, service, level, startTime, endTime, refType, refId, completed, failed, running } = detail;
 
     return (
-      <React.Fragment>
+      <Fragment>
         <Row style={{ marginTop: 25 }}>
           <Col span={14}>
             <Row className="c7n-saga-expand-row">
@@ -136,7 +136,7 @@ export default class InstanceExpandRow extends Component {
             </Row>
           </Col>
         </Row>
-      </React.Fragment>
+      </Fragment>
     );
   }
 }

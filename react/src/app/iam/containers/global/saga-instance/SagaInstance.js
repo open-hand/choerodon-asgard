@@ -1,7 +1,8 @@
+/* eslint-disable max-classes-per-file */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
-import { Button, Table, Tooltip, Modal, Icon } from 'choerodon-ui';
-import { Content, Header, Page } from '@choerodon/boot';
+import { Button, Table, Tooltip, Modal, Icon, Tag } from 'choerodon-ui';
+import { Content, Header, Page } from '@choerodon/master';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import SagaImg from '../saga/SagaImg';
 import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
@@ -184,13 +185,24 @@ export default class SagaInstance extends Component {
     const dataSource = SagaInstanceStore.getTaskData;
     const columns = [
       {
+        title: <FormattedMessage id="global.saga.task.code" />,
+        key: 'taskInstanceCode',
+        dataIndex: 'taskInstanceCode',
+        filters: [],
+        filteredValue: filters.taskInstanceCode || [],
+        render: (text, record) => (
+          <span style={{ cursor: 'pointer' }} onClick={this.openSidebar.bind(this, record.sagaInstanceId)}>
+            {text}
+          </span>
+        ),
+      },
+      {
         title: <FormattedMessage id={`${intlPrefix}.status`} />,
         key: 'status',
         dataIndex: 'status',
         width: '130px',
-        render: status => (
+        render: (status) => (
           <StatusTag
-            mode="icon"
             name={intl.formatMessage({ id: status.toLowerCase() })}
             colorCode={status === 'WAIT_TO_BE_PULLED' ? 'QUEUE' : status}
           />
@@ -211,24 +223,12 @@ export default class SagaInstance extends Component {
         filteredValue: filters.status || [],
       },
       {
-        title: <FormattedMessage id="global.saga.task.code" />,
-        key: 'taskInstanceCode',
-        dataIndex: 'taskInstanceCode',
-        filters: [],
-        filteredValue: filters.taskInstanceCode || [],
-        render: text => (
-          <MouseOverWrapper text={text} width={0.1}>
-            {text}
-          </MouseOverWrapper>
-        ),
-      },
-      {
         title: <FormattedMessage id="global.saga-instance.saga" />,
         key: 'sagaInstanceCode',
         dataIndex: 'sagaInstanceCode',
         filters: [],
         filteredValue: filters.sagaInstanceCode || [],
-        render: text => (
+        render: (text) => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}
           </MouseOverWrapper>
@@ -240,7 +240,7 @@ export default class SagaInstance extends Component {
         dataIndex: 'description',
         // filters: [],
         // filteredValue: filters.description || [],
-        render: text => (
+        render: (text) => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}
           </MouseOverWrapper>
@@ -250,7 +250,7 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id="global.saga.task.actualstarttime" />,
         key: 'plannedStartTime',
         dataIndex: 'plannedStartTime',
-        render: text => (
+        render: (text) => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}
           </MouseOverWrapper>
@@ -260,7 +260,7 @@ export default class SagaInstance extends Component {
         title: <FormattedMessage id="global.saga.task.actualendtime" />,
         key: 'actualEndTime',
         dataIndex: 'actualEndTime',
-        render: text => (
+        render: (text) => (
           <MouseOverWrapper text={text} width={0.1}>
             {text}
           </MouseOverWrapper>
@@ -269,28 +269,7 @@ export default class SagaInstance extends Component {
       {
         title: <FormattedMessage id="saga-instance.task.retry-count" />,
         width: '85px',
-        render: record => `${record.retriedCount}/${record.maxRetryCount}`,
-      },
-      {
-        title: '',
-        width: '50px',
-        key: 'action',
-        align: 'right',
-        render: (text, record) => (
-          <div>
-            <Tooltip
-              title={<FormattedMessage id="detail" />}
-              placement="bottom"
-            >
-              <Button
-                icon="find_in_page"
-                size="small"
-                shape="circle"
-                onClick={this.openSidebar.bind(this, record.sagaInstanceId)}
-              />
-            </Tooltip>
-          </div>
-        ),
+        render: (record) => `${record.retriedCount}/${record.maxRetryCount}`,
       },
     ];
     return (
@@ -307,16 +286,101 @@ export default class SagaInstance extends Component {
     );
   }
 
+  renderTag = (status) => {
+    let color = '';
+    let text = '';
+    if (status === 'FAILED') {
+      color = '#F44336';
+      text = '失败';
+    } else if (status === 'COMPLETED') {
+      text = '完成';
+      color = '#00BFA5';
+    } else {
+      text = '运行中';
+      color = '#4D90FE';
+    }
+    return (
+      <Tag color={color}>{text}</Tag>
+    );
+  }
+
+  renderTitle = (record) => {
+    const { id, sagaCode, level, description, service } = record;
+    return (
+      <div>
+        <div className="c7n-saga-instance-table-tooltip-item">
+          <div className="c7n-saga-instance-table-tooltip-item-title">
+            <FormattedMessage id="saga-instance.saga.instance.id" />
+          </div>
+          <div className="c7n-saga-instance-table-tooltip-item-value">{id}</div>
+        </div>
+        <div className="c7n-saga-instance-table-tooltip-item">
+          <div className="c7n-saga-instance-table-tooltip-item-title">
+            <FormattedMessage id="saga-instance.saga.instance.sagaCode" />
+
+          </div>
+          <div className="c7n-saga-instance-table-tooltip-item-value">{sagaCode}</div>
+        </div>
+        <div className="c7n-saga-instance-table-tooltip-item">
+          <div className="c7n-saga-instance-table-tooltip-item-title">
+            <FormattedMessage id="saga-instance.saga.instance.description" />
+          </div>
+          <div className="c7n-saga-instance-table-tooltip-item-value">{description}</div>
+        </div>
+        <div className="c7n-saga-instance-table-tooltip-item">
+          <div className="c7n-saga-instance-table-tooltip-item-title">
+            <FormattedMessage id="saga-instance.saga.instance.service" />
+          </div>
+          <div className="c7n-saga-instance-table-tooltip-item-value">{service}</div>
+        </div>
+        <div className="c7n-saga-instance-table-tooltip-item">
+          <div className="c7n-saga-instance-table-tooltip-item-title">
+            <FormattedMessage id="saga-instance.saga.instance.level" />
+          </div>
+          <div className="c7n-saga-instance-table-tooltip-item-value">
+            <FormattedMessage id={`saga-instance.saga.instance.level.${level}`} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  renderProgress = (record) => {
+    const { completedCount, failedCount, rollbackCount, runningCount, waitToBePulledCount } = record;
+    return (
+      <div className="c7n-saga-instance-table-progress">
+        {Object.keys({
+          completedCount, failedCount, rollbackCount, runningCount, waitToBePulledCount,
+        }).map((key) => <div className={`c7n-saga-instance-table-progress-${key}`} style={{ flex: record[key] }} />)}
+      </div>
+    );
+  }
+
   renderTable() {
     const { intl } = this.props;
     const { filters } = this.state;
     const dataSource = SagaInstanceStore.getData;
     const columns = [
       {
+        title: <FormattedMessage id="saga-instance.saga.instance" />,
+        key: 'sagaCode',
+        width: '25%',
+        dataIndex: 'sagaCode',
+        filters: [],
+        filteredValue: filters.sagaCode || [],
+        render: (text, record) => (
+          <Tooltip title={this.renderTitle.bind(this, record)}>
+            <span style={{ cursor: 'pointer' }} onClick={this.openSidebar.bind(this, record.id)}>
+              {text}
+            </span>
+          </Tooltip>
+        ),
+      },
+      {
         title: <FormattedMessage id={`${intlPrefix}.status`} />,
         key: 'status',
         dataIndex: 'status',
-        render: status => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
+        render: this.renderTag,
         filters: [{
           value: 'RUNNING',
           text: '运行中',
@@ -328,19 +392,6 @@ export default class SagaInstance extends Component {
           text: '完成',
         }],
         filteredValue: filters.status || [],
-      },
-      {
-        title: <FormattedMessage id="saga-instance.saga.instance" />,
-        key: 'sagaCode',
-        width: '25%',
-        dataIndex: 'sagaCode',
-        filters: [],
-        filteredValue: filters.sagaCode || [],
-        render: text => (
-          <MouseOverWrapper text={text} width={0.2}>
-            {text}
-          </MouseOverWrapper>
-        ),
       },
       {
         title: <FormattedMessage id={`${intlPrefix}.start.time`} />,
@@ -364,25 +415,9 @@ export default class SagaInstance extends Component {
         filteredValue: filters.refId || [],
       },
       {
-        title: '',
-        width: '50px',
-        key: 'action',
-        align: 'right',
-        render: (text, record) => (
-          <div>
-            <Tooltip
-              title={<FormattedMessage id="detail" />}
-              placement="bottom"
-            >
-              <Button
-                icon="find_in_page"
-                size="small"
-                shape="circle"
-                onClick={this.openSidebar.bind(this, record.id)}
-              />
-            </Tooltip>
-          </div>
-        ),
+        title: <FormattedMessage id={`${intlPrefix}.progress`} />,
+        width: 150,
+        render: this.renderProgress,
       },
     ];
     return (
@@ -394,7 +429,6 @@ export default class SagaInstance extends Component {
         indentSize={0}
         dataSource={dataSource}
         filters={this.state.params}
-        expandedRowRender={record => <InstanceExpandRow apiGateWay={this.sagaInstanceType.apiGetway} record={record} expand={this.openSidebar.bind(this, record.id)} />}
         rowKey="id"
         onChange={this.tableChange}
         filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
@@ -424,14 +458,6 @@ export default class SagaInstance extends Component {
           'asgard-service.saga-instance-project.queryDetails',
         ]}
       >
-        <Header title={<FormattedMessage id={`${this.sagaInstanceType.code}.header.title`} />}>
-          <Button
-            icon="refresh"
-            onClick={this.refresh}
-          >
-            <FormattedMessage id="refresh" />
-          </Button>
-        </Header>
         <Content>
           <div className="c7n-saga-status-wrap">
             <div style={{ width: 512 }}>
@@ -441,24 +467,13 @@ export default class SagaInstance extends Component {
                   values={this.sagaInstanceType.values}
                 />
               </h2>
-              <p>
-                <FormattedMessage
-                  id={`${this.sagaInstanceType.code}.description`}
-                />
-                <a href={formatMessage({ id: `${this.sagaInstanceType.code}.link` })} rel="nofollow me noopener noreferrer" target="_blank" className="c7n-external-link">
-                  <span className="c7n-external-link-content">
-                    <FormattedMessage id="learnmore" />
-                  </span>
-                  <i className="icon icon-open_in_new c7n-iam-link-icon" />
-                </a>
-              </p>
             </div>
             <div className="c7n-saga-status-content">
               {null}
               <div>
                 <div className="c7n-saga-status-text"><FormattedMessage id="saga-instance.overview" /></div>
                 <div className="c7n-saga-status-wrap">
-                  {istStatusType.map(item => (
+                  {istStatusType.map((item) => (
                     <div onClick={() => this.handleStatusClick(item)} key={item.toLowerCase()} className={`c7n-saga-status-num c7n-saga-status-${item.toLowerCase()}`}>
                       <div>{SagaInstanceStore.getStatistics[item] || 0}</div>
                       <div><FormattedMessage id={item.toLowerCase()} /></div>
@@ -497,11 +512,7 @@ export default class SagaInstance extends Component {
             visible={this.state.visible}
             destroyOnClose
           >
-            <Content
-              className="sidebar-content"
-              code={`${intlPrefix}.detail`}
-              values={{ name: data.id }}
-            >
+            <Content>
               <SagaImg data={data} instance />
             </Content>
           </Sidebar>

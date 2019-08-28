@@ -9,6 +9,7 @@ const Color = {
   COMPLETED: '#00BFA5',
   NON_CONSUMER: '#00BFA5',
   DEFAULT: '#b8b8b8',
+  QUEUE: '#ffb100',
 };
 
 const IconType = {
@@ -24,22 +25,19 @@ const IconType = {
   UN_START: 'timer',
   QUEUE: 'watch_later',
 };
-
+const propTypes = {
+  name: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]),
+  color: PropTypes.string,
+  colorCode: PropTypes.string,
+  iconType: PropTypes.string,
+};
+const defaultProps = {
+  colorCode: 'DEFAULT',
+};
 export default class StatusTag extends Component {
-  static propTypes = {
-    name: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.bool,
-    ]),
-    color: PropTypes.string,
-    colorCode: PropTypes.string,
-    iconType: PropTypes.string,
-  };
-
-  static defaultProps = {
-    colorCode: 'DEFAULT',
-  };
-
   shouldComponentUpdate(nextProps, nextState) {
     return !(nextProps.name === this.props.name
       && nextProps.color === this.props.color
@@ -86,3 +84,5 @@ export default class StatusTag extends Component {
     }
   }
 }
+StatusTag.propTypes = propTypes;
+StatusTag.defaultProps = defaultProps;

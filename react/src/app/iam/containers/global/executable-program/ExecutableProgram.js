@@ -1,8 +1,9 @@
+/* eslint-disable max-classes-per-file */
 import React, { Component } from 'react';
 import { inject, observer } from 'mobx-react';
 import { Button, Select, Table, Tooltip, Modal, Form, Input, Popover, Icon, Tabs } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { axios, Content, Header, Page, Permission, Action } from '@choerodon/boot';
+import { axios, Content, Header, Page, Permission, Action } from '@choerodon/master';
 import { withRouter } from 'react-router-dom';
 import ExecutableProgramStore from '../../../stores/global/executable-program';
 import jsonFormat from '../../../common/json-format';
@@ -221,7 +222,7 @@ export default class ExecutableProgram extends Component {
       title: <FormattedMessage id={`${intlPrefix}.params.default`} />,
       dataIndex: 'defaultValue',
       key: 'defaultValue',
-      render: text => <span>{`${text}`}</span>,
+      render: (text) => <span>{`${text}`}</span>,
     }];
     return (
       <Table
@@ -248,7 +249,7 @@ export default class ExecutableProgram extends Component {
       width: '10%',
       filters: [],
       filteredValue: filters.code || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.1}>
           {text}
         </MouseOverWrapper>
@@ -260,7 +261,7 @@ export default class ExecutableProgram extends Component {
       width: '10%',
       filters: [],
       filteredValue: filters.service || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.1}>
           {text}
         </MouseOverWrapper>
@@ -272,7 +273,7 @@ export default class ExecutableProgram extends Component {
       width: '20%',
       filters: [],
       filteredValue: filters.method || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
@@ -293,7 +294,7 @@ export default class ExecutableProgram extends Component {
         text: '项目',
       }],
       filteredValue: filters.level || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.05}>
           <FormattedMessage id={text} />
         </MouseOverWrapper>
@@ -305,7 +306,7 @@ export default class ExecutableProgram extends Component {
       width: '25%',
       filters: [],
       filteredValue: filters.description || [],
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.2}>
           {text}
         </MouseOverWrapper>
@@ -411,8 +412,7 @@ export default class ExecutableProgram extends Component {
               </Tabs>
               {showJson
                 ? (<div className="c7n-executable-program-json" style={{ margin: 0 }}><pre><code id="json">{jsonFormat(ExecutableProgramStore.getDetail.paramsList)}</code></pre></div>)
-                : (this.renderParamsTable())
-              }
+                : (this.renderParamsTable())}
             </Content>
           </Sidebar>
         </Content>

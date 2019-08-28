@@ -1,8 +1,9 @@
+/* eslint-disable max-classes-per-file */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { observable, action, configure } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { Content, Header, Page, Permission } from '@choerodon/boot';
+import { Content, Header, Page, Permission } from '@choerodon/master';
 import { Steps, Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, Popover, Icon, Tabs, Col, Row, Spin, InputNumber, Checkbox } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import moment from 'moment';
@@ -415,7 +416,7 @@ export default class TaskCreate extends Component {
    * @param id
    */
   handleChangeClass(id) {
-    const currentClass = TaskDetailStore.classNames.find(item => item.id === id);
+    const currentClass = TaskDetailStore.classNames.find((item) => item.id === id);
     TaskDetailStore.setCurrentClassNames(currentClass);
     this.loadParamsTable();
   }
@@ -474,7 +475,7 @@ export default class TaskCreate extends Component {
         if (data.failed) {
           Choerodon.prompt(data.message);
         } else {
-          const filteredParamsData = data.paramsList.length ? data.paramsList.filter(item => item.default === false) : [];
+          const filteredParamsData = data.paramsList.length ? data.paramsList.filter((item) => item.default === false) : [];
           this.setState({
             paramsData: filteredParamsData,
           });
@@ -817,7 +818,7 @@ export default class TaskCreate extends Component {
                     required: text === null,
                     message: intl.formatMessage({ id: `${intlPrefix}.num.required` }),
                   }, {
-                    transform: value => Number(value),
+                    transform: (value) => Number(value),
                     type: 'number',
                     message: intl.formatMessage({ id: `${intlPrefix}.number.pattern` }),
                   }],
@@ -900,7 +901,7 @@ export default class TaskCreate extends Component {
                   onChange={this.handleChangeService.bind(this)}
                 >
                   {
-                    service && service.length ? service.map(item => (
+                    service && service.length ? service.map((item) => (
                       <Option key={item}>{item}</Option>
                     )) : <Option key="empty">{intl.formatMessage({ id: `${intlPrefix}.noservice` })}</Option>
                   }
@@ -1114,8 +1115,8 @@ export default class TaskCreate extends Component {
    */
   handleChoiceRemove = (value) => {
     const { showSelectedRowKeys, showSelected } = this.state;
-    const deleteItemIndex = showSelectedRowKeys.findIndex(item => item === value);
-    const deleteRowItemIndex = showSelected.findIndex(item => item.id === value);
+    const deleteItemIndex = showSelectedRowKeys.findIndex((item) => item === value);
+    const deleteRowItemIndex = showSelected.findIndex((item) => item.id === value);
     showSelectedRowKeys.splice(deleteItemIndex, 1);
     showSelected.splice(deleteRowItemIndex, 1);
     this.setState({
@@ -1262,7 +1263,7 @@ export default class TaskCreate extends Component {
       dataIndex: 'loginName',
       key: 'loginName',
       width: '50%',
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.4}>
           {text}
         </MouseOverWrapper>
@@ -1272,7 +1273,7 @@ export default class TaskCreate extends Component {
       dataIndex: 'realName',
       key: 'realName',
       width: '50%',
-      render: text => (
+      render: (text) => (
         <MouseOverWrapper text={text} width={0.4}>
           {text}
         </MouseOverWrapper>
@@ -1305,7 +1306,7 @@ export default class TaskCreate extends Component {
     const level = this.getLevelName();
     const { firstStepValues, serviceName, submitLoading, params, informArr, showSelected } = this.state;
     const tableData = [];
-    Object.entries(params).map(item => tableData.push({ name: item[0], value: item[1] }));
+    Object.entries(params).map((item) => tableData.push({ name: item[0], value: item[1] }));
     let unit;
     switch (firstStepValues.simpleRepeatIntervalUnit) {
       case 'SECONDS':
@@ -1370,7 +1371,7 @@ export default class TaskCreate extends Component {
         title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
         key: 'value',
         dataIndex: 'value',
-        render: text => `${text}`,
+        render: (text) => `${text}`,
       }];
     return (
       <div>
@@ -1406,7 +1407,7 @@ export default class TaskCreate extends Component {
                     {showSelected.length ? (
                       <div className={`${stepPrefix}-informlist-name-container`}>
                         {
-                          showSelected.map(item => (
+                          showSelected.map((item) => (
                             <div key={item.id}>
                               <span>{item.loginName}{item.realName}</span>
                               <span>、</span>

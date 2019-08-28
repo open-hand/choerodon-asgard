@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { axios, store } from '@choerodon/boot';
+import { axios, store } from '@choerodon/master';
 import querystring from 'query-string';
 
 // @store('ExecutableProgramStore')
@@ -57,7 +57,7 @@ class ExecutableProgramStore {
     return axios.get(`/asgard/v1/schedules${path}/methods/${recordId}`);
   };
 
-  deleteExecutableProgramById = id => axios.delete(`/asgard/v1/schedules/methods/${id}`);
+  deleteExecutableProgramById = (id) => axios.delete(`/asgard/v1/schedules/methods/${id}`);
 }
 
 const executableProgramStore = new ExecutableProgramStore();
