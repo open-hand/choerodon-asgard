@@ -23,6 +23,7 @@ class IAMIndex extends React.Component {
           <Route path={`${match.url}/task-detail`} component={taskDetail} />
           <Route path={`${match.url}/execution-record`} component={executionRecord} />
           <Route path={`${match.url}/executable-program`} component={executableProgram} />
+          <Route path={`${match.url}/org-saga-instance`} component={sagaInstance} />         
           <Route path="*" component={nomatch} />
         </Switch>
       </IntlProviderAsync>
