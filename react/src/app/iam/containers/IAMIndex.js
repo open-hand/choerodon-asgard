@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
+import { ModalContainer } from 'choerodon-ui/pro';
 import { asyncLocaleProvider, asyncRouter, nomatch } from '@choerodon/master';
 
 const taskDetail = asyncRouter(() => import('./global/task-detail'));
@@ -17,15 +18,18 @@ class IAMIndex extends React.Component {
     const IntlProviderAsync = asyncLocaleProvider(langauge, () => import(`../locale/${langauge}`));
     return (
       <IntlProviderAsync>
-        <Switch>
-          <Route path={`${match.url}/saga`} component={saga} />
-          <Route path={`${match.url}/saga-instance`} component={sagaInstance} />
-          <Route path={`${match.url}/task-detail`} component={taskDetail} />
-          <Route path={`${match.url}/execution-record`} component={executionRecord} />
-          <Route path={`${match.url}/executable-program`} component={executableProgram} />
-          <Route path={`${match.url}/org-saga-instance`} component={sagaInstance} />         
-          <Route path="*" component={nomatch} />
-        </Switch>
+        <Fragment>
+          <Switch>
+            <Route path={`${match.url}/saga`} component={saga} />
+            <Route path={`${match.url}/saga-instance`} component={sagaInstance} />
+            <Route path={`${match.url}/task-detail`} component={taskDetail} />
+            <Route path={`${match.url}/execution-record`} component={executionRecord} />
+            <Route path={`${match.url}/executable-program`} component={executableProgram} />
+            <Route path={`${match.url}/org-saga-instance`} component={sagaInstance} />         
+            <Route path="*" component={nomatch} />
+          </Switch>
+          <ModalContainer />
+        </Fragment>
       </IntlProviderAsync>
     );
   }
