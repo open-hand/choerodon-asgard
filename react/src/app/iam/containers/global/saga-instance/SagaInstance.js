@@ -300,7 +300,7 @@ export default class SagaInstance extends Component {
       color = '#4D90FE';
     }
     return (
-      <Tag color={color}>{text}</Tag>
+      <StatusTag color={color} name={text} />
     );
   }
 
@@ -350,7 +350,7 @@ export default class SagaInstance extends Component {
     return (
       <div className="c7n-saga-instance-table-progress">
         {Object.keys({
-          completedCount, failedCount, rollbackCount, runningCount, waitToBePulledCount,
+          completedCount, failedCount, runningCount, waitToBePulledCount,
         }).map((key) => <div className={`c7n-saga-instance-table-progress-${key}`} style={{ flex: record[key] }} />)}
       </div>
     );
