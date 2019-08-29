@@ -132,7 +132,7 @@ export default class SagaImg extends Component {
   getLineData = (tasks) => {
     const lineData = {};
     const { task: { code, taskCode } } = this.state;
-    tasks.forEach(items => items.forEach(
+    tasks.forEach((items) => items.forEach(
       (task) => { lineData[task.code || task.taskCode] = task; },
     ));
     const task = { ...lineData[code || taskCode] };
