@@ -5,11 +5,11 @@ import { Button, Select, Table, Tooltip, Modal, Form, Input, Popover, Icon, Tabs
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, Action } from '@choerodon/master';
 import { withRouter } from 'react-router-dom';
-import ExecutableProgramStore from '../../../stores/global/executable-program';
-import jsonFormat from '../../../common/json-format';
-import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import ExecutableProgramStore from '../../stores/global/executable-program';
+import jsonFormat from '../../common/json-format';
+import MouseOverWrapper from '../../components/mouseOverWrapper';
 import './ExecutableProgram.scss';
-import { handleFiltersParams } from '../../../common/util';
+import { handleFiltersParams } from '../../common/util';
 
 const { Sidebar } = Modal;
 const { TabPane } = Tabs;

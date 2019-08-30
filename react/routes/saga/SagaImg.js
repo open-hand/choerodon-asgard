@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Icon, Tabs } from 'choerodon-ui';
-import { inject, observer } from 'mobx-react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import classnames from 'classnames';
-import SagaInstanceStore from '../../../stores/global/saga-instance/SagaInstanceStore';
-import jsonFormat from '../../../common/json-format';
-import SagaStore from '../../../stores/global/saga/SagaStore';
+import SagaInstanceStore from '../../stores/global/saga-instance/SagaInstanceStore';
+import jsonFormat from '../../common/json-format';
+import SagaStore from '../../stores/global/saga/SagaStore';
 import './style/saga-img.scss';
 import './style/saga.scss';
 import './style/json.scss';

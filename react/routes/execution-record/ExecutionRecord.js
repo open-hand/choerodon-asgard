@@ -5,10 +5,10 @@ import { Button, Table, Tooltip, Input, Popover, Icon } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { axios, Content, Header, Page, Permission, Action } from '@choerodon/master';
 import { withRouter } from 'react-router-dom';
-import ExecutionRecordStore from '../../../stores/global/execution-record';
-import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import StatusTag from '../../../components/statusTag';
-import { handleFiltersParams } from '../../../common/util';
+import ExecutionRecordStore from '../../stores/global/execution-record';
+import MouseOverWrapper from '../../components/mouseOverWrapper';
+import StatusTag from '../../components/statusTag';
+import { handleFiltersParams } from '../../common/util';
 
 const intlPrefix = 'execution';
 const tablePrefix = 'taskdetail';

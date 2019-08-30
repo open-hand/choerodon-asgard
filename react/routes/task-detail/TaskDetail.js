@@ -7,12 +7,12 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Permission } from '@choerodon/master';
 import classnames from 'classnames';
 import { withRouter } from 'react-router-dom';
-import TaskDetailStore from '../../../stores/global/task-detail';
-import StatusTag from '../../../components/statusTag';
+import TaskDetailStore from '../../stores/global/task-detail';
+import StatusTag from '../../components/statusTag';
 import './TaskDetail.scss';
-import '../../../common/ConfirmModal.scss';
-import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import { handleFiltersParams } from '../../../common/util';
+import '../../common/ConfirmModal.scss';
+import MouseOverWrapper from '../../components/mouseOverWrapper';
+import { handleFiltersParams } from '../../common/util';
 
 const intlPrefix = 'taskdetail';
 const { Sidebar } = Modal;

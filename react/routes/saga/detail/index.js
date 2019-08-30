@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Tabs } from 'choerodon-ui';
-import jsonFormat from '../../../../common/json-format';
+import jsonFormat from '../../../common/json-format';
 import SagaImg from '../SagaImg';
  
 const { TabPane } = Tabs;

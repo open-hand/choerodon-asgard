@@ -9,10 +9,10 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import moment from 'moment';
 import classnames from 'classnames';
 import _ from 'lodash';
-import TaskDetailStore from '../../../stores/global/task-detail';
+import TaskDetailStore from '../../stores/global/task-detail';
 import './TaskDetail.scss';
-import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import Tips from '../../../components/tips';
+import MouseOverWrapper from '../../components/mouseOverWrapper';
+import Tips from '../../components/tips';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;

@@ -6,9 +6,9 @@ import { Button, Tooltip } from 'choerodon-ui';
 import { Table, Modal } from 'choerodon-ui/pro';
 import { Content, Page } from '@choerodon/master';
 import { FormattedMessage } from 'react-intl';
-import MouseOverWrapper from '../../../components/mouseOverWrapper';
+import MouseOverWrapper from '../../components/mouseOverWrapper';
 import './style/saga-instance.scss';
-import StatusTag from '../../../components/statusTag';
+import StatusTag from '../../components/statusTag';
 import Store, { StoreProvider } from './stores';
 import SagaImg from '../saga/SagaImg';
 
