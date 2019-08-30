@@ -51,6 +51,7 @@
 
   &-btns {
     margin-bottom: 24px;
+    padding: 0 24px;
 
     .text {
       display: inline-block;
@@ -85,36 +86,10 @@
 
   // 修改事务实例中列表的展开箭头
   &-table {
-
-    tr.c7n-table-expanded-row,
-    tr.c7n-table-expanded-row:hover {
-      background: #fff;
-    }
-
-    .c7n-table-row-expand-icon-cell {
-      position: relative;
-      padding: 5px 9px;
-      text-align: left;
-
-      &:after {
-        content: ' ';
-        position: absolute;
-        top: 20%;
-        right: 13px;
-        width: 0;
-        height: 60%;
-        border-right: 1px solid rgba(0, 0, 0, .12);
-      }
-
-      .c7n-table-row-expand-icon {
-        width: 18px;
-        font-size: 18px;
-
-        &:before {
-          content: '\E5CF';
-        }
-      }
-    }
+    padding: 0 24px;
+    height: calc(100% - 54px);
+    overflow-y: auto;
+    overflow-x: hidden;
 
     &-tooltip {
       &-item {
@@ -162,18 +137,13 @@
   }
 }
 
-.c7n-saga-status-wrap {
-  display: flex;
-
-  > div {
-    > p {
-      margin-bottom: 24px;
-    }
-  }
+.c7n-saga-instance-title {
+  position: relative;
 
   .c7n-saga-status-content {
-    margin-left: auto;
-    display: flex;
+    position: absolute;
+    right: 0;
+    top: 20px;
 
     .c7n-saga-status-wrap {
       display: flex;

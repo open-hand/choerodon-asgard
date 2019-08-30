@@ -1,5 +1,5 @@
 
-export default ({ id = 0, intl, intlPrefix }) => {
+export default ({ intl, intlPrefix }) => {
   const code = intl.formatMessage({ id: `${intlPrefix}.code` });
   const service = intl.formatMessage({ id: `${intlPrefix}.service` });
   const description = intl.formatMessage({ id: `${intlPrefix}.desc` });

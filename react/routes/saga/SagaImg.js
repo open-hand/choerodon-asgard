@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Icon, Tabs } from 'choerodon-ui';
+import { Content } from '@choerodon/master';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import classnames from 'classnames';
-import SagaInstanceStore from '../../stores/global/saga-instance/SagaInstanceStore';
 import jsonFormat from '../../common/json-format';
-import SagaStore from '../../stores/global/saga/SagaStore';
 import './style/saga-img.scss';
 import './style/saga.scss';
 import './style/json.scss';
@@ -103,9 +102,8 @@ export default class SagaImg extends Component {
 
   reload() {
     const { data: { id }, intervals } = this.state;
-    const { instance } = this.props;
-    const store = instance ? SagaInstanceStore : SagaStore;
-    store.loadDetailData(id).then((data) => {
+    const { loadDetailData } = this.props;
+    loadDetailData(id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -230,8 +228,8 @@ export default class SagaImg extends Component {
 
   handleUnLock = () => {
     const { task: { id } } = this.state;
-    const { intl: { formatMessage } } = this.props;
-    SagaInstanceStore.unLock(id).then((data) => {
+    const { intl: { formatMessage }, unLock } = this.props;
+    unLock(id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -243,7 +241,8 @@ export default class SagaImg extends Component {
 
   handleAbort = () => {
     const { task: { id } } = this.state;
-    SagaInstanceStore.abort(id).then((data) => {
+    const { abort } = this.props;
+    abort(id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -254,8 +253,8 @@ export default class SagaImg extends Component {
 
   handleRetry = () => {
     const { task: { id }, intervals } = this.state;
-    const { intl: { formatMessage } } = this.props;
-    SagaInstanceStore.retry(id).then((data) => {
+    const { intl: { formatMessage }, retry } = this.props;
+    retry(id).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -287,7 +286,7 @@ export default class SagaImg extends Component {
     obj = JSON.parse(str);
     if (typeof obj === 'string') {
       /* eslint-disable-next-line */
-      obj =  eval(obj);
+      obj = eval(obj);
     }
     return obj;
   }
@@ -564,31 +563,33 @@ export default class SagaImg extends Component {
       'c7n-saga-instance': !!instance,
     });
     return (
-      <div className={clsNames}>
-        <div className="c7n-saga-img" ref={this.taskImg}>
-          {input}
-          {this.renderContent()}
-          {output}
+      <Content className="sidebar-content">
+        <div className={clsNames}>
+          <div className="c7n-saga-img" ref={this.taskImg}>
+            {input}
+            {this.renderContent()}
+            {output}
+          </div>
+          {showDetail && (
+            <div className="c7n-saga-img-detail" ref={this.taskDetail}>
+              {instance && (
+                <Tabs activeKey={activeTab} onChange={this.handleTabChange}>
+                  <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.run.title`} />} key="run" />
+                  <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.detail.title`} />} key="detail" />
+                </Tabs>
+              )}
+              {instance && activeTab === 'run' ? this.renderTaskRunDetail() : ''}
+              {instance && activeTab !== 'run' ? this.renderTaskDetail() : ''}
+              {instance ? '' : this.renderWithoutInstance()}
+            </div>
+          )}
+          {jsonTitle && (
+            <div className="c7n-saga-img-detail" ref={this.taskDetail}>
+              {this.renderJson()}
+            </div>
+          )}
         </div>
-        {showDetail && (
-          <div className="c7n-saga-img-detail" ref={this.taskDetail}>
-            {instance && (
-            <Tabs activeKey={activeTab} onChange={this.handleTabChange}>
-              <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.run.title`} />} key="run" />
-              <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.detail.title`} />} key="detail" />
-            </Tabs>
-            )}
-            {instance && activeTab === 'run' ? this.renderTaskRunDetail() : ''}
-            {instance && activeTab !== 'run' ? this.renderTaskDetail() : ''}
-            {instance ? '' : this.renderWithoutInstance()}
-          </div>
-        )}
-        {jsonTitle && (
-          <div className="c7n-saga-img-detail" ref={this.taskDetail}>
-            {this.renderJson()}
-          </div>
-        )}
-      </div>
+      </Content>
     );
   }
 }

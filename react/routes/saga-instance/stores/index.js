@@ -1,6 +1,8 @@
+/* eslint-disable no-shadow */
 import React, { createContext, useMemo } from 'react';
 import { DataSet } from 'choerodon-ui/pro';
 import { inject } from 'mobx-react';
+import { axios } from '@choerodon/master';
 import { injectIntl } from 'react-intl';
 import SagaInstanceDataSet from './SagaInstanceDataSet';
 import SagaTaskDataSet from './SagaTaskDataSet';
@@ -32,12 +34,46 @@ export const StoreProvider = injectIntl(inject('AppState')(
     const intlPrefix = 'global.saga-instance';
     const instanceDataSet = useMemo(() => new DataSet(SagaInstanceDataSet({ id, apiGetway, intl, intlPrefix })), [id]);
     const taskDataSet = useMemo(() => new DataSet(SagaTaskDataSet({ id, apiGetway, intl, intlPrefix })), [id]);
+    /**
+    * 重试
+    * @param id
+    * @returns {IDBRequest | Promise<void>}
+    */
+    function retry(id) {
+      return axios.put(`${apiGetway}tasks/instances/${id}/retry`);
+    }
+
+    /**
+     * 解锁
+     */
+    function unLock(id) {
+      return axios.put(`${apiGetway}tasks/instances/${id}/unlock`);
+    }
+
+    /**
+     * 强制失败
+     * @param id
+     */
+    function abort(id) {
+      return axios.put(`${apiGetway}tasks/instances/${id}/failed`);
+    }
+    /**
+    * 详情
+    * @param id
+    */
+    function loadDetailData(id) {
+      return axios.get(`${apiGetway}instances/${id}`);
+    }
     const value = {
       ...props,
       instanceDataSet,
       taskDataSet,
       apiGetway,
       code,
+      abort,
+      unLock,
+      retry,
+      loadDetailData,
       prefixCls: 'c7n-saga',
       intlPrefix,
       organizationId,

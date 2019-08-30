@@ -8,6 +8,7 @@ const { TabPane } = Tabs;
 const Detail = ({
   data,
   intlPrefix,
+  loadDetailData,
 }) => {
   const [showJson, setShowJson] = useState(false);
 
@@ -25,7 +26,7 @@ const Detail = ({
             </pre>
           </div>
         )
-        : (<SagaImg data={data} />)}
+        : (<SagaImg data={data} loadDetailData={loadDetailData} />)}
     </div>
   );
 };

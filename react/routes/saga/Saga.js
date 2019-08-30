@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
-import { axios } from '@choerodon/master';
+import { axios, Breadcrumb } from '@choerodon/master';
 import { Table, Modal } from 'choerodon-ui/pro';
 import { Content, Page } from '@choerodon/master';
 import { FormattedMessage } from 'react-intl';
@@ -12,7 +12,7 @@ import './style/json.scss';
 
 const { Column } = Table;
 const Saga = observer(() => {
-  const { dataSet, intlPrefix } = useContext(Store);
+  const { dataSet, intlPrefix, loadDetailData } = useContext(Store);
   const openDetail = async (id) => {
     try {
       const data = await axios.get(`/asgard/v1/sagas/${id}`);
@@ -21,9 +21,9 @@ const Saga = observer(() => {
         title: <FormattedMessage id={`${intlPrefix}.detail`} />,
         style: {
           width: 'calc(100% - 3.52rem)',
-        },        
-        children: <Detail data={data} intlPrefix={intlPrefix} />,
-        footer: (okBtn) => okBtn, 
+        },
+        children: <Detail data={data} intlPrefix={intlPrefix} loadDetailData={loadDetailData} />,
+        footer: (okBtn) => okBtn,
         okText: <FormattedMessage id="close" />,
       });
     } catch (err) {
@@ -35,12 +35,13 @@ const Saga = observer(() => {
     <Table dataSet={dataSet}>
       <Column
         name="code"
+        style={{ cursor: 'pointer' }}
         onCell={({ record }) => ({
           onClick: () => { openDetail(record.get('id')); },
-        })} 
+        })}
       />
       <Column name="service" />
-      <Column name="description" />      
+      <Column name="description" />
     </Table>
   );
 
@@ -52,9 +53,8 @@ const Saga = observer(() => {
         'asgard-service.saga.query',
       ]}
     >
-      <Content
-        title={<FormattedMessage id={`${intlPrefix}.title`} />}
-      >
+      <Breadcrumb />
+      <Content style={{ paddingTop: 0 }}>
         {renderTable()}
       </Content>
     </Page>

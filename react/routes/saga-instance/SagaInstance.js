@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import React, { useState, useContext, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { axios } from '@choerodon/master';
+import { axios, Breadcrumb } from '@choerodon/master';
 import { Button, Tooltip } from 'choerodon-ui';
 import { Table, Modal } from 'choerodon-ui/pro';
 import { Content, Page } from '@choerodon/master';
@@ -15,7 +15,7 @@ import SagaImg from '../saga/SagaImg';
 const { Column } = Table;
 
 const SagaInstance = observer(() => {
-  const { instanceDataSet, taskDataSet, intlPrefix, apiGetway, code } = useContext(Store);
+  const { instanceDataSet, taskDataSet, intlPrefix, apiGetway, abort, unLock, retry, loadDetailData } = useContext(Store);
   const [activeTab, setActiveTab] = useState('instance');
   const [statistics, setStatistics] = useState({
     COMPLETED_COUNT: 0,
@@ -136,7 +136,7 @@ const SagaInstance = observer(() => {
         style: {
           width: 'calc(100% - 3.52rem)',
         },
-        children: <SagaImg data={data} instance />,
+        children: <SagaImg data={data} instance abort={abort} unLock={unLock} retry={retry} loadDetailData={loadDetailData} />,
         footer: (okBtn) => okBtn,
         okText: <FormattedMessage id="close" />,
       });
@@ -148,6 +148,7 @@ const SagaInstance = observer(() => {
     <Table dataSet={instanceDataSet}>
       <Column
         name="sagaCode"
+        style={{ cursor: 'pointer' }}
         renderer={({ text, record }) => (
           <Tooltip title={renderTooltipTitle(record)}>
             {text}
@@ -172,6 +173,7 @@ const SagaInstance = observer(() => {
     <Table dataSet={taskDataSet}>
       <Column
         name="taskInstanceCode"
+        style={{ cursor: 'pointer' }}
         onCell={({ record }) => ({
           onClick: () => { openDetail(record.get('sagaInstanceId')); },
         })}
@@ -179,7 +181,7 @@ const SagaInstance = observer(() => {
           <MouseOverWrapper text={text} width={0.1}>
             {text}
           </MouseOverWrapper>
-        )} 
+        )}
       />
       <Column
         width={130}
@@ -192,7 +194,7 @@ const SagaInstance = observer(() => {
           <MouseOverWrapper text={text} width={0.1}>
             {text}
           </MouseOverWrapper>
-        )} 
+        )}
       />
       <Column
         name="description"
@@ -232,28 +234,21 @@ const SagaInstance = observer(() => {
         'asgard-service.saga-instance-project.queryDetails',
       ]}
     >
-      <Content>
-        <div className="c7n-saga-status-wrap">
-          <div style={{ width: 512 }}>
-            <h2 className="c7n-space-first">
-              <FormattedMessage id={`${code}.title`} />
-            </h2>
-          </div>
-          <div className="c7n-saga-status-content">
-            {null}
-            <div>
-              <div className="c7n-saga-status-text"><FormattedMessage id="saga-instance.overview" /></div>
-              <div className="c7n-saga-status-wrap">
-                {istStatusType.map((item) => (
-                  <div onClick={() => handleStatusClick(item)} key={item.toLowerCase()} className={`c7n-saga-status-num c7n-saga-status-${item.toLowerCase()}`}>
-                    <div>{statistics[`${item}_COUNT`] || 0}</div>
-                    <div><FormattedMessage id={item.toLowerCase()} /></div>
-                  </div>
-                ))}
+      <div className="c7n-saga-instance-title">
+        <Breadcrumb />
+        <div className="c7n-saga-status-content">
+          <div className="c7n-saga-status-text"><FormattedMessage id="saga-instance.overview" /></div>
+          <div className="c7n-saga-status-wrap">
+            {istStatusType.map((item) => (
+              <div onClick={() => handleStatusClick(item)} key={item.toLowerCase()} className={`c7n-saga-status-num c7n-saga-status-${item.toLowerCase()}`}>
+                <div>{statistics[`${item}_COUNT`] || 0}</div>
+                <div><FormattedMessage id={item.toLowerCase()} /></div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
+      </div>
+      <Content style={{ padding: 0 }}>
         <div className="c7n-saga-instance-btns">
           <span className="text">
             <FormattedMessage id={`${intlPrefix}.view`} />：
@@ -273,7 +268,9 @@ const SagaInstance = observer(() => {
             <FormattedMessage id={`${intlPrefix}.task`} />
           </Button>
         </div>
-        {activeTab === 'instance' ? renderTable() : renderTaskTable()}
+        <div className="c7n-saga-instance-table">
+          {activeTab === 'instance' ? renderTable() : renderTaskTable()}
+        </div>
       </Content>
     </Page>
   );
