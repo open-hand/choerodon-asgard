@@ -10,6 +10,9 @@ const Color = {
   NON_CONSUMER: '#00BFA5',
   DEFAULT: '#b8b8b8',
   QUEUE: '#ffb100',
+  ENABLE: '#00bfa5',
+  DISABLE: '#d3d3d3',
+  FINISHED: '#ffb100',
 };
 
 const IconType = {

@@ -1,10 +1,10 @@
 /* eslint-disable max-classes-per-file */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { observable, action, configure } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { Button, Table, Tooltip, Modal, Tabs, Col, Row } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Content, Header, Page, Permission } from '@choerodon/master';
+import { Content, Header, Page, Breadcrumb, Permission, Action } from '@choerodon/master';
 import classnames from 'classnames';
 import { withRouter } from 'react-router-dom';
 import TaskDetailStore from '../../stores/global/task-detail';
@@ -13,6 +13,7 @@ import './TaskDetail.scss';
 import '../../common/ConfirmModal.scss';
 import MouseOverWrapper from '../../components/mouseOverWrapper';
 import { handleFiltersParams } from '../../common/util';
+import Create from './create';
 
 const intlPrefix = 'taskdetail';
 const { Sidebar } = Modal;
@@ -88,6 +89,7 @@ export default class TaskDetail extends Component {
       logParams: [],
       paramsData: [], // 参数列表的数据
       paramsLoading: false, // 创建任务参数列表Loading
+      createVisible: false, // 创建弹框
     };
   }
 
@@ -246,47 +248,19 @@ export default class TaskDetail extends Component {
   showActionButton(record) {
     const { enableService, disableService } = this.getPermission();
     if (record.status === 'ENABLE') {
-      return (
-        <Permission service={disableService}>
-          <Tooltip
-            title={<FormattedMessage id="disable" />}
-            placement="bottom"
-          >
-            <Button
-              size="small"
-              icon="remove_circle_outline"
-              shape="circle"
-              onClick={this.handleAble.bind(this, record)}
-            />
-          </Tooltip>
-        </Permission>
-      );
+      return [{
+        service: disableService,
+        action: this.handleAble.bind(this, record),
+        text: <FormattedMessage id="disable" />,
+      }];
     } else if (record.status === 'DISABLE') {
-      return (
-        <Permission service={enableService}>
-          <Tooltip
-            title={<FormattedMessage id="enable" />}
-            placement="bottom"
-          >
-            <Button
-              size="small"
-              icon="finished"
-              shape="circle"
-              onClick={this.handleAble.bind(this, record)}
-            />
-          </Tooltip>
-        </Permission>
-      );
-    } else {
-      return (
-        <Button
-          disabled
-          size="small"
-          icon="finished"
-          shape="circle"
-        />
-      );
+      return [{
+        service: enableService,
+        action: this.handleAble.bind(this, record),
+        text: <FormattedMessage id="enable" />,
+      }];
     }
+    return [];
   }
 
   /**
@@ -335,28 +309,31 @@ export default class TaskDetail extends Component {
 
 
   createTask() {
-    const { type, id, name } = this.taskdetail;
-    const { currentMenuType } = this.props.AppState;
-    let organizationId;
-    if (currentMenuType.type === 'project') {
-      // eslint-disable-next-line prefer-destructuring
-      organizationId = currentMenuType.organizationId;
-    }
-    let createUrl;
-    switch (type) {
-      case 'organization':
-        createUrl = `/asgard/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
-        break;
-      case 'project':
-        createUrl = `/asgard/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
-        break;
-      case 'site':
-        createUrl = '/asgard/task-detail/create';
-        break;
-      default:
-        break;
-    }
-    this.props.history.push(createUrl);
+    // const { type, id, name } = this.taskdetail;
+    // const { currentMenuType } = this.props.AppState;
+    // let organizationId;
+    // if (currentMenuType.type === 'project') {
+    //   // eslint-disable-next-line prefer-destructuring
+    //   organizationId = currentMenuType.organizationId;
+    // }
+    // let createUrl;
+    // switch (type) {
+    //   case 'organization':
+    //     createUrl = `/asgard/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
+    //     break;
+    //   case 'project':
+    //     createUrl = `/asgard/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
+    //     break;
+    //   case 'site':
+    //     createUrl = '/asgard/task-detail/create';
+    //     break;
+    //   default:
+    //     break;
+    // }
+    // this.props.history.push(createUrl);
+    this.setState({
+      createVisible: true,
+    });
   }
 
 
@@ -422,6 +399,11 @@ export default class TaskDetail extends Component {
     });
   }
 
+  handleCreateCancel = () => {
+    this.setState({
+      createVisible: false,
+    });
+  }
 
   // 渲染侧边栏成功按钮文字
   renderSidebarOkText() {
@@ -693,7 +675,7 @@ export default class TaskDetail extends Component {
   render() {
     const { intl, AppState } = this.props;
     const { deleteService, detailService } = this.getPermission();
-    const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting } = this.state;
+    const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting, createVisible } = this.state;
     const { createService } = this.getPermission();
     const TaskData = TaskDetailStore.getData.slice();
     const columns = [{
@@ -703,10 +685,26 @@ export default class TaskDetail extends Component {
       width: '20%',
       filters: [],
       filteredValue: filters.name || [],
-      render: (text) => (
-        <MouseOverWrapper text={text} width={0.2}>
-          {text}
-        </MouseOverWrapper>
+      render: (text, record) => (
+        <div style={{ display: 'flex' }}>
+          <MouseOverWrapper text={text} width={0.2}>
+            <Permission service={detailService} noAccessChildren={text}>
+              <span style={{ cursor: 'pointer' }} onClick={this.handleOpen.bind(this, 'detail', record)}>
+                {text}
+              </span>  
+            </Permission>                       
+          </MouseOverWrapper>
+          <Action
+            style={{ marginLeft: 'auto' }}
+            data={[
+              ...this.showActionButton(record),
+              {                
+                service: deleteService,
+                action: this.handleDelete.bind(this, record),
+                text: <FormattedMessage id="delete" />,
+              }]}
+          />
+        </div>
       ),
     }, {
       title: <FormattedMessage id="description" />,
@@ -743,43 +741,7 @@ export default class TaskDetail extends Component {
         text: intl.formatMessage({ id: 'finished' }),
       }],
       filteredValue: filters.status || [],
-      render: (status) => (<StatusTag mode="icon" name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
-    }, {
-      title: '',
-      key: 'action',
-      align: 'right',
-      width: '130px',
-      render: (text, record) => (
-        <div>
-          <Permission service={detailService}>
-            <Tooltip
-              title={<FormattedMessage id="detail" />}
-              placement="bottom"
-            >
-              <Button
-                size="small"
-                icon="find_in_page"
-                shape="circle"
-                onClick={this.handleOpen.bind(this, 'detail', record)}
-              />
-            </Tooltip>
-          </Permission>
-          {this.showActionButton(record)}
-          <Permission service={deleteService}>
-            <Tooltip
-              title={<FormattedMessage id="delete" />}
-              placement="bottom"
-            >
-              <Button
-                size="small"
-                icon="delete_forever"
-                shape="circle"
-                onClick={this.handleDelete.bind(this, record)}
-              />
-            </Tooltip>
-          </Permission>
-        </div>
-      ),
+      render: (status) => (<StatusTag name={intl.formatMessage({ id: status.toLowerCase() })} colorCode={status} />),
     }];
     return (
       <Page
@@ -825,10 +787,8 @@ export default class TaskDetail extends Component {
             <FormattedMessage id="refresh" />
           </Button>
         </Header>
-        <Content
-          code={this.taskdetail.code}
-          values={{ name: `${this.taskdetail.values.name || 'Choerodon'}` }}
-        >
+        <Breadcrumb />
+        <Content style={{ paddingTop: 0 }}>
           <Table
             loading={loading}
             columns={columns}
@@ -851,6 +811,7 @@ export default class TaskDetail extends Component {
           >
             {this.renderDetailContent()}
           </Sidebar>
+          <Create visible={createVisible} onCancel={this.handleCreateCancel} />
         </Content>
       </Page>
     );

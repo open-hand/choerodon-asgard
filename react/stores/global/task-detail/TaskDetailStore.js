@@ -1,4 +1,4 @@
-import { action, computed, observable } from 'mobx';
+import { action, computed, observable, toJS } from 'mobx';
 import { axios, store, stores } from '@choerodon/master';
 import querystring from 'query-string';
 
@@ -19,8 +19,16 @@ class TaskDetailStore {
   @observable currentClassNames = {}; // 当前任务程序
 
   @observable currentTask = {};
-  
+
   @observable userdata = [];
+
+  @observable methods = [];
+
+  @observable selectedRowKeys = [];
+
+  @observable params = [];
+
+  @observable paramsLoading = false;
 
   @action setData(data) {
     this.data = data;
@@ -81,6 +89,28 @@ class TaskDetailStore {
 
   @computed get getUserData() {
     return this.userdata;
+  }
+
+  @action setMethods(methods) {
+    this.methods = methods;
+  }
+
+  @action setSelectedRowKeys(selectedRowKeys) {
+    this.selectedRowKeys = selectedRowKeys;
+  }
+
+  @computed get getSelectedRowKeys() {
+    return toJS(this.selectedRowKeys);
+  }
+
+
+  @action setParams(params) {
+    this.params = params;
+  }
+
+  @action setParamsLoading(paramsLoading) {
+    console.log(paramsLoading);
+    this.paramsLoading = paramsLoading;
   }
 
   getLevelType = (type, id) => (type === 'site' ? '' : `/${type}s/${id}`);
@@ -162,6 +192,17 @@ class TaskDetailStore {
     } else {
       return axios.post(`${this.getRoleLevelType(type, id)}/role_members/users/roles?${querystring.stringify(queryObj)}`, JSON.stringify(body));
     }
+  }
+
+  loadMethods(
+    { current, pageSize },
+    type, id,
+  ) {
+    const queryObj = {
+      size: pageSize,
+      page: current,
+    };
+    return axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods?${querystring.stringify(queryObj)}`);
   }
 
   loadService = (type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/services`);

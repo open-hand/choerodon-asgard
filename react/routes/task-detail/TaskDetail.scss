@@ -84,9 +84,11 @@
     a:link {
       text-decoration: none;
     }
+
     a:hover {
       text-decoration: underline;
     }
+
     a:visited {
       text-decoration: none;
     }
@@ -109,38 +111,17 @@
   display: flex;
 }
 
-.c7n-taskdetail-text .c7n-taskdetail-text-icon {
-  color: rgba(0, 0, 0, .65);
-  display: none;
-}
-
-.c7n-taskdetail-text:hover .c7n-taskdetail-text-icon {
-  display: block;
-}
-
-.c7n-input-focus + .c7n-taskdetail-text-icon {
-  display: block;
-}
-
 .c7n-iam-create-task {
   &-tip-select {
     position: relative;
+
     .c7n-iam-select-tip {
-      right: 291px;
-    }
-    .c7n-select-arrow {
-      position: absolute !important;
-      right: 20px;
-      bottom: 0;
-      margin: 0;
-      transition: opacity .15s ease;
-      cursor: pointer;
+      right: 22px;
     }
   }
+
   &-container {
     background: #fff;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.20);
-    padding: 32px;
 
     .c7n-select-dropdown--multiple {
       display: none;
@@ -148,30 +129,13 @@
   }
 
   &-content {
-    padding: 36px 38px 30px;
-
-    &-des {
-      width: 512px;
-      font-size: 13px;
-      color: rgba(0, 0, 0, 0.65);
-      margin-bottom: 24px;
-
-      a:link {
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      a:visited {
-        text-decoration: none;
-      }
-    }
+    width: 512px;
+    margin: 36px 38px 30px;
 
     &-inline-formitem {
       display: inline-block;
 
       &-select {
-        margin-top: 13px;
         .c7n-select-selection__placeholder {
           color: rgba(0, 0, 0, 0.6);
         }
@@ -187,7 +151,7 @@
     }
 
     &-btn-group {
-      margin-top: 32px;
+      // margin-top: 32px;
 
       button:not(:first-child) {
         margin-left: 12px;
@@ -195,7 +159,8 @@
     }
 
     &-step1-container {
-      width: 532px;
+
+      // width: 512px;
       &-simpletask-time-container {
         display: inline-block;
         margin-right: 60px;
@@ -206,9 +171,7 @@
         height: 156px;
 
         &-icon {
-          position: absolute;
-          left: 589px;
-          margin-top: 16px;
+          color: #000;
           cursor: pointer;
         }
       }
@@ -220,6 +183,7 @@
         white-space: nowrap;
         overflow: hidden;
       }
+
     }
 
     &-step3-container {
@@ -305,27 +269,15 @@
         }
       }
     }
+
+    .c7n-task-deatil-methods-container {
+      .c7n-table-expand-icon-th {
+        display: none;
+      }
+
+      .c7n-table-row-expand-icon-cell {
+        display: none;
+      }
+    }
   }
 }
-
-.c7n-iam-create-task-modal {
-  .c7n-modal-title {
-    margin-bottom: 20px;
-  }
-
-  .c7n-table-body {
-    height: 330px;
-    overflow-y: scroll;
-  }
-
-  .c7n-table-placeholder {
-    bottom: 300px;
-  }
-}
-
-.c7n-iam-create-task-page {
-  .c7n-tooltip-inner {
-    max-width: 530px;
-  }
-}
-
