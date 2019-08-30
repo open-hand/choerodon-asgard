@@ -15,7 +15,7 @@ import SagaImg from '../saga/SagaImg';
 const { Column } = Table;
 
 const SagaInstance = observer(() => {
-  const { instanceDataSet, taskDataSet, intlPrefix, apiGetway, abort, unLock, retry, loadDetailData } = useContext(Store);
+  const { instanceDataSet, intl, taskDataSet, intlPrefix, apiGetway, abort, unLock, retry, loadDetailData } = useContext(Store);
   const [activeTab, setActiveTab] = useState('instance');
   const [statistics, setStatistics] = useState({
     COMPLETED_COUNT: 0,
@@ -46,31 +46,6 @@ const SagaInstance = observer(() => {
     setActiveTab('instance');
     instanceDataSet.query();
   };
-  function renderTag(status) {
-    let color = '';
-    let text = '';
-    if (status === 'FAILED') {
-      color = '#F44336';
-      text = '失败';
-    } else if (status === 'COMPLETED') {
-      text = '完成';
-      color = '#00BFA5';
-    } else {
-      text = '运行中';
-      color = '#4D90FE';
-    }
-    return (
-      <StatusTag
-        color={color}
-        name={text}
-        style={{
-          lineHeight: '20px',
-          padding: '0 7px',
-        }}
-      />
-    );
-  }
-
 
   const renderTooltipTitle = (record) => {
     const id = record.get('id');
@@ -117,16 +92,31 @@ const SagaInstance = observer(() => {
     );
   };
 
-  const renderProgress = ({ record }) => (
-    <div className="c7n-saga-instance-table-progress">
-      {['completedCount', 'failedCount', 'runningCount', 'waitToBePulledCount'].map((key) => (
-        <div
-          className={`c7n-saga-instance-table-progress-${key}`}
-          style={{ flex: record.get(key) }}
-        />
-      ))}
-    </div>
-  );
+  const renderProgress = ({ record }) => {
+    const title = ['completedCount', 'failedCount', 'runningCount', 'waitToBePulledCount'].map((key) => (
+      <div style={{ display: 'flex' }}> 
+        <div style={{ width: 80 }}>
+          {intl.formatMessage({ id: `${intlPrefix}.${key}` })}：
+        </div>
+        <div>
+          {record.get(key)}
+        </div>
+      </div>
+    ));
+    const progress = (
+      <Tooltip title={title}>
+        <div className="c7n-saga-instance-table-progress">
+          {['completedCount', 'failedCount', 'runningCount', 'waitToBePulledCount'].map((key) => (
+            <div
+              className={`c7n-saga-instance-table-progress-${key}`}
+              style={{ flex: record.get(key) }}
+            />
+          ))}
+        </div>
+      </Tooltip>
+    );
+    return progress;
+  };
   const openDetail = async (id) => {
     try {
       const data = await axios.get(`${apiGetway}instances/${id}`);
@@ -145,7 +135,7 @@ const SagaInstance = observer(() => {
     }
   };
   const renderTable = () => (
-    <Table dataSet={instanceDataSet}>
+    <Table dataSet={instanceDataSet} key="instance">
       <Column
         name="sagaCode"
         style={{ cursor: 'pointer' }}
@@ -161,7 +151,16 @@ const SagaInstance = observer(() => {
       <Column
         width={130}
         name="status"
-        renderer={({ text: status }) => renderTag(status)}
+        renderer={({ text: status }) => (
+          <StatusTag
+            style={{
+              lineHeight: '20px',
+              padding: '0 7px',
+            }}
+            name={intl.formatMessage({ id: status.toLowerCase() })}
+            colorCode={status === 'WAIT_TO_BE_PULLED' ? 'QUEUE' : status}
+          />
+        )}
       />
       <Column name="startTime" />
       <Column name="refType" />
@@ -170,7 +169,7 @@ const SagaInstance = observer(() => {
     </Table>
   );
   const renderTaskTable = () => (
-    <Table dataSet={taskDataSet}>
+    <Table dataSet={taskDataSet} key="task">
       <Column
         name="taskInstanceCode"
         style={{ cursor: 'pointer' }}
@@ -186,7 +185,16 @@ const SagaInstance = observer(() => {
       <Column
         width={130}
         name="status"
-        renderer={({ text: status }) => renderTag(status)}
+        renderer={({ text: status }) => (
+          <StatusTag
+            style={{
+              lineHeight: '20px',
+              padding: '0 7px',
+            }}
+            name={intl.formatMessage({ id: status.toLowerCase() })}
+            colorCode={status === 'WAIT_TO_BE_PULLED' ? 'QUEUE' : status}
+          />
+        )}
       />
       <Column
         name="sagaInstanceCode"

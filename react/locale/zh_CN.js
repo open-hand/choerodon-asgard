@@ -1276,6 +1276,10 @@ const zh_CN = {
   'global.saga-instance.reftype': '关联业务类型',
   'global.saga-instance.refid': '关联业务ID',
   'global.saga-instance.progress': '进度条',
+  'global.saga-instance.completedCount': '已完成',
+  'global.saga-instance.failedCount': '已失败',
+  'global.saga-instance.runningCount': '运行中',
+  'global.saga-instance.waitToBePulledCount': '等待被拉取',
 
   // 仪表盘配置
   'global.dashboard-setting.header.title': '仪表盘配置',
