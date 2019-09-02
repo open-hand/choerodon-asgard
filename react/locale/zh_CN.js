@@ -862,6 +862,7 @@ const zh_CN = {
   'taskdetail.task.description.required': '请输入任务描述',
   'taskdetail.task.start.time': '开始时间',
   'taskdetail.task.start.time.required': '请输入开始时间',
+  'taskdetail.task.range.required': '请输入开始时间和结束时间',
   'taskdetail.task.end.time': '结束时间',
   'taskdetail.task.end.time.required': '请输入结束时间',
   'taskdetail.trigger.type': '触发类型',

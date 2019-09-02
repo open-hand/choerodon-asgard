@@ -141,7 +141,7 @@ const SagaInstance = observer(() => {
         style={{ cursor: 'pointer' }}
         renderer={({ text, record }) => (
           <Tooltip title={renderTooltipTitle(record)}>
-            {text}
+            {`${text}-${record.get('id')}`}
           </Tooltip>
         )}
         onCell={({ record }) => ({
