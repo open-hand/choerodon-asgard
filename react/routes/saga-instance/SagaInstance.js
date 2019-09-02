@@ -13,7 +13,7 @@ import Store, { StoreProvider } from './stores';
 import SagaImg from '../saga/SagaImg';
 
 const { Column } = Table;
-
+const modalKey = Modal.key();
 const SagaInstance = observer(() => {
   const { instanceDataSet, intl, taskDataSet, intlPrefix, apiGetway, abort, unLock, retry, loadDetailData } = useContext(Store);
   const [activeTab, setActiveTab] = useState('instance');
@@ -121,6 +121,7 @@ const SagaInstance = observer(() => {
     try {
       const data = await axios.get(`${apiGetway}instances/${id}`);
       Modal.open({
+        key: modalKey,
         drawer: true,
         title: <FormattedMessage id={`${intlPrefix}.detail`} />,
         style: {

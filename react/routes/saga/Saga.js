@@ -9,7 +9,7 @@ import Store, { StoreProvider } from './stores';
 import './style/saga.scss';
 import './style/json.scss';
 
-
+const key = Modal.key();
 const { Column } = Table;
 const Saga = observer(() => {
   const { dataSet, intlPrefix, loadDetailData } = useContext(Store);
@@ -17,6 +17,7 @@ const Saga = observer(() => {
     try {
       const data = await axios.get(`/asgard/v1/sagas/${id}`);
       Modal.open({
+        key,
         drawer: true,
         title: <FormattedMessage id={`${intlPrefix}.detail`} />,
         style: {
