@@ -31,7 +31,7 @@
             AND asi.SOURCE_ID=#{sourceId}
         </if>
         <if test="sagaCode != null">
-            AND concat(concat(asi.saga_code, '-'), id) LIKE concat(concat('%',#{sagaCode}),'%')
+            AND concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{sagaCode}),'%')
         </if>
         <if test="status != null">
             <choose>
@@ -51,7 +51,7 @@
         </if>
         <if test="params != null">
             AND(
-            concat(concat(asi.saga_code, '-'), id) LIKE concat(concat('%',#{params}),'%') OR
+            concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{params}),'%') OR
             asi.ref_type LIKE concat(concat('%',#{params}),'%') OR
             asi.ref_id LIKE concat(concat('%',#{params}),'%')
             )
