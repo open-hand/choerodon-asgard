@@ -1,18 +1,31 @@
 package io.choerodon.asgard.app.service.impl;
 
+import static java.util.stream.Collectors.groupingBy;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.vo.PageSagaTaskInstance;
-import io.choerodon.asgard.api.vo.SagaInstance;
-import io.choerodon.asgard.api.vo.SagaInstanceDetails;
-import io.choerodon.asgard.api.vo.SagaWithTaskInstance;
-import io.choerodon.asgard.api.vo.StartInstance;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.service.JsonDataService;
 import io.choerodon.asgard.app.service.SagaInstanceService;
+import io.choerodon.asgard.infra.dto.JsonDataDTO;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
@@ -24,21 +37,6 @@ import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
@@ -128,8 +126,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.WAIT_TO_BE_PULLED.name());
             if (taskInstanceMapper.insertSelective(sagaTaskInstance) != 1) {
                 throw new FeignException(DB_ERROR);
-            }
-            else{
+            } else {
                 sagaInstanceEventPublisher.sagaTaskInstanceEvent(t.getService());
             }
         });
@@ -137,8 +134,8 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(int page, int size, String sagaCode,
-                                                            String status, String refType,
-                                                            String refId, String params, String level, Long sourceId) {
+                                                                   String status, String refType,
+                                                                   String refId, String params, String level, Long sourceId) {
         return new ResponseEntity<>(
                 PageHelper
                         .startPage(page, size)
@@ -153,27 +150,37 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             throw new CommonException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
         }
         SagaWithTaskInstance dto = modelMapper.map(sagaInstance, SagaWithTaskInstance.class);
-        if (sagaInstance.getInputDataId() != null) {
-            dto.setInput(jsonDataMapper.selectByPrimaryKey(sagaInstance.getInputDataId()).getData());
+        Long inputDataId = sagaInstance.getInputDataId();
+        Long outputDataId = sagaInstance.getOutputDataId();
+        if (inputDataId != null) {
+            JsonDataDTO inputJsonData = jsonDataMapper.selectByPrimaryKey(inputDataId);
+            if (inputJsonData == null) {
+                LOGGER.warn("input data of saga instance is null which input data id = {}", inputDataId);
+            } else {
+                dto.setInput(inputJsonData.getData());
+            }
         }
-        if (sagaInstance.getOutputDataId() != null) {
-            dto.setOutput(jsonDataMapper.selectByPrimaryKey(sagaInstance.getOutputDataId()).getData());
+        if (outputDataId != null) {
+            JsonDataDTO outputJsonData = jsonDataMapper.selectByPrimaryKey(outputDataId);
+            if (outputJsonData == null) {
+                LOGGER.warn("output data of saga instance is null which output data id = {}", outputDataId);
+            } else {
+                dto.setOutput(outputJsonData.getData());
+            }
         }
-        List<List<PageSagaTaskInstance>> list = new ArrayList<>(
-                taskInstanceMapper.selectAllBySagaInstanceId(id)
-                        .stream()
-                        .collect(groupingBy(PageSagaTaskInstance::getSeq)).values().stream().sorted((List<PageSagaTaskInstance> list1, List<PageSagaTaskInstance> list2) -> {
+        List<List<PageSagaTaskInstance>> list = taskInstanceMapper.selectAllBySagaInstanceId(id)
+                .stream()
+                .collect(groupingBy(PageSagaTaskInstance::getSeq)).values().stream().sorted((List<PageSagaTaskInstance> list1, List<PageSagaTaskInstance> list2) -> {
                     PageSagaTaskInstance o1 = list1.get(0);
                     PageSagaTaskInstance o2 = list2.get(0);
                     return o1.getSeq().compareTo(o2.getSeq());
-                }).collect(Collectors.toList()));
+                }).collect(Collectors.toList());
         dto.setTasks(list);
         try {
             return new ResponseEntity<>(objectMapper.writeValueAsString(dto), HttpStatus.OK);
         } catch (JsonProcessingException e) {
             throw new CommonException("error.SagaInstanceService.IOException", e);
         }
-
     }
 
     @Override
@@ -214,7 +221,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                 calendar.add(Calendar.DATE, 1);
             }
         } catch (ParseException e) {
-            LOGGER.info("error.sagaInstanceService.queryFailedByDate.ParseException", e);
+            LOGGER.error("error.sagaInstanceService.queryFailedByDate.ParseException", e);
         }
         Map<String, Object> map = new HashMap<>();
         map.put("date", date);
