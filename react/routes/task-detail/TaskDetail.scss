@@ -25,10 +25,6 @@
   .c7n-task-detail-row {
     margin-bottom: 12px;
 
-    div:first-child {
-      width: 11.5%;
-    }
-
     div:last-child {
       color: rgba(0, 0, 0, 0.65);
     }
@@ -112,6 +108,12 @@
 }
 
 .c7n-iam-create-task {
+  &-sidebar {
+    .c7n-modal-body {
+      height: calc(100% - 1.21rem) !important;
+    }
+  }
+
   &-tip-select {
     position: relative;
 
@@ -123,9 +125,9 @@
   &-container {
     background: #fff;
 
-    .c7n-select-dropdown--multiple {
-      display: none;
-    }
+    // .c7n-select-dropdown--multiple {
+    //   display: none;
+    // }
   }
 
   &-content {
@@ -183,7 +185,6 @@
         white-space: nowrap;
         overflow: hidden;
       }
-
     }
 
     &-step3-container {
@@ -270,13 +271,31 @@
       }
     }
 
-    .c7n-task-deatil-methods-container {
+    .c7n-task-detail-methods-container {
       .c7n-table-expand-icon-th {
         display: none;
       }
 
       .c7n-table-row-expand-icon-cell {
         display: none;
+      }
+
+      .c7n-table-expanded-row:hover > td {
+        background: #fbfbfb;
+      }
+    }
+
+    .c7n-task-detail-params-container {
+      margin-left: -10px;
+
+      th {
+        background: none;
+      }
+
+      tr:last-of-type {
+        td {
+          border-bottom: none;
+        }
       }
     }
   }

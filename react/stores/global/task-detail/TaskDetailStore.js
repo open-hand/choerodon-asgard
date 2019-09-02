@@ -1,5 +1,6 @@
 import { action, computed, observable, toJS } from 'mobx';
-import { axios, store, stores } from '@choerodon/master';
+import { find } from 'lodash';
+import { axios } from '@choerodon/master';
 import querystring from 'query-string';
 
 // @store('TaskDetailStore')
@@ -23,6 +24,21 @@ class TaskDetailStore {
   @observable userdata = [];
 
   @observable methods = [];
+
+  @observable methodPagination = {
+    current: 1,
+    total: 0,
+    pageSize: 10,
+  };
+
+  @observable methodFilters = {};
+
+  @observable methodSort= {
+    columnKey: 'id',
+    order: 'descend',
+  }
+  
+  @observable methodParams= []
 
   @observable selectedRowKeys = [];
 
@@ -103,14 +119,32 @@ class TaskDetailStore {
     return toJS(this.selectedRowKeys);
   }
 
+  @computed get getSelectedMethod() {
+    return find(this.methods, { id: this.selectedRowKeys[0] });
+  }
 
   @action setParams(params) {
     this.params = params;
   }
 
   @action setParamsLoading(paramsLoading) {
-    console.log(paramsLoading);
     this.paramsLoading = paramsLoading;
+  }
+
+  @action setMethodPagination(methodPagination) {
+    this.methodPagination = methodPagination;
+  }
+
+  @action setMethodFilters(methodFilters) {
+    this.methodFilters = methodFilters;
+  }
+
+  @action setMethodSort(sort) {
+    this.methodSort = sort;
+  }
+
+  @action setMethodParams(methodParams) {
+    this.methodParams = methodParams;
   }
 
   getLevelType = (type, id) => (type === 'site' ? '' : `/${type}s/${id}`);
@@ -196,12 +230,24 @@ class TaskDetailStore {
 
   loadMethods(
     { current, pageSize },
-    type, id,
+    { service, description },
+    { columnKey = 'id', order = 'descend' },
+    params, type, id,
   ) {
     const queryObj = {
       size: pageSize,
       page: current,
+      service,
+      description,
     };
+    if (columnKey) {
+      const sorter = [];
+      sorter.push(columnKey);
+      if (order === 'descend') {
+        sorter.push('desc');
+      }
+      queryObj.sort = sorter.join(',');
+    }
     return axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods?${querystring.stringify(queryObj)}`);
   }
 

@@ -111,10 +111,6 @@ export default class TaskCreate extends Component {
     this.initTaskDetail();
   }
 
-  componentDidMount() {
-    this.loadMethods();
-  }
-
   componentWillUnmount() {
     TaskDetailStore.setService([]);
     TaskDetailStore.setClassNames([]);
@@ -125,13 +121,6 @@ export default class TaskCreate extends Component {
 
   initTaskDetail() {
     this.taskdetail = new TaskDetailType(this);
-  }
-
-  loadMethods = () => {
-    const { type, id } = this.taskdetail;
-    TaskDetailStore.loadMethods({ current: 1, pageSize: 10 }, type, id).then((res) => {
-      TaskDetailStore.setMethods(res.list);
-    });
   }
 
 
@@ -732,6 +721,7 @@ export default class TaskCreate extends Component {
     const { intl: { formatMessage }, AppState } = this.props;
     const level = this.getLevelName();
     const { firstStepValues, serviceName, submitLoading, params, informArr, showSelected } = this.state;
+    const method = TaskDetailStore.getSelectedMethod;
     const tableData = [];
     Object.entries(params).map((item) => tableData.push({ name: item[0], value: item[1] }));
     let unit;
@@ -792,10 +782,10 @@ export default class TaskCreate extends Component {
       value: formatMessage({ id: `${intlPrefix}.${firstStepValues.executeStrategy.toLowerCase()}` }) || '阻塞',
     }, {
       key: formatMessage({ id: `${intlPrefix}.service.name` }),
-      value: serviceName,
+      value: method.service,
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.class.name` }),
-      value: TaskDetailStore.getCurrentClassNames.description,
+      value: method.description,
     }, {
       key: formatMessage({ id: `${intlPrefix}.params.data` }),
       value: <Table
@@ -1056,12 +1046,12 @@ export default class TaskCreate extends Component {
             current: step + 1,
             submitLoading: false,
           }, () => {
-            if (!TaskDetailStore.methods.length) {
-              this.loadMethods();
-            }
+            // if (!TaskDetailStore.methods.length) {
+            //   this.loadMethods();
+            // }
           });
         } else if (step === 2) {
-          if (values.methodId === 'empty') {
+          if (!TaskDetailStore.getSelectedMethod) {
             Choerodon.prompt(intl.formatMessage({ id: `${intlPrefix}.noprogram` }));
             this.setState({
               submitLoading: false,
@@ -1080,7 +1070,8 @@ export default class TaskCreate extends Component {
             submitLoading: false,
           });
         } else {
-          const { informArr, showSelectedRowKeys, methodId, params, firstStepValues: { executeStrategy, range, cronExpression, simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, triggerType } } = this.state;
+          const { informArr, showSelectedRowKeys, params, firstStepValues: { executeStrategy, range, cronExpression, simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, triggerType } } = this.state;
+          const method = TaskDetailStore.getSelectedMethod;
           const flag = triggerType === 'simple-trigger';
           const [startTime, endTime] = range;
           const body = {
@@ -1093,7 +1084,7 @@ export default class TaskCreate extends Component {
             simpleRepeatCount: flag ? Number(simpleRepeatCount) : null,
             executeStrategy,
             params,
-            methodId,
+            methodId: method.id,
             notifyUser: {
               administrator: informArr.indexOf('manager') !== -1,
               creator: informArr.indexOf(AppState.getUserInfo.id) !== -1,
@@ -1244,7 +1235,7 @@ export default class TaskCreate extends Component {
     const { current } = this.state;
     const { visible } = this.props;
     return (
-      <Sidebar visible={visible} title={<FormattedMessage id={`${intlPrefix}.create`} />} footer={this.renderFooter()}>
+      <Sidebar visible={visible} title={<FormattedMessage id={`${intlPrefix}.create`} />} footer={this.renderFooter()} className="c7n-iam-create-task-sidebar">
         <div className="c7n-iam-create-task-container">
           <div className="c7n-iam-create-task-container-steps">
             <Steps current={current}>
@@ -1291,8 +1282,8 @@ export default class TaskCreate extends Component {
             </Steps>
           </div>
           <div className="c7n-iam-create-task-content">
-            {/* {current === 1 && this.handleRenderFirstStep()} */}
-            {current === 1 && <SelectMethod taskdetail={this.taskdetail} {...this.props} />}
+            {current === 1 && this.handleRenderFirstStep()}
+            {current === 2 && <SelectMethod taskdetail={this.taskdetail} {...this.props} />}
             {current === 3 && this.handleRenderThirdStep()}
             {current === 4 && this.handleRenderFourthStep()}
           </div>

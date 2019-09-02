@@ -461,6 +461,29 @@ export default class TaskDetail extends Component {
       default:
         break;
     }
+    
+    const paramColumns = [{
+      title: <FormattedMessage id={`${intlPrefix}.params.name`} />,
+      dataIndex: 'name',
+      key: 'name',
+      width: '50%',
+      render: (text) => (
+        <MouseOverWrapper text={text} width={0.4}>
+          {text}
+        </MouseOverWrapper>
+      ),
+    }, {
+      title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
+      dataIndex: 'value',
+      key: 'value',
+      width: '50%',
+      render: (text) => (
+        <MouseOverWrapper text={text} width={0.4}>
+          {text}
+        </MouseOverWrapper>
+      ),
+    }];
+
     const infoList = [{
       key: formatMessage({ id: `${intlPrefix}.task.name` }),
       value: info.name,
@@ -502,29 +525,14 @@ export default class TaskDetail extends Component {
       value: info.methodDescription,
     }, {
       key: formatMessage({ id: `${intlPrefix}.params.data` }),
-      value: '',
-    }];
-
-    const paramColumns = [{
-      title: <FormattedMessage id={`${intlPrefix}.params.name`} />,
-      dataIndex: 'name',
-      key: 'name',
-      width: '50%',
-      render: (text) => (
-        <MouseOverWrapper text={text} width={0.4}>
-          {text}
-        </MouseOverWrapper>
-      ),
-    }, {
-      title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
-      dataIndex: 'value',
-      key: 'value',
-      width: '50%',
-      render: (text) => (
-        <MouseOverWrapper text={text} width={0.4}>
-          {text}
-        </MouseOverWrapper>
-      ),
+      value: <Table
+        columns={paramColumns}
+        style={{ width: '512px' }}
+        pagination={false}
+        filterBar={false}
+        dataSource={info.params}
+        rowKey="name"
+      />,
     }];
 
     const logColumns = [{
@@ -562,8 +570,8 @@ export default class TaskDetail extends Component {
     return (
       <Content
         className="sidebar-content"
-        code={`${this.taskdetail.code}.detail`}
-        values={{ name: info.name }}
+        // code={`${this.taskdetail.code}.detail`}
+        // values={{ name: info.name }}
       >
         <Tabs activeKey={showLog ? 'log' : 'info'} onChange={this.handleTabChange}>
           <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.info`} />} key="info" />
@@ -580,14 +588,7 @@ export default class TaskDetail extends Component {
                   </Row>
                 ))
               }
-              <Table
-                columns={paramColumns}
-                style={{ width: '512px', marginBottom: '12px' }}
-                pagination={false}
-                filterBar={false}
-                dataSource={info.params}
-                rowKey="name"
-              />
+              
               <Row className={classnames({ 'c7n-task-detail-row': !info.notifyUser })}>
                 <Col span={3}>{formatMessage({ id: `${intlPrefix}.inform.person` })}:</Col>
                 <Col span={21}>
