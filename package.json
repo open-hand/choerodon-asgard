@@ -3,7 +3,7 @@
   "routeName": "asgard",
   "version": "0.20.0",
   "description": "",
-  "main": "./lib/src/app/iam/containers/IAMIndex.js",
+  "main": "./lib/index.js",
   "files": [
     "lib"
   ],
