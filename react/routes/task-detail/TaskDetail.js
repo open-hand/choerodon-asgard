@@ -781,12 +781,12 @@ export default class TaskDetail extends Component {
               <FormattedMessage id={`${intlPrefix}.create`} />
             </Button>
           </Permission>
-          <Button
+          {/* <Button
             icon="refresh"
             onClick={this.handleRefresh}
           >
             <FormattedMessage id="refresh" />
-          </Button>
+          </Button> */}
         </Header>
         <Breadcrumb />
         <Content style={{ paddingTop: 0 }}>
