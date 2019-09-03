@@ -132,6 +132,11 @@ export default class TaskCreate extends Component {
     onCancel();
   };
 
+  handleOk = () => {
+    const { onOk } = this.props;
+    onOk();
+  };
+
   /**
    * 获取步骤条状态
    * @param index
@@ -1104,7 +1109,7 @@ export default class TaskCreate extends Component {
               this.setState({
                 submitLoading: false,
               }, () => {
-                this.handleCancel();
+                this.handleOk();
               });
             }
           }).catch(() => {

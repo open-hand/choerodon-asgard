@@ -405,6 +405,13 @@ export default class TaskDetail extends Component {
     });
   }
 
+  handleCreateOk=() => {
+    this.setState({
+      createVisible: false,
+    });
+    this.loadTaskDetail();
+  }
+
   // 渲染侧边栏成功按钮文字
   renderSidebarOkText() {
     const { selectType } = this.state;
@@ -812,7 +819,7 @@ export default class TaskDetail extends Component {
           >
             {this.renderDetailContent()}
           </Sidebar>
-          <Create visible={createVisible} onCancel={this.handleCreateCancel} />
+          <Create visible={createVisible} onCancel={this.handleCreateCancel} onOk={this.handleCreateOk} />
         </Content>
       </Page>
     );
