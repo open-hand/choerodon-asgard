@@ -113,8 +113,8 @@ export default class TaskCreate extends Component {
     const { modal } = this.props;
     modal.update();
   }
-  
-  componentDidUpdate(prevProps, prevState) {    
+
+  componentDidUpdate(prevProps, prevState) {
     if (this.state.submitLoading !== prevState.submitLoading || this.state.current !== prevState.current) {
       const { modal } = this.props;
       modal.update();
@@ -830,9 +830,7 @@ export default class TaskCreate extends Component {
                     ))
                   }
                 </Select>
-              ) : (
-                <div>{intl.formatMessage({ id: `${intlPrefix}.nousers` })}</div>
-              )
+              ) : (<div>{intl.formatMessage({ id: `${intlPrefix}.nousers` })}</div>)
             }
             <Modal
               width={560}
@@ -905,7 +903,7 @@ export default class TaskCreate extends Component {
       value: firstStepValues.startTime.format('YYYY-MM-DD HH:mm:ss'),
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.end.time` }),
-      value: firstStepValues.endTime.format('YYYY-MM-DD HH:mm:ss'),
+      value: firstStepValues.endTime ? firstStepValues.endTime.format('YYYY-MM-DD HH:mm:ss') : null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.cron.expression` }),
       value: firstStepValues.triggerType === 'simple-trigger' ? null : firstStepValues.cronExpression,
@@ -1156,6 +1154,7 @@ export default class TaskCreate extends Component {
 
     return (
       <Table
+        style={{ marginTop: 20 }}
         loading={loading}
         columns={columns}
         pagination={pagination}

@@ -149,7 +149,7 @@ class TaskDetailStore {
 
   getLevelType = (type, id) => (type === 'site' ? '' : `/${type}s/${id}`);
 
-  getRoleLevelType = (type, id) => (type === 'site' ? `/iam/v1/${type}` : `/iam/v1/${type}s/${id}`);
+  getRoleLevelType = (type, id) => (type === 'site' ? `/base/v1/${type}` : `/base/v1/${type}s/${id}`);
 
   loadData(
     { current, pageSize },
