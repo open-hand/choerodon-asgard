@@ -12,7 +12,7 @@ class JsonFormatter extends Component {
   /**
    *  根据count 返回空格数
    */
-  getSpace = count => ' '.repeat(count);
+  getSpace = (count) => ' '.repeat(count);
 
   /**
    * 每一行包 span标签

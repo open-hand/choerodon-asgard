@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file */
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
-import { action, configure } from 'mobx';
+import { configure, action } from 'mobx';
 import { inject, observer } from 'mobx-react';
-import { Steps, Button, Select, Table, DatePicker, Radio, Tooltip, Modal, Form, Input, Popover, Icon, Col, Row, Spin, InputNumber, Checkbox } from 'choerodon-ui';
+import { Steps, Button, Select, Table, DatePicker, Radio, Modal, Form, Input, Popover, Icon, Col, Row, Spin, Checkbox } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import moment from 'moment';
 import classnames from 'classnames';
@@ -16,12 +16,10 @@ import SelectMethod from './SelectMethod';
 
 const { TextArea } = Input;
 const FormItem = Form.Item;
-const { RangePicker } = DatePicker;
 const RadioGroup = Radio.Group;
 const { Option } = Select;
 const { Step } = Steps;
 const CheckboxGroup = Checkbox.Group;
-const { Sidebar } = Modal;
 const intlPrefix = 'taskdetail';
 const inputWidth = '512px';
 const formItemLayout = {
@@ -111,6 +109,18 @@ export default class TaskCreate extends Component {
     this.initTaskDetail();
   }
 
+  componentDidMount() {
+    const { modal } = this.props;
+    modal.update();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.submitLoading !== prevState.submitLoading || this.state.current !== prevState.current) {
+      const { modal } = this.props;
+      modal.update();
+    }
+  }
+
   componentWillUnmount() {
     TaskDetailStore.setService([]);
     TaskDetailStore.setClassNames([]);
@@ -123,14 +133,36 @@ export default class TaskCreate extends Component {
     this.taskdetail = new TaskDetailType(this);
   }
 
-
   /**
    * 返回列表页
    */
   handleCancel = () => {
-    const { onCancel } = this.props;
-    onCancel();
+    const { modal } = this.props;
+    modal.close();
+    this.reset();
   };
+
+  handleOk = () => {
+    const { onOk, modal } = this.props;
+    modal.close();
+    this.reset();
+    onOk();
+  };
+
+  reset = () => {
+    // const { form } = this.props;
+    this.setState(this.getInitState(), () => {
+      TaskDetailStore.setCurrentTask({});
+      TaskDetailStore.setMethodPagination({
+        current: 1,
+        total: 0,
+        pageSize: 10,
+      });
+      TaskDetailStore.setMethodFilters({});
+      TaskDetailStore.setMethodParams([]);
+      TaskDetailStore.setSelectedRowKeys([]);
+    });
+  }
 
   /**
    * 获取步骤条状态
@@ -168,6 +200,27 @@ export default class TaskCreate extends Component {
     });
   };
 
+  /* 时间选择器处理 -- start */
+  disabledStartDate = (startTime) => {
+    const { endTime } = this.state;
+    if (!startTime || !endTime) {
+      return false;
+    }
+    if (endTime.format().split('T')[1] === '00:00:00+08:00') {
+      return startTime.format().split('T')[0] >= endTime.format().split('T')[0];
+    } else {
+      return startTime.format().split('T')[0] > endTime.format().split('T')[0];
+    }
+  };
+
+  disabledEndDate = (endTime) => {
+    const { startTime } = this.state;
+    if (!endTime || !startTime) {
+      return false;
+    }
+    return endTime.valueOf() <= startTime.valueOf();
+  };
+
   range = (start, end) => {
     const result = [];
     for (let i = start; i < end; i += 1) {
@@ -176,8 +229,72 @@ export default class TaskCreate extends Component {
     return result;
   };
 
-  onRangeChange = (value) => {
-    this.onChange('range', value);
+  @action
+  disabledDateStartTime = (date) => {
+    this.startTimes = date;
+    if (date && this.endTimes && this.endTimes.day() === date.day()) {
+      if (this.endTimes.hour() === date.hour() && this.endTimes.minute() === date.minute()) {
+        return {
+          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
+          disabledMinutes: () => this.range(this.endTimes.minute() + 1, 60),
+          disabledSeconds: () => this.range(this.endTimes.second(), 60),
+        };
+      } else if (this.endTimes.hour() === date.hour()) {
+        return {
+          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
+          disabledMinutes: () => this.range(this.endTimes.minute() + 1, 60),
+        };
+      } else {
+        return {
+          disabledHours: () => this.range(this.endTimes.hour() + 1, 24),
+        };
+      }
+    }
+  };
+
+  @action
+  clearStartTimes = (status) => {
+    if (!status) {
+      this.endTimes = null;
+    }
+  };
+
+  @action
+  clearEndTimes = (status) => {
+    if (!status) {
+      this.startTimes = null;
+    }
+  };
+
+  @action
+  disabledDateEndTime = (date) => {
+    this.endTimes = date;
+    if (date && this.startTimes && this.startTimes.day() === date.day()) {
+      if (this.startTimes.hour() === date.hour() && this.startTimes.minute() === date.minute()) {
+        return {
+          disabledHours: () => this.range(0, this.startTimes.hour()),
+          disabledMinutes: () => this.range(0, this.startTimes.minute()),
+          disabledSeconds: () => this.range(0, this.startTimes.second() + 1),
+        };
+      } else if (this.startTimes.hour() === date.hour()) {
+        return {
+          disabledHours: () => this.range(0, this.startTimes.hour()),
+          disabledMinutes: () => this.range(0, this.startTimes.minute()),
+        };
+      } else {
+        return {
+          disabledHours: () => this.range(0, this.startTimes.hour()),
+        };
+      }
+    }
+  };
+
+  onStartChange = (value) => {
+    this.onChange('startTime', value);
+  };
+
+  onEndChange = (value) => {
+    this.onChange('endTime', value);
   };
 
   onChange = (field, value) => {
@@ -387,7 +504,7 @@ export default class TaskCreate extends Component {
    * 返回上一步
    * @param index
    */
-  goPrevStep = (index) => {
+  goStep = (index) => {
     this.setState({ current: index });
   };
 
@@ -442,26 +559,50 @@ export default class TaskCreate extends Component {
               <TextArea autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.task.description`} />} />,
             )}
           </FormItem>
-          <FormItem
-            {...formItemLayout}
-          >
-            {getFieldDecorator('range', {
-              rules: [{
-                required: true,
-                message: intl.formatMessage({ id: `${intlPrefix}.task.range.required` }),
-              }],
-              initialValue: firstStepValues ? firstStepValues.range : undefined,
-            })(
-              <RangePicker
-                label={<FormattedMessage id={`${intlPrefix}.task.start.time`} />}
-                style={{ width: '100%' }}
-                format="YYYY-MM-DD HH:mm:ss"
-                showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                getCalendarContainer={() => document.getElementsByClassName('page-content')[0]}
-                onChange={this.onRangeChange}
-              />,
-            )}
-          </FormItem>
+          <Row gutter={24}>
+            <Col span={12}>
+              <FormItem>
+                {getFieldDecorator('startTime', {
+                  rules: [{
+                    required: true,
+                    message: intl.formatMessage({ id: `${intlPrefix}.task.start.time.required` }),
+                  }],
+                  initialValue: firstStepValues ? firstStepValues.startTime : undefined,
+                })(
+                  <DatePicker
+                    label={<FormattedMessage id={`${intlPrefix}.task.start.time`} />}
+                    style={{ width: '100%' }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    disabledDate={this.disabledStartDate}
+                    disabledTime={this.disabledDateStartTime}
+                    showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+                    getCalendarContainer={() => document.getElementsByClassName('page-content')[0]}
+                    onChange={this.onStartChange}
+                    onOpenChange={this.clearStartTimes}
+                  />,
+                )}
+              </FormItem>
+            </Col>
+            <Col span={12}>
+              <FormItem>
+                {getFieldDecorator('endTime', {
+                  initialValue: firstStepValues ? firstStepValues.endTime : undefined,
+                })(
+                  <DatePicker
+                    label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
+                    style={{ width: '100%' }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                    disabledDate={this.disabledEndDate.bind(this)}
+                    disabledTime={this.disabledDateEndTime.bind(this)}
+                    showTime={{ defaultValue: moment() }}
+                    getCalendarContainer={() => document.getElementsByClassName('page-content')[0]}
+                    onChange={this.onEndChange}
+                    onOpenChange={this.clearEndTimes}
+                  />,
+                )}
+              </FormItem>
+            </Col>
+          </Row>
           <FormItem
             {...formItemLayout}
             className={`${contentPrefix}-inline-formitem`}
@@ -689,9 +830,7 @@ export default class TaskCreate extends Component {
                     ))
                   }
                 </Select>
-              ) : (
-                <div>{intl.formatMessage({ id: `${intlPrefix}.nousers` })}</div>
-              )
+              ) : (<div>{intl.formatMessage({ id: `${intlPrefix}.nousers` })}</div>)
             }
             <Modal
               width={560}
@@ -752,7 +891,7 @@ export default class TaskCreate extends Component {
         dataIndex: 'value',
         render: (text) => `${text}`,
       }];
-    const [startTime, endTime] = firstStepValues.range;
+
     const infoList = [{
       key: formatMessage({ id: `${intlPrefix}.task.name` }),
       value: firstStepValues.name,
@@ -761,10 +900,10 @@ export default class TaskCreate extends Component {
       value: firstStepValues.description,
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.start.time` }),
-      value: startTime.format('YYYY-MM-DD HH:mm:ss'),
+      value: firstStepValues.startTime.format('YYYY-MM-DD HH:mm:ss'),
     }, {
       key: formatMessage({ id: `${intlPrefix}.task.end.time` }),
-      value: endTime.format('YYYY-MM-DD HH:mm:ss'),
+      value: firstStepValues.endTime ? firstStepValues.endTime.format('YYYY-MM-DD HH:mm:ss') : null,
     }, {
       key: formatMessage({ id: `${intlPrefix}.cron.expression` }),
       value: firstStepValues.triggerType === 'simple-trigger' ? null : firstStepValues.cronExpression,
@@ -797,7 +936,7 @@ export default class TaskCreate extends Component {
     }];
 
     return (
-      <div>
+      <div className={`${stepPrefix}`}>
         {
           infoList.map(({ key, value }) => (
             <Row key={key} className={classnames(`${stepPrefix}-row`, { 'c7n-iam-create-task-content-step4-container-row-hide': value === null })}>
@@ -1015,6 +1154,7 @@ export default class TaskCreate extends Component {
 
     return (
       <Table
+        style={{ marginTop: 20 }}
         loading={loading}
         columns={columns}
         pagination={pagination}
@@ -1070,10 +1210,9 @@ export default class TaskCreate extends Component {
             submitLoading: false,
           });
         } else {
-          const { informArr, showSelectedRowKeys, params, firstStepValues: { executeStrategy, range, cronExpression, simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, triggerType } } = this.state;
+          const { informArr, showSelectedRowKeys, params, firstStepValues: { executeStrategy, startTime, endTime, cronExpression, simpleRepeatInterval, simpleRepeatIntervalUnit, simpleRepeatCount, triggerType } } = this.state;
           const method = TaskDetailStore.getSelectedMethod;
           const flag = triggerType === 'simple-trigger';
-          const [startTime, endTime] = range;
           const body = {
             ...this.state.firstStepValues,
             startTime: startTime.format('YYYY-MM-DD HH:mm:ss'),
@@ -1104,7 +1243,7 @@ export default class TaskCreate extends Component {
               this.setState({
                 submitLoading: false,
               }, () => {
-                this.handleCancel();
+                this.handleOk();
               });
             }
           }).catch(() => {
@@ -1128,13 +1267,13 @@ export default class TaskCreate extends Component {
   renderFooter = () => {
     const { current, submitLoading } = this.state;
     const contentPrefix = 'c7n-iam-create-task-content';
+    const { modal } = this.props;
     switch (current) {
       case 1: return (
         <div className={`${contentPrefix}-btn-group`}>
           <Button
             type="primary"
             funcType="raised"
-            style={{ display: 'inlineBlock', marginTop: '8px' }}
             loading={submitLoading}
             onClick={this.handleSubmit.bind(this, 1)}
           >
@@ -1162,7 +1301,7 @@ export default class TaskCreate extends Component {
           <Button
             disabled={submitLoading}
             funcType="raised"
-            onClick={this.goPrevStep.bind(this, 1)}
+            onClick={this.goStep.bind(this, 1)}
           >
             <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
@@ -1188,7 +1327,7 @@ export default class TaskCreate extends Component {
           <Button
             disabled={submitLoading}
             funcType="raised"
-            onClick={this.goPrevStep.bind(this, 2)}
+            onClick={this.goStep.bind(this, 2)}
           >
             <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
@@ -1214,7 +1353,7 @@ export default class TaskCreate extends Component {
           <Button
             disabled={submitLoading}
             funcType="raised"
-            onClick={this.goPrevStep.bind(this, 3)}
+            onClick={this.goStep.bind(this, 3)}
           >
             <FormattedMessage id={`${intlPrefix}.step.prev`} />
           </Button>
@@ -1233,62 +1372,61 @@ export default class TaskCreate extends Component {
 
   render() {
     const { current } = this.state;
-    const { visible } = this.props;
+    const { forwardRef } = this.props;
+    forwardRef(this);
     return (
-      <Sidebar visible={visible} title={<FormattedMessage id={`${intlPrefix}.create`} />} footer={this.renderFooter()} className="c7n-iam-create-task-sidebar">
-        <div className="c7n-iam-create-task-container">
-          <div className="c7n-iam-create-task-container-steps">
-            <Steps current={current}>
-              <Step
-                title={(
-                  <span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>
-                    <FormattedMessage id={`${intlPrefix}.step1.title`} />
-                  </span>
-                )}
-                status={this.getStatus(1)}
-              />
-              <Step
-                title={(
-                  <span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>
-                    <FormattedMessage id={`${intlPrefix}.step2.title`} />
-                  </span>
-                )}
-                status={this.getStatus(2)}
-              />
-              <Step
-                title={(
-                  <span style={{
-                    color: current === 3 ? '#3F51B5' : '',
-                    fontSize: 14,
-                  }}
-                  >
-                    <FormattedMessage id={`${intlPrefix}.step3.title`} />
-                  </span>
-                )}
-                status={this.getStatus(3)}
-              />
-              <Step
-                title={(
-                  <span style={{
-                    color: current === 4 ? '#3F51B5' : '',
-                    fontSize: 14,
-                  }}
-                  >
-                    <FormattedMessage id={`${intlPrefix}.step4.title`} />
-                  </span>
-                )}
-                status={this.getStatus(4)}
-              />
-            </Steps>
-          </div>
-          <div className="c7n-iam-create-task-content">
-            {current === 1 && this.handleRenderFirstStep()}
-            {current === 2 && <SelectMethod taskdetail={this.taskdetail} {...this.props} />}
-            {current === 3 && this.handleRenderThirdStep()}
-            {current === 4 && this.handleRenderFourthStep()}
-          </div>
+      <div className="c7n-iam-create-task-container">
+        <div className="c7n-iam-create-task-container-steps">
+          <Steps current={current}>
+            <Step
+              title={(
+                <span style={{ color: current === 1 ? '#3F51B5' : '', fontSize: 14 }}>
+                  <FormattedMessage id={`${intlPrefix}.step1.title`} />
+                </span>
+              )}
+              status={this.getStatus(1)}
+            />
+            <Step
+              title={(
+                <span style={{ color: current === 2 ? '#3F51B5' : '', fontSize: 14 }}>
+                  <FormattedMessage id={`${intlPrefix}.step2.title`} />
+                </span>
+              )}
+              status={this.getStatus(2)}
+            />
+            <Step
+              title={(
+                <span style={{
+                  color: current === 3 ? '#3F51B5' : '',
+                  fontSize: 14,
+                }}
+                >
+                  <FormattedMessage id={`${intlPrefix}.step3.title`} />
+                </span>
+              )}
+              status={this.getStatus(3)}
+            />
+            <Step
+              title={(
+                <span style={{
+                  color: current === 4 ? '#3F51B5' : '',
+                  fontSize: 14,
+                }}
+                >
+                  <FormattedMessage id={`${intlPrefix}.step4.title`} />
+                </span>
+              )}
+              status={this.getStatus(4)}
+            />
+          </Steps>
         </div>
-      </Sidebar>
+        <div className="c7n-iam-create-task-content">
+          {current === 1 && this.handleRenderFirstStep()}
+          {current === 2 && <SelectMethod taskdetail={this.taskdetail} {...this.props} />}
+          {current === 3 && this.handleRenderThirdStep()}
+          {current === 4 && this.handleRenderFourthStep()}
+        </div>
+      </div>
     );
   }
 }

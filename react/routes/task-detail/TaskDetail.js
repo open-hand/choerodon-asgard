@@ -3,6 +3,7 @@ import React, { Component, Fragment } from 'react';
 import { observable, action, configure } from 'mobx';
 import { inject, observer } from 'mobx-react';
 import { Button, Table, Tooltip, Modal, Tabs, Col, Row } from 'choerodon-ui';
+import { Modal as ModalPro } from 'choerodon-ui/pro';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Content, Header, Page, Breadcrumb, Permission, Action } from '@choerodon/master';
 import classnames from 'classnames';
@@ -89,7 +90,6 @@ export default class TaskDetail extends Component {
       logParams: [],
       paramsData: [], // 参数列表的数据
       paramsLoading: false, // 创建任务参数列表Loading
-      createVisible: false, // 创建弹框
     };
   }
 
@@ -309,30 +309,14 @@ export default class TaskDetail extends Component {
 
 
   createTask() {
-    // const { type, id, name } = this.taskdetail;
-    // const { currentMenuType } = this.props.AppState;
-    // let organizationId;
-    // if (currentMenuType.type === 'project') {
-    //   // eslint-disable-next-line prefer-destructuring
-    //   organizationId = currentMenuType.organizationId;
-    // }
-    // let createUrl;
-    // switch (type) {
-    //   case 'organization':
-    //     createUrl = `/asgard/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${id}`;
-    //     break;
-    //   case 'project':
-    //     createUrl = `/asgard/task-detail/create?type=${type}&id=${id}&name=${name}&organizationId=${organizationId}`;
-    //     break;
-    //   case 'site':
-    //     createUrl = '/asgard/task-detail/create';
-    //     break;
-    //   default:
-    //     break;
-    // }
-    // this.props.history.push(createUrl);
-    this.setState({
-      createVisible: true,
+    ModalPro.open({
+      title: <FormattedMessage id={`${intlPrefix}.create`} />,
+      drawer: true,
+      style: {
+        width: 'calc(100% - 3.52rem)',
+      },
+      footer: () => this.createRef && this.createRef.renderFooter(),
+      children: <Create forwardRef={(ref) => { this.createRef = ref; }} onOk={this.handleCreateOk} />,
     });
   }
 
@@ -399,10 +383,8 @@ export default class TaskDetail extends Component {
     });
   }
 
-  handleCreateCancel = () => {
-    this.setState({
-      createVisible: false,
-    });
+  handleCreateOk = () => {
+    this.loadTaskDetail();
   }
 
   // 渲染侧边栏成功按钮文字
@@ -461,7 +443,7 @@ export default class TaskDetail extends Component {
       default:
         break;
     }
-    
+
     const paramColumns = [{
       title: <FormattedMessage id={`${intlPrefix}.params.name`} />,
       dataIndex: 'name',
@@ -570,8 +552,8 @@ export default class TaskDetail extends Component {
     return (
       <Content
         className="sidebar-content"
-        // code={`${this.taskdetail.code}.detail`}
-        // values={{ name: info.name }}
+      // code={`${this.taskdetail.code}.detail`}
+      // values={{ name: info.name }}
       >
         <Tabs activeKey={showLog ? 'log' : 'info'} onChange={this.handleTabChange}>
           <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.info`} />} key="info" />
@@ -588,7 +570,7 @@ export default class TaskDetail extends Component {
                   </Row>
                 ))
               }
-              
+
               <Row className={classnames({ 'c7n-task-detail-row': !info.notifyUser })}>
                 <Col span={3}>{formatMessage({ id: `${intlPrefix}.inform.person` })}:</Col>
                 <Col span={21}>
@@ -676,7 +658,7 @@ export default class TaskDetail extends Component {
   render() {
     const { intl, AppState } = this.props;
     const { deleteService, detailService } = this.getPermission();
-    const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting, createVisible } = this.state;
+    const { filters, params, pagination, loading, isShowSidebar, selectType, isSubmitting } = this.state;
     const { createService } = this.getPermission();
     const TaskData = TaskDetailStore.getData.slice();
     const columns = [{
@@ -692,14 +674,14 @@ export default class TaskDetail extends Component {
             <Permission service={detailService} noAccessChildren={text}>
               <span style={{ cursor: 'pointer' }} onClick={this.handleOpen.bind(this, 'detail', record)}>
                 {text}
-              </span>  
-            </Permission>                       
+              </span>
+            </Permission>
           </MouseOverWrapper>
           <Action
             style={{ marginLeft: 'auto' }}
             data={[
               ...this.showActionButton(record),
-              {                
+              {
                 service: deleteService,
                 action: this.handleDelete.bind(this, record),
                 text: <FormattedMessage id="delete" />,
@@ -812,7 +794,6 @@ export default class TaskDetail extends Component {
           >
             {this.renderDetailContent()}
           </Sidebar>
-          <Create visible={createVisible} onCancel={this.handleCreateCancel} />
         </Content>
       </Page>
     );
