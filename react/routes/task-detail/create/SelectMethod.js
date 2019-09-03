@@ -239,7 +239,7 @@ class SelectMethod extends Component {
       <div className="c7n-task-detail-methods-container">
         <Table
           key="methods"
-          style={{ width: 1006 }}    
+          // style={{ width: 1006 }}    
           columns={columns}
           rowSelection={rowSelection}
           dataSource={methods}

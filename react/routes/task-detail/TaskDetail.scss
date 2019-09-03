@@ -124,14 +124,9 @@
 
   &-container {
     background: #fff;
-
-    // .c7n-select-dropdown--multiple {
-    //   display: none;
-    // }
   }
 
   &-content {
-    width: 512px;
     margin: 36px 38px 30px;
 
     &-inline-formitem {
@@ -144,17 +139,11 @@
       }
     }
 
-    div &-inline-formitem {
-      margin-right: 18px;
-    }
-
     &-radio-container > label:first-child {
       margin-right: 52px;
     }
 
     &-btn-group {
-      // margin-top: 32px;
-
       button:not(:first-child) {
         margin-left: 12px;
       }
@@ -162,7 +151,7 @@
 
     &-step1-container {
 
-      // width: 512px;
+      width: 512px;
       &-simpletask-time-container {
         display: inline-block;
         margin-right: 60px;
@@ -223,6 +212,7 @@
     }
 
     &-step4-container {
+      width: 512px;
       &-row {
         margin-bottom: 20px;
         font-size: 14px;
