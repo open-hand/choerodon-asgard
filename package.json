@@ -12,6 +12,8 @@
     "@choerodon/master": "0.20.x"
   },
   "dependencies": {
+    "js-beautify": "^1.10.2",
+    "react-codemirror": "^1.0.0"
   },
   "devDependencies": {
     "@choerodon/boot": "0.20.x",

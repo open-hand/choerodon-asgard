@@ -238,8 +238,8 @@ class SelectMethod extends Component {
     return (
       <div className="c7n-task-detail-methods-container">
         <Table
+          filterBarPlaceholder="过滤表"
           key="methods"
-          // style={{ width: 1006 }}    
           columns={columns}
           rowSelection={rowSelection}
           dataSource={methods}

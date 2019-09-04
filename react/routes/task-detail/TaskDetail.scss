@@ -152,6 +152,7 @@
     &-step1-container {
 
       width: 512px;
+
       &-simpletask-time-container {
         display: inline-block;
         margin-right: 60px;
@@ -204,15 +205,14 @@
         }
       }
 
-      &-select {
-        .c7n-select-underline {
-          display: none;
-        }
+      &-select:before {
+        border: none !important;
       }
     }
 
     &-step4-container {
       width: 512px;
+
       &-row {
         margin-bottom: 20px;
         font-size: 14px;

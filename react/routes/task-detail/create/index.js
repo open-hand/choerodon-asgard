@@ -826,7 +826,7 @@ export default class TaskCreate extends Component {
                 >
                   {
                     showSelected.length && showSelected.map(({ loginName, realName, id }) => (
-                      <Option key={id} value={id}>{loginName}{realName}</Option>
+                      <Option key={id} value={id}>{realName}</Option>
                     ))
                   }
                 </Select>

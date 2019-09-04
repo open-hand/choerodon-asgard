@@ -153,22 +153,23 @@
     }
     .c7n-saga-detail {
       &-json {
-        position: relative;
-        i.icon.copy-icon {
-          color: #3f51b5;
-          position: absolute;
-          top: 10px;
-          right: 20px;
-          cursor: pointer;
-          font-size: 20px;
-          background: white;
-          display: none;
-        }
-        &:hover {
-          i.icon.copy-icon {
-            display: inline-block;
-          }
-        }
+        // position: relative;
+        max-height: 350px;
+        // i.icon.copy-icon {
+        //   color: #3f51b5;
+        //   position: absolute;
+        //   top: 10px;
+        //   right: 20px;
+        //   cursor: pointer;
+        //   font-size: 20px;
+        //   background: white;
+        //   display: none;
+        // }
+        // &:hover {
+        //   i.icon.copy-icon {
+        //     display: inline-block;
+        //   }
+        // }
       }
     }
 

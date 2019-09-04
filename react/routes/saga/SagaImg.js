@@ -3,7 +3,7 @@ import { Icon, Tabs } from 'choerodon-ui';
 import { Content } from '@choerodon/master';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import classnames from 'classnames';
-import jsonFormat from '../../common/json-format';
+import CodeShow from './CodeShow';
 import './style/saga-img.scss';
 import './style/saga.scss';
 import './style/json.scss';
@@ -398,11 +398,9 @@ export default class SagaImg extends Component {
       key: formatMessage({ id: `${intlPrefix}.task.run.exception.msg` }),
       value: exceptionMessage,
     };
-
-    const obj = this.handleTransObj(output);
+    
     const completed = {
       key: formatMessage({ id: `${intlPrefix}.task.run.result.msg` }),
-      value: obj ? jsonFormat(obj) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
     };
     return (
       <div className="c7n-saga-task-run">
@@ -447,7 +445,9 @@ export default class SagaImg extends Component {
             {status === 'COMPLETED' && (
               <div>{completed.key}:
                 <div className="c7n-saga-detail-json">
-                  <pre style={{ maxHeight: '350px' }}><code>{completed.value}</code></pre>
+                  <CodeShow                  
+                    value={output} 
+                  />
                 </div>
               </div>
             )}
@@ -501,8 +501,7 @@ export default class SagaImg extends Component {
       value: service,
     }];
     const input = {
-      key: formatMessage({ id: `${intlPrefix}.task.input.demo` }),
-      value: inputSchema ? jsonFormat(JSON.parse(inputSchema)) : formatMessage({ id: `${intlPrefix}.json.nodata` }),
+      key: formatMessage({ id: `${intlPrefix}.task.input.demo` }),      
     };
     return (
       <div className="c7n-saga-task-detail">
@@ -511,7 +510,9 @@ export default class SagaImg extends Component {
           {!instance && (
             <div>{input.key}:
               <div className="c7n-saga-detail-json">
-                <pre style={{ maxHeight: '350px' }}><code>{input.value}</code></pre>
+                <CodeShow                  
+                  value={inputSchema}
+                />
               </div>
             </div>
           )}
@@ -530,20 +531,16 @@ export default class SagaImg extends Component {
         </div>
         <div className="c7n-saga-task-detail-content">
           <div className="c7n-saga-detail-json">
-            <pre style={{ maxHeight: '350px' }}>
-              <code id="json">
-                {json ? jsonFormat(this.handleTransObj(json)) : formatMessage({ id: `${intlPrefix}.json.nodata` })}
-              </code>
-            </pre>
+            <CodeShow                  
+              value={json || formatMessage({ id: `${intlPrefix}.json.nodata` })}
+            />
           </div>
         </div>
       </div>
     );
   }
 
-  renderWithoutInstance() {
-    const { json } = this.state;
-    const { intl: { formatMessage } } = this.props;
+  renderWithoutInstance() {   
     return (
       <div className="c7n-saga-task-detail">
         <div className="c7n-saga-task-detail-title">

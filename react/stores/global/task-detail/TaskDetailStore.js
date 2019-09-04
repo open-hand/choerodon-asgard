@@ -240,6 +240,9 @@ class TaskDetailStore {
       service,
       description,
     };
+    if (type === 'site') {
+      queryObj.level = 'site';
+    }
     if (columnKey) {
       const sorter = [];
       sorter.push(columnKey);
