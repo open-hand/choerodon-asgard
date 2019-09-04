@@ -481,10 +481,12 @@ export default class TaskDetail extends Component {
     }, {
       key: formatMessage({ id: `${intlPrefix}.trigger.type` }),
       value: info.triggerType === 'simple-trigger' ? formatMessage({ id: `${intlPrefix}.easy.task` }) : formatMessage({ id: `${intlPrefix}.cron.task` }),
-    }, {
+    },
+    ...(info.triggerType === 'simple-trigger' ? [] : [{
       key: formatMessage({ id: `${intlPrefix}.cron.expression` }),
       value: info.cronExpression,
-    }, {
+    }]),
+    {
       key: formatMessage({ id: `${intlPrefix}.repeat.interval` }),
       value: info.triggerType === 'simple-trigger' ? `${info.simpleRepeatInterval}${unit}` : null,
     }, {
