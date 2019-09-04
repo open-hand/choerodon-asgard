@@ -19,7 +19,7 @@ import io.choerodon.core.notify.NoticeSendDTO;
 /**
  * @author dengyouquan
  **/
-@FeignClient(value = "iam-service", path = "/v1", fallback = IamFeignClientFallback.class)
+@FeignClient(value = "base-service", path = "/v1", fallback = IamFeignClientFallback.class)
 public interface IamFeignClient {
     @GetMapping(value = "/organizations/{organization_id}")
     ResponseEntity<Organization> queryOrganization(@PathVariable(name = "organization_id") Long id);
