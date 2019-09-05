@@ -218,7 +218,7 @@ const SagaInstance = observer(() => {
       <Column
         name="sagaInstanceCode"
         renderer={({ text }) => (
-          <MouseOverWrapper text={text} width={0.1}>
+          <MouseOverWrapper text={text} width={0.1} className="c7n-asgard-table-cell">
             {text}
           </MouseOverWrapper>
         )}
@@ -226,14 +226,14 @@ const SagaInstance = observer(() => {
       <Column
         name="description"
         renderer={({ text }) => (
-          <MouseOverWrapper text={text} width={0.1}>
+          <MouseOverWrapper text={text} width={0.1} className="c7n-asgard-table-cell">
             {text}
           </MouseOverWrapper>
         )}
       />
-      <Column name="plannedStartTime" />
-      <Column name="actualEndTime" />
-      <Column name="retryCount" renderer={({ record }) => `${record.get('retriedCount')}/${record.get('maxRetryCount')}`} />
+      <Column name="plannedStartTime" className="c7n-asgard-table-cell" />
+      <Column name="actualEndTime" className="c7n-asgard-table-cell" />
+      <Column name="retryCount" className="c7n-asgard-table-cell" renderer={({ record }) => `${record.get('retriedCount')}/${record.get('maxRetryCount')}`} />
     </Table>
   );
   const handleStatusClick = (status) => {
