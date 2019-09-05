@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import { ModalContainer } from 'choerodon-ui/pro';
 import { asyncLocaleProvider, asyncRouter, nomatch } from '@choerodon/master';
+import './index.less';
 
 const taskDetail = asyncRouter(() => import('./routes/task-detail'));
 const executionRecord = asyncRouter(() => import('./routes/execution-record'));

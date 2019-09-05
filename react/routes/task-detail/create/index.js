@@ -559,7 +559,7 @@ export default class TaskCreate extends Component {
               <TextArea autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.task.description`} />} />,
             )}
           </FormItem>
-          <Row gutter={24}>
+          <Row gutter={8}>
             <Col span={12}>
               <FormItem>
                 {getFieldDecorator('startTime', {
@@ -623,7 +623,7 @@ export default class TaskCreate extends Component {
             )}
           </FormItem>
           <div style={{ display: triggerType === 'simple-trigger' ? 'block' : 'none' }}>
-            <Row gutter={24}>
+            <Row gutter={8}>
               <Col span={9}>
                 <FormItem>
                   {getFieldDecorator('simpleRepeatInterval', {

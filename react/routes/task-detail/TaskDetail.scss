@@ -18,14 +18,24 @@
 }
 
 .c7n-task-detail-sidebar {
+  font-size: 14px;
+
+  .c7n-tabs-tab {
+    font-size: 14px;
+  }
+
   &.c7n-modal-sidebar .c7n-modal-body {
     height: calc(100% - 121px);
   }
 
-  .c7n-task-detail-row {
-    margin-bottom: 12px;
+  .c7n-task-detail-wrapper {
+    padding-left: 16px;
+  }
 
-    div:last-child {
+  .c7n-task-detail-row {
+    margin-bottom: 16px;
+
+    div:first-child {
       color: rgba(0, 0, 0, 0.65);
     }
 
@@ -127,7 +137,7 @@
   }
 
   &-content {
-    margin: 36px 38px 30px;
+    margin: 24px 36px 30px;
 
     &-inline-formitem {
       display: inline-block;
@@ -213,11 +223,12 @@
     &-step4-container {
       width: 512px;
 
-      &-row {
-        margin-bottom: 20px;
+      &-row,
+      &-informlist {
+        margin-bottom: 26px;
         font-size: 14px;
 
-        .c7n-col-21 {
+        .c7n-col-5 {
           color: rgba(0, 0, 0, 0.65);
         }
 

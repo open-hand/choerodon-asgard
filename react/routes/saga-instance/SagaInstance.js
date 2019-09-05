@@ -181,9 +181,9 @@ const SagaInstance = observer(() => {
           />
         )}
       />
-      <Column name="startTime" />
-      <Column name="refType" />
-      <Column name="refId" />
+      <Column name="startTime" className="c7n-asgard-table-cell" />
+      <Column name="refType" className="c7n-asgard-table-cell" />
+      <Column name="refId" className="c7n-asgard-table-cell" />
       <Column name="progress" renderer={renderProgress} />
     </Table>
   );

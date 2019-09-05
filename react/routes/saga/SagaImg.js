@@ -398,7 +398,7 @@ export default class SagaImg extends Component {
       key: formatMessage({ id: `${intlPrefix}.task.run.exception.msg` }),
       value: exceptionMessage,
     };
-    
+
     const completed = {
       key: formatMessage({ id: `${intlPrefix}.task.run.result.msg` }),
     };
@@ -426,7 +426,12 @@ export default class SagaImg extends Component {
         </div>
         <div className="c7n-saga-task-detail">
           <div className="c7n-saga-task-detail-content">
-            {list.map(({ key, value }) => <div key={`task-run-${key}`}>{key}: {value}</div>)}
+            {list.map(({ key, value }) => (
+              <div className="c7n-saga-task-detail-content-item">
+                <div className="c7n-saga-task-detail-content-label">{key}</div>
+                <div className="c7n-saga-task-detail-content-value">{value}</div>
+              </div>
+            ))}
             {status === 'FAILED' && (
               <div>{failed.key}:
                 <div className="c7n-saga-detail-json">
@@ -443,10 +448,10 @@ export default class SagaImg extends Component {
               </div>
             )}
             {status === 'COMPLETED' && (
-              <div>{completed.key}:
+              <div><span className="c7n-saga-task-detail-content-label">{completed.key}</span>
                 <div className="c7n-saga-detail-json">
-                  <CodeShow                  
-                    value={output} 
+                  <CodeShow
+                    value={output}
                   />
                 </div>
               </div>
@@ -501,16 +506,21 @@ export default class SagaImg extends Component {
       value: service,
     }];
     const input = {
-      key: formatMessage({ id: `${intlPrefix}.task.input.demo` }),      
+      key: formatMessage({ id: `${intlPrefix}.task.input.demo` }),
     };
     return (
       <div className="c7n-saga-task-detail">
         <div className="c7n-saga-task-detail-content">
-          {list.map(({ key, value }) => <div key={`task-detail-${key}`}>{key}: {value}</div>)}
+          {list.map(({ key, value }) => (
+            <div className="c7n-saga-task-detail-content-item">
+              <div className="c7n-saga-task-detail-content-label">{key}</div>
+              <div className="c7n-saga-task-detail-content-value">{value}</div>
+            </div>
+          ))}
           {!instance && (
             <div>{input.key}:
               <div className="c7n-saga-detail-json">
-                <CodeShow                  
+                <CodeShow
                   value={inputSchema}
                 />
               </div>
@@ -531,7 +541,7 @@ export default class SagaImg extends Component {
         </div>
         <div className="c7n-saga-task-detail-content">
           <div className="c7n-saga-detail-json">
-            <CodeShow                  
+            <CodeShow
               value={json || formatMessage({ id: `${intlPrefix}.json.nodata` })}
             />
           </div>
@@ -540,7 +550,7 @@ export default class SagaImg extends Component {
     );
   }
 
-  renderWithoutInstance() {   
+  renderWithoutInstance() {
     return (
       <div className="c7n-saga-task-detail">
         <div className="c7n-saga-task-detail-title">
