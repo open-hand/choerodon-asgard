@@ -6,8 +6,6 @@ import { asyncLocaleProvider, asyncRouter, nomatch } from '@choerodon/master';
 import './index.less';
 
 const taskDetail = asyncRouter(() => import('./routes/task-detail'));
-const executionRecord = asyncRouter(() => import('./routes/execution-record'));
-const executableProgram = asyncRouter(() => import('./routes/executable-program'));
 const saga = asyncRouter(() => import('./routes/saga'));
 const sagaInstance = asyncRouter(() => import('./routes/saga-instance'));
 // saga 事务管理
@@ -24,8 +22,6 @@ class Index extends React.Component {
             <Route path={`${match.url}/saga`} component={saga} />
             <Route path={`${match.url}/saga-instance`} component={sagaInstance} />
             <Route path={`${match.url}/task-detail`} component={taskDetail} />
-            <Route path={`${match.url}/execution-record`} component={executionRecord} />
-            <Route path={`${match.url}/executable-program`} component={executableProgram} />
             <Route path={`${match.url}/org-saga-instance`} component={sagaInstance} />
             <Route path="*" component={nomatch} />
           </Switch>

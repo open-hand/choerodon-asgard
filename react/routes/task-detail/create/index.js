@@ -142,7 +142,7 @@ export default class TaskCreate extends Component {
   };
 
   reset = () => {
-    this.setState(this.getInitState(), () => {     
+    this.setState(this.getInitState(), () => {
       TaskDetailStore.setMethodPagination({
         current: 1,
         total: 0,
@@ -524,7 +524,7 @@ export default class TaskCreate extends Component {
                   initialValue: firstStepValues ? firstStepValues.startTime : undefined,
                 })(
                   <DatePicker
-                    label={<FormattedMessage id={`${intlPrefix}.task.start.time`} />}
+                    placeholder={intl.formatMessage({ id: `${intlPrefix}.task.start.time` })}
                     style={{ width: '100%' }}
                     format="YYYY-MM-DD HH:mm:ss"
                     disabledDate={this.disabledStartDate}
@@ -543,7 +543,7 @@ export default class TaskCreate extends Component {
                   initialValue: firstStepValues ? firstStepValues.endTime : undefined,
                 })(
                   <DatePicker
-                    label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
+                    placeholder={intl.formatMessage({ id: `${intlPrefix}.task.end.time` })}
                     style={{ width: '100%' }}
                     format="YYYY-MM-DD HH:mm:ss"
                     disabledDate={this.disabledEndDate.bind(this)}
