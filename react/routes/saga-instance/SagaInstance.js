@@ -157,7 +157,7 @@ const SagaInstance = observer(() => {
     <Table dataSet={instanceDataSet} key="instance">
       <Column
         name="sagaCode"
-        style={{ cursor: 'pointer' }}
+        className="c7n-asgard-table-cell-click"
         renderer={({ text, record }) => (
           <Tooltip title={renderTooltipTitle(record)}>
             {`${text}-${record.get('id')}`}
@@ -191,7 +191,7 @@ const SagaInstance = observer(() => {
     <Table dataSet={taskDataSet} key="task">
       <Column
         name="taskInstanceCode"
-        style={{ cursor: 'pointer' }}
+        className="c7n-asgard-table-cell-click"
         onCell={({ record }) => ({
           onClick: () => { openDetail(record.get('sagaInstanceId')); },
         })}

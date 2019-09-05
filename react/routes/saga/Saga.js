@@ -36,7 +36,7 @@ const Saga = observer(() => {
     <Table dataSet={dataSet}>
       <Column
         name="code"
-        style={{ cursor: 'pointer' }}
+        className="c7n-asgard-table-cell-click"
         onCell={({ record }) => ({
           onClick: () => { openDetail(record.get('id')); },
         })}

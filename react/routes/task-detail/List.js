@@ -156,7 +156,7 @@ const List = observer(() => {
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <MouseOverWrapper text={text} width={0.2}>
         <Permission service={detailService} noAccessChildren={text}>
-          <span style={{ cursor: 'pointer' }} onClick={openDetail.bind(this, record)}>
+          <span className="c7n-asgard-table-cell-click" onClick={openDetail.bind(this, record)}>
             {text}
           </span>
         </Permission>
