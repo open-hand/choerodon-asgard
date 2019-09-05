@@ -5,22 +5,6 @@ import querystring from 'query-string';
 
 // @store('TaskDetailStore')
 class TaskDetailStore {
-  @observable data = [];
-
-  @observable service = [];
-
-  @observable info = {}; // 任务信息
-
-  @observable log = []; // 任务日志
-
-  @observable currentService = [];
-
-  @observable classNames = []; // 任务类名下拉框数据
-
-  @observable currentClassNames = {}; // 当前任务程序
-
-  @observable currentTask = {};
-
   @observable userdata = [];
 
   @observable methods = [];
@@ -33,12 +17,12 @@ class TaskDetailStore {
 
   @observable methodFilters = {};
 
-  @observable methodSort= {
+  @observable methodSort = {
     columnKey: 'id',
     order: 'descend',
   }
-  
-  @observable methodParams= []
+
+  @observable methodParams = []
 
   @observable selectedRowKeys = [];
 
@@ -52,51 +36,6 @@ class TaskDetailStore {
 
   @computed get getData() {
     return this.data;
-  }
-
-  @action setLog(data) {
-    this.log = data;
-  }
-
-  @computed get getLog() {
-    return this.log;
-  }
-
-  @action setService(data) {
-    this.service = data;
-  }
-
-  @action setCurrentService(data) {
-    this.currentService = data;
-  }
-
-  @computed get getCurrentService() {
-    return this.currentService;
-  }
-
-  @action setCurrentClassNames(data) {
-    this.currentClassNames = data;
-  }
-
-  @computed get getCurrentClassNames() {
-    return this.currentClassNames;
-  }
-
-  @action setClassNames(data) {
-    this.classNames = data;
-  }
-
-  @computed get getClassNames() {
-    return this.classNames;
-  }
-
-  @action setInfo(data) {
-    this.info = data;
-    if (this.info.simpleRepeatCount != null) this.info.simpleRepeatCount += 1;
-  }
-
-  @action setCurrentTask(data) {
-    this.currentTask = data;
   }
 
   @action setUserData(data) {
@@ -151,56 +90,6 @@ class TaskDetailStore {
 
   getRoleLevelType = (type, id) => (type === 'site' ? `/base/v1/${type}` : `/base/v1/${type}s/${id}`);
 
-  loadData(
-    { current, pageSize },
-    { status, name, description },
-    { columnKey = 'id', order = 'descend' },
-    params, type, id,
-  ) {
-    const queryObj = {
-      page: current,
-      size: pageSize,
-      status,
-      name,
-      description,
-      params,
-    };
-    if (columnKey) {
-      const sorter = [];
-      sorter.push(columnKey);
-      if (order === 'descend') {
-        sorter.push('desc');
-      }
-      queryObj.sort = sorter.join(',');
-    }
-    return axios.get(`asgard/v1/schedules${this.getLevelType(type, id)}/tasks?${querystring.stringify(queryObj)}`);
-  }
-
-  loadLogData(
-    { current, pageSize },
-    { status, serviceInstanceId },
-    { columnKey = 'id', order = 'descend' },
-    params, taskId, type, id,
-  ) {
-    const queryObj = {
-      page: current,
-      size: pageSize,
-      status,
-      serviceInstanceId,
-      params,
-    };
-    if (columnKey) {
-      const sorter = [];
-      sorter.push(columnKey);
-      if (order === 'descend') {
-        sorter.push('desc');
-      }
-      queryObj.sort = sorter.join(',');
-    }
-    return axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/tasks/instances/${taskId}?${querystring.stringify(queryObj)}`);
-  }
-
-
   loadUserDatas(
     { current, pageSize },
     { columnKey = 'id', order = 'descend' },
@@ -253,10 +142,6 @@ class TaskDetailStore {
     }
     return axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods?${querystring.stringify(queryObj)}`);
   }
-
-  loadService = (type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/services`);
-
-  loadClass = (service, type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/service?service=${service}`);
 
   loadParams = (classId, type, id) => axios.get(`/asgard/v1/schedules${this.getLevelType(type, id)}/methods/${classId}`);
 

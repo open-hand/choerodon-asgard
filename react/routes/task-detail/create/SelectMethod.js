@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { Select, Table, Form, Input, InputNumber } from 'choerodon-ui';
 import { FormattedMessage } from 'react-intl';
 import TaskDetailStore from '../../../stores/global/task-detail';
-import '../TaskDetail.scss';
+import './index.less';
 
 const FormItem = Form.Item;
 
