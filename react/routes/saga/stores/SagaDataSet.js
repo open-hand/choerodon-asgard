@@ -8,8 +8,8 @@ export default ({ intl, intlPrefix }) => {
     selection: false,
     transport: {
       read: {
-        url: '/asgard/v1/sagas',
-        method: 'get',
+        url: '/asgard/v1/sagas/list',
+        method: 'post',
       },
     },
     fields: [
