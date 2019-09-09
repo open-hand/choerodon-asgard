@@ -29,8 +29,8 @@ export default ({ id = 0, apiGetway, intl, intlPrefix }) => {
     selection: false,
     transport: {
       read: {
-        url: `${apiGetway}tasks/instances`,
-        method: 'get',
+        url: `${apiGetway}tasks/instances/list`,
+        method: 'post',
       },
     },
     fields: [
