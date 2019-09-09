@@ -3,16 +3,14 @@ package io.choerodon.asgard.app.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.vo.JsonMerge;
-import io.choerodon.asgard.api.vo.Saga;
-import io.choerodon.asgard.api.vo.SagaTask;
-import io.choerodon.asgard.api.vo.SagaWithTask;
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.SagaService;
 import io.choerodon.asgard.infra.dto.SagaDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.mapper.SagaMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
+import io.choerodon.asgard.infra.utils.ParamUtils;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -68,12 +66,12 @@ public class SagaServiceImpl implements SagaService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<Saga>> pagingQuery(int page, int size, String code, String description, String service, String params) {
+    public ResponseEntity<PageInfo<Saga>> pagingQuery(int page, int size, SagaSearchVO sagaSearchVO) {
         return new ResponseEntity<>(
                 PageHelper
                         .startPage(page, size)
                         .doSelectPageInfo(
-                                () -> sagaMapper.fulltextSearch(code, description, service, params)), HttpStatus.OK);
+                                () -> sagaMapper.fulltextSearch(sagaSearchVO.getCode(), sagaSearchVO.getDescription(), sagaSearchVO.getService(), ParamUtils.arrToStr(sagaSearchVO.getParams()))), HttpStatus.OK);
     }
 
     @Override

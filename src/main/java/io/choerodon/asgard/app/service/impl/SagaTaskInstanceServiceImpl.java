@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.vo.PageSagaTaskInstance;
-import io.choerodon.asgard.api.vo.SagaTaskInstance;
-import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
-import io.choerodon.asgard.api.vo.SagaTaskInstanceStatus;
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.service.JsonDataService;
 import io.choerodon.asgard.app.service.NoticeService;
@@ -21,6 +18,7 @@ import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
+import io.choerodon.asgard.infra.utils.ParamUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.core.exception.CommonException;
@@ -349,13 +347,12 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(int page, int size, String sagaInstanceCode,
-                                                                    String status, String taskInstanceCode, String params, String level, Long sourceId) {
+    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(int page, int size, SagaTaskInstanceSearchVO sagaTaskInstanceSearchVO, String level, Long sourceId) {
         return new ResponseEntity<>(
                 PageHelper
                         .startPage(page,size)
                         .doSelectPageInfo(
-                                () -> taskInstanceMapper.fulltextSearchTaskInstance(sagaInstanceCode, status, taskInstanceCode, params, level, sourceId)), HttpStatus.OK);
+                                () -> taskInstanceMapper.fulltextSearchTaskInstance(sagaTaskInstanceSearchVO.getSagaInstanceCode(), sagaTaskInstanceSearchVO.getStatus(), sagaTaskInstanceSearchVO.getTaskInstanceCode(), ParamUtils.arrToStr(sagaTaskInstanceSearchVO.getParams()), level, sourceId)), HttpStatus.OK);
     }
 
     @Override
