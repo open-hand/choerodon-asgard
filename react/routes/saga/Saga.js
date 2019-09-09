@@ -36,13 +36,13 @@ const Saga = observer(() => {
     <Table dataSet={dataSet}>
       <Column
         name="code"
-        style={{ cursor: 'pointer' }}
+        className="c7n-asgard-table-cell-click"
         onCell={({ record }) => ({
           onClick: () => { openDetail(record.get('id')); },
         })}
       />
-      <Column name="service" />
-      <Column name="description" />
+      <Column name="service" className="c7n-asgard-table-cell" />
+      <Column name="description" className="c7n-asgard-table-cell" />
     </Table>
   );
 

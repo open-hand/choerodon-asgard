@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { asyncRouter, nomatch } from '@choerodon/master';
 
-const index = asyncRouter(() => (import('./TaskDetail')));
+const index = asyncRouter(() => (import('./List')));
 
 const Index = ({ match }) => (
   <Switch>

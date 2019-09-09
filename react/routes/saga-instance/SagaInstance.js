@@ -157,7 +157,7 @@ const SagaInstance = observer(() => {
     <Table dataSet={instanceDataSet} key="instance">
       <Column
         name="sagaCode"
-        style={{ cursor: 'pointer' }}
+        className="c7n-asgard-table-cell-click"
         renderer={({ text, record }) => (
           <Tooltip title={renderTooltipTitle(record)}>
             {`${text}-${record.get('id')}`}
@@ -181,9 +181,9 @@ const SagaInstance = observer(() => {
           />
         )}
       />
-      <Column name="startTime" />
-      <Column name="refType" />
-      <Column name="refId" />
+      <Column name="startTime" className="c7n-asgard-table-cell" />
+      <Column name="refType" className="c7n-asgard-table-cell" />
+      <Column name="refId" className="c7n-asgard-table-cell" />
       <Column name="progress" renderer={renderProgress} />
     </Table>
   );
@@ -191,7 +191,7 @@ const SagaInstance = observer(() => {
     <Table dataSet={taskDataSet} key="task">
       <Column
         name="taskInstanceCode"
-        style={{ cursor: 'pointer' }}
+        className="c7n-asgard-table-cell-click"
         onCell={({ record }) => ({
           onClick: () => { openDetail(record.get('sagaInstanceId')); },
         })}
@@ -218,7 +218,7 @@ const SagaInstance = observer(() => {
       <Column
         name="sagaInstanceCode"
         renderer={({ text }) => (
-          <MouseOverWrapper text={text} width={0.1}>
+          <MouseOverWrapper text={text} width={0.1} className="c7n-asgard-table-cell">
             {text}
           </MouseOverWrapper>
         )}
@@ -226,14 +226,14 @@ const SagaInstance = observer(() => {
       <Column
         name="description"
         renderer={({ text }) => (
-          <MouseOverWrapper text={text} width={0.1}>
+          <MouseOverWrapper text={text} width={0.1} className="c7n-asgard-table-cell">
             {text}
           </MouseOverWrapper>
         )}
       />
-      <Column name="plannedStartTime" />
-      <Column name="actualEndTime" />
-      <Column name="retryCount" renderer={({ record }) => `${record.get('retriedCount')}/${record.get('maxRetryCount')}`} />
+      <Column name="plannedStartTime" className="c7n-asgard-table-cell" />
+      <Column name="actualEndTime" className="c7n-asgard-table-cell" />
+      <Column name="retryCount" className="c7n-asgard-table-cell" renderer={({ record }) => `${record.get('retriedCount')}/${record.get('maxRetryCount')}`} />
     </Table>
   );
   const handleStatusClick = (status) => {

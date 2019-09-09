@@ -1,11 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { autorun } from 'mobx';
 import { Select, Table, Form, Input, InputNumber } from 'choerodon-ui';
 import { FormattedMessage } from 'react-intl';
 import TaskDetailStore from '../../../stores/global/task-detail';
-import '../TaskDetail.scss';
+import './index.less';
 
 const FormItem = Form.Item;
 
@@ -95,6 +94,7 @@ class SelectMethod extends Component {
       title: <FormattedMessage id={`${intlPrefix}.params.name`} />,
       dataIndex: 'name',
       key: 'name',
+      className: 'c7n-asgard-table-cell',
     }, {
       title: <FormattedMessage id={`${intlPrefix}.params.value`} />,
       dataIndex: 'defaultValue',
@@ -187,10 +187,12 @@ class SelectMethod extends Component {
       title: <FormattedMessage id={`${intlPrefix}.params.type`} />,
       dataIndex: 'type',
       key: 'type',
+      className: 'c7n-asgard-table-cell',
     }, {
       title: <FormattedMessage id={`${intlPrefix}.params.description`} />,
       dataIndex: 'description',
       key: 'description',
+      className: 'c7n-asgard-table-cell',
     }];
 
     return (
@@ -224,12 +226,14 @@ class SelectMethod extends Component {
       key: 'service',
       filters: [],
       filteredValue: methodFilters.service || [],
+      className: 'c7n-asgard-table-cell',
     }, {
       title: <FormattedMessage id={`${intlPrefix}.task.class.name`} />,
       dataIndex: 'description',
       key: 'description',
       filters: [],
       filteredValue: methodFilters.description || [],
+      className: 'c7n-asgard-table-cell',
     }];
     const rowSelection = {
       selectedRowKeys: TaskDetailStore.getSelectedRowKeys,
@@ -238,8 +242,8 @@ class SelectMethod extends Component {
     return (
       <div className="c7n-task-detail-methods-container">
         <Table
+          filterBarPlaceholder="过滤表"
           key="methods"
-          // style={{ width: 1006 }}    
           columns={columns}
           rowSelection={rowSelection}
           dataSource={methods}

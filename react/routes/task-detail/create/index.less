@@ -1,64 +1,3 @@
-.c7n-task-container-status {
-  i {
-    padding-right: 6px;
-    vertical-align: top;
-  }
-
-  .enabled {
-    color: #00bfa5;
-  }
-
-  .disabled {
-    color: #f44336;
-  }
-
-  .end {
-    color: #ffb100;
-  }
-}
-
-.c7n-task-detail-sidebar {
-  &.c7n-modal-sidebar .c7n-modal-body {
-    height: calc(100% - 121px);
-  }
-
-  .c7n-task-detail-row {
-    margin-bottom: 12px;
-
-    div:last-child {
-      color: rgba(0, 0, 0, 0.65);
-    }
-
-    &-hide {
-      display: none;
-    }
-
-    &-inform-person {
-      margin-bottom: 12px;
-      color: rgba(0, 0, 0, 0.65);
-
-      &-empty {
-        color: rgba(0, 0, 0, 0.65);
-      }
-
-      &-informlist-name-container {
-        display: inline;
-        margin-left: 10px;
-
-        div {
-          display: inline;
-        }
-
-        div:last-child {
-          span:last-child {
-            display: none;
-          }
-        }
-      }
-    }
-  }
-}
-
 .c7n-task-deatil-cron-container {
   font-size: 13px;
 
@@ -91,18 +30,6 @@
   }
 }
 
-.c7n-task-detail-popover {
-  width: 272px;
-  height: 156px;
-
-  &-icon {
-    position: absolute;
-    left: 491px;
-    margin-top: 16px;
-    cursor: pointer;
-  }
-}
-
 .c7n-taskdetail-text {
   display: flex;
 }
@@ -127,7 +54,7 @@
   }
 
   &-content {
-    margin: 36px 38px 30px;
+    margin: 24px 36px 30px;
 
     &-inline-formitem {
       display: inline-block;
@@ -152,6 +79,7 @@
     &-step1-container {
 
       width: 512px;
+
       &-simpletask-time-container {
         display: inline-block;
         margin-right: 60px;
@@ -204,20 +132,20 @@
         }
       }
 
-      &-select {
-        .c7n-select-underline {
-          display: none;
-        }
+      &-select:before {
+        border: none !important;
       }
     }
 
     &-step4-container {
       width: 512px;
-      &-row {
-        margin-bottom: 20px;
+
+      &-row,
+      &-informlist {
+        margin-bottom: 26px;
         font-size: 14px;
 
-        .c7n-col-21 {
+        .c7n-col-5 {
           color: rgba(0, 0, 0, 0.65);
         }
 

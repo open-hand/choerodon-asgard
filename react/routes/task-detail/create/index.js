@@ -9,7 +9,7 @@ import moment from 'moment';
 import classnames from 'classnames';
 import _ from 'lodash';
 import TaskDetailStore from '../../../stores/global/task-detail';
-import '../TaskDetail.scss';
+import './index.less';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
 import Tips from '../../../components/tips';
 import SelectMethod from './SelectMethod';
@@ -121,14 +121,6 @@ export default class TaskCreate extends Component {
     }
   }
 
-  componentWillUnmount() {
-    TaskDetailStore.setService([]);
-    TaskDetailStore.setClassNames([]);
-    TaskDetailStore.setCurrentService({});
-    TaskDetailStore.setCurrentClassNames({});
-    TaskDetailStore.setUserData([]);
-  }
-
   initTaskDetail() {
     this.taskdetail = new TaskDetailType(this);
   }
@@ -150,9 +142,7 @@ export default class TaskCreate extends Component {
   };
 
   reset = () => {
-    // const { form } = this.props;
     this.setState(this.getInitState(), () => {
-      TaskDetailStore.setCurrentTask({});
       TaskDetailStore.setMethodPagination({
         current: 1,
         total: 0,
@@ -410,42 +400,6 @@ export default class TaskCreate extends Component {
 
 
   /**
-   * 服务名变换时
-   * @param service 服务名
-   */
-  handleChangeService(service) {
-    const currentService = [service];
-    TaskDetailStore.setCurrentService(currentService);
-    this.loadClass();
-  }
-
-  /**
-   * 类名变换时
-   * @param id
-   */
-  handleChangeClass(id) {
-    const currentClass = TaskDetailStore.classNames.find((item) => item.id === id);
-    TaskDetailStore.setCurrentClassNames(currentClass);
-    this.loadParamsTable();
-  }
-
-  /**
-   * 获取所有服务名
-   */
-  loadService = () => {
-    const { type, id } = this.taskdetail;
-    TaskDetailStore.loadService(type, id).then((data) => {
-      if (data.failed) {
-        Choerodon.prompt(data.message);
-      } else {
-        TaskDetailStore.setService(data);
-      }
-    }).catch((error) => {
-      Choerodon.handleResponseError(error);
-    });
-  };
-
-  /**
    * 获取对应服务名的类名
    */
   loadClass = () => {
@@ -559,7 +513,7 @@ export default class TaskCreate extends Component {
               <TextArea autoComplete="off" label={<FormattedMessage id={`${intlPrefix}.task.description`} />} />,
             )}
           </FormItem>
-          <Row gutter={24}>
+          <Row gutter={8}>
             <Col span={12}>
               <FormItem>
                 {getFieldDecorator('startTime', {
@@ -570,7 +524,7 @@ export default class TaskCreate extends Component {
                   initialValue: firstStepValues ? firstStepValues.startTime : undefined,
                 })(
                   <DatePicker
-                    label={<FormattedMessage id={`${intlPrefix}.task.start.time`} />}
+                    placeholder={intl.formatMessage({ id: `${intlPrefix}.task.start.time` })}
                     style={{ width: '100%' }}
                     format="YYYY-MM-DD HH:mm:ss"
                     disabledDate={this.disabledStartDate}
@@ -589,7 +543,7 @@ export default class TaskCreate extends Component {
                   initialValue: firstStepValues ? firstStepValues.endTime : undefined,
                 })(
                   <DatePicker
-                    label={<FormattedMessage id={`${intlPrefix}.task.end.time`} />}
+                    placeholder={intl.formatMessage({ id: `${intlPrefix}.task.end.time` })}
                     style={{ width: '100%' }}
                     format="YYYY-MM-DD HH:mm:ss"
                     disabledDate={this.disabledEndDate.bind(this)}
@@ -623,7 +577,7 @@ export default class TaskCreate extends Component {
             )}
           </FormItem>
           <div style={{ display: triggerType === 'simple-trigger' ? 'block' : 'none' }}>
-            <Row gutter={24}>
+            <Row gutter={8}>
               <Col span={9}>
                 <FormItem>
                   {getFieldDecorator('simpleRepeatInterval', {
@@ -826,7 +780,7 @@ export default class TaskCreate extends Component {
                 >
                   {
                     showSelected.length && showSelected.map(({ loginName, realName, id }) => (
-                      <Option key={id} value={id}>{loginName}{realName}</Option>
+                      <Option key={id} value={id}>{realName}</Option>
                     ))
                   }
                 </Select>
