@@ -1,6 +1,7 @@
 package io.choerodon.asgard.api.controller.v1;
 
 import com.github.pagehelper.PageInfo;
+import io.choerodon.asgard.api.vo.SagaSearchVO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.constant.PageConstant;
 import io.choerodon.base.enums.ResourceType;
@@ -30,15 +31,12 @@ public class SagaController {
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @GetMapping
+    @PostMapping("/list")
     @ApiOperation(value = "查询事务列表")
-    public ResponseEntity<PageInfo<Saga>> pagingQuery(@RequestParam(required = false, name = "code") String code,
-                                                      @RequestParam(required = false, name = "description") String description,
-                                                      @RequestParam(required = false, name = "service") String service,
-                                                      @RequestParam(required = false, name = "params") String params,
+    public ResponseEntity<PageInfo<Saga>> pagingQuery(@RequestBody SagaSearchVO sagaSearchVO,
                                                       @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
                                                       @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
-        return sagaService.pagingQuery(page, size, code, description, service, params);
+        return sagaService.pagingQuery(page, size, sagaSearchVO);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

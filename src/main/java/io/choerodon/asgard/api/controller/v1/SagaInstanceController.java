@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.controller.v1;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.SagaInstance;
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
+import io.choerodon.asgard.api.vo.SagaInstanceSearchVO;
 import io.choerodon.asgard.api.vo.StartInstance;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.base.annotation.Permission;
@@ -87,17 +88,13 @@ public class SagaInstanceController {
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @GetMapping
+    @PostMapping("/list")
     @ApiOperation(value = "平台层查询事务实例列表")
     @ResponseBody
-    public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@RequestParam(value = "sagaCode", required = false) String sagaCode,
-                                                              @RequestParam(name = "status", required = false) String status,
-                                                              @RequestParam(name = "refType", required = false) String refType,
-                                                              @RequestParam(name = "refId", required = false) String refId,
-                                                              @RequestParam(name = "params", required = false) String params,
-                                                              @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                              @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
-        return sagaInstanceService.pageQuery(page, size, sagaCode, status, refType, refId, params, null, null);
+    public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@RequestBody SagaInstanceSearchVO sagaInstanceSearchVO,
+                                                                     @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
+                                                                     @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
+        return sagaInstanceService.pageQuery(page, size, sagaInstanceSearchVO, null, null);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

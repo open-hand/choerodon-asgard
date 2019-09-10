@@ -4,6 +4,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
+import io.choerodon.asgard.api.vo.ScheduleTaskSiteSearchVO;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.domain.PageRequest;
@@ -73,17 +74,14 @@ public class ScheduleTaskSiteController {
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @GetMapping
+    @PostMapping("/list")
     @ApiOperation(value = "全局层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@RequestParam(value = "status", required = false) String status,
-                                                            @RequestParam(name = "name", required = false) String name,
-                                                            @RequestParam(name = "description", required = false) String description,
-                                                            @RequestParam(name = "params", required = false) String params,
+    public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@RequestBody ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO,
                                                             @ApiIgnore
                                                                @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.SITE.value(), 0L);
+        return scheduleTaskService.pageQuery(pageRequest, scheduleTaskSiteSearchVO, ResourceLevel.SITE.value(), 0L);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

@@ -4,28 +4,29 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
-import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.domain.PageRequest;
-import io.choerodon.base.domain.Sort;
-import io.choerodon.base.enums.ResourceType;
-import io.choerodon.mybatis.annotation.SortDefault;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.api.vo.QuartzTask;
 import io.choerodon.asgard.api.vo.ScheduleTask;
 import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
+import io.choerodon.asgard.api.vo.ScheduleTaskSiteSearchVO;
 import io.choerodon.asgard.app.service.ScheduleTaskService;
-import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
+import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.annotation.SortDefault;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/v1/schedules/projects/{project_id}/tasks")
@@ -77,18 +78,15 @@ public class ScheduleTaskProjectController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
-    @GetMapping
+    @PostMapping("/list")
     @ApiOperation(value = "项目层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                            @RequestParam(value = "status", required = false) String status,
-                                                            @RequestParam(name = "name", required = false) String name,
-                                                            @RequestParam(name = "description", required = false) String description,
-                                                            @RequestParam(name = "params", required = false) String params,
+                                                            @RequestBody ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO,
                                                             @ApiIgnore
-                                                               @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
+        return scheduleTaskService.pageQuery(pageRequest, scheduleTaskSiteSearchVO, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})

@@ -4,6 +4,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.domain.PageRequest;
@@ -17,9 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.asgard.api.vo.QuartzTask;
-import io.choerodon.asgard.api.vo.ScheduleTask;
-import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
 import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
@@ -83,18 +81,15 @@ public class ScheduleTaskOrgController {
     }
 
     @Permission(type = ResourceType.ORGANIZATION)
-    @GetMapping
+    @PostMapping("/list")
     @ApiOperation(value = "组织层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@PathVariable("organization_id") long orgId,
-                                                            @RequestParam(value = "status", required = false) String status,
-                                                            @RequestParam(name = "name", required = false) String name,
-                                                            @RequestParam(name = "description", required = false) String description,
-                                                            @RequestParam(name = "params", required = false) String params,
+                                                            @RequestBody ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO,
                                                             @ApiIgnore
                                                                @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
+        return scheduleTaskService.pageQuery(pageRequest, scheduleTaskSiteSearchVO, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(type = ResourceType.ORGANIZATION)

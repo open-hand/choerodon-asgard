@@ -9,15 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.vo.Organization;
-import io.choerodon.asgard.api.vo.Project;
-import io.choerodon.asgard.api.vo.QuartzTask;
-import io.choerodon.asgard.api.vo.QuartzTaskDetail;
-import io.choerodon.asgard.api.vo.Role;
-import io.choerodon.asgard.api.vo.ScheduleTask;
-import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.enums.TriggerType;
-import io.choerodon.asgard.api.vo.User;
+import io.choerodon.asgard.infra.utils.ParamUtils;
 import io.choerodon.base.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -384,9 +378,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<QuartzTask>> pageQuery(PageRequest pageRequest, String status, String name, String description,
-                                                          String params, String level, Long sourceId) {
-        PageInfo<QuartzTaskDTO> result = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
+    public ResponseEntity<PageInfo<QuartzTask>> pageQuery(PageRequest pageRequest, ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO, String level, Long sourceId) {
+        PageInfo<QuartzTaskDTO> result = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(scheduleTaskSiteSearchVO.getStatus(), scheduleTaskSiteSearchVO.getName(), scheduleTaskSiteSearchVO.getDescription(), ParamUtils.arrToStr(scheduleTaskSiteSearchVO.getParams()), level, sourceId));
         List<QuartzTaskDTO> quartzTasks = result.getList();
         Page<QuartzTask> resultPage = new Page<>(pageRequest.getPage(), pageRequest.getSize());
         resultPage.setTotal(result.getTotal());
