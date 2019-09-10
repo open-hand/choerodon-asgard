@@ -1,7 +1,10 @@
 package io.choerodon.asgard.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+
 /**
+ * 任务管理查询VO.
+ *
  * @author tom
  * @since 2019/9/9
  */
@@ -18,10 +21,6 @@ public class ScheduleTaskSiteSearchVO {
 
     @ApiModelProperty(value = "模糊查询数组")
     private String[] params;
-
-
-    public ScheduleTaskSiteSearchVO() {
-    }
 
     public String getStatus() {
         return status;

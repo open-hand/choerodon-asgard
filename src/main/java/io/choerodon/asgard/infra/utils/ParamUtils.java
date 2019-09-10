@@ -2,7 +2,7 @@ package io.choerodon.asgard.infra.utils;
 
 /**
  * @author lrc
- * @since 2019/9/9 14:52
+ * @since 2019/9/9
  */
 public class ParamUtils {
     private ParamUtils() {

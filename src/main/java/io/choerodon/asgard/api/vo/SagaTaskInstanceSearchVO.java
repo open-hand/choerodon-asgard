@@ -1,33 +1,26 @@
 package io.choerodon.asgard.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+
 /**
+ * SagaTask实例查询VO.
+ *
  * @author tom
- * @since 2019/9/9 16:56
+ * @since 2019/9/9
  */
 public class SagaTaskInstanceSearchVO {
 
-    @ApiModelProperty(value = "所属sagatask实例")
+    @ApiModelProperty(value = "SagaTask实例编码")
     private String taskInstanceCode;
 
-    @ApiModelProperty(value = "所属saga实例")
+    @ApiModelProperty(value = "所属Saga实例编码")
     private String sagaInstanceCode;
 
     @ApiModelProperty(value = "状态")
     private String status;
 
-    @ApiModelProperty(value = "参数数组")
+    @ApiModelProperty(value = "模糊查询数组")
     private String[] params;
-
-    public SagaTaskInstanceSearchVO(String taskInstanceCode, String sagaInstanceCode, String status, String[] params) {
-        this.taskInstanceCode = taskInstanceCode;
-        this.sagaInstanceCode = sagaInstanceCode;
-        this.status = status;
-        this.params = params;
-    }
-
-    public SagaTaskInstanceSearchVO() {
-    }
 
     public String getTaskInstanceCode() {
         return taskInstanceCode;

@@ -1,18 +1,19 @@
 package io.choerodon.asgard.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
-import java.util.Date;
 
 /**
+ * Saga实例查询VO.
+ *
  * @author tom
- * @since 2019/9/9 16:06
+ * @since 2019/9/9
  */
 public class SagaInstanceSearchVO {
 
-    @ApiModelProperty(value = "对应Saga 编码")
+    @ApiModelProperty(value = "Saga编码")
     private String sagaCode;
 
-    @ApiModelProperty(value = "当前Saga 实例的状态")
+    @ApiModelProperty(value = "状态")
     private String status;
 
     @ApiModelProperty(value = "关联业务类型")
@@ -21,19 +22,9 @@ public class SagaInstanceSearchVO {
     @ApiModelProperty(value = "关联业务ID")
     private String refId;
 
-    @ApiModelProperty(value = "参数数组")
+    @ApiModelProperty(value = "模糊查询数组")
     private String[] params;
 
-    public SagaInstanceSearchVO() {
-    }
-
-    public SagaInstanceSearchVO(String sagaCode, String status, String refType, String refId, String[] params) {
-        this.sagaCode = sagaCode;
-        this.status = status;
-        this.refType = refType;
-        this.refId = refId;
-        this.params = params;
-    }
 
     public String getSagaCode() {
         return sagaCode;

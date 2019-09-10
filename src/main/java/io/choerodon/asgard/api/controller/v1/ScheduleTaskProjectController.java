@@ -4,29 +4,29 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.vo.ScheduleTaskSiteSearchVO;
-import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
-import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.domain.PageRequest;
-import io.choerodon.base.domain.Sort;
-import io.choerodon.base.enums.ResourceType;
-import io.choerodon.mybatis.annotation.SortDefault;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.api.vo.QuartzTask;
 import io.choerodon.asgard.api.vo.ScheduleTask;
 import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
+import io.choerodon.asgard.api.vo.ScheduleTaskSiteSearchVO;
 import io.choerodon.asgard.app.service.ScheduleTaskService;
-import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
+import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
+import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.annotation.SortDefault;
 import io.choerodon.swagger.annotation.CustomPageRequest;
-import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/v1/schedules/projects/{project_id}/tasks")
@@ -85,7 +85,7 @@ public class ScheduleTaskProjectController {
     public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@PathVariable("project_id") long projectId,
                                                             @RequestBody ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO,
                                                             @ApiIgnore
-                                                               @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
         return scheduleTaskService.pageQuery(pageRequest, scheduleTaskSiteSearchVO, ResourceLevel.PROJECT.value(), projectId);
     }
 

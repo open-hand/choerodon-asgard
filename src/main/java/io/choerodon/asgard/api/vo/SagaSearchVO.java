@@ -1,11 +1,12 @@
 package io.choerodon.asgard.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
+ * Saga查询VO.
+ *
  * @author lrc
- * @since 2019/9/9 14:56
+ * @since 2019/9/9
  */
 public class SagaSearchVO {
 
@@ -18,18 +19,8 @@ public class SagaSearchVO {
     @ApiModelProperty(value = "所属微服务")
     private String service;
 
-    @ApiModelProperty(value = "参数数组")
+    @ApiModelProperty(value = "模糊查询数组")
     private String[] params;
-
-    public SagaSearchVO() {
-    }
-
-    public SagaSearchVO(String code, String description, String service, String[] params) {
-        this.code = code;
-        this.description = description;
-        this.service = service;
-        this.params = params;
-    }
 
     public String getCode() {
         return code;
