@@ -1108,13 +1108,14 @@ export default class TaskCreate extends Component {
 
     return (
       <Table
-        style={{ marginTop: 20 }}
+        // style={{ marginTop: 20 }} 
         loading={loading}
         columns={columns}
         pagination={pagination}
         dataSource={TaskDetailStore.getUserData}
         filters={userParams}
         rowKey="id"
+        className="c7n-iam-create-task-three-table"
         onChange={this.handlePageChange}
         rowSelection={rowSelection}
         filterBarPlaceholder={intl.formatMessage({ id: 'filtertable' })}
