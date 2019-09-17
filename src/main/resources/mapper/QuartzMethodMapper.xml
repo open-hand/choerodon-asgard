@@ -34,7 +34,7 @@
             AND fd_level = #{level}
         </if>
         <if test="params != null">
-            AND(
+            AND (
             code LIKE concat(concat('%',#{params}),'%') OR
             service LIKE concat(concat('%',#{params}),'%') OR
             method LIKE concat(concat('%',#{params}),'%') OR

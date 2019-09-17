@@ -62,7 +62,7 @@
         </if>
 
         <if test="params != null">
-            AND(
+            AND (
             task_name LIKE concat(concat('%',#{params}),'%') OR
             exception_message LIKE concat(concat('%',#{params}),'%') OR
             status LIKE concat(concat('%',#{params}),'%')
@@ -144,7 +144,7 @@
         </if>
 
         <if test="params != null">
-            AND(
+            AND (
             concat(
             concat(tmp.service, ":"),
             aqti.INSTANCE_LOCK

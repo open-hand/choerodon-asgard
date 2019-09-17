@@ -50,7 +50,7 @@
             AND asi.ref_id LIKE concat(concat('%',#{refId}),'%')
         </if>
         <if test="params != null">
-            AND(
+            AND (
             concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{params}),'%') OR
             asi.ref_type LIKE concat(concat('%',#{params}),'%') OR
             asi.ref_id LIKE concat(concat('%',#{params}),'%')
