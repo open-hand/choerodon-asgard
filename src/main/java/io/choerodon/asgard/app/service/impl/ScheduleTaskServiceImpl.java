@@ -378,8 +378,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<QuartzTask>> pageQuery(PageRequest pageRequest, ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO, String level, Long sourceId) {
-        PageInfo<QuartzTaskDTO> result = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(scheduleTaskSiteSearchVO.getStatus(), scheduleTaskSiteSearchVO.getName(), scheduleTaskSiteSearchVO.getDescription(), ParamUtils.arrToStr(scheduleTaskSiteSearchVO.getParams()), level, sourceId));
+    public ResponseEntity<PageInfo<QuartzTask>> pageQuery(PageRequest pageRequest, String status, String name, String description, String param, String level, Long sourceId) {
+        PageInfo<QuartzTaskDTO> result = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, param, level, sourceId));
         List<QuartzTaskDTO> quartzTasks = result.getList();
         Page<QuartzTask> resultPage = new Page<>(pageRequest.getPage(), pageRequest.getSize());
         resultPage.setTotal(result.getTotal());

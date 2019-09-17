@@ -1,10 +1,12 @@
 package io.choerodon.asgard.api.controller.v1;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.vo.SagaSearchVO;
 import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.constant.PageConstant;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
+import io.choerodon.mybatis.annotation.SortDefault;
+import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import io.choerodon.asgard.api.vo.Saga;
 import io.choerodon.asgard.api.vo.SagaWithTask;
 import io.choerodon.asgard.app.service.SagaService;
 import io.choerodon.core.iam.InitRoleCode;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/v1/sagas")
@@ -31,12 +34,16 @@ public class SagaController {
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @PostMapping("/list")
+    @GetMapping
     @ApiOperation(value = "查询事务列表")
-    public ResponseEntity<PageInfo<Saga>> pagingQuery(@RequestBody SagaSearchVO sagaSearchVO,
-                                                      @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                      @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
-        return sagaService.pagingQuery(page, size, sagaSearchVO);
+    @CustomPageRequest
+    public ResponseEntity<PageInfo<Saga>> pagingQuery(@ApiIgnore
+                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest,
+                                                      @RequestParam(required = false) String code,
+                                                      @RequestParam(required = false) String description,
+                                                      @RequestParam(required = false) String service,
+                                                      @RequestParam(required = false) String param) {
+        return sagaService.pagingQuery(pageRequest, code, description, service, param);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

@@ -16,7 +16,7 @@ public interface SagaInstanceMapper extends Mapper<SagaInstanceDTO> {
                                               @Param("status") String status,
                                               @Param("refType") String refType,
                                               @Param("refId") String refId,
-                                              @Param("params") String params,
+                                              @Param("param") String param,
                                               @Param("level") String level,
                                               @Param("sourceId") Long sourceId);
 

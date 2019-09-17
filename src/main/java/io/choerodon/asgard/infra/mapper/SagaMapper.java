@@ -16,6 +16,6 @@ public interface SagaMapper extends Mapper<SagaDTO> {
     List<Saga> fulltextSearch(@Param("code") String code,
                               @Param("description") String description,
                               @Param("service") String service,
-                              @Param("params") String params);
+                              @Param("param") String param);
 
 }

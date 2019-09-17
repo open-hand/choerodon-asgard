@@ -22,11 +22,11 @@
         <if test="sourceId != null">
             AND source_id = #{sourceId}
         </if>
-        <if test="params != null">
+        <if test="param != null">
             AND(
-            name LIKE concat(concat('%',#{params}),'%') OR
-            description LIKE concat(concat('%',#{params}),'%') OR
-            status LIKE concat(concat('%',#{params}),'%')
+            name LIKE concat(concat('%',#{param}),'%') OR
+            description LIKE concat(concat('%',#{param}),'%') OR
+            status LIKE concat(concat('%',#{param}),'%')
             )
         </if>
         order by case status

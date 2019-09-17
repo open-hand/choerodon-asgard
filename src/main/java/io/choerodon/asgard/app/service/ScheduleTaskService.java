@@ -27,7 +27,7 @@ public interface ScheduleTaskService {
 
     void finish(long id);
 
-    ResponseEntity<PageInfo<QuartzTask>> pageQuery(PageRequest pageRequest, ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO, String level, Long sourceId);
+    ResponseEntity<PageInfo<QuartzTask>> pageQuery(PageRequest pageRequest, String status, String name, String description, String param, String level, Long sourceId);
 
     ScheduleTaskDetail getTaskDetail(Long id, String level, Long sourceId);
 

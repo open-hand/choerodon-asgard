@@ -17,7 +17,7 @@ public interface QuartzTaskMapper extends Mapper<QuartzTaskDTO> {
     List<QuartzTaskDTO> fulltextSearch(@Param("status") String status,
                                        @Param("name") String name,
                                        @Param("description") String description,
-                                       @Param("params") String params,
+                                       @Param("param") String param,
                                        @Param("level") String level,
                                        @Param("sourceId") Long sourceId);
 

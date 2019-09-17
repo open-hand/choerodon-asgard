@@ -15,7 +15,6 @@ import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.api.vo.QuartzTask;
 import io.choerodon.asgard.api.vo.ScheduleTask;
 import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
-import io.choerodon.asgard.api.vo.ScheduleTaskSiteSearchVO;
 import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
@@ -83,10 +82,13 @@ public class ScheduleTaskProjectController {
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                            @RequestBody ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO,
                                                             @ApiIgnore
-                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, scheduleTaskSiteSearchVO, ResourceLevel.PROJECT.value(), projectId);
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+                                                            @RequestParam(required = false) String status,
+                                                            @RequestParam(required = false) String name,
+                                                            @RequestParam(required = false) String description,
+                                                            @RequestParam(required = false) String param) {
+        return scheduleTaskService.pageQuery(pageRequest, status, name ,description, param, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})

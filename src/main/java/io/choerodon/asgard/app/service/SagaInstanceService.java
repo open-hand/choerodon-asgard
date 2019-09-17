@@ -3,8 +3,8 @@ package io.choerodon.asgard.app.service;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.SagaInstance;
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
-import io.choerodon.asgard.api.vo.SagaInstanceSearchVO;
 import io.choerodon.asgard.api.vo.StartInstance;
+import io.choerodon.base.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Map;
@@ -20,7 +20,7 @@ public interface SagaInstanceService {
     void cancel(String uuid);
 
 
-    ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(int page, int size, SagaInstanceSearchVO sagaInstanceSearchVO, String level, Long sourceId);
+    ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(PageRequest pageRequest, String sagaCode, String status, String refType, String refId, String param, String level, Long sourceId);
 
     ResponseEntity<String> query(Long id);
 
