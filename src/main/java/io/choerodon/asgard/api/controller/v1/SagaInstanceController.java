@@ -101,8 +101,8 @@ public class SagaInstanceController {
                                                                      @RequestParam(required = false) String status,
                                                                      @RequestParam(required = false) String refType,
                                                                      @RequestParam(required = false) String refId,
-                                                                     @RequestParam(required = false) String param) {
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, param, null, null);
+                                                                     @RequestParam(required = false) String params) {
+        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, null, null);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

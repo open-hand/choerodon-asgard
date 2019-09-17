@@ -78,12 +78,12 @@ public class ScheduleTaskSiteController {
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@ApiIgnore
-                                                               @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
                                                             @RequestParam(required = false) String status,
                                                             @RequestParam(required = false) String name,
                                                             @RequestParam(required = false) String description,
-                                                            @RequestParam(required = false) String param) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name, description, param, ResourceLevel.SITE.value(), 0L);
+                                                            @RequestParam(required = false) String params) {
+        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.SITE.value(), 0L);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

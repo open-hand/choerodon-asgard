@@ -348,12 +348,12 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(PageRequest pageRequest, String taskInstanceCode, String sagaInstanceCode, String status, String param, String level, Long sourceId) {
+    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(PageRequest pageRequest, String taskInstanceCode, String sagaInstanceCode, String status, String params, String level, Long sourceId) {
         return new ResponseEntity<>(
                 PageHelper
                         .startPage(pageRequest.getPage(),pageRequest.getSize())
                         .doSelectPageInfo(
-                                () -> taskInstanceMapper.fulltextSearchTaskInstance(taskInstanceCode, status, sagaInstanceCode, param, level, sourceId)), HttpStatus.OK);
+                                () -> taskInstanceMapper.fulltextSearchTaskInstance(taskInstanceCode, status, sagaInstanceCode, params, level, sourceId)), HttpStatus.OK);
     }
 
     @Override

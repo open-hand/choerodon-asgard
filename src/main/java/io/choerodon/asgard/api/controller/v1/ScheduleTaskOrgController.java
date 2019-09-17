@@ -89,10 +89,10 @@ public class ScheduleTaskOrgController {
                                                             @RequestParam(required = false) String status,
                                                             @RequestParam(required = false) String name,
                                                             @RequestParam(required = false) String description,
-                                                            @RequestParam(required = false) String param,
+                                                            @RequestParam(required = false) String params,
                                                             @ApiIgnore
-                                                               @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name, description, param, ResourceLevel.ORGANIZATION.value(), orgId);
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
+        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(type = ResourceType.ORGANIZATION)

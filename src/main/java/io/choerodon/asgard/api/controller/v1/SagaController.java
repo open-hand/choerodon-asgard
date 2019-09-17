@@ -42,8 +42,8 @@ public class SagaController {
                                                       @RequestParam(required = false) String code,
                                                       @RequestParam(required = false) String description,
                                                       @RequestParam(required = false) String service,
-                                                      @RequestParam(required = false) String param) {
-        return sagaService.pagingQuery(pageRequest, code, description, service, param);
+                                                      @RequestParam(required = false) String params) {
+        return sagaService.pagingQuery(pageRequest, code, description, service, params);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

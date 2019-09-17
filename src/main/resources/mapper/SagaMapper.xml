@@ -21,11 +21,11 @@
             AND description LIKE concat(concat('%',#{description}),'%')
         </if>
 
-        <if test="param != null">
+        <if test="params != null">
             AND(
-            code LIKE concat(concat('%',#{param}),'%') OR
-            service LIKE concat(concat('%',#{param}),'%') OR
-            description LIKE concat(concat('%',#{param}),'%')
+            code LIKE concat(concat('%',#{params}),'%') OR
+            service LIKE concat(concat('%',#{params}),'%') OR
+            description LIKE concat(concat('%',#{params}),'%')
             )
         </if>
         order by id desc

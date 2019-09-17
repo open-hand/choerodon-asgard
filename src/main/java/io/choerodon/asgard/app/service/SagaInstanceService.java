@@ -20,7 +20,7 @@ public interface SagaInstanceService {
     void cancel(String uuid);
 
 
-    ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(PageRequest pageRequest, String sagaCode, String status, String refType, String refId, String param, String level, Long sourceId);
+    ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(PageRequest pageRequest, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId);
 
     ResponseEntity<String> query(Long id);
 

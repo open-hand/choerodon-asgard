@@ -41,14 +41,14 @@ public class SagaInstanceOrgController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@ApiIgnore
-                                                                         @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
-            @PathVariable("organization_id") long orgId,
+                                                                     @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+                                                                     @PathVariable("organization_id") long orgId,
                                                                      @RequestParam(required = false) String sagaCode,
                                                                      @RequestParam(required = false) String status,
                                                                      @RequestParam(required = false) String refType,
                                                                      @RequestParam(required = false) String refId,
-                                                                     @RequestParam(required = false) String param) {
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, param, ResourceLevel.ORGANIZATION.value(), orgId);
+                                                                     @RequestParam(required = false) String params) {
+        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})

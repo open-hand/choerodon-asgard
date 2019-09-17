@@ -11,7 +11,7 @@ public interface SagaService {
 
     void create(SagaDTO saga);
 
-    ResponseEntity<PageInfo<Saga>> pagingQuery(PageRequest pageRequest, String code, String description, String service, String param);
+    ResponseEntity<PageInfo<Saga>> pagingQuery(PageRequest pageRequest, String code, String description, String service, String params);
 
     ResponseEntity<SagaWithTask> query(Long id);
 

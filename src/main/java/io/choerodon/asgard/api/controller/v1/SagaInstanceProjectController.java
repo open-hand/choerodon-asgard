@@ -45,10 +45,10 @@ public class SagaInstanceProjectController {
                                                                      @RequestParam(required = false) String status,
                                                                      @RequestParam(required = false) String refType,
                                                                      @RequestParam(required = false) String refId,
-                                                                     @RequestParam(required = false) String param,
+                                                                     @RequestParam(required = false) String params,
                                                                      @ApiIgnore
                                                                          @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status,refType, refId, param, ResourceLevel.PROJECT.value(), projectId);
+        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status,refType, refId, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})

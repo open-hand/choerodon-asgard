@@ -87,8 +87,8 @@ public class ScheduleTaskProjectController {
                                                             @RequestParam(required = false) String status,
                                                             @RequestParam(required = false) String name,
                                                             @RequestParam(required = false) String description,
-                                                            @RequestParam(required = false) String param) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name ,description, param, ResourceLevel.PROJECT.value(), projectId);
+                                                            @RequestParam(required = false) String params) {
+        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})

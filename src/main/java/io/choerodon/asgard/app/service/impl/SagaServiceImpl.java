@@ -67,12 +67,12 @@ public class SagaServiceImpl implements SagaService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<Saga>> pagingQuery(PageRequest pageRequest, String code, String description, String service, String param) {
+    public ResponseEntity<PageInfo<Saga>> pagingQuery(PageRequest pageRequest, String code, String description, String service, String params) {
         return new ResponseEntity<>(
                 PageHelper
                         .startPage(pageRequest.getPage(), pageRequest.getSize())
                         .doSelectPageInfo(
-                                () -> sagaMapper.fulltextSearch(code, description, service, param)), HttpStatus.OK);
+                                () -> sagaMapper.fulltextSearch(code, description, service, params)), HttpStatus.OK);
     }
 
     @Override

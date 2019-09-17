@@ -49,11 +49,11 @@
         <if test="refId != null">
             AND asi.ref_id LIKE concat(concat('%',#{refId}),'%')
         </if>
-        <if test="param != null">
+        <if test="params != null">
             AND(
-            concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{param}),'%') OR
-            asi.ref_type LIKE concat(concat('%',#{param}),'%') OR
-            asi.ref_id LIKE concat(concat('%',#{param}),'%')
+            concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{params}),'%') OR
+            asi.ref_type LIKE concat(concat('%',#{params}),'%') OR
+            asi.ref_id LIKE concat(concat('%',#{params}),'%')
             )
         </if>
         GROUP BY

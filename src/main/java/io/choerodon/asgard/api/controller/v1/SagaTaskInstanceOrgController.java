@@ -75,7 +75,7 @@ public class SagaTaskInstanceOrgController {
                                                                       @RequestParam(required = false) String taskInstanceCode,
                                                                       @RequestParam(required = false) String sagaInstanceCode,
                                                                       @RequestParam(required = false) String status,
-                                                                      @RequestParam(required = false) String param) {
-        return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, param, ResourceLevel.ORGANIZATION.value(), orgId);
+                                                                      @RequestParam(required = false) String params) {
+        return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 }

@@ -74,9 +74,9 @@ public class SagaTaskInstanceProjController {
                                                                       @RequestParam(required = false) String taskInstanceCode,
                                                                       @RequestParam(required = false) String sagaInstanceCode,
                                                                       @RequestParam(required = false) String status,
-                                                                      @RequestParam(required = false) String param,
+                                                                      @RequestParam(required = false) String params,
                                                                       @ApiIgnore
-                                                                          @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, param, ResourceLevel.PROJECT.value(), projectId);
+                                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+        return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.PROJECT.value(), projectId);
     }
 }
