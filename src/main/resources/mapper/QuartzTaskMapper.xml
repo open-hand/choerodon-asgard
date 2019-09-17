@@ -23,7 +23,7 @@
             AND source_id = #{sourceId}
         </if>
         <if test="params != null">
-            AND(
+            AND (
             name LIKE concat(concat('%',#{params}),'%') OR
             description LIKE concat(concat('%',#{params}),'%') OR
             status LIKE concat(concat('%',#{params}),'%')

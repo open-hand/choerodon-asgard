@@ -22,7 +22,7 @@
         </if>
 
         <if test="params != null">
-            AND(
+            AND (
             code LIKE concat(concat('%',#{params}),'%') OR
             service LIKE concat(concat('%',#{params}),'%') OR
             description LIKE concat(concat('%',#{params}),'%')
