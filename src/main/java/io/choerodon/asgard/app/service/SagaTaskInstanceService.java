@@ -3,6 +3,7 @@ package io.choerodon.asgard.app.service;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
+import io.choerodon.base.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public interface SagaTaskInstanceService {
 
     void forceFailed(long id);
 
-    ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(int page, int size, SagaTaskInstanceSearchVO sagaTaskInstanceSearchVO, String level, Long sourceId);
+    ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(PageRequest pageRequest, String taskInstanceCode,String sagaInstanceCode, String status,String params,String level, Long sourceId);
 
     /**
      * 根据事务实例Id查出某一seq下的全部任务实例

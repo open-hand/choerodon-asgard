@@ -3,10 +3,12 @@ package io.choerodon.asgard.api.controller.v1;
 import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.vo.SagaInstanceSearchVO;
 import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.constant.PageConstant;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
+import io.choerodon.mybatis.annotation.SortDefault;
+import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import io.choerodon.asgard.api.vo.SagaInstanceDetails;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Controller
 @RequestMapping("/v1/sagas/projects/{project_id}/instances")
@@ -33,14 +36,19 @@ public class SagaInstanceProjectController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
-    @PostMapping("/list")
+    @GetMapping
     @ApiOperation(value = "项目层查询事务实例列表")
     @ResponseBody
+    @CustomPageRequest
     public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                                     @RequestBody SagaInstanceSearchVO sagaInstanceSearchVO,
-                                                                     @RequestParam(defaultValue = PageConstant.PAGE, required = false) final int page,
-                                                                     @RequestParam(defaultValue = PageConstant.SIZE, required = false) final int size) {
-        return sagaInstanceService.pageQuery(page, size, sagaInstanceSearchVO, ResourceLevel.PROJECT.value(), projectId);
+                                                                     @RequestParam(required = false) String sagaCode,
+                                                                     @RequestParam(required = false) String status,
+                                                                     @RequestParam(required = false) String refType,
+                                                                     @RequestParam(required = false) String refId,
+                                                                     @RequestParam(required = false) String params,
+                                                                     @ApiIgnore
+                                                                         @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status,refType, refId, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})

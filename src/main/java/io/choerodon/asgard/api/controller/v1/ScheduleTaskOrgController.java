@@ -81,15 +81,18 @@ public class ScheduleTaskOrgController {
     }
 
     @Permission(type = ResourceType.ORGANIZATION)
-    @PostMapping("/list")
+    @GetMapping
     @ApiOperation(value = "组织层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@PathVariable("organization_id") long orgId,
-                                                            @RequestBody ScheduleTaskSiteSearchVO scheduleTaskSiteSearchVO,
+                                                            @RequestParam(required = false) String status,
+                                                            @RequestParam(required = false) String name,
+                                                            @RequestParam(required = false) String description,
+                                                            @RequestParam(required = false) String params,
                                                             @ApiIgnore
-                                                               @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, scheduleTaskSiteSearchVO, ResourceLevel.ORGANIZATION.value(), orgId);
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
+        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(type = ResourceType.ORGANIZATION)

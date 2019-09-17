@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.infra.utils.ParamUtils;
+import io.choerodon.base.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -134,12 +135,12 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(int page, int size, SagaInstanceSearchVO sagaInstanceSearchVO, String level, Long sourceId) {
+    public ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(PageRequest pageRequest, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId) {
         return new ResponseEntity<>(
                 PageHelper
-                        .startPage(page, size)
+                        .startPage(pageRequest.getPage(), pageRequest.getSize())
                         .doSelectPageInfo(
-                                () -> instanceMapper.fulltextSearchInstance(sagaInstanceSearchVO.getSagaCode(), sagaInstanceSearchVO.getStatus(), sagaInstanceSearchVO.getRefType(), sagaInstanceSearchVO.getRefId(), ParamUtils.arrToStr(sagaInstanceSearchVO.getParams()), level, sourceId)), HttpStatus.OK);
+                                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
     }
 
     @Override

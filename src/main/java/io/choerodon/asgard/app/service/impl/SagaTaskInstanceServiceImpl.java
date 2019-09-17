@@ -21,6 +21,7 @@ import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.infra.utils.ParamUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
+import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import org.modelmapper.ModelMapper;
@@ -347,12 +348,12 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(int page, int size, SagaTaskInstanceSearchVO sagaTaskInstanceSearchVO, String level, Long sourceId) {
+    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(PageRequest pageRequest, String taskInstanceCode, String sagaInstanceCode, String status, String params, String level, Long sourceId) {
         return new ResponseEntity<>(
                 PageHelper
-                        .startPage(page,size)
+                        .startPage(pageRequest.getPage(),pageRequest.getSize())
                         .doSelectPageInfo(
-                                () -> taskInstanceMapper.fulltextSearchTaskInstance(sagaTaskInstanceSearchVO.getSagaInstanceCode(), sagaTaskInstanceSearchVO.getStatus(), sagaTaskInstanceSearchVO.getTaskInstanceCode(), ParamUtils.arrToStr(sagaTaskInstanceSearchVO.getParams()), level, sourceId)), HttpStatus.OK);
+                                () -> taskInstanceMapper.fulltextSearchTaskInstance(taskInstanceCode, status, sagaInstanceCode, params, level, sourceId)), HttpStatus.OK);
     }
 
     @Override
