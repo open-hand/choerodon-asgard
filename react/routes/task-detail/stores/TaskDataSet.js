@@ -25,8 +25,8 @@ export default ({ id = 0, levelType, intl, intlPrefix }) => {
     selection: false,
     transport: {
       read: {
-        url: `asgard/v1/schedules${levelType}/tasks/list`,
-        method: 'post',
+        url: `asgard/v1/schedules${levelType}/tasks`,
+        method: 'get',
       },
     },
     fields: [
