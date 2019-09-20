@@ -54,9 +54,10 @@ public interface SagaTaskInstanceMapper extends Mapper<SagaTaskInstanceDTO> {
     /**
      * 分页查询层级单位下事务实例
      */
-    List<SagaTaskInstanceInfo> fulltextSearchTaskInstance(@Param("sagaInstanceCode") String sagaInstanceCode,
+
+    List<SagaTaskInstanceInfo> fulltextSearchTaskInstance(@Param("taskInstanceCode") String taskInstanceCode,
                                                           @Param("status") String status,
-                                                          @Param("taskInstanceCode") String taskInstanceCode,
+                                                          @Param("sagaInstanceCode") String sagaInstanceCode,
                                                           @Param("params") String params,
                                                           @Param("level") String level,
                                                           @Param("sourceId") Long sourceId);
