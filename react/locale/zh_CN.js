@@ -1257,7 +1257,7 @@ const zh_CN = {
   'global.saga.task.retry': '重试',
   'global.saga.task.retry.success': '重试成功',
   'global.saga.task.unlock.success': '解锁成功',
-  'global.saga.json.nodata': '// 暂无数据',
+  'global.saga.json.nodata': '暂无数据',
   'global.saga.task.concurrentlimit.policy': '并发限制模式',
   'global.saga.task.concurrentlimit.num': '最大并发数',
   'global.saga.task.plannedstarttime': '计划执行时间',
