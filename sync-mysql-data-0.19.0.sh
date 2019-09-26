@@ -26,10 +26,10 @@ declare quartzMethodNum int;
 
 select count(id)  into sagaNum
 from ${asgard_service_table_asgard_orch_saga}
-where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','apim-service');
+where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','issue-service','apim-service');
 select count(id) into sagaTaskNum
 from ${asgard_service_table_asgard_orch_saga_task}
-where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','apim-service');
+where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','issue-service','apim-service');
 select count(id) into quartzMethodNum
 from ${asgard_service_table_asgard_quartz_method}
 where service in ('organization-service','iam-service','apim-service');
@@ -39,20 +39,20 @@ select quartzMethodNum;
 
 delete
 from ${asgard_service_table_asgard_orch_saga}
-where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','apim-service');
+where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','issue-service','apim-service');
 delete
 from ${asgard_service_table_asgard_orch_saga_task}
-where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','apim-service');
+where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','issue-service','apim-service');
 delete
 from ${asgard_service_table_asgard_quartz_method}
 where service in ('organization-service','iam-service','apim-service');
 
 select count(id)  into sagaNum
 from ${asgard_service_table_asgard_orch_saga}
-where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','apim-service');
+where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','issue-service','apim-service');
 select count(id) into sagaTaskNum
 from ${asgard_service_table_asgard_orch_saga_task}
-where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','apim-service');
+where service in ('organization-service','iam-service','state-machine-service' ,'foundation-service','wiki-service','issue-service','apim-service');
 select count(id) into quartzMethodNum
 from ${asgard_service_table_asgard_quartz_method}
 where service in ('organization-service','iam-service','apim-service');
