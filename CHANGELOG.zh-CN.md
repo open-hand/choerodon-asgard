@@ -21,6 +21,7 @@
 - 升级`choerodon-starter`依赖版本为`0.12.0.RELEASE`
 - 更新初始化数据内的 `iam-service` 为 `base-service`
 - 更新feign调用 `iam-service` 为 `base-service`
+- 更新跨服务初始化目录名 `/script/front` 为 `/script/meta`
 
 ### 修复
 

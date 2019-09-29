@@ -13,7 +13,7 @@ helm repo update
 ## Installing the Chart
 
 ```bash
-$ helm install c7n/api-gateway --name api-gateway
+$ helm install c7n/asgard-service --name asgard-service
 ```
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
@@ -21,25 +21,30 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 ## Uninstalling the Chart
 
 ```bash
-$ helm delete api-gateway
+$ helm delete asgard-service
 ```
 
 ## Configuration
 
 Parameter | Description	| Default
 --- |  ---  |  ---  
-`replicaCount` | Replicas count | `1`
+
+`replicaCount` | pod运行数量 | `1`
+`image.repository` | 镜像库地址 | `registry.cn-hangzhou.aliyuncs.com/choerodon-framework/asgard-service`
+`image.pullPolicy` | 镜像拉取策略 | `IfNotPresent`
 `preJob.timeout` | job超时时间 | `300`
-`preJob.preConfig.enabled` | 是否初始化配置 | `true`
+`preJob.image` | job镜像库地址 | `registry.cn-hangzhou.aliyuncs.com/choerodon-tools/dbtool:0.6.4`
+`preJob.preConfig.enabled` | 是否初始化manager_service数据库 | `true`
 `preJob.preConfig.configFile` | 初始化到配置中心文件名 | `application.yml`
 `preJob.preConfig.configType` | 初始化到配置中心存储方式 | `k8s`
-`preJob.preConfig.updatePolicy` | 初始化配置策略（not/add/override/update） | `add`
+`preJob.preConfig.updatePolicy` | 初始化配置策略: not/add/override/update | `add`
 `preJob.preConfig.registerHost` | 注册中心地址 | `http://register-server:8000`
-`preJob.preInitDB.enabled` | 是否初始化数据库 | `true`
-`preJob.preInitDB.datasource.url` | 初始化数据库连接地址 | `jdbc:mysql://127.0.0.1:3306/asgard_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true`
-`preJob.preInitDB.datasource.username` | 初始化数据库用户名 | `choerodon`
-`preJob.preInitDB.datasource.password` | 初始化数据库用户密码 | `password`
+`preJob.preInitDB.enabled `| 是否初始asgard_service数据库 | `true`
+`preJob.preInitDB.datasource.url` | asgard_service数据库连接地址 | `jdbc:mysql://127.0.0.1:3306/asgard_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true`
+`preJob.preInitDB.datasource.username` | asgard_service数据库用户名 | `choerodon`
+`preJob.preInitDB.datasource.password` | asgard_service数据库密码 | `password`
 `deployment.managementPort` | 服务管理端口 | `18081`
+`env.open.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` | 注册服务地址 | `http://register-server:8000/eureka/`
 `env.open.SPRING_CLOUD_CONFIG_ENABLED` | 是否启用配置中心 | `true`
 `env.open.SPRING_CLOUD_CONFIG_URI` | 配置中心地址 | `http://register-server:8000/`
 `env.open.SPRING_DATASOURCE_URL` | 数据库连接地址 | `jdbc:mysql://127.0.0.1/asgard_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true`
@@ -48,13 +53,15 @@ Parameter | Description	| Default
 `env.open.SPRING_REDIS_HOST` | redis主机地址 | `localhost`
 `env.open.SPRING_REDIS_PORT` | redis端口 | `6379`
 `env.open.SPRING_REDIS_DATABASE` | redis db | `7`
-`env.open.EUREKA_CLIENT_SERVICEURL_DEFAULTZONE` | 注册服务地址 | `http://register-server:8000/eureka/`
 `service.port` | service端口 | `18080`
-`metrics.path` | 收集应用的指标数据路径 | ``
-`metrics.group` | 性能指标应用分组 | `spring-boot`
+`metrics.path` | 收集应用的指标数据路径 | `/actuator/prometheus`
+`metrics.group`| 性能指标应用分组 | `spring-boot`
 `logs.parser` | 日志收集格式 | `spring-boot`
+`persistence.enabled` | 是否启用持久化存储 | `false`
+`persistence.existingClaim` | 绑定的pvc名称 | `无`
+`persistence.subPath`| 持久化路径 | `无`
 `resources.limits` | k8s中容器能使用资源的资源最大值 | `2Gi`
-`resources.requests` | k8s中容器使用的最小资源需求 | `1Gi`
+`resources.requests` | k8s中容器使用的最小资源需求 | `1.5Gi`
 
 ### SkyWalking Configuration
 Parameter | Description
@@ -70,9 +77,9 @@ Parameter | Description
 `skywalking.collector.backend_service` | SkyWalking OAP 服务地址和端口配置
 
 ```bash
-$ helm install c7n/api-gateway \
-    --set env.open.SKYWALKING_OPTS="-javaagent:/agent/skywalking-agent.jar -Dskywalking.agent.application_code=api-gateway  -Dskywalking.agent.sample_n_per_3_secs=-1 -Dskywalking.collector.backend_service=oap.skywalking:11800" \
-    --name api-gateway
+$ helm install c7n/asgard-service \
+    --set env.open.SKYWALKING_OPTS="-javaagent:/agent/skywalking-agent.jar -Dskywalking.agent.application_code=asgard-service  -Dskywalking.agent.sample_n_per_3_secs=-1 -Dskywalking.collector.backend_service=oap.skywalking:11800" \
+    --name asgard-service
 ```
 
 ## 验证部署
