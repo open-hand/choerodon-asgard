@@ -1,14 +1,15 @@
 #!/bin/bash
-asgard_service="asgard_service"
+
+: ${asgard_service:=asgard_service}
 
 asgard_service_table_asgard_orch_saga="asgard_orch_saga"
 asgard_service_table_asgard_orch_saga_task="asgard_orch_saga_task"
 asgard_service_table_asgard_quartz_method="asgard_quartz_method"
 
-AsgardDBHOST="localhost"
-AsgardDBPORT="3306"
-AsgardDBUSER="root"
-AsgardDBPASS="handhand"
+: ${AsgardDBHOST:=127.0.0.1}
+: ${AsgardDBPORT:=3306}
+: ${AsgardDBUSER:=root}
+: ${AsgardDBPASS:=handhand}
 
 echo "开始同步数据"
 # 删除变更服务的saga和sagaTask数据
