@@ -2,6 +2,34 @@
 
 这个项目的所有显著变化都将被记录在这个文件中。
 
+# [0.19.0] - 2019-09-30
+
+## 后端
+
+### 新增
+
+- 新增0.18.0 升级到 0.19.0，数据修复脚本`sync-mysql-data-0.19.0.sh` 
+- 新增Saga `mgmt-actuator-refresh` 的SagaTask 初始化数据
+- `bootstrap.yml` 添加健康检查详情显示
+- `values.yaml` 添加初始化配置策略参数
+
+### 修改
+
+- 更新代码包结构
+- 模糊查询列表接口统一改为 GET 请求
+- 事务实例列表返回进度数据
+- 升级`choerodon-starter`依赖版本为`0.12.0.RELEASE`
+- 更新初始化数据内的 `iam-service` 为 `base-service`
+- 更新feign调用 `iam-service` 为 `base-service`
+
+### 修复
+
+- 修复创建 `quartz_task_instance` NPE问题
+
+### 移除
+
+- 移除多余的前后端合并部署文件
+
 # [0.18.0] - 2019-06-21
 
 ### 修复

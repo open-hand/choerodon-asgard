@@ -5,7 +5,6 @@ asgard_service_table_asgard_orch_saga="asgard_orch_saga"
 asgard_service_table_asgard_orch_saga_task="asgard_orch_saga_task"
 asgard_service_table_asgard_quartz_method="asgard_quartz_method"
 
-#AsgardDBHOST="192.168.16.214"
 AsgardDBHOST="localhost"
 AsgardDBPORT="3306"
 AsgardDBUSER="root"
