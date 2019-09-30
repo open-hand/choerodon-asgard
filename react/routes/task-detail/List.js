@@ -3,9 +3,8 @@ import { observer } from 'mobx-react-lite';
 import { Button } from 'choerodon-ui';
 import { Modal, Table } from 'choerodon-ui/pro';
 import { FormattedMessage } from 'react-intl';
-import { Content, Header, Page, Breadcrumb, Permission, Action, axios } from '@choerodon/master';
+import { Content, Header, Page, Breadcrumb, Permission, Action, axios, StatusTag } from '@choerodon/master';
 import TaskDetailStore from '../../stores/global/task-detail';
-import StatusTag from '../../components/statusTag';
 import './List.less';
 import '../../common/ConfirmModal.scss';
 import MouseOverWrapper from '../../components/mouseOverWrapper';
@@ -175,10 +174,6 @@ const List = observer(() => {
   );
   const renderStatus = ({ text: status }) => (
     <StatusTag
-      style={{
-        lineHeight: '20px',
-        padding: '0 7px',
-      }}
       name={intl.formatMessage({ id: status.toLowerCase() })}
       colorCode={status}
     />

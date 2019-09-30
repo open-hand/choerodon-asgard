@@ -2,11 +2,10 @@ import React, { useState, useContext } from 'react';
 import { Tabs, Row, Col } from 'choerodon-ui';
 import { Table, DataSet } from 'choerodon-ui/pro';
 import { FormattedMessage } from 'react-intl';
-import { Content } from '@choerodon/master';
+import { Content, StatusTag } from '@choerodon/master';
 import classnames from 'classnames';
 import Store, { StoreProvider } from './stores';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import StatusTag from '../../../components/statusTag';
 import './index.less';
 
 const { TabPane } = Tabs;
@@ -114,10 +113,6 @@ const Detail = () => {
   }];
   const renderStatus = ({ text: status }) => (
     <StatusTag
-      style={{
-        lineHeight: '20px',
-        padding: '0 7px',
-      }}
       name={formatMessage({ id: status.toLowerCase() })}
       colorCode={status}
     />

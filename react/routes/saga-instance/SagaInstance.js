@@ -1,14 +1,13 @@
 /* eslint-disable max-classes-per-file */
 import React, { useState, useContext, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { axios, Breadcrumb } from '@choerodon/master';
+import { axios, Breadcrumb, StatusTag } from '@choerodon/master';
 import { Button, Tooltip } from 'choerodon-ui';
 import { Table, Modal } from 'choerodon-ui/pro';
 import { Content, Page } from '@choerodon/master';
 import { FormattedMessage } from 'react-intl';
 import MouseOverWrapper from '../../components/mouseOverWrapper';
 import './style/saga-instance.scss';
-import StatusTag from '../../components/statusTag';
 import Store, { StoreProvider } from './stores';
 import SagaImg from '../saga/SagaImg';
 
@@ -172,10 +171,6 @@ const SagaInstance = observer(() => {
         name="status"
         renderer={({ text: status }) => (
           <StatusTag
-            style={{
-              lineHeight: '20px',
-              padding: '0 7px',
-            }}
             name={intl.formatMessage({ id: status.toLowerCase() })}
             colorCode={status === 'WAIT_TO_BE_PULLED' ? 'QUEUE' : status}
           />
@@ -206,10 +201,6 @@ const SagaInstance = observer(() => {
         name="status"
         renderer={({ text: status }) => (
           <StatusTag
-            style={{
-              lineHeight: '20px',
-              padding: '0 7px',
-            }}
             name={intl.formatMessage({ id: status.toLowerCase() })}
             colorCode={status === 'WAIT_TO_BE_PULLED' ? 'QUEUE' : status}
           />
