@@ -18,7 +18,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.iam.ResourceLevel;
