@@ -2,7 +2,7 @@ package io.choerodon.asgard.app.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
 
-import io.choerodon.asgard.app.service.impl.RegisterInstanceServiceImpl
+
 import io.choerodon.asgard.property.PropertyData
 import io.choerodon.asgard.property.PropertySaga
 import io.choerodon.asgard.property.PropertySagaTask

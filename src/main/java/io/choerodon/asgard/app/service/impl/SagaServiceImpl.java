@@ -10,12 +10,11 @@ import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.mapper.SagaMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
-import io.choerodon.asgard.infra.utils.ParamUtils;
-import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -67,10 +66,10 @@ public class SagaServiceImpl implements SagaService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<Saga>> pagingQuery(PageRequest pageRequest, String code, String description, String service, String params) {
+    public ResponseEntity<PageInfo<Saga>> pagingQuery(Pageable pageable, String code, String description, String service, String params) {
         return new ResponseEntity<>(
                 PageHelper
-                        .startPage(pageRequest.getPage(), pageRequest.getSize())
+                        .startPage(pageable.getPageNumber(), pageable.getPageSize())
                         .doSelectPageInfo(
                                 () -> sagaMapper.fulltextSearch(code, description, service, params)), HttpStatus.OK);
     }

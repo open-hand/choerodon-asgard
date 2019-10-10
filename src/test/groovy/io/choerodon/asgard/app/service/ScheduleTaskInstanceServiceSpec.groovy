@@ -2,7 +2,7 @@ package io.choerodon.asgard.app.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.vo.ScheduleTaskInstance
-import io.choerodon.asgard.app.service.impl.ScheduleTaskInstanceServiceImpl
+
 import io.choerodon.asgard.common.UpdateStatusDTO
 import io.choerodon.asgard.infra.dto.QuartzTaskInstanceDTO
 import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper

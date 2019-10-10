@@ -1,7 +1,7 @@
 package io.choerodon.asgard.app.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.app.service.impl.QuartzJobServiceImpl
+
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO
 import io.choerodon.core.exception.CommonException
 import org.quartz.Scheduler

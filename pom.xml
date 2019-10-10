@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-framework-parent</artifactId>
-        <version>0.12.0.RELEASE</version>
+        <version>0.13.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -15,7 +15,6 @@
     <properties>
         <choerodon.mainClass>io.choerodon.asgard.AsgardApplication</choerodon.mainClass>
         <choerodon.serviceBuild>true</choerodon.serviceBuild>
-        <choerodon.starters.version>0.12.0.RELEASE</choerodon.starters.version>
     </properties>
     <dependencies>
         <!--spring boot-->
@@ -44,38 +43,35 @@
         <!--choerodon starters-->
         <dependency>
             <groupId>io.choerodon</groupId>
+            <artifactId>choerodon-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-oauth-resource</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-swagger</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-actuator</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-core</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-asgard</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-mybatis</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-eureka-event</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -84,7 +80,6 @@
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-feign-replay</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <dependency>
             <groupId>org.modelmapper</groupId>
@@ -126,7 +121,6 @@
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-starter-metric</artifactId>
-            <version>${choerodon.starters.version}</version>
         </dependency>
         <!-- Test Dependencies -->
         <dependency>
@@ -137,7 +131,6 @@
         <dependency>
             <groupId>io.choerodon</groupId>
             <artifactId>choerodon-liquibase</artifactId>
-            <version>${choerodon.starters.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -170,5 +163,17 @@
     <build>
         <finalName>app</finalName>
     </build>
+    <repositories>
+        <repository>
+            <id>choerodon-maven</id>
+            <url>https://nexus.choerodon.com.cn/repository/choerodon-maven/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>choerodon-maven</id>
+            <url>https://nexus.choerodon.com.cn/repository/choerodon-maven/</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
 

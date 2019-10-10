@@ -3,7 +3,7 @@ package io.choerodon.asgard.app.service
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.vo.QuartzTask
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher
-import io.choerodon.asgard.app.service.impl.QuartzRealJobServiceImpl
+
 import io.choerodon.asgard.infra.dto.QuartzMethodDTO
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO
 import io.choerodon.asgard.infra.dto.QuartzTaskInstanceDTO

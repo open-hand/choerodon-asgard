@@ -2,7 +2,7 @@ package io.choerodon.asgard.app.service.impl
 
 import io.choerodon.asgard.api.vo.QuartzTask
 import io.choerodon.asgard.api.vo.Role
-import io.choerodon.asgard.app.service.NoticeService
+
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO
 import io.choerodon.asgard.infra.dto.QuartzTaskMemberDTO
 import io.choerodon.asgard.infra.feign.IamFeignClient

@@ -11,11 +11,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.enums.TriggerType;
-import io.choerodon.asgard.infra.utils.ParamUtils;
-import io.choerodon.base.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -378,10 +377,10 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<QuartzTask>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params, String level, Long sourceId) {
-        PageInfo<QuartzTaskDTO> result = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
+    public ResponseEntity<PageInfo<QuartzTask>> pageQuery(Pageable pageable, String status, String name, String description, String params, String level, Long sourceId) {
+        PageInfo<QuartzTaskDTO> result = PageHelper.startPage(pageable.getPageNumber(), pageable.getPageSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
         List<QuartzTaskDTO> quartzTasks = result.getList();
-        Page<QuartzTask> resultPage = new Page<>(pageRequest.getPage(), pageRequest.getSize());
+        Page<QuartzTask> resultPage = new Page<>(pageable.getPageNumber(), pageable.getPageSize());
         resultPage.setTotal(result.getTotal());
         List<QuartzTask> quartzTaskList = new ArrayList<>();
         quartzTasks.forEach(q -> {

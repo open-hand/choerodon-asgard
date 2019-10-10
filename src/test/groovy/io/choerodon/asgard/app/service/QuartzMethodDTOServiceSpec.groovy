@@ -1,7 +1,7 @@
 package io.choerodon.asgard.app.service
 
 import io.choerodon.asgard.IntegrationTestConfiguration
-import io.choerodon.asgard.app.service.impl.QuartzMethodServiceImpl
+
 import io.choerodon.asgard.infra.dto.QuartzMethodDTO
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper
 import org.springframework.boot.test.context.SpringBootTest
