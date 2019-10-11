@@ -163,17 +163,5 @@
     <build>
         <finalName>app</finalName>
     </build>
-    <repositories>
-        <repository>
-            <id>choerodon-maven</id>
-            <url>https://nexus.choerodon.com.cn/repository/choerodon-maven/</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>choerodon-maven</id>
-            <url>https://nexus.choerodon.com.cn/repository/choerodon-maven/</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
 
