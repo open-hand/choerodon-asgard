@@ -4,7 +4,7 @@ import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.vo.QuartzTask
 import io.choerodon.asgard.api.vo.ScheduleTask
 import io.choerodon.asgard.api.vo.ScheduleTaskDetail
-
+import io.choerodon.asgard.app.service.ScheduleTaskService
 import io.choerodon.core.domain.Page
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
