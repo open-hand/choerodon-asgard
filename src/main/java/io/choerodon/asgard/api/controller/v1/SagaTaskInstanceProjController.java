@@ -4,13 +4,13 @@ import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
 import io.choerodon.asgard.app.service.SagaTaskInstanceService;
 import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.domain.PageRequest;
-import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.annotation.SortDefault;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +76,7 @@ public class SagaTaskInstanceProjController {
                                                                       @RequestParam(required = false) String status,
                                                                       @RequestParam(required = false) String params,
                                                                       @ApiIgnore
-                                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.PROJECT.value(), projectId);
+                                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return sagaTaskInstanceService.pageQuery(pageable, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.PROJECT.value(), projectId);
     }
 }

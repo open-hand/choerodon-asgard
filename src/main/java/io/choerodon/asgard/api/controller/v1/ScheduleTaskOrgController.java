@@ -5,20 +5,19 @@ import javax.validation.Valid;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.*;
+import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.domain.PageRequest;
-import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
-import io.choerodon.mybatis.annotation.SortDefault;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.iam.ResourceLevel;
@@ -91,8 +90,8 @@ public class ScheduleTaskOrgController {
                                                             @RequestParam(required = false) String description,
                                                             @RequestParam(required = false) String params,
                                                             @ApiIgnore
-                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest) {
-        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) Pageable pageable) {
+        return scheduleTaskService.pageQuery(pageable, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(type = ResourceType.ORGANIZATION)

@@ -4,15 +4,15 @@ import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
 import io.choerodon.asgard.app.service.SagaTaskInstanceService;
 import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.domain.PageRequest;
-import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.mybatis.annotation.SortDefault;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -70,12 +70,12 @@ public class SagaTaskInstanceOrgController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pagingQuery(@ApiIgnore
-                                                                      @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+                                                                      @SortDefault(value = "id", direction = Sort.Direction.ASC) Pageable pageable,
                                                                       @PathVariable("organization_id") long orgId,
                                                                       @RequestParam(required = false) String taskInstanceCode,
                                                                       @RequestParam(required = false) String sagaInstanceCode,
                                                                       @RequestParam(required = false) String status,
                                                                       @RequestParam(required = false) String params) {
-        return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.ORGANIZATION.value(), orgId);
+        return sagaTaskInstanceService.pageQuery(pageable, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 }

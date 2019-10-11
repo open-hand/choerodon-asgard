@@ -12,12 +12,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.infra.utils.ParamUtils;
-import io.choerodon.base.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -135,10 +134,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(PageRequest pageRequest, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId) {
+    public ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(Pageable pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId) {
         return new ResponseEntity<>(
                 PageHelper
-                        .startPage(pageRequest.getPage(), pageRequest.getSize())
+                        .startPage(pageable.getPageNumber(), pageable.getPageSize())
                         .doSelectPageInfo(
                                 () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
     }

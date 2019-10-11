@@ -6,22 +6,21 @@ import io.choerodon.asgard.api.vo.SagaInstanceDetails;
 import io.choerodon.asgard.api.vo.StartInstance;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.domain.PageRequest;
-import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.mybatis.annotation.SortDefault;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
 import java.util.Map;
 
 @Controller
@@ -96,13 +95,13 @@ public class SagaInstanceController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<PageInfo<SagaInstanceDetails>> pagingQuery(@ApiIgnore
-                                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest,
+                                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                                                      @RequestParam(required = false) String sagaCode,
                                                                      @RequestParam(required = false) String status,
                                                                      @RequestParam(required = false) String refType,
                                                                      @RequestParam(required = false) String refId,
                                                                      @RequestParam(required = false) String params) {
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, null, null);
+        return sagaInstanceService.pageQuery(pageable, sagaCode, status, refType, refId, params, null, null);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

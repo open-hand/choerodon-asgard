@@ -1,6 +1,6 @@
 package io.choerodon.asgard.app.eventhandler
 
-import io.choerodon.asgard.app.service.RegisterInstanceService
+
 import io.choerodon.eureka.event.EurekaEventPayload
 import spock.lang.Specification
 

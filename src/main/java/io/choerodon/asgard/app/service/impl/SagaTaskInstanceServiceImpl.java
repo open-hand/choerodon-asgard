@@ -18,16 +18,16 @@ import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
-import io.choerodon.asgard.infra.utils.ParamUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
-import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -348,10 +348,10 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(PageRequest pageRequest, String taskInstanceCode, String sagaInstanceCode, String status, String params, String level, Long sourceId) {
+    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(Pageable pageable, String taskInstanceCode, String sagaInstanceCode, String status, String params, String level, Long sourceId) {
         return new ResponseEntity<>(
                 PageHelper
-                        .startPage(pageRequest.getPage(),pageRequest.getSize())
+                        .startPage(pageable.getPageNumber(),pageable.getPageSize())
                         .doSelectPageInfo(
                                 () -> taskInstanceMapper.fulltextSearchTaskInstance(taskInstanceCode, status, sagaInstanceCode, params, level, sourceId)), HttpStatus.OK);
     }
