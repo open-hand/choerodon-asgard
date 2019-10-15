@@ -1,10 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import React, { useState, useContext, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { axios, Breadcrumb, StatusTag } from '@choerodon/master';
+import { axios, Breadcrumb, StatusTag, Choerodon } from '@choerodon/boot';
 import { Button, Tooltip } from 'choerodon-ui';
 import { Table, Modal } from 'choerodon-ui/pro';
-import { Content, Page } from '@choerodon/master';
+import { Content, Page } from '@choerodon/boot';
 import { FormattedMessage } from 'react-intl';
 import MouseOverWrapper from '../../components/mouseOverWrapper';
 import './style/saga-instance.scss';

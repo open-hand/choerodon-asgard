@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Icon, Tabs } from 'choerodon-ui';
-import { Content } from '@choerodon/master';
+import { Content, Choerodon } from '@choerodon/boot';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import classnames from 'classnames';
 import CodeShow from './CodeShow';

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { Button } from 'choerodon-ui';
 import { Modal, Table } from 'choerodon-ui/pro';
 import { FormattedMessage } from 'react-intl';
-import { Content, Header, Page, Breadcrumb, Permission, Action, axios, StatusTag } from '@choerodon/master';
+import { Content, Header, Page, Breadcrumb, Permission, Action, axios, StatusTag, Choerodon } from '@choerodon/boot';
 import TaskDetailStore from '../../stores/global/task-detail';
 import './List.less';
 import '../../common/ConfirmModal.scss';

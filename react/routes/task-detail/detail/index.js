@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Tabs, Row, Col } from 'choerodon-ui';
 import { Table, DataSet } from 'choerodon-ui/pro';
 import { FormattedMessage } from 'react-intl';
-import { Content, StatusTag } from '@choerodon/master';
+import { Content, StatusTag } from '@choerodon/boot';
 import classnames from 'classnames';
 import Store, { StoreProvider } from './stores';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
