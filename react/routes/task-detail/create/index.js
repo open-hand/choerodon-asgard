@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { configure, action } from 'mobx';
+import { Choerodon } from '@choerodon/boot';
 import { inject, observer } from 'mobx-react';
 import { Steps, Button, Select, Table, DatePicker, Radio, Modal, Form, Input, Popover, Icon, Col, Row, Spin, Checkbox } from 'choerodon-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Select, Table, Form, Input, InputNumber } from 'choerodon-ui';
 import { FormattedMessage } from 'react-intl';
+import { Choerodon } from '@choerodon/boot';
 import TaskDetailStore from '../../../stores/global/task-detail';
 import './index.less';
 

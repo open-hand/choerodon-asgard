@@ -2,7 +2,7 @@
 import React, { createContext, useMemo } from 'react';
 import { DataSet } from 'choerodon-ui/pro';
 import { inject } from 'mobx-react';
-import { axios } from '@choerodon/master';
+import { axios } from '@choerodon/boot';
 import { injectIntl } from 'react-intl';
 import SagaInstanceDataSet from './SagaInstanceDataSet';
 import SagaTaskDataSet from './SagaTaskDataSet';

@@ -1,6 +1,6 @@
 package io.choerodon.asgard.app.eventhandler
 
-import io.choerodon.asgard.app.service.RegisterInstanceService
+
 import spock.lang.Specification
 
 class ActuatorSagaHandlerSpec extends Specification {

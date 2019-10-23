@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.controller.v1;
 import java.util.List;
 
 import com.github.pagehelper.PageInfo;
+import io.choerodon.asgard.app.service.ScheduleMethodService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.constant.PageConstant;
 import io.choerodon.base.enums.ResourceType;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import io.choerodon.asgard.api.vo.ScheduleMethod;
 import io.choerodon.asgard.api.vo.ScheduleMethodInfo;
 import io.choerodon.asgard.api.vo.ScheduleMethodParams;
-import io.choerodon.asgard.app.service.ScheduleMethodService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 

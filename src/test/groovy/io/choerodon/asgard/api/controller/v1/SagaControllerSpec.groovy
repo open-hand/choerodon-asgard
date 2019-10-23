@@ -2,7 +2,7 @@ package io.choerodon.asgard.api.controller.v1
 
 import io.choerodon.asgard.IntegrationTestConfiguration
 import io.choerodon.asgard.api.vo.SagaWithTask
-import io.choerodon.asgard.app.service.SagaService
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

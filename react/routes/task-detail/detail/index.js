@@ -2,11 +2,10 @@ import React, { useState, useContext } from 'react';
 import { Tabs, Row, Col } from 'choerodon-ui';
 import { Table, DataSet } from 'choerodon-ui/pro';
 import { FormattedMessage } from 'react-intl';
-import { Content } from '@choerodon/master';
+import { Content, StatusTag } from '@choerodon/boot';
 import classnames from 'classnames';
 import Store, { StoreProvider } from './stores';
 import MouseOverWrapper from '../../../components/mouseOverWrapper';
-import StatusTag from '../../../components/statusTag';
 import './index.less';
 
 const { TabPane } = Tabs;
@@ -114,10 +113,6 @@ const Detail = () => {
   }];
   const renderStatus = ({ text: status }) => (
     <StatusTag
-      style={{
-        lineHeight: '20px',
-        padding: '0 7px',
-      }}
       name={formatMessage({ id: status.toLowerCase() })}
       colorCode={status}
     />
@@ -137,27 +132,27 @@ const Detail = () => {
               {
               infoList.map(({ key, value }) => (
                 <Row key={key} className={classnames('c7n-task-detail-row', { 'c7n-task-detail-row-hide': value === null })}>
-                  <Col span={3}>{key}:</Col>
+                  <Col span={3}>{key}</Col>
                   <Col span={21}>{value}</Col>
                 </Row>
               ))
             }
 
               <Row className={classnames({ 'c7n-task-detail-row': !info.notifyUser })}>
-                <Col span={3}>{formatMessage({ id: `${intlPrefix}.inform.person` })}:</Col>
+                <Col span={3}>{formatMessage({ id: `${intlPrefix}.inform.person` })}</Col>
                 <Col span={21}>
                   {
                   info.notifyUser ? (
                     <ul style={{ paddingLeft: '0' }}>
                       <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.creator })}>
-                        {formatMessage({ id: `${intlPrefix}.creator` })}:
+                        {formatMessage({ id: `${intlPrefix}.creator` })}
                         <span style={{ marginLeft: '10px' }}>{info.notifyUser.creator ? info.notifyUser.creator.loginName : null}{info.notifyUser.creator ? info.notifyUser.creator.realName : null}</span>
                       </li>
                       <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.administrator })}>
                         {level}{formatMessage({ id: `${intlPrefix}.manager` })}
                       </li>
                       <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.assigner.length })}>
-                        {formatMessage({ id: `${intlPrefix}.user` })}:
+                        {formatMessage({ id: `${intlPrefix}.user` })}
                         {info.notifyUser.assigner.length ? (
                           <div className="c7n-task-detail-row-inform-person-informlist-name-container">
                             {

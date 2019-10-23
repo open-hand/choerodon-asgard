@@ -1,6 +1,6 @@
 import { action, computed, observable, toJS } from 'mobx';
 import { find } from 'lodash';
-import { axios } from '@choerodon/master';
+import { axios } from '@choerodon/boot';
 import querystring from 'query-string';
 
 // @store('TaskDetailStore')
