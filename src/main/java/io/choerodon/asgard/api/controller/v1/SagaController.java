@@ -2,8 +2,8 @@ package io.choerodon.asgard.api.controller.v1;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.app.service.SagaService;
-import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.enums.ResourceType;
+import io.choerodon.core.annotation.Permission;
+import io.choerodon.core.enums.ResourceType;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

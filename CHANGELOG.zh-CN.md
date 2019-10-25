@@ -18,7 +18,7 @@
 - 更新代码包结构
 - 模糊查询列表接口统一改为 GET 请求
 - 事务实例列表返回进度数据
-- 升级`choerodon-starter`依赖版本为`0.12.0.RELEASE`
+- 升级`choerodon-starter`依赖版本为`0.13.0.RELEASE`
 - 更新初始化数据内的 `iam-service` 为 `base-service`
 - 更新feign调用 `iam-service` 为 `base-service`
 - 更新跨服务初始化目录名 `/script/front` 为 `/script/meta`

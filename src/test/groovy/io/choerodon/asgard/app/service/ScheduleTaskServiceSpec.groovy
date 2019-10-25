@@ -18,7 +18,6 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskMapper
 import io.choerodon.asgard.infra.mapper.QuartzTaskMemberMapper
 import io.choerodon.asgard.property.PropertyTimedTask
 import io.choerodon.asgard.schedule.QuartzDefinition
-import io.choerodon.base.domain.PageRequest
 import io.choerodon.core.exception.CommonException
 import io.choerodon.core.iam.ResourceLevel
 import org.springframework.boot.test.context.SpringBootTest
@@ -72,9 +71,9 @@ class ScheduleTaskServiceSpec extends Specification {
         def e = thrown(exceptionType)
         e.message == msg
         where: "异常比对"
-        method                                                                                                                                                                                                                                      | insert || exceptionType   | msg
-        null                                                                                                                                                                                                                                        | 0      || CommonException | "error.scheduleTask.methodNotExist"
-        new QuartzMethodDTO(code: "code", level: "site", params: "[{\"name\":\"name\",\"defaultValue\":null,\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")       | 0      || CommonException | "error.scheduleTask.paramInvalidType"
+        method                                                                                                                                                                                                                                         | insert || exceptionType   | msg
+        null                                                                                                                                                                                                                                           | 0      || CommonException | "error.scheduleTask.methodNotExist"
+        new QuartzMethodDTO(code: "code", level: "site", params: "[{\"name\":\"name\",\"defaultValue\":null,\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")          | 0      || CommonException | "error.scheduleTask.paramInvalidType"
         new QuartzMethodDTO(code: "code", level: "site", params: "[{\"name\":\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"IntegerInValid\",\"description\":\"年龄\"}]") | 0      || CommonException | "error.scheduleTask.paramType"
         new QuartzMethodDTO(code: "code", level: "site", params: "[{\"name\":\"name\",\"defaultValue\":\"zh\",\"type\":\"String\",\"description\":\"\"},{\"name\":\"age\",\"defaultValue\":null,\"type\":\"Integer\",\"description\":\"年龄\"}]")        | 0      || CommonException | "error.scheduleTask.create"
     }
@@ -176,8 +175,8 @@ class ScheduleTaskServiceSpec extends Specification {
         def error = thrown(CommonException)
         error.message == errormsg
         where: '异常分析'
-        dto                                                                    || errormsg
-        null                                                                   || "error.scheduleTask.taskNotExist"
+        dto                                                                       || errormsg
+        null                                                                      || "error.scheduleTask.taskNotExist"
         new QuartzTaskDTO(id: 1L, status: 'DISABLE', sourceId: 0L, level: "site") || "error.scheduleTask.enableTaskFailed"
 
     }
@@ -213,8 +212,8 @@ class ScheduleTaskServiceSpec extends Specification {
         def error = thrown(CommonException)
         error.message == errormsg
         where: '异常分析'
-        dto                                                               || errormsg
-        null                                                              || "error.scheduleTask.taskNotExist"
+        dto                                                                  || errormsg
+        null                                                                 || "error.scheduleTask.taskNotExist"
         new QuartzTaskDTO(id: 1L, status: 'ENABLE', objectVersionNumber: 1L) || "error.scheduleTask.disableTaskFailed"
     }
 
@@ -248,8 +247,8 @@ class ScheduleTaskServiceSpec extends Specification {
         def error = thrown(CommonException)
         error.message == errormsg
         where: '异常分析'
-        dto                                                                                            || errormsg
-        null                                                                                           || "error.scheduleTask.taskNotExist"
+        dto                                                                                               || errormsg
+        null                                                                                              || "error.scheduleTask.taskNotExist"
         new QuartzTaskDTO(id: 1L, status: 'ENABLE', sourceId: 0L, level: "site", objectVersionNumber: 1L) || "error.scheduleTask.deleteTaskFailed"
     }
 
@@ -270,8 +269,7 @@ class ScheduleTaskServiceSpec extends Specification {
         and: "mock"
         mockTaskMapper.fulltextSearch(_, _, _, _, _, _) >> { return taskList }
         when: '调用方法'
-        PageRequest pageRequest = new PageRequest(1, 20)
-        scheduleTaskService.pageQuery(pageRequest, status, name, description, params, "site", 0L)
+        scheduleTaskService.pageQuery(null, status, name, description, params, "site", 0L)
         then: '无异常抛出'
         noExceptionThrown()
     }
@@ -287,8 +285,8 @@ class ScheduleTaskServiceSpec extends Specification {
         then: "结果分析"
         noExceptionThrown()
         where: "条件分支"
-        dto                           | num
-        null                          | 0
+        dto                              | num
+        null                             | 0
         new QuartzTaskDTO(level: "site") | 1
         new QuartzTaskDTO(level: "site") | 0
     }

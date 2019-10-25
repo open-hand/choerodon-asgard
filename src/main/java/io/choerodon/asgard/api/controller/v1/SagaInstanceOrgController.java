@@ -4,8 +4,8 @@ import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.app.service.SagaInstanceService;
-import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.enums.ResourceType;
+import io.choerodon.core.annotation.Permission;
+import io.choerodon.core.enums.ResourceType;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Pageable;
