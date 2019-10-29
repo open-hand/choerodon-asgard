@@ -4,7 +4,7 @@ export default ({ id = 0, type }) => {
       case 'site':
         return '/base/v1/site/enableUsers';
       default:
-        return '/base/v1/site/enableUsers';
+        return `/base/v1/organizations/${id}/enableUsers`;
     }
   }
   return {

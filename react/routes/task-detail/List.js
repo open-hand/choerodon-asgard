@@ -11,6 +11,8 @@ import MouseOverWrapper from '../../components/mouseOverWrapper';
 import Store, { StoreProvider } from './stores';
 import Create from './create';
 import Detail from './detail';
+import Executable from './executable-program';
+
 // 页面权限
 function getPermission(AppState) {
   const { type } = AppState.currentMenuType;
@@ -132,6 +134,19 @@ const List = observer(() => {
     });
   }
 
+  function openExecutableProgram() {
+    Modal.open({
+      title: '可执行程序',
+      drawer: true,
+      style: {
+        width: 'calc(100% - 3.52rem)',
+      },
+      okText: '关闭',
+      okCancel: false,
+      children: <Executable />,
+    });
+  }
+
 
   /**
    * 开启侧边栏
@@ -206,6 +221,8 @@ const List = observer(() => {
         'asgard-service.schedule-task-instance-site.pagingQueryByTaskId',
         'asgard-service.schedule-task-instance-org.pagingQueryByTaskId',
         'asgard-service.schedule-task-instance-project.pagingQueryByTaskId',
+        'asgard-service.schedule-method-site.pagingQuery',
+        'asgard-service.schedule-method-site.getParams',
       ]}
     >
       <Header
@@ -217,6 +234,18 @@ const List = observer(() => {
             onClick={createTask}
           >
             <FormattedMessage id={`${intlPrefix}.create`} />
+          </Button>
+        </Permission>
+        <Permission service={[
+          'asgard-service.schedule-method-site.pagingQuery',
+          'asgard-service.schedule-method-site.getParams',
+        ]}
+        >
+          <Button
+            icon="classname"
+            onClick={openExecutableProgram}
+          >
+            可执行程序
           </Button>
         </Permission>
       </Header>
