@@ -1,9 +1,11 @@
 /* eslint-disable max-classes-per-file */
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
+import { FormattedMessage } from 'react-intl';
 import _ from 'lodash';
 import { Divider } from 'choerodon-ui';
-import { Form, Select, Table, TextField, TextArea, DateTimePicker, SelectBox, NumberField, Tooltip } from 'choerodon-ui/pro';
+import { Form, Select, Table, TextField, TextArea, DateTimePicker, SelectBox, NumberField, Tooltip, Icon } from 'choerodon-ui/pro';
+import { Popover } from 'choerodon-ui';
 import Store, { StoreProvider } from './stores';
 import FormSelectEditor from '../../../components/formSelectEditor';
 import OrgUserDataSetConfig from './stores/OrgUserDataSet';
@@ -12,7 +14,7 @@ import './index.less';
 const { Option } = Select;
 const { Column } = Table;
 const TaskCreate = observer(() => {
-  const { methodDataSet, taskCreateDataSet, paramDataSet, dsStore, prefixCls, id, intl, type, modal } = useContext(Store);
+  const { methodDataSet, taskCreateDataSet, paramDataSet, dsStore, prefixCls, id, intl, type, modal, intlPrefix } = useContext(Store);
   const microservice = Array.from(new Set(methodDataSet.map((r) => r.get('service'))));
   modal.handleOk(async () => {
     const params = {};
@@ -50,12 +52,26 @@ const TaskCreate = observer(() => {
     e.persist();
     queryUser(e.target.value, optionDataSet);
   }
+  function getCronHelper() {
+    return (
+      <Tooltip
+        theme="light"
+        placement="bottom"
+        trigger="click"
+        title={taskCreateDataSet.current && taskCreateDataSet.current.get('cronTime') && taskCreateDataSet.current.get('cronTime').map((value, key) => (
+          <li key={key}><span>{value}</span></li>
+        ))}
+      >
+        <Icon style={{ cursor: 'pointer' }} type="find_in_page" />
+      </Tooltip>
+    );
+  }
   return (
     <React.Fragment>
       <div className="c7n-task-create-container">
         <div className="c7n-task-create-container-small">
           <div className="title">基础信息</div>
-          <Form dataSet={taskCreateDataSet}>
+          <Form columns={2} dataSet={taskCreateDataSet}>
             <Select name="service">
               {microservice.map((v) => (
                 <Option value={v} key={v}>{v}</Option>
@@ -100,6 +116,7 @@ const TaskCreate = observer(() => {
                 width: '3.4rem',
               }}
               format="YYYY-MM-DD HH:mm:ss"
+              placeholder={['起始日期', '失效日期']}
               name="time"
             />
           </Form>
@@ -119,7 +136,7 @@ const TaskCreate = observer(() => {
               <Select clearButton={false} colSpan={1} name="simpleRepeatIntervalUnit" />,
               <NumberField colSpan={2} name="simpleRepeatCount" />,
             ] : (
-              <TextField colSpan={5} name="cronExpression" />
+              <TextField colSpan={5} name="cronExpression" addonAfter={getCronHelper()} />
             )}
             <Select colSpan={5} name="executeStrategy" showHelp="tooltip" />
           </Form>
@@ -127,7 +144,7 @@ const TaskCreate = observer(() => {
           <Form dataSet={taskCreateDataSet}>
             <SelectBox name="notifyUser" />
           </Form>
-          {taskCreateDataSet.current && taskCreateDataSet.current.get('notifyUser').includes('assigner') && (
+          <div style={{ display: taskCreateDataSet.current && taskCreateDataSet.current.get('notifyUser').includes('assigner') ? 'block' : 'none' }}>
             <FormSelectEditor
               record={taskCreateDataSet.current}
               optionDataSetConfig={OrgUserDataSetConfig({ id, type })}
@@ -149,7 +166,7 @@ const TaskCreate = observer(() => {
                 />
               ))}
             </FormSelectEditor>
-          )}
+          </div>
         </div>
       </div>
     </React.Fragment>
