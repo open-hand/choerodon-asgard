@@ -177,7 +177,7 @@ const Detail = () => {
           )
           : (
             <Table dataSet={logDataSet}>
-              <Column name="status" renderer={renderStatus} />
+              <Column name="status" width={100} renderer={renderStatus} />
 
               <Column name="serviceInstanceId" className="c7n-asgard-table-cell" />
               <Column name="plannedStartTime" className="c7n-asgard-table-cell" />

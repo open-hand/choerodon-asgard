@@ -37,13 +37,14 @@ export const StoreProvider = injectIntl(inject('AppState')(
       { meaning: '指定用户', value: 'assigner' },
     ];
     const methodDataSet = useMemo(() => new DataSet(MethodDataSet({ type, id, levelType })), [type, id]);
-    const taskCreateDataSet = useMemo(() => new DataSet(TaskCreateDataSet({ methodDataSet, triggerType, simpleRepeatIntervalUnit, executeStrategy, notifyUser, id, type, levelType })), [type, id]);
+    const taskCreateDataSet = useMemo(() => new DataSet(TaskCreateDataSet({ intl, methodDataSet, triggerType, simpleRepeatIntervalUnit, executeStrategy, notifyUser, id, type, levelType })), [type, id]);
     const paramDataSet = useMemo(() => new DataSet(ParamDataSet({ taskCreateDataSet, type, id, levelType })), [type, id]);
     const value = {
       ...props,
       id,
       type,
       intl,
+      intlPrefix: 'taskdetail',
       methodDataSet,
       taskCreateDataSet,
       paramDataSet,
