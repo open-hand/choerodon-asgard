@@ -64,6 +64,8 @@ public class ScheduleTaskDetail {
     @ApiModelProperty(value = "执行策略")
     private String executeStrategy;
 
+    private Long objectVersionNumber;
+
     public NotifyUser getNotifyUser() {
         return notifyUser;
     }
@@ -206,6 +208,14 @@ public class ScheduleTaskDetail {
 
     public void setMethodDescription(String methodDescription) {
         this.methodDescription = methodDescription;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 
     public ScheduleTaskDetail() {
