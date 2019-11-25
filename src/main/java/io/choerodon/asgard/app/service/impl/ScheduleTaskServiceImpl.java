@@ -455,6 +455,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         query.setCode(detailDTO.getMethodCode());
         QuartzMethodDTO quartzMethod = methodMapper.selectOne(query);
         detailDTO.setMethodDescription(Optional.ofNullable(quartzMethod).map(QuartzMethodDTO::getDescription).orElse(null));
+        detailDTO.setObjectVersionNumber(quartzTask.getObjectVersionNumber());
         return detailDTO;
     }
 
