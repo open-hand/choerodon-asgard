@@ -51,7 +51,7 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层启用任务")
     @PutMapping("/{id}/enable")
     public void enable(@PathVariable("organization_id") long orgId,
-                       @PathVariable long id, @RequestParam long objectVersionNumber) {
+                       @PathVariable long id, @RequestParam(value = "objectVersionNumber") long objectVersionNumber) {
         scheduleTaskService.enable(id, objectVersionNumber, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
@@ -59,7 +59,7 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层停用任务")
     @PutMapping("/{id}/disable")
     public void disable(@PathVariable("organization_id") long orgId,
-                        @PathVariable long id, @RequestParam long objectVersionNumber) {
+                        @PathVariable long id, @RequestParam(value = "objectVersionNumber") long objectVersionNumber) {
         scheduleTaskService.getQuartzTask(id, ResourceLevel.ORGANIZATION.value(), orgId);
         scheduleTaskService.disable(id, objectVersionNumber, false);
     }
