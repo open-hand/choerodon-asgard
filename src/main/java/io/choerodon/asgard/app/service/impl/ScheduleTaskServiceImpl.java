@@ -104,7 +104,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             quartzTask.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
             quartzTask.setExecuteMethod(method.getCode());
             quartzTask.setId(null);
-            quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
+            if (quartzTask.getStatus() == null || quartzTask.getStatus().equals("")) {
+                quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
+            }
             quartzTask.setExecuteParams(objectMapper.writeValueAsString(dto.getParams()));
             quartzTask.setLevel(level);
             quartzTask.setSourceId(sourceId);

@@ -54,6 +54,9 @@ public class ScheduleTask {
     @ApiModelProperty(value = "执行策略")
     private String executeStrategy;
 
+    @ApiModelProperty(value = "启用/禁用状态")
+    private String status;
+
     private NotifyUser notifyUser;
 
     private Long[] assignUserIds;
@@ -168,6 +171,14 @@ public class ScheduleTask {
 
     public void setExecuteStrategy(String executeStrategy) {
         this.executeStrategy = executeStrategy;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public ScheduleTask() {
