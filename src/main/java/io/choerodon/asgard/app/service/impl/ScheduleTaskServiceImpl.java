@@ -9,8 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.enums.TriggerType;
+
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,6 +96,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public QuartzTaskDTO create(final ScheduleTask dto, String level, Long sourceId) {
+        LOGGER.info("=========startTime:{}", dto.getStartTime());
         QuartzTaskDTO quartzTask = modelMapper.map(dto, QuartzTaskDTO.class);
         QuartzMethodDTO method = methodMapper.selectByPrimaryKey(dto.getMethodId());
         validatorLevelAndQuartzMethod(level, method);
