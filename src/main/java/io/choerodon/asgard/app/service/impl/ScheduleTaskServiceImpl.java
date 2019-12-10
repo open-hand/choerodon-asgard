@@ -99,13 +99,11 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     @Transactional(rollbackFor = Exception.class)
     public QuartzTaskDTO create(final ScheduleTask dto, String level, Long sourceId) {
         if (dto.getStartTime() == null && dto.getStartTimeStr() != null) {
-            LOGGER.info("=========startTimeStr:{}", dto.getStartTime());
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             ParsePosition pos = new ParsePosition(0);
             Date strToDate = formatter.parse(dto.getStartTimeStr(), pos);
             dto.setStartTime(strToDate);
         }
-        LOGGER.info("=========startTime:{}", dto.getStartTime());
         QuartzTaskDTO quartzTask = modelMapper.map(dto, QuartzTaskDTO.class);
         QuartzMethodDTO method = methodMapper.selectByPrimaryKey(dto.getMethodId());
         validatorLevelAndQuartzMethod(level, method);
