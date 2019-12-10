@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public class ScheduleTask {
 
@@ -28,11 +29,11 @@ public class ScheduleTask {
     private String description;
 
     @ApiModelProperty(value = "定时任务开始时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     @ApiModelProperty(value = "定时任务结束时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
     @ApiModelProperty(value = "定时任务结束类型。simple-trigger或cron-trigger")
