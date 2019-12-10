@@ -29,11 +29,9 @@ public class ScheduleTask {
     private String description;
 
     @ApiModelProperty(value = "定时任务开始时间")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     @ApiModelProperty(value = "定时任务结束时间")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
     @ApiModelProperty(value = "定时任务结束类型。simple-trigger或cron-trigger")
