@@ -60,6 +60,9 @@ public class ScheduleTask {
 
     private Long[] assignUserIds;
 
+    @ApiModelProperty(value = "用于feign传递时间，相差8小时,以后若解决可删除")
+    private String startTimeStr;
+
     public NotifyUser getNotifyUser() {
         return notifyUser;
     }
@@ -182,6 +185,14 @@ public class ScheduleTask {
 
     public ScheduleTask() {
         this.methodId = 0L;
+    }
+
+    public String getStartTimeStr() {
+        return startTimeStr;
+    }
+
+    public void setStartTimeStr(String startTimeStr) {
+        this.startTimeStr = startTimeStr;
     }
 
     public ScheduleTask(Long methodId, Map<String, Object> params, String name, String description, Date startTime) {
