@@ -32,7 +32,7 @@ export const StoreProvider = injectIntl(inject('AppState')(
       { meaning: '并行', value: 'PARALLEL' },
     ];
     const notifyUser = [
-      { meaning: '平台管理员', value: 'administrator' },
+      { meaning: `${type === 'site' ? '平台管理员' : '组织管理员'}`, value: 'administrator' },
       { meaning: '创建者', value: 'creator' },
       { meaning: '指定用户', value: 'assigner' },
     ];

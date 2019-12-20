@@ -14,13 +14,14 @@ import './index.less';
 const { Option } = Select;
 const { Column } = Table;
 const TaskCreate = observer(() => {
-  const { methodDataSet, taskCreateDataSet, paramDataSet, dsStore, prefixCls, id, intl, type, modal, intlPrefix } = useContext(Store);
+  const { methodDataSet, taskCreateDataSet, paramDataSet, dsStore, prefixCls, id, intl, type, modal, intlPrefix, onOk } = useContext(Store);
   const microservice = Array.from(new Set(methodDataSet.map((r) => r.get('service'))));
   modal.handleOk(async () => {
     const params = {};
     paramDataSet.forEach((r) => { params[r.get('name')] = r.get('defaultValue'); });
     taskCreateDataSet.current.set('params', params);
     if (await taskCreateDataSet.submit()) {
+      onOk();
       return true;
     } else {
       return false;
@@ -86,7 +87,7 @@ const TaskCreate = observer(() => {
                   .filter((r) => r.get('service') === taskCreateDataSet.current
                     .get('service')).map((r) => (
                       <Option value={r.get('id')}>{r.get('description')}</Option>
-                  ))    
+                  ))
               }
             </Select>
           </Form>
@@ -106,24 +107,32 @@ const TaskCreate = observer(() => {
         </div>
       </div>
       <Divider />
-      
+
       <div className="c7n-task-create-container">
         <div className="c7n-task-create-container-small">
           <div className="title">配置信息</div>
-          <Form dataSet={taskCreateDataSet}>
+          <Form dataSet={taskCreateDataSet} columns={2}>
             <DateTimePicker
-              style={{
-                width: '3.4rem',
-              }}
+              // style={{
+              //   width: '1.7rem',
+              // }}
               format="YYYY-MM-DD HH:mm:ss"
-              placeholder={['起始日期', '失效日期']}
-              name="time"
+              placeholder="起始日期"
+              name="startTime"
+            />
+            <DateTimePicker
+              // style={{
+              //   width: '1.7rem',
+              // }}
+              format="YYYY-MM-DD HH:mm:ss"
+              placeholder="失效日期"
+              name="endTime"
             />
           </Form>
           <div className="sub-title">触发类型</div>
           <Form dataSet={taskCreateDataSet}>
             <SelectBox
-              style={{ 
+              style={{
                 marginBottom: '-0.12rem',
                 marginTop: '-0.05rem',
               }}
