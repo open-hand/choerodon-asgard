@@ -43,6 +43,9 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
   const notifyUserOptionDs = new DataSet({
     data: notifyUser,
   });
+  const defaultValidationMessagesSelect = {
+    valueMissing: '请选择{label}',
+  };
   return {
     selection: false,
     autoCreate: true,
@@ -62,8 +65,8 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
     fields: [
       { name: 'id', type: 'number' },
       { name: 'cronTime', defaultValue: ['请输入cron表达式'] },
-      { name: 'service', type: 'string', label: '所属微服务', required: true },
-      { name: 'methodId', type: 'number', label: '可执行程序', required: true },
+      { name: 'service', type: 'string', label: '所属微服务', required: true, defaultValidationMessages: defaultValidationMessagesSelect },
+      { name: 'methodId', type: 'number', label: '可执行程序', required: true, defaultValidationMessages: defaultValidationMessagesSelect },
       { name: 'name', type: 'string', label: '任务名称', validator: checkTaskName, required: true },
       { name: 'description', type: 'string', label: '任务描述', required: true },
       { name: 'startTime', type: 'dateTime', label: '起始日期', required: true },
@@ -73,7 +76,14 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
       { name: 'simpleRepeatIntervalUnit', type: 'string', label: '间隔单位', defaultValue: 'SECONDS', options: simpleRepeatIntervalUnitOptionDs },
       { name: 'simpleRepeatCount', type: 'number', label: '执行次数', min: 1, dynamicProps: ({ record }) => ({ required: record.get('triggerType') === 'simple-trigger' }) },
       { name: 'cronExpression', type: 'string', label: 'cron表达式', dynamicProps: ({ record }) => ({ required: record.get('triggerType') !== 'simple-trigger', validator: record.get('triggerType') !== 'simple-trigger' ? checkCronExpression : noop }) },
-      { name: 'executeStrategy', type: 'string', label: '超时策略', required: true, options: executeStrategyOptionDs },
+      {
+        name: 'executeStrategy',
+        type: 'string',
+        label: '超时策略',
+        required: true,
+        options: executeStrategyOptionDs,
+        defaultValidationMessages: defaultValidationMessagesSelect,
+      },
       { name: 'assignUserIds', label: '指定用户', textField: 'realName', valueField: 'id' },
       { name: 'notifyUser', type: 'string', options: notifyUserOptionDs, multiple: true },
     ],

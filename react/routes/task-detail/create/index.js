@@ -16,6 +16,14 @@ const { Column } = Table;
 const TaskCreate = observer(() => {
   const { methodDataSet, taskCreateDataSet, paramDataSet, dsStore, prefixCls, id, intl, type, modal, intlPrefix, onOk } = useContext(Store);
   const microservice = Array.from(new Set(methodDataSet.map((r) => r.get('service'))));
+  const executeStrategyHelp = (
+    <span>超时策略：
+      <p>阻塞： 下次触发时间若上次触发任务未完成，则暂停定时任务，任务不再被执行</p>
+      <p>串行： 下次触发时间若上次触发任务未完成，两次任务可按照触发时间依次被执行</p>
+      <p>并行： 下次触发时间若上次触发任务未完成，两次任务可以同时被执行
+      </p>
+    </span>
+  );
   modal.handleOk(async () => {
     const params = {};
     paramDataSet.forEach((r) => { params[r.get('name')] = r.get('defaultValue'); });
@@ -67,20 +75,34 @@ const TaskCreate = observer(() => {
       </Tooltip>
     );
   }
+  function handleClearService() {
+    taskCreateDataSet.current.set('methodId', undefined);
+  }
+  function handleChangeService(e) {
+    if (taskCreateDataSet.current.get('methodId') && taskCreateDataSet.current.get('methodId') !== null) { 
+      taskCreateDataSet.current.set('methodId', undefined); 
+    }
+  }
   return (
     <React.Fragment>
       <div className="c7n-task-create-container">
         <div className="c7n-task-create-container-small">
           <div className="title">基础信息</div>
           <Form columns={2} dataSet={taskCreateDataSet}>
-            <Select name="service">
+            <Select
+              name="service"
+              onChange={handleChangeService}
+              onClear={handleClearService}
+            >
               {microservice.map((v) => (
                 <Option value={v} key={v}>{v}</Option>
               ))}
             </Select>
             <Select
               name="methodId"
-              onChange={() => { paramDataSet.query(); }}
+              onChange={(value) => {
+                if (value !== null && value !== '') { paramDataSet.query(); }
+              }}
             >
               {
                 methodDataSet
@@ -147,7 +169,7 @@ const TaskCreate = observer(() => {
             ] : (
               <TextField colSpan={5} name="cronExpression" addonAfter={getCronHelper()} />
             )}
-            <Select colSpan={5} name="executeStrategy" showHelp="tooltip" />
+            <Select colSpan={5} name="executeStrategy" suffix={<Tooltip title={executeStrategyHelp} theme="light"><Icon type="help" /></Tooltip>} />
           </Form>
           <div className="sub-title">通知对象</div>
           <Form dataSet={taskCreateDataSet}>
