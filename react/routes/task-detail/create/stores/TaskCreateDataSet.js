@@ -2,7 +2,7 @@ import { DataSet } from 'choerodon-ui/pro';
 import { axios } from '@choerodon/boot';
 import { observable } from 'mobx';
 
-function noop() {}
+function noop() { }
 export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, executeStrategy, notifyUser, intl }) {
   async function checkTaskName(value, name, record) {
     try {
@@ -43,6 +43,9 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
   const notifyUserOptionDs = new DataSet({
     data: notifyUser,
   });
+  const defaultValidationMessagesSelect = {
+    valueMissing: '请选择{label}',
+  };
   return {
     selection: false,
     autoCreate: true,
@@ -51,7 +54,7 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
         const tmpObj = {};
         data.notifyUser.forEach((v) => { tmpObj[v] = true; });
         data.notifyUser = tmpObj;
-        [data.startTime, data.endTime] = data.time.map((moment) => moment.format('YYYY-MM-DD HH:mm:ss'));
+        // [data.startTime, data.endTime] = data.time.map((moment) => moment.format('YYYY-MM-DD HH:mm:ss'));
         return {
           url: `/asgard/v1/schedules${levelType}/tasks`,
           method: 'post',
@@ -62,17 +65,25 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
     fields: [
       { name: 'id', type: 'number' },
       { name: 'cronTime', defaultValue: ['请输入cron表达式'] },
-      { name: 'service', type: 'string', label: '所属微服务', required: true },
-      { name: 'methodId', type: 'number', label: '可执行程序', required: true },
+      { name: 'service', type: 'string', label: '所属微服务', required: true, defaultValidationMessages: defaultValidationMessagesSelect },
+      { name: 'methodId', type: 'number', label: '可执行程序', required: true, defaultValidationMessages: defaultValidationMessagesSelect },
       { name: 'name', type: 'string', label: '任务名称', validator: checkTaskName, required: true },
       { name: 'description', type: 'string', label: '任务描述', required: true },
-      { name: 'time', type: 'dateTime', range: true, label: '起始日期-失效日期', required: true },
+      { name: 'startTime', type: 'dateTime', label: '起始日期', required: true },
+      { name: 'endTime', type: 'dateTime', label: '失效日期' },
       { name: 'triggerType', type: 'string', required: true, defaultValue: 'simple-trigger', options: triggerTypeOptionDs },
       { name: 'simpleRepeatInterval', type: 'number', label: '重复间隔', min: 1, dynamicProps: ({ record }) => ({ required: record.get('triggerType') === 'simple-trigger' }) },
       { name: 'simpleRepeatIntervalUnit', type: 'string', label: '间隔单位', defaultValue: 'SECONDS', options: simpleRepeatIntervalUnitOptionDs },
       { name: 'simpleRepeatCount', type: 'number', label: '执行次数', min: 1, dynamicProps: ({ record }) => ({ required: record.get('triggerType') === 'simple-trigger' }) },
       { name: 'cronExpression', type: 'string', label: 'cron表达式', dynamicProps: ({ record }) => ({ required: record.get('triggerType') !== 'simple-trigger', validator: record.get('triggerType') !== 'simple-trigger' ? checkCronExpression : noop }) },
-      { name: 'executeStrategy', type: 'string', label: '超时策略', required: true, options: executeStrategyOptionDs },
+      {
+        name: 'executeStrategy',
+        type: 'string',
+        label: '超时策略',
+        required: true,
+        options: executeStrategyOptionDs,
+        defaultValidationMessages: defaultValidationMessagesSelect,
+      },
       { name: 'assignUserIds', label: '指定用户', textField: 'realName', valueField: 'id' },
       { name: 'notifyUser', type: 'string', options: notifyUserOptionDs, multiple: true },
     ],

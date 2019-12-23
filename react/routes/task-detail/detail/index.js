@@ -11,8 +11,9 @@ import './index.less';
 const { TabPane } = Tabs;
 const { Column } = Table;
 const Detail = () => {
-  const { intl: { formatMessage }, intlPrefix, logDataSet, info } = useContext(Store);
-  const level = 'sss';
+  const { intl: { formatMessage }, intlPrefix, logDataSet, info, AppState } = useContext(Store);
+  const { currentMenuType: { type } } = AppState;
+  const level = `${type === 'site' ? '平台' : '组织'}`;
   const [showLog, setShowLog] = useState(false);
   let unit;
   switch (info.simpleRepeatIntervalUnit) {
@@ -125,52 +126,52 @@ const Detail = () => {
         <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.info`} />} key="info" />
         <TabPane tab={<FormattedMessage id={`${intlPrefix}.task.log`} />} key="log" />
       </Tabs>
-      <div className="c7n-task-detail-wrapper">     
+      <div className="c7n-task-detail-wrapper">
         {!showLog
           ? (
             <div>
               {
-              infoList.map(({ key, value }) => (
-                <Row key={key} className={classnames('c7n-task-detail-row', { 'c7n-task-detail-row-hide': value === null })}>
-                  <Col span={3}>{key}</Col>
-                  <Col span={21}>{value}</Col>
-                </Row>
-              ))
-            }
+                infoList.map(({ key, value }) => (
+                  <Row key={key} className={classnames('c7n-task-detail-row', { 'c7n-task-detail-row-hide': value === null })}>
+                    <Col span={3}>{key}</Col>
+                    <Col span={21}>{value}</Col>
+                  </Row>
+                ))
+              }
 
               <Row className={classnames({ 'c7n-task-detail-row': !info.notifyUser })}>
                 <Col span={3}>{formatMessage({ id: `${intlPrefix}.inform.person` })}</Col>
                 <Col span={21}>
                   {
-                  info.notifyUser ? (
-                    <ul style={{ paddingLeft: '0' }}>
-                      <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.creator })}>
-                        {formatMessage({ id: `${intlPrefix}.creator` })}
-                        <span style={{ marginLeft: '10px' }}>{info.notifyUser.creator ? info.notifyUser.creator.loginName : null}{info.notifyUser.creator ? info.notifyUser.creator.realName : null}</span>
-                      </li>
-                      <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.administrator })}>
-                        {level}{formatMessage({ id: `${intlPrefix}.manager` })}
-                      </li>
-                      <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.assigner.length })}>
-                        {formatMessage({ id: `${intlPrefix}.user` })}
-                        {info.notifyUser.assigner.length ? (
-                          <div className="c7n-task-detail-row-inform-person-informlist-name-container">
-                            {
-                              info.notifyUser.assigner.map((item) => (
-                                <div key={item.loginName}>
-                                  <span>{item.loginName}{item.realName}</span>
-                                  <span>、</span>
-                                </div>
-                              ))
-                            }
-                          </div>
-                        ) : <div>{formatMessage({ id: `${intlPrefix}.empty` })}</div>}
-                      </li>
-                    </ul>
-                  ) : (
-                    <Col span={21} className="c7n-task-detail-row-inform-person-empty">{formatMessage({ id: `${intlPrefix}.empty` })}</Col>
-                  )
-                }
+                    info.notifyUser ? (
+                      <ul style={{ paddingLeft: '0' }}>
+                        <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.creator })}>
+                          {formatMessage({ id: `${intlPrefix}.creator` })}
+                          <span style={{ marginLeft: '10px' }}>{info.notifyUser.creator ? info.notifyUser.creator.loginName : null}{info.notifyUser.creator ? info.notifyUser.creator.realName : null}</span>
+                        </li>
+                        <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.administrator })}>
+                          {level}{formatMessage({ id: `${intlPrefix}.manager` })}
+                        </li>
+                        <li className={classnames('c7n-task-detail-row-inform-person', { 'c7n-task-detail-row-hide': !info.notifyUser.assigner.length })}>
+                          {formatMessage({ id: `${intlPrefix}.user` })}
+                          {info.notifyUser.assigner.length ? (
+                            <div className="c7n-task-detail-row-inform-person-informlist-name-container">
+                              {
+                                info.notifyUser.assigner.map((item) => (
+                                  <div key={item.loginName}>
+                                    <span>{item.loginName}{item.realName}</span>
+                                    <span>、</span>
+                                  </div>
+                                ))
+                              }
+                            </div>
+                          ) : <div>{formatMessage({ id: `${intlPrefix}.empty` })}</div>}
+                        </li>
+                      </ul>
+                    ) : (
+                      <Col span={21} className="c7n-task-detail-row-inform-person-empty">{formatMessage({ id: `${intlPrefix}.empty` })}</Col>
+                    )
+                  }
                 </Col>
               </Row>
             </div>
