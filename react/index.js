@@ -23,6 +23,7 @@ class Index extends React.Component {
             <Route path={`${match.url}/saga-instance`} component={sagaInstance} />
             <Route path={`${match.url}/task-detail`} component={taskDetail} />
             <Route path={`${match.url}/org-saga-instance`} component={sagaInstance} />
+            <Route path={`${match.url}/project-saga-instance`} component={sagaInstance} />
             <Route path="*" component={nomatch} />
           </Switch>
           <ModalContainer />
