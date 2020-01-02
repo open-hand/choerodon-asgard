@@ -34,14 +34,14 @@ public class SagaTaskInstanceProjController {
 
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
-    @ApiOperation(value = "去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
+    @ApiOperation(value = "项目层去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
     public void unlockById(@PathVariable("project_id") long projectId, @PathVariable long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
-    @ApiOperation(value = "强制消息失败")
+    @ApiOperation(value = "项目层强制失败SagaTask")
     @PutMapping("/{id}/failed")
     public void forceFailed(@PathVariable("project_id") long projectId, @PathVariable long id) {
         sagaTaskInstanceService.forceFailed(id);
@@ -49,7 +49,7 @@ public class SagaTaskInstanceProjController {
 
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
-    @ApiOperation(value = "根据服务实例批量去除消息的服务实例锁")
+    @ApiOperation(value = "项目层根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
     public void unlockByInstance(@PathVariable("project_id") long projectId, @RequestParam(value = "instance", required = false) String instance) {
         if (StringUtils.isEmpty(instance)) {
@@ -59,7 +59,7 @@ public class SagaTaskInstanceProjController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR})
-    @ApiOperation(value = "手动重试消息")
+    @ApiOperation(value = "项目层手动重试SagaTask")
     @PutMapping("/{id}/retry")
     public void retry(@PathVariable("project_id") long projectId, @PathVariable long id) {
         sagaTaskInstanceService.retry(id);

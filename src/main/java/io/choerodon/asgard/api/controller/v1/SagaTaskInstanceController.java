@@ -64,21 +64,21 @@ public class SagaTaskInstanceController {
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = " ")
+    @ApiOperation(value = "平台层强制失败SagaTask")
     @PutMapping("/{id}/failed")
     public void forceFailed(@PathVariable long id) {
         sagaTaskInstanceService.forceFailed(id);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
+    @ApiOperation(value = "平台层去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
     public void unlockById(@PathVariable long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "根据服务实例批量去除消息的服务实例锁")
+    @ApiOperation(value = "平台层根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
     public void unlockByInstance(@RequestParam(value = "instance", required = false) String instance) {
         if (StringUtils.isEmpty(instance)) {
@@ -88,7 +88,7 @@ public class SagaTaskInstanceController {
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @ApiOperation(value = "手动重试消息")
+    @ApiOperation(value = "平台层手动重试SagaTask")
     @PutMapping("/{id}/retry")
     public void retry(@PathVariable long id) {
         sagaTaskInstanceService.retry(id);
