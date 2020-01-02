@@ -52,7 +52,7 @@ public class SagaInstanceOrgController {
 
     @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/{id}", produces = "application/json")
-    @ApiOperation(value = "查询某个事务实例运行详情")
+    @ApiOperation(value = "组织层查询某个事务实例运行详情")
     public ResponseEntity<String> query(@PathVariable("organization_id") long orgId,
                                         @PathVariable("id") Long id) {
         return sagaInstanceService.query(id);
@@ -60,7 +60,7 @@ public class SagaInstanceOrgController {
 
     @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/{id}/details", produces = "application/json")
-    @ApiOperation(value = "查询事务实例的具体信息")
+    @ApiOperation(value = "组织层查询事务实例的具体信息")
     public ResponseEntity<SagaInstanceDetails> queryDetails(@PathVariable("organization_id") long orgId,
                                                             @PathVariable("id") Long id) {
         return new ResponseEntity<>(sagaInstanceService.queryDetails(id), HttpStatus.OK);

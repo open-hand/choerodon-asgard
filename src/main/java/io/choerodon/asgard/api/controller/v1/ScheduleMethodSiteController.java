@@ -77,7 +77,7 @@ public class ScheduleMethodSiteController {
     }
 
     @Permission(permissionWithin = true)
-    @ApiOperation(value = "根据方法code检索可执行程序方法Id")
+    @ApiOperation(value = "平台层根据方法code检索可执行程序方法Id")
     @GetMapping("/code/{code}")
     public ResponseEntity<Long> getMethodIdByCode(@PathVariable String code) {
         return new ResponseEntity<>(scheduleMethodService.getMethodIdByCode(code), HttpStatus.OK);

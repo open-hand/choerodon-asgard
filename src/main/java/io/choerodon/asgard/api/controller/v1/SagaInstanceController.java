@@ -107,14 +107,14 @@ public class SagaInstanceController {
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/{id}", produces = "application/json")
-    @ApiOperation(value = "查询某个事务实例运行详情")
+    @ApiOperation(value = "平台层查询某个事务实例运行详情")
     public ResponseEntity<String> query(@PathVariable("id") Long id) {
         return sagaInstanceService.query(id);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/{id}/details", produces = "application/json")
-    @ApiOperation(value = "查询事务实例的具体信息")
+    @ApiOperation(value = "平台层查询事务实例的具体信息")
     public ResponseEntity<SagaInstanceDetails> queryDetails(@PathVariable("id") Long id) {
         return new ResponseEntity<>(sagaInstanceService.queryDetails(id), HttpStatus.OK);
     }
