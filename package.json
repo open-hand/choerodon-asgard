@@ -8,16 +8,16 @@
     "lib"
   ],
   "peerDependencies": {
-    "@choerodon/boot": "0.19.x",
-    "@choerodon/master": "0.20.0"
+    "@choerodon/boot": "0.20.0",
+    "@choerodon/master": "0.21.0"
   },
   "dependencies": {
     "js-beautify": "^1.10.2",
     "react-codemirror": "^1.0.0"
   },
   "devDependencies": {
-    "@choerodon/boot": "0.19.x",
-    "@choerodon/master": "0.20.0",
+    "@choerodon/boot": "0.20.0",
+    "@choerodon/master": "0.21.0",
     "babel-preset-env": "^1.7.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
