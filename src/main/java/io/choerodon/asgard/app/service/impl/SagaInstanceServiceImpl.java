@@ -280,6 +280,11 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         if (dbInstance == null) {
             throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
         }
-        instanceMapper.deleteByPrimaryKey(dbInstance.getId());
+        List<PageSagaTaskInstance> taskInstanceList = taskInstanceMapper.selectAllBySagaInstanceId(dbInstance.getId());
+        if (taskInstanceList == null || taskInstanceList.size() == 0) {
+            instanceMapper.deleteByPrimaryKey(dbInstance.getId());
+        } else {
+            throw new CommonException("error.cancel.saga.instance");
+        }
     }
 }
