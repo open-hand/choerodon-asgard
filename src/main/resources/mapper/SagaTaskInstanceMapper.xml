@@ -12,8 +12,8 @@
         INNER JOIN ASGARD_SAGA_INSTANCE asi ON asti.saga_instance_id = asi.id
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE
-        (asti.status = 'WAIT_TO_BE_PULLED' OR asti.status = 'RUNNING')
-        AND asti.service = #{service}
+        asti.service = #{service}
+        AND asti.status in('WAIT_TO_BE_PULLED' ,'RUNNING')
         AND asti.concurrent_limit_policy = 'NONE'
         AND (asti.instance_lock IS null OR asti.instance_lock = #{instance})
         ORDER BY asti.id
@@ -30,7 +30,8 @@
         INNER JOIN ASGARD_SAGA_INSTANCE asi ON asti.saga_instance_id = asi.id
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE  asti.service = #{service}
-        AND (asti.status = 'WAIT_TO_BE_PULLED' OR asti.status = 'RUNNING') AND asti.concurrent_limit_policy = 'TYPE_AND_ID'
+        AND asti.status in ('WAIT_TO_BE_PULLED' ,'RUNNING')
+        AND asti.concurrent_limit_policy = 'TYPE_AND_ID'
         ORDER BY asti.id
     </select>
 
@@ -45,7 +46,7 @@
         INNER JOIN ASGARD_SAGA_INSTANCE asi ON asti.saga_instance_id = asi.id
         LEFT JOIN asgard_orch_json_data jd ON asti.input_data_id = jd.id
         WHERE  asti.service = #{service}
-        AND (asti.status = 'WAIT_TO_BE_PULLED' OR asti.status = 'RUNNING') AND asti.concurrent_limit_policy = 'TYPE'
+        AND asti.status in( 'WAIT_TO_BE_PULLED' , 'RUNNING') AND asti.concurrent_limit_policy = 'TYPE'
         ORDER BY asti.id
     </select>
 
