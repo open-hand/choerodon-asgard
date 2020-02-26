@@ -3,12 +3,15 @@ package io.choerodon.asgard.api.controller.v1;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.SagaInstance;
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
+import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
 import io.choerodon.asgard.api.vo.StartInstance;
 import io.choerodon.asgard.app.service.SagaInstanceService;
+import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.core.annotation.Permission;
 import io.choerodon.core.enums.ResourceType;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.iam.InitRoleCode;
+import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -22,6 +25,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -124,6 +128,23 @@ public class SagaInstanceController {
     @ApiOperation(value = "统计全平台各个事务实例状态下的实例个数")
     public ResponseEntity<Map> statistics() {
         return new ResponseEntity<>(sagaInstanceService.statistics(null, null), HttpStatus.OK);
+    }
+
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @GetMapping(value = "/statistics/failure")
+    @ApiOperation(value = "统计组织下失败实例情况")
+    public ResponseEntity<List<SagaInstanceFailureVO>> statisticsFailure(@RequestParam("date") Integer date) {
+        return new ResponseEntity<>(sagaInstanceService.statisticsFailure(ResourceLevel.SITE.value(), null, date), HttpStatus.OK);
+    }
+
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @GetMapping(value = "/statistics/failure/list")
+    @CustomPageRequest
+    @ApiOperation(value = "统计组织下失败实例情况")
+    public ResponseEntity<PageInfo<SagaInstanceDTO>> statisticsFailure(@ApiIgnore
+                                                                       @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                       @RequestParam("date") Integer date) {
+        return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.SITE.value(), null, date, pageable), HttpStatus.OK);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER, InitRoleCode.SITE_ADMINISTRATOR})

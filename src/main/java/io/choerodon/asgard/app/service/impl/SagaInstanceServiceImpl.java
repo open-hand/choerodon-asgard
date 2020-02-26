@@ -30,6 +30,7 @@ import io.choerodon.asgard.infra.dto.JsonDataDTO;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
+import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.asgard.infra.mapper.JsonDataMapper;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
@@ -58,6 +59,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     private JsonDataMapper jsonDataMapper;
     private JsonDataService jsonDataService;
     private SagaInstanceEventPublisher sagaInstanceEventPublisher;
+    private IamFeignClient iamFeignClient;
 
 
     public SagaInstanceServiceImpl(SagaTaskMapper taskMapper,
@@ -65,12 +67,14 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                                    SagaTaskInstanceMapper taskInstanceMapper,
                                    JsonDataService jsonDataService,
                                    JsonDataMapper jsonDataMapper,
+                                   IamFeignClient iamFeignClient,
                                    SagaInstanceEventPublisher sagaInstanceEventPublisher) {
         this.taskMapper = taskMapper;
         this.instanceMapper = instanceMapper;
         this.taskInstanceMapper = taskInstanceMapper;
         this.jsonDataService = jsonDataService;
         this.jsonDataMapper = jsonDataMapper;
+        this.iamFeignClient = iamFeignClient;
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
@@ -185,6 +189,50 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     @Override
     public Map<String, Integer> statistics(String level, Long sourceId) {
         return instanceMapper.statisticsByStatus(level, sourceId);
+    }
+
+    @Override
+    public List<SagaInstanceFailureVO> statisticsFailure(String level, Long sourceId, Integer date) {
+        Calendar calEnd = Calendar.getInstance();
+        calEnd.add(Calendar.DATE, 1);
+        String endTime = new SimpleDateFormat("yyyy-MM-dd").format(calEnd.getTime());
+
+        Calendar calStart = Calendar.getInstance();
+        calStart.add(Calendar.DATE, date * (-1));
+        String startTime = new SimpleDateFormat("yyyy-MM-dd").format(calStart.getTime());
+
+        if (level != null && !level.equals("site")) {
+            List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
+            List<Long> projectIds = projectVOs == null ? null : projectVOs.stream().map(ProjectVO::getId).collect(Collectors.toList());
+            return instanceMapper.statisticsFailure(level, sourceId, startTime, endTime, projectIds);
+        } else {
+            return instanceMapper.statisticsFailure(level, null, startTime, endTime, null);
+        }
+    }
+
+    @Override
+    public PageInfo<SagaInstanceDTO> statisticsFailureList(String level, Long sourceId, Integer date, Pageable pageable) {
+        Calendar calEnd = Calendar.getInstance();
+        calEnd.add(Calendar.DATE, 1);
+        String endTime = new SimpleDateFormat("yyyy-MM-dd").format(calEnd.getTime());
+
+        Calendar calStart = Calendar.getInstance();
+        calStart.add(Calendar.DATE, date * (-1));
+        String startTime = new SimpleDateFormat("yyyy-MM-dd").format(calStart.getTime());
+
+        if (level != null && !level.equals("site")) {
+            List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
+            List<Long> projectIds = projectVOs == null ? null : projectVOs.stream().map(ProjectVO::getId).collect(Collectors.toList());
+            return PageHelper
+                    .startPage(pageable.getPageNumber(), pageable.getPageSize())
+                    .doSelectPageInfo(
+                            () -> instanceMapper.statisticsFailureList(level, sourceId, startTime, endTime, projectIds));
+        } else {
+            return PageHelper
+                    .startPage(pageable.getPageNumber(), pageable.getPageSize())
+                    .doSelectPageInfo(
+                            () -> instanceMapper.statisticsFailureList(level, null, startTime, endTime, null));
+        }
     }
 
     @Override

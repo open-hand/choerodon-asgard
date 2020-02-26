@@ -1,6 +1,7 @@
 package io.choerodon.asgard.infra.mapper;
 
 import org.apache.ibatis.annotations.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.*;
 
@@ -20,6 +21,18 @@ public interface SagaInstanceMapper extends Mapper<SagaInstanceDTO> {
 
     Map<String, Integer> statisticsByStatus(@Param("level") String level,
                                             @Param("sourceId") Long sourceId);
+
+    List<SagaInstanceFailureVO> statisticsFailure(@Param("level") String level,
+                                                  @Param("sourceId") Long sourceId,
+                                                  @Param("startTime") String startTime,
+                                                  @Param("endTime") String endTime,
+                                                  @Param("projectIds") List<Long> projectIds);
+
+    List<SagaInstanceDTO> statisticsFailureList(@Param("level") String level,
+                                                @Param("sourceId") Long sourceId,
+                                                @Param("startTime") String startTime,
+                                                @Param("endTime") String endTime,
+                                                @Param("projectIds") List<Long> projectIds);
 
     SagaInstanceDetails selectDetails(@Param("id") Long id);
 
