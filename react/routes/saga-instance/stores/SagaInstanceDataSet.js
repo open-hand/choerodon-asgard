@@ -19,9 +19,9 @@ export default ({ id = 0, apiGetway, intl, intlPrefix }) => {
       meaning: '完成',
     }],
   });
-  
+
   return {
-    autoQuery: true,
+    autoQuery: false,
     selection: false,
     transport: {
       read: {
@@ -32,16 +32,16 @@ export default ({ id = 0, apiGetway, intl, intlPrefix }) => {
     fields: [
       { name: 'sagaCode', type: 'string', label: sagaCode },
       { name: 'status', type: 'string', label: status },
-      { name: 'startTime', type: 'string', label: startTime },      
-      { name: 'refType', type: 'string', label: refType },      
-      { name: 'refId', type: 'string', label: refId },      
-      { name: 'progress', type: 'string', label: progress },      
-    ],    
+      { name: 'startTime', type: 'string', label: startTime },
+      { name: 'refType', type: 'string', label: refType },
+      { name: 'refId', type: 'string', label: refId },
+      { name: 'progress', type: 'string', label: progress },
+    ],
     queryFields: [
       { name: 'sagaCode', type: 'string', label: sagaCode },
       { name: 'status', type: 'string', label: status, options: statusDataSet },
-      { name: 'refType', type: 'string', label: refType },      
-      { name: 'refId', type: 'string', label: refId },      
+      { name: 'refType', type: 'string', label: refType },
+      { name: 'refId', type: 'string', label: refId },
     ],
   };
 };
