@@ -176,7 +176,35 @@
         </if>
         AND asi.CREATION_DATE &gt; #{startTime}
         AND asi.CREATION_DATE &lt;  #{endTime}
-        order by asi.id
+    </select>
+
+    <select id="statisticsFailureDetail" resultType="io.choerodon.asgard.api.vo.SagaInstanceFailureDetailVO">
+        SELECT
+        COUNT(*) as totalCount,
+        SUM(asi.`status` = 'FAILED') as failureCount
+        FROM
+        asgard_saga_instance asi
+        WHERE
+        1=1
+        <if test="sourceId != null">
+            AND (
+            (
+            asi.FD_LEVEL = 'organization'
+            AND asi.SOURCE_ID = #{sourceId}
+            )
+            <if test="projectIds != null and projectIds.size>0">
+                OR (
+                asi.FD_LEVEL = 'project'
+                AND asi.SOURCE_ID IN
+                <foreach collection="projectIds" item="projectId" open="(" separator="," close=")">
+                    #{projectId}
+                </foreach>
+                )
+            </if>
+            )
+        </if>
+        AND asi.CREATION_DATE &gt; #{startTime}
+        AND asi.CREATION_DATE &lt;  #{endTime}
     </select>
 
     <select id="selectFailedTimes" resultType="java.util.Map">

@@ -2,6 +2,7 @@ package io.choerodon.asgard.app.service.impl;
 
 import static java.util.stream.Collectors.groupingBy;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -193,13 +194,8 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public List<SagaInstanceFailureVO> statisticsFailure(String level, Long sourceId, Integer date) {
-        Calendar calEnd = Calendar.getInstance();
-        calEnd.add(Calendar.DATE, 1);
-        String endTime = new SimpleDateFormat("yyyy-MM-dd").format(calEnd.getTime());
-
-        Calendar calStart = Calendar.getInstance();
-        calStart.add(Calendar.DATE, date * (-1));
-        String startTime = new SimpleDateFormat("yyyy-MM-dd").format(calStart.getTime());
+        String endTime = getTimeStr(null, 1);
+        String startTime = getTimeStr(null, date * (-1));
 
         if (level != null && !level.equals("site")) {
             List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
@@ -212,13 +208,8 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public PageInfo<SagaInstanceDTO> statisticsFailureList(String level, Long sourceId, Integer date, Pageable pageable) {
-        Calendar calEnd = Calendar.getInstance();
-        calEnd.add(Calendar.DATE, 1);
-        String endTime = new SimpleDateFormat("yyyy-MM-dd").format(calEnd.getTime());
-
-        Calendar calStart = Calendar.getInstance();
-        calStart.add(Calendar.DATE, date * (-1));
-        String startTime = new SimpleDateFormat("yyyy-MM-dd").format(calStart.getTime());
+        String endTime = getTimeStr(null, 1);
+        String startTime = getTimeStr(null, date * (-1));
 
         if (level != null && !level.equals("site")) {
             List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
@@ -233,6 +224,34 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                     .doSelectPageInfo(
                             () -> instanceMapper.statisticsFailureList(level, null, startTime, endTime, null));
         }
+    }
+
+    @Override
+    public SagaInstanceFailureDetailVO statisticsFailureDetail(String level, Long sourceId, String dateStr) {
+        SagaInstanceFailureDetailVO sagaInstanceFailureDetailVO;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = sdf.parse(dateStr);
+        } catch (ParseException e) {
+            throw new CommonException("error.get.saga.instance.failure.detail");
+        }
+
+        String startTime = getTimeStr(date, -1);
+        String endTime = getTimeStr(date, 1);
+
+        if (level != null && !level.equals("site")) {
+            List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
+            List<Long> projectIds = projectVOs == null ? null : projectVOs.stream().map(ProjectVO::getId).collect(Collectors.toList());
+            sagaInstanceFailureDetailVO = instanceMapper.statisticsFailureDetail(level, sourceId, startTime, endTime, projectIds);
+        } else {
+            sagaInstanceFailureDetailVO = instanceMapper.statisticsFailureDetail(level, null, startTime, endTime, null);
+        }
+        sagaInstanceFailureDetailVO.setDate(date);
+
+        DecimalFormat df = new DecimalFormat("0.00");
+        sagaInstanceFailureDetailVO.setPercentage(df.format((float) sagaInstanceFailureDetailVO.getFailureCount() / sagaInstanceFailureDetailVO.getTotalCount() * 100));
+        return sagaInstanceFailureDetailVO;
     }
 
     @Override
@@ -334,5 +353,14 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         } else {
             throw new CommonException("error.cancel.saga.instance");
         }
+    }
+
+    private String getTimeStr(Date date, Integer num) {
+        date = date == null ? new Date() : date;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calStart = Calendar.getInstance();
+        calStart.setTime(date);
+        calStart.add(Calendar.DAY_OF_MONTH, num);
+        return dateFormat.format(calStart.getTime());
     }
 }
