@@ -3,16 +3,16 @@ package io.choerodon.asgard.api.vo;
 import java.util.Date;
 
 public class SagaInstanceFailureDetailVO {
-    private Date date;
+    private String date;
     private String percentage;
     private Long failureCount;
     private Long totalCount;
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

@@ -15,6 +15,7 @@ import io.choerodon.core.annotation.Permission;
 import io.choerodon.core.enums.ResourceType;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -104,7 +105,8 @@ public class SagaInstanceOrgController {
     @GetMapping(value = "/statistics/failure/details")
     @ApiOperation(value = "统计组织下失败实例情况详情")
     public ResponseEntity<SagaInstanceFailureDetailVO> statisticsFailureDetail(@PathVariable("organization_id") long orgId,
-                                                                               @RequestParam("date") String date) {
+                                                                               @RequestParam("date")
+                                                                               @ApiParam(value = "日期格式yyyy-MM-dd", required = true) String date) {
         return new ResponseEntity<>(sagaInstanceService.statisticsFailureDetail(ResourceLevel.ORGANIZATION.value(), orgId, date), HttpStatus.OK);
     }
 }

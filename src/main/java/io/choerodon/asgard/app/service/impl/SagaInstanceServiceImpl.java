@@ -40,6 +40,7 @@ import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
+import io.choerodon.web.util.PageableHelper;
 
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
@@ -215,12 +216,12 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
             List<Long> projectIds = projectVOs == null ? null : projectVOs.stream().map(ProjectVO::getId).collect(Collectors.toList());
             return PageHelper
-                    .startPage(pageable.getPageNumber(), pageable.getPageSize())
+                    .startPage(pageable.getPageNumber(), pageable.getPageSize(), PageableHelper.getSortSql(pageable.getSort()))
                     .doSelectPageInfo(
                             () -> instanceMapper.statisticsFailureList(level, sourceId, startTime, endTime, projectIds));
         } else {
             return PageHelper
-                    .startPage(pageable.getPageNumber(), pageable.getPageSize())
+                    .startPage(pageable.getPageNumber(), pageable.getPageSize(), PageableHelper.getSortSql(pageable.getSort()))
                     .doSelectPageInfo(
                             () -> instanceMapper.statisticsFailureList(level, null, startTime, endTime, null));
         }
@@ -247,7 +248,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         } else {
             sagaInstanceFailureDetailVO = instanceMapper.statisticsFailureDetail(level, null, startTime, endTime, null);
         }
-        sagaInstanceFailureDetailVO.setDate(date);
+        sagaInstanceFailureDetailVO.setDate(dateStr);
 
         DecimalFormat df = new DecimalFormat("0.00");
         sagaInstanceFailureDetailVO.setPercentage(df.format((float) sagaInstanceFailureDetailVO.getFailureCount() / sagaInstanceFailureDetailVO.getTotalCount() * 100));
