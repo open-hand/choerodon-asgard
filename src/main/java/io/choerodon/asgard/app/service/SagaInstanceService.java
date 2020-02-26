@@ -3,10 +3,14 @@ package io.choerodon.asgard.app.service;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.SagaInstance;
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
+import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
 import io.choerodon.asgard.api.vo.StartInstance;
+import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SagaInstanceService {
@@ -28,6 +32,10 @@ public interface SagaInstanceService {
 
 
     Map<String, Integer> statistics(String level, Long sourceId);
+
+    List<SagaInstanceFailureVO> statisticsFailure(String level, Long sourceId, Integer date);
+
+    PageInfo<SagaInstanceDTO> statisticsFailureList(String level, Long sourceId, Integer date, Pageable pageable);
 
     Map<String, Object> queryFailedByDate(String beginDate, String endDate);
 }

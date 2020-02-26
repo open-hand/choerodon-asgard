@@ -2,11 +2,8 @@ package io.choerodon.asgard.infra.feign.fallback;
 
 import java.util.List;
 
-import io.choerodon.asgard.api.vo.Organization;
-import io.choerodon.asgard.api.vo.Project;
-import io.choerodon.asgard.api.vo.RegistrantInfo;
-import io.choerodon.asgard.api.vo.Role;
-import io.choerodon.asgard.api.vo.User;
+import io.choerodon.asgard.api.vo.*;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -59,5 +56,10 @@ public class IamFeignClientFallback implements IamFeignClient {
     @Override
     public ResponseEntity<RegistrantInfo> queryRegistrantAndAdminId(String orgCode) {
         throw new FeignException("error.feign.iam.queryRegistrantAndAdminId");
+    }
+
+    @Override
+    public ResponseEntity<List<ProjectVO>> listProjectsByOrgId(Long organizationId) {
+        throw new FeignException("error.feign.iam.list.all.project");
     }
 }

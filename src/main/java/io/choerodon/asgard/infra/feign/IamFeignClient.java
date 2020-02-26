@@ -2,12 +2,10 @@ package io.choerodon.asgard.infra.feign;
 
 import java.util.List;
 
-import io.choerodon.asgard.api.vo.Organization;
-import io.choerodon.asgard.api.vo.Project;
-import io.choerodon.asgard.api.vo.RegistrantInfo;
-import io.choerodon.asgard.api.vo.Role;
-import io.choerodon.asgard.api.vo.User;
+import io.choerodon.asgard.api.vo.*;
+
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,5 +49,8 @@ public interface IamFeignClient {
     ResponseEntity<List<User>> listUsersByIds(@RequestBody Long[] ids);
 
     @GetMapping(value = "/users/registrant")
-    ResponseEntity<RegistrantInfo> queryRegistrantAndAdminId(@RequestParam(value = "org_code")  String orgCode);
+    ResponseEntity<RegistrantInfo> queryRegistrantAndAdminId(@RequestParam(value = "org_code") String orgCode);
+
+    @GetMapping(value = "/organizations/{organization_id}/projects/all")
+    ResponseEntity<List<ProjectVO>> listProjectsByOrgId(@PathVariable(name = "organization_id") Long organizationId);
 }

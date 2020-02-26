@@ -1,9 +1,13 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import java.util.List;
 import java.util.Map;
 
 import com.github.pagehelper.PageInfo;
+
+import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
 import io.choerodon.asgard.app.service.SagaInstanceService;
+import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.core.annotation.Permission;
 import io.choerodon.core.enums.ResourceType;
 import io.choerodon.swagger.annotation.CustomPageRequest;
@@ -74,4 +78,22 @@ public class SagaInstanceOrgController {
     }
 
 
+    @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
+    @GetMapping(value = "/statistics/failure")
+    @ApiOperation(value = "统计组织下失败实例情况")
+    public ResponseEntity<List<SagaInstanceFailureVO>> statisticsFailure(@PathVariable("organization_id") long orgId,
+                                                                         @RequestParam("date") Integer date) {
+        return new ResponseEntity<>(sagaInstanceService.statisticsFailure(ResourceLevel.ORGANIZATION.value(), orgId, date), HttpStatus.OK);
+    }
+
+    @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
+    @GetMapping(value = "/statistics/failure/list")
+    @CustomPageRequest
+    @ApiOperation(value = "统计组织下失败实例情况")
+    public ResponseEntity<PageInfo<SagaInstanceDTO>> statisticsFailure(@ApiIgnore
+                                                                       @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                       @PathVariable("organization_id") long orgId,
+                                                                       @RequestParam("date") Integer date) {
+        return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.ORGANIZATION.value(), orgId, date,pageable), HttpStatus.OK);
+    }
 }
