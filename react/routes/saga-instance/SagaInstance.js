@@ -3,6 +3,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { axios, Breadcrumb, StatusTag, Choerodon } from '@choerodon/boot';
 import { Button, Tooltip } from 'choerodon-ui';
+import { withRouter } from 'react-router-dom';
 import { Table, Modal } from 'choerodon-ui/pro';
 import { Content, Page } from '@choerodon/boot';
 import { FormattedMessage } from 'react-intl';
@@ -13,7 +14,7 @@ import SagaImg from '../saga/SagaImg';
 
 const { Column } = Table;
 const modalKey = Modal.key();
-const SagaInstance = observer(() => {
+const SagaInstance = withRouter(observer((props) => {
   const { instanceDataSet, intl, taskDataSet, intlPrefix, apiGetway, abort, unLock, retry, loadDetailData } = useContext(Store);
   const [activeTab, setActiveTab] = useState('instance');
   const [statistics, setStatistics] = useState({
@@ -22,6 +23,20 @@ const SagaInstance = observer(() => {
     RUNNING_COUNT: 0,
     ROLLBACK_COUNT: 0,
   });
+  useEffect(async () => {
+    const { search } = props.location;
+    if (search.split('?')[1].split('&').find((i) => i.includes('sagaId'))) {
+      const sagaId = search.split('?')[1].split('&').find((i) => i.includes('sagaId')).split('=')[1];
+      await instanceDataSet.query();
+      if (instanceDataSet.length) {
+        instanceDataSet.queryDataSet.current.set('params', sagaId);
+        instanceDataSet.query();
+      }
+    } else {
+      instanceDataSet.query();
+    }
+  }, []);
+
   useEffect(() => {
     const loadStatistics = async () => {
       const data = await axios.get(`${apiGetway}instances/statistics`);
@@ -111,7 +126,7 @@ const SagaInstance = observer(() => {
 
   const renderProgress = ({ record }) => {
     const title = ['completedCount', 'failedCount', 'runningCount', 'waitToBePulledCount'].map((key) => (
-      <div style={{ display: 'flex' }}> 
+      <div style={{ display: 'flex' }}>
         <div style={{ width: 80 }}>
           {intl.formatMessage({ id: `${intlPrefix}.${key}` })}：
         </div>
@@ -292,7 +307,7 @@ const SagaInstance = observer(() => {
       </Content>
     </Page>
   );
-});
+}));
 export default (props) => (
   <StoreProvider {...props}>
     <SagaInstance />
