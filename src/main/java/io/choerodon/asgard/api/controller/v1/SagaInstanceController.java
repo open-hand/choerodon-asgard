@@ -141,9 +141,9 @@ public class SagaInstanceController {
     @GetMapping(value = "/statistics/failure/list")
     @CustomPageRequest
     @ApiOperation(value = "统计组织下失败实例情况")
-    public ResponseEntity<PageInfo<SagaInstanceDTO>> statisticsFailure(@ApiIgnore
-                                                                       @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                                                                       @RequestParam("date") Integer date) {
+    public ResponseEntity<PageInfo<SagaInstanceDTO>> statisticsFailureList(@ApiIgnore
+                                                                           @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                                                                           @RequestParam("date") Integer date) {
         return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.SITE.value(), null, date, pageable), HttpStatus.OK);
     }
 
