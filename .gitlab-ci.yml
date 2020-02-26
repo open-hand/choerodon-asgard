@@ -18,7 +18,7 @@ build front:
       - pom.xml
       - src/**/*
       - docker/**/*
-      - charts/**/*
+      - chart/**/*
       - "*.sh"
       - .gitignore
       - .github/**/*
