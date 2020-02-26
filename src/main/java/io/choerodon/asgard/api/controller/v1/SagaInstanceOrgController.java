@@ -89,7 +89,7 @@ public class SagaInstanceOrgController {
     @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/statistics/failure/list")
     @CustomPageRequest
-    @ApiOperation(value = "统计组织下失败实例情况")
+    @ApiOperation(value = "统计组织下失败实例情况详情")
     public ResponseEntity<PageInfo<SagaInstanceDTO>> statisticsFailureList(@ApiIgnore
                                                                        @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                                                        @PathVariable("organization_id") long orgId,
