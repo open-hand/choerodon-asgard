@@ -132,7 +132,7 @@ public class SagaInstanceController {
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/statistics/failure")
-    @ApiOperation(value = "统计组织下失败实例情况")
+    @ApiOperation(value = "统计平台下失败实例情况")
     public ResponseEntity<List<SagaInstanceFailureVO>> statisticsFailure(@RequestParam("date") Integer date) {
         return new ResponseEntity<>(sagaInstanceService.statisticsFailure(ResourceLevel.SITE.value(), null, date), HttpStatus.OK);
     }
@@ -140,7 +140,7 @@ public class SagaInstanceController {
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/statistics/failure/list")
     @CustomPageRequest
-    @ApiOperation(value = "统计组织下失败实例情况")
+    @ApiOperation(value = "统计平台下失败实例情况详情")
     public ResponseEntity<PageInfo<SagaInstanceDTO>> statisticsFailureList(@ApiIgnore
                                                                            @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                                                            @RequestParam("date") Integer date) {
