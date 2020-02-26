@@ -1,10 +1,8 @@
 package io.choerodon.asgard.api.controller.v1;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.asgard.api.vo.SagaInstance;
-import io.choerodon.asgard.api.vo.SagaInstanceDetails;
-import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
-import io.choerodon.asgard.api.vo.StartInstance;
+
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.core.annotation.Permission;
@@ -25,6 +23,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -145,6 +144,14 @@ public class SagaInstanceController {
                                                                            @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable,
                                                                            @RequestParam("date") Integer date) {
         return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.SITE.value(), null, date, pageable), HttpStatus.OK);
+    }
+
+    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @GetMapping(value = "/statistics/failure/details")
+    @ApiOperation(value = "统计平台下失败实例情况详情")
+    public ResponseEntity<SagaInstanceFailureDetailVO> statisticsFailureDetail(@RequestParam("date")
+                                                                               @ApiParam(value = "日期格式yyyy-MM-dd", required = true) String date) {
+        return new ResponseEntity<>(sagaInstanceService.statisticsFailureDetail(ResourceLevel.SITE.value(), null, date), HttpStatus.OK);
     }
 
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER, InitRoleCode.SITE_ADMINISTRATOR})
