@@ -228,34 +228,6 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public SagaInstanceFailureDetailVO statisticsFailureDetail(String level, Long sourceId, String dateStr) {
-        SagaInstanceFailureDetailVO sagaInstanceFailureDetailVO;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date;
-        try {
-            date = sdf.parse(dateStr);
-        } catch (ParseException e) {
-            throw new CommonException("error.get.saga.instance.failure.detail");
-        }
-
-        String startTime = getTimeStr(date, -1);
-        String endTime = getTimeStr(date, 1);
-
-        if (level != null && !level.equals("site")) {
-            List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
-            List<Long> projectIds = projectVOs == null ? null : projectVOs.stream().map(ProjectVO::getId).collect(Collectors.toList());
-            sagaInstanceFailureDetailVO = instanceMapper.statisticsFailureDetail(level, sourceId, startTime, endTime, projectIds);
-        } else {
-            sagaInstanceFailureDetailVO = instanceMapper.statisticsFailureDetail(level, null, startTime, endTime, null);
-        }
-        sagaInstanceFailureDetailVO.setDate(dateStr);
-
-        DecimalFormat df = new DecimalFormat("0.00");
-        sagaInstanceFailureDetailVO.setPercentage(df.format((float) sagaInstanceFailureDetailVO.getFailureCount() / sagaInstanceFailureDetailVO.getTotalCount() * 100));
-        return sagaInstanceFailureDetailVO;
-    }
-
-    @Override
     public SagaInstanceDetails queryDetails(Long id) {
         return instanceMapper.selectDetails(id);
     }

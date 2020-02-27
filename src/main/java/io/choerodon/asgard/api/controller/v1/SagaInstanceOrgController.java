@@ -1,13 +1,10 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.PageInfo;
 
-import io.choerodon.asgard.api.vo.SagaInstanceFailureDetailVO;
 import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
@@ -101,12 +98,4 @@ public class SagaInstanceOrgController {
         return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.ORGANIZATION.value(), orgId, date,pageable), HttpStatus.OK);
     }
 
-    @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
-    @GetMapping(value = "/statistics/failure/details")
-    @ApiOperation(value = "统计组织下失败实例情况详情")
-    public ResponseEntity<SagaInstanceFailureDetailVO> statisticsFailureDetail(@PathVariable("organization_id") long orgId,
-                                                                               @RequestParam("date")
-                                                                               @ApiParam(value = "日期格式yyyy-MM-dd", required = true) String date) {
-        return new ResponseEntity<>(sagaInstanceService.statisticsFailureDetail(ResourceLevel.ORGANIZATION.value(), orgId, date), HttpStatus.OK);
-    }
 }
