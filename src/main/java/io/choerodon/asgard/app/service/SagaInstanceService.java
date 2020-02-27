@@ -8,7 +8,6 @@ import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +28,11 @@ public interface SagaInstanceService {
 
     SagaInstanceDetails queryDetails(Long id);
 
-
     Map<String, Integer> statistics(String level, Long sourceId);
 
     List<SagaInstanceFailureVO> statisticsFailure(String level, Long sourceId, Integer date);
 
     PageInfo<SagaInstanceDTO> statisticsFailureList(String level, Long sourceId, Integer date, Pageable pageable);
-
-    SagaInstanceFailureDetailVO statisticsFailureDetail(String level, Long sourceId, String dateStr);
 
     Map<String, Object> queryFailedByDate(String beginDate, String endDate);
 }

@@ -4,7 +4,9 @@ import java.util.Date;
 
 public class SagaInstanceFailureVO {
     private Date creationDate;
-    private Long count;
+    private Long failureCount;
+    private Double percentage;
+    private Long totalCount;
 
     public Date getCreationDate() {
         return creationDate;
@@ -14,11 +16,27 @@ public class SagaInstanceFailureVO {
         this.creationDate = creationDate;
     }
 
-    public Long getCount() {
-        return count;
+    public Double getPercentage() {
+        return percentage;
     }
 
-    public void setCount(Long count) {
-        this.count = count;
+    public void setPercentage(Double percentage) {
+        this.percentage = percentage;
+    }
+
+    public Long getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(Long totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public Long getFailureCount() {
+        return failureCount;
+    }
+
+    public void setFailureCount(Long failureCount) {
+        this.failureCount = failureCount;
     }
 }

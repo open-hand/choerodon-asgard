@@ -146,14 +146,6 @@ public class SagaInstanceController {
         return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.SITE.value(), null, date, pageable), HttpStatus.OK);
     }
 
-    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
-    @GetMapping(value = "/statistics/failure/details")
-    @ApiOperation(value = "统计平台下失败实例情况详情")
-    public ResponseEntity<SagaInstanceFailureDetailVO> statisticsFailureDetail(@RequestParam("date")
-                                                                               @ApiParam(value = "日期格式yyyy-MM-dd", required = true) String date) {
-        return new ResponseEntity<>(sagaInstanceService.statisticsFailureDetail(ResourceLevel.SITE.value(), null, date), HttpStatus.OK);
-    }
-
     @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER, InitRoleCode.SITE_ADMINISTRATOR})
     @ApiOperation("根据日期查询事务失败的次数")
     @GetMapping("/failed/count")
