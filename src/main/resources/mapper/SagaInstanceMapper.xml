@@ -130,21 +130,8 @@
         WHERE
         1=1
         <if test="sourceId != null">
-            AND (
-            (
-            asi.FD_LEVEL = 'organization'
+            AND asi.FD_LEVEL = 'organization'
             AND asi.SOURCE_ID = #{sourceId}
-            )
-            <if test="projectIds != null and projectIds.size>0">
-                OR (
-                asi.FD_LEVEL = 'project'
-                AND asi.SOURCE_ID IN
-                <foreach collection="projectIds" item="projectId" open="(" separator="," close=")">
-                    #{projectId}
-                </foreach>
-                )
-            </if>
-            )
         </if>
         AND asi.CREATION_DATE &gt; #{startTime}
         AND asi.CREATION_DATE &lt;  #{endTime}
@@ -160,21 +147,8 @@
         WHERE
         asi.`status` = 'FAILED'
         <if test="sourceId != null">
-            AND (
-            (
-            asi.FD_LEVEL = 'organization'
+            AND asi.FD_LEVEL = 'organization'
             AND asi.SOURCE_ID = #{sourceId}
-            )
-            <if test="projectIds != null and projectIds.size>0">
-                OR (
-                asi.FD_LEVEL = 'project'
-                AND asi.SOURCE_ID IN
-                <foreach collection="projectIds" item="projectId" open="(" separator="," close=")">
-                    #{projectId}
-                </foreach>
-                )
-            </if>
-            )
         </if>
         AND asi.CREATION_DATE &gt; #{startTime}
         AND asi.CREATION_DATE &lt;  #{endTime}
