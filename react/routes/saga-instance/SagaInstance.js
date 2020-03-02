@@ -23,7 +23,8 @@ const SagaInstance = withRouter(observer((props) => {
     RUNNING_COUNT: 0,
     ROLLBACK_COUNT: 0,
   });
-  useEffect(async () => {
+
+  const init = async () => {
     const { search } = props.location;
     if (search.split('?')[1].split('&').find((i) => i.includes('sagaId'))) {
       const sagaId = search.split('?')[1].split('&').find((i) => i.includes('sagaId')).split('=')[1];
@@ -35,6 +36,10 @@ const SagaInstance = withRouter(observer((props) => {
     } else {
       instanceDataSet.query();
     }
+  };
+
+  useEffect(() => {
+    init();
   }, []);
 
   useEffect(() => {
