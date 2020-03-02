@@ -199,11 +199,9 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         String startTime = getTimeStr(null, date * (-1));
 
         if (level != null && !level.equals("site")) {
-            List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
-            List<Long> projectIds = projectVOs == null ? null : projectVOs.stream().map(ProjectVO::getId).collect(Collectors.toList());
-            return instanceMapper.statisticsFailure(level, sourceId, startTime, endTime, projectIds);
+            return instanceMapper.statisticsFailure(level, sourceId, startTime, endTime);
         } else {
-            return instanceMapper.statisticsFailure(level, null, startTime, endTime, null);
+            return instanceMapper.statisticsFailure(level, null, startTime, endTime);
         }
     }
 
@@ -213,17 +211,15 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         String startTime = getTimeStr(null, date * (-1));
 
         if (level != null && !level.equals("site")) {
-            List<ProjectVO> projectVOs = iamFeignClient.listProjectsByOrgId(sourceId).getBody();
-            List<Long> projectIds = projectVOs == null ? null : projectVOs.stream().map(ProjectVO::getId).collect(Collectors.toList());
             return PageHelper
                     .startPage(pageable.getPageNumber(), pageable.getPageSize(), PageableHelper.getSortSql(pageable.getSort()))
                     .doSelectPageInfo(
-                            () -> instanceMapper.statisticsFailureList(level, sourceId, startTime, endTime, projectIds));
+                            () -> instanceMapper.statisticsFailureList(level, sourceId, startTime, endTime));
         } else {
             return PageHelper
                     .startPage(pageable.getPageNumber(), pageable.getPageSize(), PageableHelper.getSortSql(pageable.getSort()))
                     .doSelectPageInfo(
-                            () -> instanceMapper.statisticsFailureList(level, null, startTime, endTime, null));
+                            () -> instanceMapper.statisticsFailureList(level, null, startTime, endTime));
         }
     }
 

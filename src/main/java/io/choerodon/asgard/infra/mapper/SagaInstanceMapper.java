@@ -25,14 +25,12 @@ public interface SagaInstanceMapper extends Mapper<SagaInstanceDTO> {
     List<SagaInstanceFailureVO> statisticsFailure(@Param("level") String level,
                                                   @Param("sourceId") Long sourceId,
                                                   @Param("startTime") String startTime,
-                                                  @Param("endTime") String endTime,
-                                                  @Param("projectIds") List<Long> projectIds);
+                                                  @Param("endTime") String endTime);
 
     List<SagaInstanceDTO> statisticsFailureList(@Param("level") String level,
                                                 @Param("sourceId") Long sourceId,
                                                 @Param("startTime") String startTime,
-                                                @Param("endTime") String endTime,
-                                                @Param("projectIds") List<Long> projectIds);
+                                                @Param("endTime") String endTime);
 
     SagaInstanceDetails selectDetails(@Param("id") Long id);
 
