@@ -52,7 +52,6 @@ public class AsgardApplication {
     }
     
 
-
     /**
      * 实现Asgard Client长连接查询可执行的任务，当有任务时直接返回，没有任务，则等待，直到超时或接收到新任务的通知消息。
      * 新任务的通知消息通过redis来发送和接收
