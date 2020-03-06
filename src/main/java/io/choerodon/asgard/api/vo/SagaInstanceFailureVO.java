@@ -8,6 +8,16 @@ public class SagaInstanceFailureVO {
     private Double percentage;
     private Long totalCount;
 
+    public SagaInstanceFailureVO() {
+    }
+
+    public SagaInstanceFailureVO(Date creationDate, Long failureCount, Double percentage, Long totalCount) {
+        this.creationDate = creationDate;
+        this.failureCount = failureCount;
+        this.percentage = percentage;
+        this.totalCount = totalCount;
+    }
+
     public Date getCreationDate() {
         return creationDate;
     }
