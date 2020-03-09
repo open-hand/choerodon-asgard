@@ -40,7 +40,16 @@ export const StoreProvider = injectIntl(inject('AppState')(
     * @returns {IDBRequest | Promise<void>}
     */
     function retry(id) {
-      return axios.put(`${apiGetway}tasks/instances/${id}/retry`);
+      switch (type) {
+        case 'organization':
+          return axios.put(`/base/v1/organization/${organizationId}/${id}/org/retry`);
+        case 'project':
+          return axios.put(`${apiGetway}tasks/instances/${id}/retry`);
+        case 'site':
+          return axios.put(`/base/v1/site/0/${id}/site/retry`);
+        default:
+          break;
+      }
     }
 
     /**

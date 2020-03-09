@@ -198,11 +198,30 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         String endTime = getTimeStr(null, 1);
         String startTime = getTimeStr(null, date * (-1));
 
+        List<SagaInstanceFailureVO> list;
         if (level != null && !level.equals("site")) {
-            return instanceMapper.statisticsFailure(level, sourceId, startTime, endTime);
+            list = instanceMapper.statisticsFailure(level, sourceId, startTime, endTime);
         } else {
-            return instanceMapper.statisticsFailure(level, null, startTime, endTime);
+            list = instanceMapper.statisticsFailure(level, null, startTime, endTime);
         }
+        if (!getTimeStr(list.get(0).getCreationDate(), 0).equals(getTimeStr(null, date * (-1)))) {
+            SagaInstanceFailureVO failureVO = new SagaInstanceFailureVO();
+            failureVO.setCreationDate(getTime(null, date * (-1)));
+            failureVO.setFailureCount(0L);
+            failureVO.setPercentage(0.0);
+            failureVO.setTotalCount(0L);
+            list.add(0, failureVO);
+        }
+
+        if (!getTimeStr(list.get(list.size() - 1).getCreationDate(), 0).equals(getTimeStr(null, 0))) {
+            SagaInstanceFailureVO failureVO = new SagaInstanceFailureVO();
+            failureVO.setCreationDate(getTime(null, 0));
+            failureVO.setFailureCount(0L);
+            failureVO.setPercentage(0.0);
+            failureVO.setTotalCount(0L);
+            list.add(failureVO);
+        }
+        return list;
     }
 
     @Override
@@ -324,12 +343,16 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         }
     }
 
-    private String getTimeStr(Date date, Integer num) {
+    private Date getTime(Date date, Integer num) {
         date = date == null ? new Date() : date;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calStart = Calendar.getInstance();
         calStart.setTime(date);
         calStart.add(Calendar.DAY_OF_MONTH, num);
-        return dateFormat.format(calStart.getTime());
+        return calStart.getTime();
+    }
+
+    private String getTimeStr(Date date, Integer num) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(getTime(date, num));
     }
 }
