@@ -204,21 +204,17 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         } else {
             list = instanceMapper.statisticsFailure(level, null, startTime, endTime);
         }
-        if (!getTimeStr(list.get(0).getCreationDate(), 0).equals(getTimeStr(null, date * (-1)))) {
-            SagaInstanceFailureVO failureVO = new SagaInstanceFailureVO();
-            failureVO.setCreationDate(getTime(null, date * (-1)));
-            failureVO.setFailureCount(0L);
-            failureVO.setPercentage(0.0);
-            failureVO.setTotalCount(0L);
+        if (list == null || list.size() == 0) {
+            SagaInstanceFailureVO failureVO = new SagaInstanceFailureVO(getTime(null, date * (-1)), 0L, 0.0, 0L);
+            list = new ArrayList<>();
+            list.add(failureVO);
+        } else if (!getTimeStr(list.get(0).getCreationDate(), 0).equals(getTimeStr(null, date * (-1)))) {
+            SagaInstanceFailureVO failureVO = new SagaInstanceFailureVO(getTime(null, date * (-1)), 0L, 0.0, 0L);
             list.add(0, failureVO);
         }
 
         if (!getTimeStr(list.get(list.size() - 1).getCreationDate(), 0).equals(getTimeStr(null, 0))) {
-            SagaInstanceFailureVO failureVO = new SagaInstanceFailureVO();
-            failureVO.setCreationDate(getTime(null, 0));
-            failureVO.setFailureCount(0L);
-            failureVO.setPercentage(0.0);
-            failureVO.setTotalCount(0L);
+            SagaInstanceFailureVO failureVO = new SagaInstanceFailureVO(getTime(null, 0), 0L, 0.0, 0L);
             list.add(failureVO);
         }
         return list;
