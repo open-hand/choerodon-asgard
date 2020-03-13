@@ -127,13 +127,13 @@ public class NoticeServiceImpl implements NoticeService {
     private List<NoticeSendDTO.User> getAdministratorUsers(String level, Long sourceId, Long roleId) {
         List<NoticeSendDTO.User> users = new ArrayList<>();
         if (ResourceLevel.SITE.value().equals(level)) {
-            users = iamFeignClient.pagingQueryUsersByRoleIdOnSiteLevel(roleId, false).getBody();
+            users = iamFeignClient.pagingQueryUsersByRoleIdOnSiteLevel(roleId, false).getBody().getList();
         }
         if (ResourceLevel.ORGANIZATION.value().equals(level)) {
-            users = iamFeignClient.pagingQueryUsersByRoleIdOnOrganizationLevel(roleId, sourceId, false).getBody();
+            users = iamFeignClient.pagingQueryUsersByRoleIdOnOrganizationLevel(roleId, sourceId, false).getBody().getList();
         }
         if (ResourceLevel.PROJECT.value().equals(level)) {
-            users = iamFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(roleId, sourceId, false).getBody();
+            users = iamFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(roleId, sourceId, false).getBody().getList();
         }
         return users;
     }

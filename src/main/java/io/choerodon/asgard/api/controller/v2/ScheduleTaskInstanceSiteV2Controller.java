@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -29,14 +30,12 @@ public class ScheduleTaskInstanceSiteV2Controller {
 
     private ScheduleTaskInstanceService scheduleTaskInstanceService;
     private SagaInstanceHandler sagaInstanceHandler;
-    private SagaInstanceEventPublisher sagaInstanceEventPublisher;
 
 
     public ScheduleTaskInstanceSiteV2Controller(ScheduleTaskInstanceService scheduleTaskInstanceService,
-                                                SagaInstanceHandler sagaInstanceHandler,SagaInstanceEventPublisher sagaInstanceEventPublisher) {
+                                                SagaInstanceHandler sagaInstanceHandler) {
         this.scheduleTaskInstanceService = scheduleTaskInstanceService;
         this.sagaInstanceHandler = sagaInstanceHandler;
-        this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
     }
 
     public void setScheduleTaskInstanceService(ScheduleTaskInstanceService scheduleTaskInstanceService) {
@@ -56,7 +55,7 @@ public class ScheduleTaskInstanceSiteV2Controller {
                 }
         );
         Set<PollScheduleTaskInstance> pollBatch = scheduleTaskInstanceService.pollBatch(dto);
-        if (pollBatch.size() > 0) {
+        if (!CollectionUtils.isEmpty(pollBatch)) {
             deferredResult.setResult(new ResponseEntity<>(pollBatch, HttpStatus.OK));
         } else {
             sagaInstanceHandler.addDeferredResult(SagaInstanceEventPublisher.QUARTZ_INSTANCE_PREFIX,dto.getService(), deferredResult);

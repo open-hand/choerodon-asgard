@@ -1,14 +1,12 @@
 package io.choerodon.asgard.api.vo;
 
-import java.io.IOException;
-import java.util.*;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.api.vo.QuartzTaskDetail;
+import io.choerodon.core.exception.CommonException;
 import io.swagger.annotations.ApiModelProperty;
 
-import io.choerodon.core.exception.CommonException;
+import java.io.IOException;
+import java.util.*;
 
 public class ScheduleTaskDetail {
     @ApiModelProperty(value = "主键id")

@@ -1,17 +1,14 @@
 package io.choerodon.asgard.infra.feign;
 
-import java.util.List;
-
+import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.*;
-
+import io.choerodon.asgard.infra.feign.fallback.IamFeignClientFallback;
+import io.choerodon.core.notify.NoticeSendDTO;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.asgard.infra.feign.fallback.IamFeignClientFallback;
-import io.choerodon.core.domain.Page;
-import io.choerodon.core.notify.NoticeSendDTO;
+import java.util.List;
 
 
 /**
@@ -26,18 +23,18 @@ public interface IamFeignClient {
     ResponseEntity<Project> queryProject(@PathVariable(name = "project_id") Long id);
 
     @PostMapping(value = "/site/role_members/users")
-    ResponseEntity<Page<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnSiteLevel(
+    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnSiteLevel(
             @RequestParam(value = "role_id") Long roleId,
             @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
 
     @PostMapping(value = "/organizations/{organization_id}/role_members/users")
-    ResponseEntity<Page<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnOrganizationLevel(
+    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnOrganizationLevel(
             @RequestParam(value = "role_id") Long roleId,
             @PathVariable(name = "organization_id") Long sourceId,
             @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
 
     @PostMapping(value = "/projects/{project_id}/role_members/users")
-    ResponseEntity<Page<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnProjectLevel(
+    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnProjectLevel(
             @RequestParam(value = "role_id") Long roleId,
             @PathVariable(name = "project_id") Long sourceId,
             @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);

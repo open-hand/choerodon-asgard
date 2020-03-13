@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 public class SagaInstanceHandler{
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaInstanceHandler.class);
 
-    private ConcurrentMap<String , ArrayList<DeferredResult>> requestMap=new ConcurrentHashMap<String , ArrayList<DeferredResult>>();
+    private ConcurrentMap<String , ArrayList<DeferredResult>> requestMap= new ConcurrentHashMap<>();
 
     public void addDeferredResult(String type,String service,DeferredResult deferredResult){
         String key = SagaInstanceEventPublisher.getMessageKey(type,service);
@@ -35,7 +35,7 @@ public class SagaInstanceHandler{
         if(requestMap.containsKey(key)){
             ArrayList<DeferredResult> deferredResults = requestMap.get(key);
             deferredResults.remove(deferredResult);
-            if(deferredResults.size()==0){
+            if(deferredResults.isEmpty()){
                 requestMap.remove(key);
             }
         }

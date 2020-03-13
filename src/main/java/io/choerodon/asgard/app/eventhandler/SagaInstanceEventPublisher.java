@@ -12,6 +12,7 @@ public class SagaInstanceEventPublisher {
      public static final String TAST_INSTANCE_PREFIX="TASK";
      public static final String QUARTZ_INSTANCE_PREFIX="QUARTZ";
      public static final String PLACEHOLDER="#";
+     public static final String STRING_FORMAT="%s%s%s";
     private StringRedisTemplate stringRedisTemplate;
 
     public SagaInstanceEventPublisher(StringRedisTemplate stringRedisTemplate){
@@ -19,14 +20,14 @@ public class SagaInstanceEventPublisher {
     }
 
     public void sagaTaskInstanceEvent(String sagaTaskInstanceService){
-        this.stringRedisTemplate.convertAndSend(SAGA_INSTANCE_TOPIC,String.format("%s%s%s",TAST_INSTANCE_PREFIX,PLACEHOLDER, sagaTaskInstanceService));
+        this.stringRedisTemplate.convertAndSend(SAGA_INSTANCE_TOPIC,String.format(STRING_FORMAT,TAST_INSTANCE_PREFIX,PLACEHOLDER, sagaTaskInstanceService));
     }
 
     public void quartzInstanceEvent(String quartzInstanceService){
-        this.stringRedisTemplate.convertAndSend(SAGA_INSTANCE_TOPIC,String.format("%s%s%s",QUARTZ_INSTANCE_PREFIX,PLACEHOLDER, quartzInstanceService));
+        this.stringRedisTemplate.convertAndSend(SAGA_INSTANCE_TOPIC,String.format(STRING_FORMAT,QUARTZ_INSTANCE_PREFIX,PLACEHOLDER, quartzInstanceService));
     }
 
     public static String getMessageKey(String type,String service){
-        return String.format("%s%s%s",type,PLACEHOLDER,service);
+        return String.format(STRING_FORMAT,type,PLACEHOLDER,service);
     }
 }
