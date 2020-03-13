@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -27,12 +28,10 @@ public class SagaTaskInstanceV2Controller {
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaTaskInstanceV2Controller.class);
     private SagaTaskInstanceService sagaTaskInstanceService;
     private SagaInstanceHandler sagaInstanceHandler;
-    private SagaInstanceEventPublisher sagaInstanceEventPublisher;
 
-    public SagaTaskInstanceV2Controller(SagaTaskInstanceService sagaTaskInstanceService, SagaInstanceHandler sagaInstanceHandler, SagaInstanceEventPublisher sagaInstanceEventPublisher) {
+    public SagaTaskInstanceV2Controller(SagaTaskInstanceService sagaTaskInstanceService, SagaInstanceHandler sagaInstanceHandler) {
         this.sagaTaskInstanceService = sagaTaskInstanceService;
         this.sagaInstanceHandler = sagaInstanceHandler;
-        this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
     }
 
     public void setSagaTaskInstanceService(SagaTaskInstanceService sagaTaskInstanceService) {
@@ -55,7 +54,7 @@ public class SagaTaskInstanceV2Controller {
                 }
         );
         Set<SagaTaskInstance> pollBatch = sagaTaskInstanceService.pollBatch(pollBatchDTO);
-        if (pollBatch.size() > 0) {
+        if (!CollectionUtils.isEmpty(pollBatch)) {
             deferredResult.setResult(new ResponseEntity<>(pollBatch, HttpStatus.OK));
         } else {
             sagaInstanceHandler.addDeferredResult(SagaInstanceEventPublisher.TAST_INSTANCE_PREFIX,pollBatchDTO.getService(), deferredResult);

@@ -392,31 +392,32 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     public ResponseEntity<PageInfo<QuartzTask>> pageQuery(Pageable pageable, String status, String name, String description, String params, String level, Long sourceId) {
         PageInfo<QuartzTaskDTO> result = PageHelper.startPage(pageable.getPageNumber(), pageable.getPageSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
         List<QuartzTaskDTO> quartzTasks = result.getList();
-        Page<QuartzTask> resultPage = new Page<>(pageable.getPageNumber(), pageable.getPageSize());
-        resultPage.setTotal(result.getTotal());
-        List<QuartzTask> quartzTaskList = new ArrayList<>();
-        quartzTasks.forEach(q -> {
-            Date lastStartTime = null;
-            Date nextStartTime;
-            QuartzTaskInstanceDTO lastInstance = instanceMapper.selectLastInstance(q.getId());
-            if (lastInstance != null) {
-                lastStartTime = lastInstance.getActualStartTime();
-                nextStartTime = lastInstance.getPlannedNextTime();
-            } else {
-                // 初次执行 开始时间已过，TriggerType 为 Cron ，则设当前时间的最近执行时间为下次执行时间 ；否则 设 开始时间 为 下次执行时间
-                if (q.getStartTime().getTime() < new Date().getTime() && TriggerType.CRON.getValue().equals(q.getTriggerType())) {
-                    nextStartTime = TriggerUtils.getStartTime(q.getCronExpression());
+        try (Page<QuartzTask> resultPage = new Page<>(pageable.getPageNumber(), pageable.getPageSize())) {
+            resultPage.setTotal(result.getTotal());
+            List<QuartzTask> quartzTaskList = new ArrayList<>();
+            quartzTasks.forEach(q -> {
+                Date lastStartTime = null;
+                Date nextStartTime;
+                QuartzTaskInstanceDTO lastInstance = instanceMapper.selectLastInstance(q.getId());
+                if (lastInstance != null) {
+                    lastStartTime = lastInstance.getActualStartTime();
+                    nextStartTime = lastInstance.getPlannedNextTime();
                 } else {
-                    nextStartTime = q.getStartTime();
+                    // 初次执行 开始时间已过，TriggerType 为 Cron ，则设当前时间的最近执行时间为下次执行时间 ；否则 设 开始时间 为 下次执行时间
+                    if (q.getStartTime().getTime() < new Date().getTime() && TriggerType.CRON.getValue().equals(q.getTriggerType())) {
+                        nextStartTime = TriggerUtils.getStartTime(q.getCronExpression());
+                    } else {
+                        nextStartTime = q.getStartTime();
+                    }
                 }
-            }
-            if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(q.getStatus())) {
-                nextStartTime = null;
-            }
-            quartzTaskList.add(new QuartzTask(q.getId(), q.getName(), q.getDescription(), lastStartTime, nextStartTime, q.getStatus(), q.getObjectVersionNumber()));
-        });
-        resultPage.addAll(quartzTaskList);
-        return new ResponseEntity<>(resultPage.toPageInfo(), HttpStatus.OK);
+                if (!QuartzDefinition.TaskStatus.ENABLE.name().equals(q.getStatus())) {
+                    nextStartTime = null;
+                }
+                quartzTaskList.add(new QuartzTask(q.getId(), q.getName(), q.getDescription(), lastStartTime, nextStartTime, q.getStatus(), q.getObjectVersionNumber()));
+            });
+            resultPage.addAll(quartzTaskList);
+            return new ResponseEntity<>(resultPage.toPageInfo(), HttpStatus.OK);
+        }
     }
 
     @Override

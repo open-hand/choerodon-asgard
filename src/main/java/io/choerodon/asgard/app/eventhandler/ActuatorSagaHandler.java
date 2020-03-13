@@ -5,8 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.app.service.RegisterInstanceService;
 import io.choerodon.asgard.property.PropertyData;
 import io.choerodon.asgard.saga.annotation.SagaTask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +12,6 @@ import java.io.IOException;
 
 @Component
 public class ActuatorSagaHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActuatorSagaHandler.class);
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String ACTUATOR_REFRESH_SAGA_CODE = "mgmt-actuator-refresh";
     private static final String SAGA_REFRESH_SAGA_CODE = "asgard-saga-refresh";

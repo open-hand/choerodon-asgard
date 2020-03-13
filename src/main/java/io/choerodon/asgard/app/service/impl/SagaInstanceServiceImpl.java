@@ -1,28 +1,10 @@
 package io.choerodon.asgard.app.service.impl;
 
-import static java.util.stream.Collectors.groupingBy;
-
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.service.JsonDataService;
@@ -31,7 +13,6 @@ import io.choerodon.asgard.infra.dto.JsonDataDTO;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.asgard.infra.mapper.JsonDataMapper;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
@@ -41,6 +22,23 @@ import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.web.util.PageableHelper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
@@ -61,22 +59,18 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     private JsonDataMapper jsonDataMapper;
     private JsonDataService jsonDataService;
     private SagaInstanceEventPublisher sagaInstanceEventPublisher;
-    private IamFeignClient iamFeignClient;
-
 
     public SagaInstanceServiceImpl(SagaTaskMapper taskMapper,
                                    SagaInstanceMapper instanceMapper,
                                    SagaTaskInstanceMapper taskInstanceMapper,
                                    JsonDataService jsonDataService,
                                    JsonDataMapper jsonDataMapper,
-                                   IamFeignClient iamFeignClient,
                                    SagaInstanceEventPublisher sagaInstanceEventPublisher) {
         this.taskMapper = taskMapper;
         this.instanceMapper = instanceMapper;
         this.taskInstanceMapper = taskInstanceMapper;
         this.jsonDataService = jsonDataService;
         this.jsonDataMapper = jsonDataMapper;
-        this.iamFeignClient = iamFeignClient;
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
         objectMapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
         this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
@@ -204,7 +198,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         } else {
             list = instanceMapper.statisticsFailure(level, null, startTime, endTime);
         }
-        if (list == null || list.size() == 0) {
+        if (CollectionUtils.isEmpty(list)) {
             SagaInstanceFailureVO failureVO = new SagaInstanceFailureVO(getTime(null, date * (-1)), 0L, 0.0, 0L);
             list = new ArrayList<>();
             list.add(failureVO);
@@ -332,7 +326,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
         }
         List<PageSagaTaskInstance> taskInstanceList = taskInstanceMapper.selectAllBySagaInstanceId(dbInstance.getId());
-        if (taskInstanceList == null || taskInstanceList.size() == 0) {
+        if (CollectionUtils.isEmpty(taskInstanceList)) {
             instanceMapper.deleteByPrimaryKey(dbInstance.getId());
         } else {
             throw new CommonException("error.cancel.saga.instance");

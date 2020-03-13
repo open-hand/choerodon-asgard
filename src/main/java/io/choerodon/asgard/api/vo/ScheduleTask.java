@@ -1,15 +1,13 @@
 package io.choerodon.asgard.api.vo;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
+import io.swagger.annotations.ApiModelProperty;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
-import org.springframework.format.annotation.DateTimeFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
 public class ScheduleTask {
 

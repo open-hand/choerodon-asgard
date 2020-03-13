@@ -59,7 +59,7 @@ public class TriggerUtils {
         List<Date> dates = org.quartz.TriggerUtils.computeFireTimes(cronTriggerImpl, null, 3);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return dates.stream()
-                .map(t -> format.format(t)).collect(Collectors.toList());
+                .map(format::format).collect(Collectors.toList());
     }
 
     public static Date getStartTime(final String cron) {
