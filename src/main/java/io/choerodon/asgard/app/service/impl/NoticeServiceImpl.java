@@ -2,11 +2,17 @@ package io.choerodon.asgard.app.service.impl;
 
 import java.util.*;
 
+import com.google.gson.JsonObject;
 import io.choerodon.asgard.api.vo.RegistrantInfo;
+import io.choerodon.asgard.api.vo.User;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
+import io.choerodon.core.enums.ResourceType;
+import io.choerodon.core.notify.WebHookJsonSendDTO;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +36,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     private static final String JOB_NAME = "jobName";
     private static final String JOB_STATUS = "jobStatus";
+    private static final String EVENT_NAME = "组织任务状态";
 
     private NotifyFeignClient notifyFeignClient;
 
@@ -47,7 +54,7 @@ public class NoticeServiceImpl implements NoticeService {
     public void sendNotice(QuartzTaskDTO quartzTask, List<QuartzTaskMemberDTO> noticeMember, String jobStatus) {
         try {
             //发送通知失败不需要回滚
-            NoticeSendDTO noticeSendDTO = getNoticeSendDTO(noticeMember, quartzTask.getName(), quartzTask.getLevel(), quartzTask.getSourceId(), jobStatus);
+            NoticeSendDTO noticeSendDTO = getNoticeSendDTO(noticeMember, quartzTask.getName(), quartzTask.getLevel(), quartzTask.getSourceId(), jobStatus, quartzTask);
             notifyFeignClient.postNotice(noticeSendDTO);
         } catch (CommonException e) {
             LOGGER.info("schedule job send notice fail!", e);
@@ -77,7 +84,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
-    private NoticeSendDTO getNoticeSendDTO(final List<QuartzTaskMemberDTO> notifyMembers, final String jobName, final String level, final Long sourceId, final String jobStatus) {
+    private NoticeSendDTO getNoticeSendDTO(final List<QuartzTaskMemberDTO> notifyMembers, final String jobName, final String level, final Long sourceId, final String jobStatus, QuartzTaskDTO quartzTaskDTO) {
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
         noticeSendDTO.setSourceId(sourceId);
         noticeSendDTO.setCode(BusinessTypeCode.getValueByLevel(level).value());
@@ -87,6 +94,30 @@ public class NoticeServiceImpl implements NoticeService {
         params.put(JOB_NAME, jobName);
         params.put(JOB_STATUS, jobStatus);
         noticeSendDTO.setParams(params);
+        if (ResourceType.ORGANIZATION.value().equals(BusinessTypeCode.getValueByLevel(level).value())) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("organizationId", sourceId);
+            jsonObject.addProperty("jobName", jobName);
+            jsonObject.addProperty("jobStatus", jobStatus);
+            jsonObject.addProperty("startedAt", String.valueOf(quartzTaskDTO.getStartTime()));
+            jsonObject.addProperty("finishedAt", String.valueOf(quartzTaskDTO.getLastUpdateDate()));
+            List<User> userList = iamFeignClient.listUsersByIds(new Long[]{quartzTaskDTO.getCreatedBy()}).getBody();
+            WebHookJsonSendDTO.User user = null;
+            if (org.springframework.util.StringUtils.isEmpty(userList)) {
+                user = new WebHookJsonSendDTO.User("0", "unknown");
+            } else {
+                user = new WebHookJsonSendDTO.User(userList.get(0).getLoginName(), userList.get(0).getRealName());
+
+            }
+            WebHookJsonSendDTO webHookJsonSendDTO = new WebHookJsonSendDTO(
+                    BusinessTypeCode.getValueByLevel(level).value(),
+                    EVENT_NAME,
+                    jsonObject,
+                    quartzTaskDTO.getCreationDate(),
+                    user
+            );
+            noticeSendDTO.setWebHookJsonSendDTO(webHookJsonSendDTO);
+        }
         return noticeSendDTO;
     }
 
