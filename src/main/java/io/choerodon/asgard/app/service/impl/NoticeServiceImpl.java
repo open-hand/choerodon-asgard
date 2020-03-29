@@ -2,6 +2,7 @@ package io.choerodon.asgard.app.service.impl;
 
 import java.util.*;
 
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import io.choerodon.asgard.api.vo.RegistrantInfo;
 import io.choerodon.asgard.api.vo.User;
@@ -95,12 +96,12 @@ public class NoticeServiceImpl implements NoticeService {
         params.put(JOB_STATUS, jobStatus);
         noticeSendDTO.setParams(params);
         if (ResourceType.ORGANIZATION.value().equals(BusinessTypeCode.getValueByLevel(level).value())) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("organizationId", sourceId);
-            jsonObject.addProperty("jobName", jobName);
-            jsonObject.addProperty("jobStatus", jobStatus);
-            jsonObject.addProperty("startedAt", String.valueOf(quartzTaskDTO.getStartTime()));
-            jsonObject.addProperty("finishedAt", String.valueOf(quartzTaskDTO.getLastUpdateDate()));
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("organizationId", sourceId);
+            jsonObject.put("jobName", jobName);
+            jsonObject.put("jobStatus", jobStatus);
+            jsonObject.put("startedAt", String.valueOf(quartzTaskDTO.getStartTime()));
+            jsonObject.put("finishedAt", String.valueOf(quartzTaskDTO.getLastUpdateDate()));
             List<User> userList = iamFeignClient.listUsersByIds(new Long[]{quartzTaskDTO.getCreatedBy()}).getBody();
             WebHookJsonSendDTO.User user = null;
             if (org.springframework.util.StringUtils.isEmpty(userList)) {
