@@ -27,6 +27,7 @@ import io.choerodon.asgard.infra.feign.NotifyFeignClient;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.notify.NoticeSendDTO;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author dengyouquan
@@ -38,6 +39,7 @@ public class NoticeServiceImpl implements NoticeService {
     private static final String JOB_NAME = "jobName";
     private static final String JOB_STATUS = "jobStatus";
     private static final String EVENT_NAME = "组织任务状态";
+    private static final String JOB_STATUS_ORGANIZATION = "jobStatusOrganization";
 
     private NotifyFeignClient notifyFeignClient;
 
@@ -95,7 +97,7 @@ public class NoticeServiceImpl implements NoticeService {
         params.put(JOB_NAME, jobName);
         params.put(JOB_STATUS, jobStatus);
         noticeSendDTO.setParams(params);
-        if (ResourceType.ORGANIZATION.value().equals(BusinessTypeCode.getValueByLevel(level).value())) {
+        if (JOB_STATUS_ORGANIZATION.equals(BusinessTypeCode.getValueByLevel(level).value())) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("organizationId", sourceId);
             jsonObject.put("jobName", jobName);
@@ -104,7 +106,7 @@ public class NoticeServiceImpl implements NoticeService {
             jsonObject.put("finishedAt", String.valueOf(quartzTaskDTO.getLastUpdateDate()));
             List<User> userList = iamFeignClient.listUsersByIds(new Long[]{quartzTaskDTO.getCreatedBy()}).getBody();
             WebHookJsonSendDTO.User user = null;
-            if (org.springframework.util.StringUtils.isEmpty(userList)) {
+            if (CollectionUtils.isEmpty(userList)) {
                 user = new WebHookJsonSendDTO.User("0", "unknown");
             } else {
                 user = new WebHookJsonSendDTO.User(userList.get(0).getLoginName(), userList.get(0).getRealName());
