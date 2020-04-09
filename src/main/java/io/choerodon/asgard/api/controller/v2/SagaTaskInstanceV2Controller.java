@@ -42,7 +42,10 @@ public class SagaTaskInstanceV2Controller {
     @Permission(permissionWithin = true)
     @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
     public DeferredResult<ResponseEntity<Set<SagaTaskInstance>>> pollBatch(@RequestBody @Valid final PollSagaTaskInstanceDTO pollBatchDTO) {
-        LOGGER.info("poll SagaTaskInstance from {}",pollBatchDTO.getService());
+        LOGGER.info("poll SagaTaskInstance from {},instance: {},maxPollSize:{}", pollBatchDTO.getService(), pollBatchDTO.getInstance(), pollBatchDTO.getMaxPollSize());
+        if (!CollectionUtils.isEmpty(pollBatchDTO.getRunningIds())) {
+            LOGGER.info("RunningIds size:{}", pollBatchDTO.getRunningIds().size());
+        }
 
         if (pollBatchDTO.getMaxPollSize() == null) {
             pollBatchDTO.setMaxPollSize(500);
@@ -55,6 +58,7 @@ public class SagaTaskInstanceV2Controller {
         );
         Set<SagaTaskInstance> pollBatch = sagaTaskInstanceService.pollBatch(pollBatchDTO);
         if (!CollectionUtils.isEmpty(pollBatch)) {
+            LOGGER.info("pollBatch size:{}", pollBatch.size());
             deferredResult.setResult(new ResponseEntity<>(pollBatch, HttpStatus.OK));
         } else {
             sagaInstanceHandler.addDeferredResult(SagaInstanceEventPublisher.TAST_INSTANCE_PREFIX,pollBatchDTO.getService(), deferredResult);
