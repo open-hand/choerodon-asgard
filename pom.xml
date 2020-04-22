@@ -27,12 +27,12 @@
         <dependency>
             <groupId>org.hzero</groupId>
             <artifactId>hzero-asgard</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>io.choerodon</groupId>
-                    <artifactId>asgard-service</artifactId>
-                </exclusion>
-            </exclusions>
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>io.choerodon</groupId>-->
+                    <!--<artifactId>asgard-service</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
 
 
