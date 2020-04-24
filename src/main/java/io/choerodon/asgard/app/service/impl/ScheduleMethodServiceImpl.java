@@ -2,9 +2,6 @@ package io.choerodon.asgard.app.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.ScheduleMethod;
 import io.choerodon.asgard.api.vo.ScheduleMethodInfo;
 import io.choerodon.asgard.api.vo.ScheduleMethodParams;
@@ -12,8 +9,11 @@ import io.choerodon.asgard.app.service.ScheduleMethodService;
 import io.choerodon.asgard.infra.dto.QuartzMethodDTO;
 import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpStatus;
@@ -53,24 +53,23 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<ScheduleMethodInfo>> pageQuery(int page, int size, String code, String service, String method, String description, String params, String level) {
-        PageInfo<QuartzMethodDTO> pageInfo =
-                PageHelper
-                        .startPage(page, size)
-                        .doSelectPageInfo(
-                                () -> methodMapper.fulltextSearch(code, service, method, description, params, level));
-        List<QuartzMethodDTO> result = pageInfo.getList();
+    public ResponseEntity<Page<ScheduleMethodInfo>> pageQuery(PageRequest pageRequest, String code, String service, String method, String description, String params, String level) {
+        Page<QuartzMethodDTO> pageInfo =
+                PageHelper.doPageAndSort(pageRequest,
+                        () -> methodMapper.fulltextSearch(code, service, method, description, params, level));
+        List<QuartzMethodDTO> result = pageInfo.getContent();
         List<ScheduleMethodInfo> scheduleMethodInfos = new ArrayList<>();
         result.forEach(r ->
                 scheduleMethodInfos.add(
                         new ScheduleMethodInfo(r.getId(), r.getCode(),
                                 r.getService(), r.getMethod(), r.getDescription(),
                                 discoveryClient.getInstances(r.getService()).size(), r.getLevel())));
-        Page<ScheduleMethodInfo> pageResult = new Page<>(page, size);
-        pageResult.setTotal(pageInfo.getTotal());
+        Page<ScheduleMethodInfo> pageResult = new Page<>();
+        pageResult.setTotalElements(pageInfo.getTotalElements());
         pageResult.addAll(scheduleMethodInfos);
-        return new ResponseEntity<>(pageResult.toPageInfo(), HttpStatus.OK);
+        return new ResponseEntity<>(pageResult, HttpStatus.OK);
     }
+
 
     @Override
     public List<ScheduleMethod> getMethodByService(String serviceName, String level) {

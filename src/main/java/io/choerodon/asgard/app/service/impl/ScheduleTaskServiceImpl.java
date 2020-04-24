@@ -2,9 +2,6 @@ package io.choerodon.asgard.app.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.NoticeService;
 import io.choerodon.asgard.app.service.QuartzJobService;
@@ -28,14 +25,16 @@ import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.asgard.property.PropertyTimedTask;
 import io.choerodon.asgard.schedule.ParamType;
 import io.choerodon.asgard.schedule.QuartzDefinition;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -389,11 +388,14 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<QuartzTask>> pageQuery(Pageable pageable, String status, String name, String description, String params, String level, Long sourceId) {
-        PageInfo<QuartzTaskDTO> result = PageHelper.startPage(pageable.getPageNumber(), pageable.getPageSize()).doSelectPageInfo(() -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
-        List<QuartzTaskDTO> quartzTasks = result.getList();
-        try (Page<QuartzTask> resultPage = new Page<>(pageable.getPageNumber(), pageable.getPageSize())) {
-            resultPage.setTotal(result.getTotal());
+    public ResponseEntity<Page<QuartzTask>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params, String level, Long sourceId) {
+        Page<QuartzTaskDTO> result = PageHelper
+                .doPageAndSort(pageRequest,
+                        () -> taskMapper.fulltextSearch(status, name, description, params, level, sourceId));
+        List<QuartzTaskDTO> quartzTasks = result.getContent();
+        Page<QuartzTask> resultPage = new Page<>();
+        try {
+            resultPage.setTotalElements(result.getTotalElements());
             List<QuartzTask> quartzTaskList = new ArrayList<>();
             quartzTasks.forEach(q -> {
                 Date lastStartTime = null;
@@ -416,7 +418,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 quartzTaskList.add(new QuartzTask(q.getId(), q.getName(), q.getDescription(), lastStartTime, nextStartTime, q.getStatus(), q.getObjectVersionNumber()));
             });
             resultPage.addAll(quartzTaskList);
-            return new ResponseEntity<>(resultPage.toPageInfo(), HttpStatus.OK);
+            return new ResponseEntity<>(resultPage, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new CommonException("error.query",e);
         }
     }
 

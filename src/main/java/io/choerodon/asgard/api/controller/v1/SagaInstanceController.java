@@ -1,26 +1,26 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import com.github.pagehelper.Page;
 import io.choerodon.asgard.api.vo.SagaInstance;
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
 import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
 import io.choerodon.asgard.api.vo.StartInstance;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
-import io.choerodon.core.annotation.Permission;
-import io.choerodon.core.enums.ResourceLevel;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
+import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.data.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereolevel.Controller;
+
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -55,7 +55,7 @@ public class SagaInstanceController {
     public ResponseEntity<SagaInstance> start(@PathVariable("code") String code,
                                               @RequestBody StartInstance dto) {
         dto.setSagaCode(code);
-        if (dto.getRefId() == null || dto.getReflevel() == null) {
+        if (dto.getRefId() == null || dto.getRefType() == null) {
             throw new FeignException(ERROR_INVALID_DTO);
         }
         return sagaInstanceService.start(dto);
@@ -80,10 +80,10 @@ public class SagaInstanceController {
     @Permission(permissionWithin = true)
     @ResponseBody
     public void confirm(@PathVariable("uuid") String uuid, @RequestBody StartInstance dto) {
-        if (dto.getReflevel() == null || dto.getRefId() == null || dto.getInput() == null) {
+        if (dto.getRefType() == null || dto.getRefId() == null || dto.getInput() == null) {
             throw new FeignException(ERROR_INVALID_DTO);
         }
-        sagaInstanceService.confirm(uuid, dto.getInput(), dto.getReflevel(), dto.getRefId());
+        sagaInstanceService.confirm(uuid, dto.getInput(), dto.getRefType(), dto.getRefId());
     }
 
     @PutMapping("{uuid}/cancel")
@@ -100,13 +100,13 @@ public class SagaInstanceController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<SagaInstanceDetails>> pagingQuery(@ApiIgnore
-                                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest PageRequest,
-                                                                     @RequestParam(required = false) String sagaCode,
-                                                                     @RequestParam(required = false) String status,
-                                                                     @RequestParam(required = false) String reflevel,
-                                                                     @RequestParam(required = false) String refId,
-                                                                     @RequestParam(required = false) String params) {
-        return sagaInstanceService.pageQuery(PageRequest, sagaCode, status, reflevel, refId, params, null, null);
+                                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest,
+                                                                 @RequestParam(required = false) String sagaCode,
+                                                                 @RequestParam(required = false) String status,
+                                                                 @RequestParam(required = false) String reflevel,
+                                                                 @RequestParam(required = false) String refId,
+                                                                 @RequestParam(required = false) String params) {
+        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, reflevel, refId, params, null, null);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

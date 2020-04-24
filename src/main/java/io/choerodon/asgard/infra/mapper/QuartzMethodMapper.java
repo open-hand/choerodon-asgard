@@ -2,12 +2,12 @@ package io.choerodon.asgard.infra.mapper;
 
 import io.choerodon.asgard.api.vo.ScheduleMethodParams;
 import io.choerodon.asgard.infra.dto.QuartzMethodDTO;
-import io.choerodon.mybatis.common.Mapper;
+import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface QuartzMethodMapper extends Mapper<QuartzMethodDTO> {
+public interface QuartzMethodMapper extends BaseMapper<QuartzMethodDTO> {
 
     List<QuartzMethodDTO> fulltextSearch(@Param("code") String code,
                                          @Param("service") String service,

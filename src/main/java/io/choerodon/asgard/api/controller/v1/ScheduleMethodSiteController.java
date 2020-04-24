@@ -1,18 +1,17 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import com.github.pagehelper.Page;
 import io.choerodon.asgard.api.vo.ScheduleMethod;
 import io.choerodon.asgard.api.vo.ScheduleMethodInfo;
 import io.choerodon.asgard.api.vo.ScheduleMethodParams;
 import io.choerodon.asgard.app.service.ScheduleMethodService;
-import io.choerodon.core.annotation.Permission;
-import io.choerodon.core.enums.ResourceLevel;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
+import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -43,14 +42,14 @@ public class ScheduleMethodSiteController {
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<Page<ScheduleMethodInfo>> pagingQuery(@RequestParam(value = "code", required = false) String code,
-                                                                    @RequestParam(name = "service", required = false) String service,
-                                                                    @RequestParam(name = "method", required = false) String method,
-                                                                    @RequestParam(name = "description", required = false) String description,
-                                                                    @RequestParam(name = "level", required = false) String level,
-                                                                    @RequestParam(name = "params", required = false) String params,
-                                                                    @ApiIgnore
-                                                                    @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest PageRequest) {
-        return scheduleMethodService.pageQuery(PageRequest.getPageNumber(), PageRequest.getPageSize(), code, service, method, description, params, level);
+                                                                @RequestParam(name = "service", required = false) String service,
+                                                                @RequestParam(name = "method", required = false) String method,
+                                                                @RequestParam(name = "description", required = false) String description,
+                                                                @RequestParam(name = "level", required = false) String level,
+                                                                @RequestParam(name = "params", required = false) String params,
+                                                                @ApiIgnore
+                                                                    @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+        return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, level);
     }
 
 

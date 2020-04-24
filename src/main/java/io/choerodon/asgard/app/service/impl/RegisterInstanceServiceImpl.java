@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.app.service.*;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.property.PropertyData;
-import io.choerodon.eureka.event.EurekaEventPayload;
+import org.hzero.register.event.event.InstanceAddedEvent;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,27 +54,25 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
     }
 
     @Override
-    public void instanceDownConsumer(final EurekaEventPayload payload) {
-        sagaTaskInstanceService.unlockByInstance(payload.getInstanceAddress());
-        scheduleTaskInstanceService.unlockByInstance(payload.getInstanceAddress());
+    public void instanceDownConsumer(final InstanceAddedEvent payload) {
+        sagaTaskInstanceService.unlockByInstance(payload.getServiceInstance().getHost());
+        scheduleTaskInstanceService.unlockByInstance(payload.getServiceInstance().getHost());
     }
 
     /**
-     * 这种方式不用了
      * @param payload
      */
     @Override
-    public void instanceUpConsumer(final EurekaEventPayload payload) {
-        PropertyData propertyData = fetchPropertyData(payload.getInstanceAddress());
+    public void instanceUpConsumer(final InstanceAddedEvent payload) {
+        PropertyData propertyData = fetchPropertyData(payload.getServiceInstance().getHost());
         if (propertyData == null) {
             throw new RemoteAccessException("error.instanceUpConsumer.fetchPropertyData");
         } else {
-            propertyDataConsume(propertyData, payload.getVersion());
+            propertyDataConsume(propertyData, payload.getServiceInstance().getMetadata().get("VERSION"));
         }
     }
 
     /**
-     * 这种方式不用了
      * @param address
      * @return
      */

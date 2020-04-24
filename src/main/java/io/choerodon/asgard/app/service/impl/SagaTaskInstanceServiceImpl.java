@@ -2,8 +2,6 @@ package io.choerodon.asgard.app.service.impl;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.PageSagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
@@ -23,13 +21,15 @@ import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -350,12 +350,11 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pageQuery(Pageable pageable, String taskInstanceCode, String sagaInstanceCode, String status, String params, String level, Long sourceId) {
-        return new ResponseEntity<>(
-                PageHelper
-                        .startPage(pageable.getPageNumber(),pageable.getPageSize())
-                        .doSelectPageInfo(
-                                () -> taskInstanceMapper.fulltextSearchTaskInstance(taskInstanceCode, status, sagaInstanceCode, params, level, sourceId)), HttpStatus.OK);
+    public ResponseEntity<Page<SagaTaskInstanceInfo>> pageQuery(PageRequest pageable, String taskInstanceCode, String sagaInstanceCode, String status, String params, String level, Long sourceId) {
+        return new ResponseEntity<Page<SagaTaskInstanceInfo>>(
+                PageHelper.doPageAndSort(
+                        pageable,
+                        () -> taskInstanceMapper.fulltextSearchTaskInstance(taskInstanceCode, status, sagaInstanceCode, params, level, sourceId)), HttpStatus.OK);
     }
 
     @Override

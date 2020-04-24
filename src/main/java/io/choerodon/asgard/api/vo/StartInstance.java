@@ -1,8 +1,8 @@
 package io.choerodon.asgard.api.vo;
 
-import io.swagger.annotations.ApiModelProperty;
-
 import javax.validation.constraints.NotNull;
+
+import io.swagger.annotations.ApiModelProperty;
 
 public class StartInstance {
 

@@ -1,12 +1,13 @@
 package io.choerodon.asgard.infra.dto;
 
-import io.choerodon.mybatis.entity.BaseDTO;
+import io.choerodon.mybatis.domain.AuditDomain;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Table(name = "ASGARD_QUARTZ_TASK")
-public class QuartzTaskDTO extends BaseDTO {
+public class QuartzTaskDTO extends AuditDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

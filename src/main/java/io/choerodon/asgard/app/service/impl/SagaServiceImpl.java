@@ -1,7 +1,6 @@
 package io.choerodon.asgard.app.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.JsonMerge;
 import io.choerodon.asgard.api.vo.Saga;
@@ -13,11 +12,13 @@ import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.mapper.SagaMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.ConvertUtils;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -69,11 +70,10 @@ public class SagaServiceImpl implements SagaService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<Saga>> pagingQuery(Pageable pageable, String code, String description, String service, String params) {
+    public ResponseEntity<Page<Saga>> pagingQuery(PageRequest pageable, String code, String description, String service, String params) {
         return new ResponseEntity<>(
                 PageHelper
-                        .startPage(pageable.getPageNumber(), pageable.getPageSize())
-                        .doSelectPageInfo(
+                        .doPageAndSort(pageable,
                                 () -> sagaMapper.fulltextSearch(code, description, service, params)), HttpStatus.OK);
     }
 

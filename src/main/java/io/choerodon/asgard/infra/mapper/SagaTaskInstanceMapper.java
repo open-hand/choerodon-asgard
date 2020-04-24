@@ -4,13 +4,13 @@ import io.choerodon.asgard.api.vo.PageSagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
 import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
-import io.choerodon.mybatis.common.Mapper;
+import io.choerodon.mybatis.common.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
 
-public interface SagaTaskInstanceMapper extends Mapper<SagaTaskInstanceDTO> {
+public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstanceDTO> {
 
     /**
      * 拉取并发策略为NONE, 状态为RUNNING的消息

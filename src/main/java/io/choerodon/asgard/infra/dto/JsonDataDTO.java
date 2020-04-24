@@ -1,6 +1,6 @@
 package io.choerodon.asgard.infra.dto;
 
-import io.choerodon.mybatis.entity.BaseDTO;
+import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "ASGARD_ORCH_JSON_DATA")
-public class JsonDataDTO extends BaseDTO {
+public class JsonDataDTO extends AuditDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
