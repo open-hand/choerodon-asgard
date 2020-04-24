@@ -1,18 +1,18 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.Page;
 import io.choerodon.asgard.api.vo.SagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceStatus;
 import io.choerodon.asgard.app.service.SagaTaskInstanceService;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.core.annotation.Permission;
-import io.choerodon.core.enums.ResourceType;
+import io.choerodon.core.enums.ResourceLevel;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -63,21 +63,21 @@ public class SagaTaskInstanceController {
         return sagaTaskInstanceService.query(id);
     }
 
-    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层强制失败SagaTask")
     @PutMapping("/{id}/failed")
     public void forceFailed(@PathVariable long id) {
         sagaTaskInstanceService.forceFailed(id);
     }
 
-    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
     public void unlockById(@PathVariable long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
-    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
     public void unlockByInstance(@RequestParam(value = "instance", required = false) String instance) {
@@ -87,7 +87,7 @@ public class SagaTaskInstanceController {
         sagaTaskInstanceService.unlockByInstance(instance);
     }
 
-    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层手动重试SagaTask")
     @PutMapping("/{id}/retry")
     public void retry(@PathVariable long id) {
@@ -95,17 +95,17 @@ public class SagaTaskInstanceController {
     }
 
 
-    @Permission(type = ResourceType.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "平台层分页查询SagaTask实例列表")
     @ResponseBody
     @CustomPageRequest
-    public ResponseEntity<PageInfo<SagaTaskInstanceInfo>> pagingQuery(@RequestParam(required = false) String taskInstanceCode,
+    public ResponseEntity<Page<SagaTaskInstanceInfo>> pagingQuery(@RequestParam(required = false) String taskInstanceCode,
                                                                       @RequestParam(required = false) String sagaInstanceCode,
                                                                       @RequestParam(required = false) String status,
                                                                       @RequestParam(required = false) String params,
                                                                       @ApiIgnore
-                                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return sagaTaskInstanceService.pageQuery(pageable, taskInstanceCode, sagaInstanceCode, status, params, null, null);
+                                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest PageRequest) {
+        return sagaTaskInstanceService.pageQuery(PageRequest, taskInstanceCode, sagaInstanceCode, status, params, null, null);
     }
 }

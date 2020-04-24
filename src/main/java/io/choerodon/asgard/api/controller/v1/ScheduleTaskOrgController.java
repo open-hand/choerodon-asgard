@@ -1,6 +1,6 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.Page;
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.api.vo.QuartzTask;
 import io.choerodon.asgard.api.vo.ScheduleTask;
@@ -8,13 +8,12 @@ import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
 import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
-import io.choerodon.core.annotation.Permission;
-import io.choerodon.core.enums.ResourceType;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
+import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -40,7 +39,7 @@ public class ScheduleTaskOrgController {
         this.scheduleTaskService = scheduleTaskService;
     }
 
-    @Permission(type = ResourceType.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION)
     @ApiOperation(value = "组织层创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTaskDTO> create(@PathVariable("organization_id") long orgId,
@@ -49,7 +48,7 @@ public class ScheduleTaskOrgController {
         return new ResponseEntity<>(scheduleTaskService.create(dto, ResourceLevel.ORGANIZATION.value(), orgId), HttpStatus.OK);
     }
 
-    @Permission(type = ResourceType.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION)
     @ApiOperation(value = "组织层启用任务")
     @PutMapping("/{id}/enable")
     public void enable(@PathVariable("organization_id") long orgId,
@@ -57,7 +56,7 @@ public class ScheduleTaskOrgController {
         scheduleTaskService.enable(id, objectVersionNumber, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(type = ResourceType.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION)
     @ApiOperation(value = "组织层停用任务")
     @PutMapping("/{id}/disable")
     public void disable(@PathVariable("organization_id") long orgId,
@@ -73,7 +72,7 @@ public class ScheduleTaskOrgController {
         scheduleTaskService.disableByLevelAndSourceId(ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(type = ResourceType.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION)
     @ApiOperation(value = "组织层删除任务")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("organization_id") long orgId,
@@ -81,22 +80,22 @@ public class ScheduleTaskOrgController {
         scheduleTaskService.delete(id, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(type = ResourceType.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION)
     @GetMapping
     @ApiOperation(value = "组织层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@PathVariable("organization_id") long orgId,
+    public ResponseEntity<Page<QuartzTask>> pagingQuery(@PathVariable("organization_id") long orgId,
                                                             @RequestParam(required = false) String status,
                                                             @RequestParam(required = false) String name,
                                                             @RequestParam(required = false) String description,
                                                             @RequestParam(required = false) String params,
                                                             @ApiIgnore
-                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) Pageable pageable) {
-        return scheduleTaskService.pageQuery(pageable, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest PageRequest) {
+        return scheduleTaskService.pageQuery(PageRequest, status, name, description, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
-    @Permission(type = ResourceType.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION)
     @GetMapping("/{id}")
     @ApiOperation(value = "组织层查看任务详情")
     public ResponseEntity<ScheduleTaskDetail> getTaskDetail(@PathVariable("organization_id") long orgId,
@@ -105,7 +104,7 @@ public class ScheduleTaskOrgController {
 
     }
 
-    @Permission(type = ResourceType.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION)
     @ApiOperation(value = "组织层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("organization_id") long orgId,
@@ -114,7 +113,7 @@ public class ScheduleTaskOrgController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @Permission(type = ResourceType.ORGANIZATION)
+    @Permission(level = ResourceLevel.ORGANIZATION)
     @ApiOperation(value = "组织层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(@PathVariable("organization_id") long orgId,

@@ -1,6 +1,6 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.Page;
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.api.vo.QuartzTask;
 import io.choerodon.asgard.api.vo.ScheduleTask;
@@ -9,13 +9,13 @@ import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
 import io.choerodon.core.annotation.Permission;
-import io.choerodon.core.enums.ResourceType;
+import io.choerodon.core.enums.ResourceLevel;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -41,7 +41,7 @@ public class ScheduleTaskProjectController {
         this.scheduleTaskService = scheduleTaskService;
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTaskDTO> create(@PathVariable("project_id") long projectId,
@@ -50,7 +50,7 @@ public class ScheduleTaskProjectController {
         return new ResponseEntity<>(scheduleTaskService.create(dto, ResourceLevel.PROJECT.value(), projectId), HttpStatus.OK);
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层启用任务")
     @PutMapping("/{id}/enable")
     public void enable(@PathVariable("project_id") long projectId,
@@ -58,7 +58,7 @@ public class ScheduleTaskProjectController {
         scheduleTaskService.enable(id, objectVersionNumber, ResourceLevel.PROJECT.value(), projectId);
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层停用任务")
     @PutMapping("/{id}/disable")
     public void disable(@PathVariable("project_id") long projectId,
@@ -67,7 +67,7 @@ public class ScheduleTaskProjectController {
         scheduleTaskService.disable(id, objectVersionNumber, false);
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层删除任务")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("project_id") long projectId,
@@ -75,22 +75,22 @@ public class ScheduleTaskProjectController {
         scheduleTaskService.delete(id, ResourceLevel.PROJECT.value(), projectId);
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @PostMapping("/list")
     @ApiOperation(value = "项目层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<PageInfo<QuartzTask>> pagingQuery(@PathVariable("project_id") long projectId,
+    public ResponseEntity<Page<QuartzTask>> pagingQuery(@PathVariable("project_id") long projectId,
                                                             @ApiIgnore
-                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) Pageable pageable,
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest PageRequest,
                                                             @RequestParam(required = false) String status,
                                                             @RequestParam(required = false) String name,
                                                             @RequestParam(required = false) String description,
                                                             @RequestParam(required = false) String params) {
-        return scheduleTaskService.pageQuery(pageable, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
+        return scheduleTaskService.pageQuery(PageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping("/{id}")
     @ApiOperation(value = "项目层查看任务详情")
     public ResponseEntity<ScheduleTaskDetail> getTaskDetail(@PathVariable("project_id") long projectId,
@@ -107,7 +107,7 @@ public class ScheduleTaskProjectController {
     }
 
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("project_id") long projectId,
@@ -116,7 +116,7 @@ public class ScheduleTaskProjectController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(@PathVariable("project_id") long projectId,
