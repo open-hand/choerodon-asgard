@@ -20,7 +20,6 @@ public class EurekaEventObserver implements ApplicationListener<InstanceAddedEve
      */
     @Override
     public void onApplicationEvent(InstanceAddedEvent event) {
-
         this.registerInstanceService.instanceUpConsumer(event);
     }
 

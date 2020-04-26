@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.asgard.infra.mapper.SagaMapper">
+
+    <select id="fulltextSearch" resultType="io.choerodon.asgard.api.vo.Saga">
+        SELECT
+        id,
+        code,
+        service,
+        description,
+        input_schema AS inputSchema
+        FROM asgard_orch_saga
+        WHERE 1 = 1
+        <if test="code != null">
+            AND code LIKE concat(concat('%',#{code}),'%')
+        </if>
+        <if test="service != null">
+            AND service LIKE concat(concat('%',#{service}),'%')
+        </if>
+        <if test="description != null">
+            AND description LIKE concat(concat('%',#{description}),'%')
+        </if>
+
+        <if test="params != null">
+            AND (
+            code LIKE concat(concat('%',#{params}),'%') OR
+            service LIKE concat(concat('%',#{params}),'%') OR
+            description LIKE concat(concat('%',#{params}),'%')
+            )
+        </if>
+        order by id desc
+    </select>
+
+</mapper>
