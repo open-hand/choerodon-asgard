@@ -6,7 +6,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
             createSequence(sequenceName: 'ASGARD_QUARTZ_TASK_S', startValue: "1")
         }
         createTable(tableName: "ASGARD_QUARTZ_TASK") {
-            column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
+            column(name: 'ID', type: 'BIGINT', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_TASK')
             }
             column(name: 'NAME', type: 'VARCHAR(64)', remarks: '任务名') {
@@ -18,8 +18,8 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
             column(name: 'TRIGGER_TYPE', type: 'VARCHAR(16)', remarks: '触发器类型。simple_trigger和cron_trigger') {
                 constraints(nullable: false)
             }
-            column(name: "SIMPLE_REPEAT_COUNT", type: "BIGINT(7) UNSIGNED", remarks: 'simple-trigger重复次数')
-            column(name: "SIMPLE_REPEAT_INTERVAL", type: "BIGINT UNSIGNED", remarks: 'simple-trigger执行间隔')
+            column(name: "SIMPLE_REPEAT_COUNT", type: "BIGINT", remarks: 'simple-trigger重复次数')
+            column(name: "SIMPLE_REPEAT_INTERVAL", type: "BIGINT", remarks: 'simple-trigger执行间隔')
             column(name: "CRON_EXPRESSION", type: "VARCHAR(120)", remarks: 'cron-trigger表达式')
 
             column(name: 'EXECUTE_PARAMS', type: 'TEXT', remarks: '任务执行参数') {
@@ -51,7 +51,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task.groovy') {
             column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'EXECUTE_METHOD')
         }
         addColumn(tableName: 'ASGARD_QUARTZ_TASK') {
-            column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED', defaultValue: "0", remarks: '创建该记录的源id，可以是projectId,也可以是organizarionId等', afterColumn: 'FD_LEVEL')
+            column(name: 'SOURCE_ID', type: 'BIGINT', defaultValue: "0", remarks: '创建该记录的源id，可以是projectId,也可以是organizarionId等', afterColumn: 'FD_LEVEL')
         }
     }
 

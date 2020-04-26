@@ -6,7 +6,7 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga.groovy') {
             createSequence(sequenceName: 'ASGARD_ORCH_SAGA_S', startValue:"1")
         }
         createTable(tableName: "ASGARD_ORCH_SAGA") {
-            column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
+            column(name: 'ID', type: 'BIGINT', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_ORCH_SAGA')
             }
             column(name: 'CODE', type: 'VARCHAR(64)', remarks: 'saga标识') {

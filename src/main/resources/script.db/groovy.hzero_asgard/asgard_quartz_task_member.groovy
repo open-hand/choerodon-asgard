@@ -6,16 +6,16 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_member.groovy') {
             createSequence(sequenceName: 'ASGARD_QUARTZ_TASK_MEMBER_S', startValue: "1")
         }
         createTable(tableName: "ASGARD_QUARTZ_TASK_MEMBER") {
-            column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
+            column(name: 'ID', type: 'BIGINT', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_TASK_MEMBER')
             }
-            column(name: 'TASK_ID', type: 'BIGINT UNSIGNED', remarks: '任务ID') {
+            column(name: 'TASK_ID', type: 'BIGINT', remarks: '任务ID') {
                 constraints(nullable: false)
             }
             column(name: 'MEMBER_TYPE', type: 'VARCHAR(32)', defaultValue: "user", remarks: '成员类型(user/role)，默认为user') {
                 constraints(nullable: false)
             }
-            column(name: 'MEMBER_ID', type: 'BIGINT UNSIGNED', remarks: '成员id，成员类型为user，则为userId') {
+            column(name: 'MEMBER_ID', type: 'BIGINT', remarks: '成员id，成员类型为user，则为userId') {
                 constraints(nullable: false)
             }
             column(name: "OBJECT_VERSION_NUMBER", type: "BIGINT", defaultValue: "1")

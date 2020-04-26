@@ -6,10 +6,10 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
             createSequence(sequenceName: 'ASGARD_QUARTZ_TASK_INSTANCE_S', startValue:"1")
         }
         createTable(tableName: "ASGARD_QUARTZ_TASK_INSTANCE") {
-            column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
+            column(name: 'ID', type: 'BIGINT', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_TASK_INSTANCE')
             }
-            column(name: 'TASK_ID', type: 'BIGINT UNSIGNED', remarks: '任务ID') {
+            column(name: 'TASK_ID', type: 'BIGINT', remarks: '任务ID') {
                 constraints(nullable: false)
             }
             column(name: "PLANNED_START_TIME", type: "DATETIME(3)", remarks: '计划开始执行时间') {
@@ -23,7 +23,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
 
             column(name: 'EXCEPTION_MESSAGE', type: 'TEXT', remarks: '消息消费失败的异常信息')
 
-            column(name: 'RETRIED_COUNT', type: 'INT UNSIGNED', defaultValue: "0", remarks: '重试次数') {
+            column(name: 'RETRIED_COUNT', type: 'INT', defaultValue: "0", remarks: '重试次数') {
                 constraints(nullable: false)
             }
             column(name: 'EXECUTE_PARAMS', type: 'TEXT', remarks: '任务执行参数') {
@@ -39,7 +39,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
             column(name: 'STATUS', type: 'VARCHAR(32)', defaultValue: "RUNNING", remarks: '任务执行状态。RUNNING,FAILED,COMPLETED') {
                 constraints(nullable: false)
             }
-            column(name: 'max_retry_count', type: 'INT UNSIGNED', remarks: '最大重试次数') {
+            column(name: 'max_retry_count', type: 'INT', remarks: '最大重试次数') {
                 constraints(nullable: false)
             }
 
@@ -64,7 +64,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
             column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'STATUS')
         }
         addColumn(tableName: 'ASGARD_QUARTZ_TASK_INSTANCE') {
-            column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED', defaultValue: "0", remarks: '创建该记录的源id，可以是projectId,也可以是organizarionId等', afterColumn: 'FD_LEVEL')
+            column(name: 'SOURCE_ID', type: 'BIGINT', defaultValue: "0", remarks: '创建该记录的源id，可以是projectId,也可以是organizarionId等', afterColumn: 'FD_LEVEL')
         }
     }
 
