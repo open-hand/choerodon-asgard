@@ -15,7 +15,6 @@ import io.choerodon.asgard.infra.feign.NotifyFeignClient;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.notify.NoticeSendDTO;
-import io.choerodon.core.notify.WebHookJsonSendDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -100,21 +99,6 @@ public class NoticeServiceImpl implements NoticeService {
             jsonObject.put("startedAt", String.valueOf(quartzTaskDTO.getStartTime()));
             jsonObject.put("finishedAt", String.valueOf(quartzTaskDTO.getLastUpdateDate()));
             List<User> userList = iamFeignClient.listUsersByIds(new Long[]{quartzTaskDTO.getCreatedBy()}).getBody();
-            WebHookJsonSendDTO.User user = null;
-            if (CollectionUtils.isEmpty(userList)) {
-                user = new WebHookJsonSendDTO.User("0", "unknown");
-            } else {
-                user = new WebHookJsonSendDTO.User(userList.get(0).getLoginName(), userList.get(0).getRealName());
-
-            }
-            WebHookJsonSendDTO webHookJsonSendDTO = new WebHookJsonSendDTO(
-                    BusinessTypeCode.getValueByLevel(level).value(),
-                    EVENT_NAME,
-                    jsonObject,
-                    quartzTaskDTO.getCreationDate(),
-                    user
-            );
-            noticeSendDTO.setWebHookJsonSendDTO(webHookJsonSendDTO);
         }
         return noticeSendDTO;
     }

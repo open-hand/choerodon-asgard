@@ -1,6 +1,5 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import com.github.pagehelper.Page;
 import io.choerodon.asgard.api.validator.ScheduleTaskValidator;
 import io.choerodon.asgard.api.vo.QuartzTask;
 import io.choerodon.asgard.api.vo.ScheduleTask;
@@ -8,14 +7,14 @@ import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
 import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.utils.TriggerUtils;
-import io.choerodon.core.annotation.Permission;
-import io.choerodon.core.enums.ResourceLevel;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
+import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -81,13 +80,13 @@ public class ScheduleTaskProjectController {
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<Page<QuartzTask>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                            @ApiIgnore
-                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest PageRequest,
-                                                            @RequestParam(required = false) String status,
-                                                            @RequestParam(required = false) String name,
-                                                            @RequestParam(required = false) String description,
-                                                            @RequestParam(required = false) String params) {
-        return scheduleTaskService.pageQuery(PageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
+                                                        @ApiIgnore
+                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+                                                        @RequestParam(required = false) String status,
+                                                        @RequestParam(required = false) String name,
+                                                        @RequestParam(required = false) String description,
+                                                        @RequestParam(required = false) String params) {
+        return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})

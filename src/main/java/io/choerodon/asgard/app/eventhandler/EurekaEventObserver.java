@@ -1,27 +1,27 @@
 package io.choerodon.asgard.app.eventhandler;
 
 import io.choerodon.asgard.app.service.RegisterInstanceService;
-import io.choerodon.eureka.event.AbstractEurekaEventObserver;
-import io.choerodon.eureka.event.EurekaEventPayload;
+import org.hzero.register.event.event.InstanceAddedEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EurekaEventObserver extends AbstractEurekaEventObserver {
-
+public class EurekaEventObserver implements ApplicationListener<InstanceAddedEvent> {
     private RegisterInstanceService registerInstanceService;
 
     public EurekaEventObserver(RegisterInstanceService registerInstanceService) {
         this.registerInstanceService = registerInstanceService;
     }
 
+    /**
+     * Handle an application event.
+     *
+     * @param event the event to respond to
+     */
     @Override
-    public void receiveUpEvent(EurekaEventPayload payload) {
-        //registerInstanceService.instanceUpConsumer(payload); 使用Saga统一刷新数据了
-    }
+    public void onApplicationEvent(InstanceAddedEvent event) {
 
-    @Override
-    public void receiveDownEvent(EurekaEventPayload payload) {
-        registerInstanceService.instanceDownConsumer(payload);
+        this.registerInstanceService.instanceUpConsumer(event);
     }
 
 }

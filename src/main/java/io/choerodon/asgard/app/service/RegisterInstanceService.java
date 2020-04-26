@@ -1,13 +1,13 @@
 package io.choerodon.asgard.app.service;
 
 import io.choerodon.asgard.property.PropertyData;
-import io.choerodon.eureka.event.EurekaEventPayload;
+import org.hzero.register.event.event.InstanceAddedEvent;
 
 public interface RegisterInstanceService {
 
-    void instanceDownConsumer(final EurekaEventPayload payload);
+    void instanceDownConsumer(final InstanceAddedEvent payload);
 
-    void instanceUpConsumer(final EurekaEventPayload payload);
+    void instanceUpConsumer(final InstanceAddedEvent payload);
 
     void propertyDataConsume(PropertyData propertyData, String version);
 }

@@ -5,7 +5,7 @@ import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceHandler;
 import io.choerodon.asgard.app.service.ScheduleTaskInstanceService;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
-import io.choerodon.core.annotation.Permission;
+import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;

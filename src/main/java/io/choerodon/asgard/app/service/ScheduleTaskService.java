@@ -1,12 +1,12 @@
 package io.choerodon.asgard.app.service;
 
-import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.QuartzTask;
 import io.choerodon.asgard.api.vo.ScheduleTask;
 import io.choerodon.asgard.api.vo.ScheduleTaskDetail;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.property.PropertyTimedTask;
-import org.springframework.data.domain.Pageable;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public interface ScheduleTaskService {
 
     void finish(long id);
 
-    ResponseEntity<PageInfo<QuartzTask>> pageQuery(Pageable pageable, String status, String name, String description, String params, String level, Long sourceId);
+    ResponseEntity<Page<QuartzTask>> pageQuery(PageRequest pageable, String status, String name, String description, String params, String level, Long sourceId);
 
     ScheduleTaskDetail getTaskDetail(Long id, String level, Long sourceId);
 

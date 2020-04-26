@@ -1,8 +1,6 @@
 package io.choerodon.asgard.app.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.PollScheduleTaskInstance;
 import io.choerodon.asgard.api.vo.ScheduleTask;
 import io.choerodon.asgard.api.vo.ScheduleTaskInstance;
@@ -14,7 +12,10 @@ import io.choerodon.asgard.infra.mapper.QuartzTaskInstanceMapper;
 import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -42,14 +43,12 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
     }
 
     @Override
-    public ResponseEntity<PageInfo<ScheduleTaskInstance>> pageQuery(int page, int size, String status, String taskName,
-                                                                    String exceptionMessage, String params, String level, Long sourceId) {
+    public ResponseEntity<Page<ScheduleTaskInstance>> pageQuery(PageRequest pageRequest, String status, String taskName,
+                                                                String exceptionMessage, String params, String level, Long sourceId) {
 
 
         return new ResponseEntity<>(
-                PageHelper
-                        .startPage(page, size)
-                        .doSelectPageInfo(
+                PageHelper.doPageAndSort(pageRequest,
                                 () -> instanceMapper.
                                         fulltextSearch(status, taskName, exceptionMessage, params, level, sourceId)), HttpStatus.OK);
     }
@@ -145,10 +144,8 @@ public class ScheduleTaskInstanceServiceImpl implements ScheduleTaskInstanceServ
     }
 
     @Override
-    public PageInfo<ScheduleTaskInstanceLog> pagingQueryByTaskId(int page, int size, Long taskId, String status, String serviceInstanceId, String params, String level, Long sourceId) {
-        return PageHelper
-                .startPage(page,size)
-                .doSelectPageInfo(
+    public Page<ScheduleTaskInstanceLog> pagingQueryByTaskId(PageRequest pageRequest, Long taskId, String status, String serviceInstanceId, String params, String level, Long sourceId) {
+        return PageHelper.doPageAndSort(pageRequest,
                         () -> instanceMapper.selectByTaskId(taskId, status, serviceInstanceId, params, level, sourceId));
     }
 

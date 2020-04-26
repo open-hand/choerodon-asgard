@@ -1,17 +1,17 @@
 package io.choerodon.asgard.app.service;
 
-import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.ScheduleMethod;
 import io.choerodon.asgard.api.vo.ScheduleMethodInfo;
 import io.choerodon.asgard.api.vo.ScheduleMethodParams;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface ScheduleMethodService {
 
-    ResponseEntity<PageInfo<ScheduleMethodInfo>> pageQuery(int page, int size, String code,
-                                                           String service, String method, String description, String params, String level);
+    ResponseEntity<Page<ScheduleMethodInfo>> pageQuery(PageRequest pageRequest, String code, String service, String method, String description, String params, String level);
 
     List<ScheduleMethod> getMethodByService(String serviceName, String level);
 

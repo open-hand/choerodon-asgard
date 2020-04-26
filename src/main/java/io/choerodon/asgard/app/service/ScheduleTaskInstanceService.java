@@ -6,15 +6,17 @@ import io.choerodon.asgard.api.vo.ScheduleTaskInstance;
 import io.choerodon.asgard.api.vo.ScheduleTaskInstanceLog;
 import io.choerodon.asgard.common.UpdateStatusDTO;
 import io.choerodon.asgard.schedule.dto.PollScheduleInstanceDTO;
+import io.choerodon.core.domain.Page;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Set;
 
 public interface ScheduleTaskInstanceService {
 
-    ResponseEntity<PageInfo<ScheduleTaskInstance>> pageQuery(int page, int size, String status,
-                                                             String taskName, String exceptionMessage,
-                                                             String params, String level, Long sourceId);
+    ResponseEntity<Page<ScheduleTaskInstance>> pageQuery(PageRequest pageRequest, String status,
+                                                         String taskName, String exceptionMessage,
+                                                         String params, String level, Long sourceId);
 
 
     Set<PollScheduleTaskInstance> pollBatch(PollScheduleInstanceDTO dto);
@@ -23,7 +25,7 @@ public interface ScheduleTaskInstanceService {
 
     void unlockByInstance(String instance);
 
-    PageInfo<ScheduleTaskInstanceLog> pagingQueryByTaskId(int page, int size, Long taskId,
+    Page<ScheduleTaskInstanceLog> pagingQueryByTaskId(PageRequest pageRequest, Long taskId,
                                                           String status, String serviceInstanceId,
                                                           String params, String level, Long sourceId);
 

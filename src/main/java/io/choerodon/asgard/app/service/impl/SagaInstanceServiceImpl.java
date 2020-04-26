@@ -3,7 +3,6 @@ package io.choerodon.asgard.app.service.impl;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
@@ -19,8 +18,11 @@ import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
+import io.choerodon.mybatis.pagehelper.PageHelper;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.web.util.PageableHelper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -134,12 +136,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public ResponseEntity<PageInfo<SagaInstanceDetails>> pageQuery(Pageable pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId) {
+    public ResponseEntity<Page<SagaInstanceDetails>> pageQuery(PageRequest pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId) {
         return new ResponseEntity<>(
-                PageHelper
-                        .startPage(pageable.getPageNumber(), pageable.getPageSize())
-                        .doSelectPageInfo(
-                                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
+                PageHelper.doPageAndSort(pageable,
+                        () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
     }
 
     @Override
@@ -215,19 +215,16 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public PageInfo<SagaInstanceDTO> statisticsFailureList(String level, Long sourceId, Integer date, Pageable pageable) {
+    public Page<SagaInstanceDTO> statisticsFailureList(String level, Long sourceId, Integer date, PageRequest pageable) {
         String endTime = getTimeStr(null, 1);
         String startTime = getTimeStr(null, date * (-1));
 
         if (level != null && !level.equals("site")) {
-            return PageHelper
-                    .startPage(pageable.getPageNumber(), pageable.getPageSize(), PageableHelper.getSortSql(pageable.getSort()))
-                    .doSelectPageInfo(
-                            () -> instanceMapper.statisticsFailureList(level, sourceId, startTime, endTime));
+            return PageHelper.doPageAndSort(pageable, () -> instanceMapper.statisticsFailureList(level, sourceId, startTime, endTime));
+
         } else {
             return PageHelper
-                    .startPage(pageable.getPageNumber(), pageable.getPageSize(), PageableHelper.getSortSql(pageable.getSort()))
-                    .doSelectPageInfo(
+                    .doPageAndSort(pageable,
                             () -> instanceMapper.statisticsFailureList(level, null, startTime, endTime));
         }
     }

@@ -1,16 +1,15 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import com.github.pagehelper.Page;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
 import io.choerodon.asgard.app.service.SagaTaskInstanceService;
-import io.choerodon.core.annotation.Permission;
-import io.choerodon.core.enums.ResourceLevel;
+import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
+import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.data.domain.PageRequest;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
@@ -70,12 +69,12 @@ public class SagaTaskInstanceOrgController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<SagaTaskInstanceInfo>> pagingQuery(@ApiIgnore
-                                                                      @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest PageRequest,
-                                                                      @PathVariable("organization_id") long orgId,
-                                                                      @RequestParam(required = false) String taskInstanceCode,
-                                                                      @RequestParam(required = false) String sagaInstanceCode,
-                                                                      @RequestParam(required = false) String status,
-                                                                      @RequestParam(required = false) String params) {
-        return sagaTaskInstanceService.pageQuery(PageRequest, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.ORGANIZATION.value(), orgId);
+                                                                      @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+                                                                  @PathVariable("organization_id") long orgId,
+                                                                  @RequestParam(required = false) String taskInstanceCode,
+                                                                  @RequestParam(required = false) String sagaInstanceCode,
+                                                                  @RequestParam(required = false) String status,
+                                                                  @RequestParam(required = false) String params) {
+        return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 }
