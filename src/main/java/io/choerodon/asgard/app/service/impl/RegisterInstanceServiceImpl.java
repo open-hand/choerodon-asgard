@@ -64,7 +64,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
      */
     @Override
     public void instanceUpConsumer(final InstanceAddedEvent payload) {
-        PropertyData propertyData = fetchPropertyData(payload.getServiceInstance().getHost());
+        PropertyData propertyData = fetchPropertyData(payload.getServiceInstance().getHost() + ":" + payload.getServiceInstance().getPort());
         if (propertyData == null) {
             throw new RemoteAccessException("error.instanceUpConsumer.fetchPropertyData");
         } else {
