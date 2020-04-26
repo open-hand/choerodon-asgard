@@ -42,3 +42,4 @@ eureka:
       defaultZone: ${EUREKA_DEFAULT_ZONE:http://dev.hzero.org:8000/eureka}
     registryFetchIntervalSeconds: 10
     disable-delta: true
+
