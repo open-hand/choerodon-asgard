@@ -6,13 +6,13 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
             createSequence(sequenceName: 'ASGARD_ORCH_SAGA_TASK_S', startValue:"1")
         }
         createTable(tableName: "ASGARD_ORCH_SAGA_TASK") {
-            column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
+            column(name: 'ID', type: 'BIGINT', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_ORCH_SAGA_TASK')
             }
             column(name: 'CODE', type: 'VARCHAR(64)', remarks: '任务标识')
             column(name: 'TIMEOUT_POLICY', type: 'VARCHAR(64)', remarks: '超时策略')
-            column(name: 'TIMEOUT_SECONDS', type: 'INT UNSIGNED', remarks: '超时时间(s)')
-            column(name: 'CONCURRENT_LIMIT_NUM', type: 'INT UNSIGNED', remarks: '最大并发数', defaultValue: "1") {
+            column(name: 'TIMEOUT_SECONDS', type: 'INT', remarks: '超时时间(s)')
+            column(name: 'CONCURRENT_LIMIT_NUM', type: 'INT', remarks: '最大并发数', defaultValue: "1") {
                 constraints(nullable: false)
             }
             column(name: 'CONCURRENT_LIMIT_POLICY', type: 'VARCHAR(32)', remarks: '并发策略。NONE,TYPE,TYPE_AND_ID', defaultValue: 'NONE'){
@@ -22,7 +22,7 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
                 constraints(nullable: false)
             }
             column(name: 'OUTPUT_SCHEMA', type: 'text', remarks: 'task输出的json schema')
-            column(name: 'IS_ENABLED', type: 'TINYINT(1)', defaultValue: "1", remarks: '是否启用') {
+            column(name: 'IS_ENABLED', type: 'TINYINT', defaultValue: "1", remarks: '是否启用') {
                 constraints(nullable: false)
             }
             column(name: 'SERVICE', type: 'VARCHAR(64)', remarks: '创建该task的服务') {
@@ -33,7 +33,7 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
             }
             column(name: 'DESCRIPTION', type: 'VARCHAR(255)', remarks: '描述')
 
-            column(name: 'MAX_RETRY_COUNT', type: 'INT UNSIGNED', defaultValue: "0", remarks: '最大重试次数') {
+            column(name: 'MAX_RETRY_COUNT', type: 'INT', defaultValue: "0", remarks: '最大重试次数') {
                 constraints(nullable: false)
             }
 

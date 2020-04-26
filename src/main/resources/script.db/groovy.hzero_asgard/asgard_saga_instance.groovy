@@ -6,7 +6,7 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
             createSequence(sequenceName: 'ASGARD_SAGA_INSTANCE_S', startValue:"1")
         }
         createTable(tableName: "ASGARD_SAGA_INSTANCE") {
-            column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
+            column(name: 'ID', type: 'BIGINT', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_SAGA_INSTANCE')
             }
             column(name: 'SAGA_CODE', type: 'VARCHAR(64)', remarks: 'saga标识') {
@@ -17,8 +17,8 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
             }
             column(name: 'REF_TYPE', type: 'VARCHAR(128)', remarks: '关联类型')
             column(name: 'REF_ID', type: 'TEXT', remarks: '关联id')
-            column(name: 'INPUT_DATA_ID', type: 'BIGINT UNSIGNED', remarks: '输入参数的json data id')
-            column(name: 'OUTPUT_DATA_ID', type: 'BIGINT UNSIGNED', remarks: '输出参数的json data id')
+            column(name: 'INPUT_DATA_ID', type: 'BIGINT', remarks: '输入参数的json data id')
+            column(name: 'OUTPUT_DATA_ID', type: 'BIGINT', remarks: '输出参数的json data id')
             column(name: "START_TIME", type: "DATETIME(3)", remarks: 'saga开始执行的时间')
             column(name: "END_TIME", type: "DATETIME(3)", remarks: 'saga执行结束的时间')
 
@@ -36,7 +36,7 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
             column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'REF_ID')
         }
         addColumn(tableName: 'ASGARD_SAGA_INSTANCE') {
-            column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED', defaultValue: "0", remarks: '创建该实例的源id，projectId/organizarionId', afterColumn: 'FD_LEVEL')
+            column(name: 'SOURCE_ID', type: 'BIGINT', defaultValue: "0", remarks: '创建该实例的源id，projectId/organizarionId', afterColumn: 'FD_LEVEL')
         }
     }
 
