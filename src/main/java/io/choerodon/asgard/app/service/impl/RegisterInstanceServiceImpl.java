@@ -6,16 +6,23 @@ import io.choerodon.asgard.infra.utils.ConvertUtils;
 import io.choerodon.asgard.property.PropertyData;
 import org.hzero.register.event.event.InstanceAddedEvent;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class RegisterInstanceServiceImpl implements RegisterInstanceService {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(RegisterInstanceServiceImpl.class);
+    private static final String VERSION = "VERSION";
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -64,12 +71,28 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
      */
     @Override
     public void instanceUpConsumer(final InstanceAddedEvent payload) {
-        PropertyData propertyData = fetchPropertyData(payload.getServiceInstance().getHost());
-        if (propertyData == null) {
-            throw new RemoteAccessException("error.instanceUpConsumer.fetchPropertyData");
+
+        if (payload.getServiceInstance() == null) {
+            LOGGER.error("[InstanceAddedEvent=" + payload + "] has no ServiceInstance");
         } else {
-            propertyDataConsume(propertyData, payload.getServiceInstance().getMetadata().get("VERSION"));
+            ServiceInstance instance = payload.getServiceInstance();
+            String address = instance.getHost() + ":" + instance.getPort();
+            Map<String, String> metadata = instance.getMetadata();
+            PropertyData propertyData = fetchPropertyData(address);
+            if (propertyData == null) {
+                throw new RemoteAccessException("error.instanceUpConsumer.fetchPropertyData");
+            } else {
+                propertyDataConsume(propertyData, metadata.get(VERSION));
+            }
         }
+
+
+//        PropertyData propertyData = fetchPropertyData(payload.getServiceInstance().getHost() + ":" + payload.getServiceInstance().getPort());
+//        if (propertyData == null) {
+//            throw new RemoteAccessException("error.instanceUpConsumer.fetchPropertyData");
+//        } else {
+//            propertyDataConsume(propertyData, payload.getServiceInstance().getMetadata().get("VERSION"));
+//        }
     }
 
     /**

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.asgard.infra.mapper.QuartzTaskMapper">
+
+    <select id="fulltextSearch" resultType="io.choerodon.asgard.infra.dto.QuartzTaskDTO">
+        SELECT
+        *
+        FROM asgard_quartz_task
+        WHERE 1 = 1
+        <if test="name != null">
+            AND name LIKE concat(concat('%',#{name}),'%')
+        </if>
+        <if test="status != null">
+            AND status LIKE concat(concat('%',#{status}),'%')
+        </if>
+        <if test="description != null">
+            AND description LIKE concat(concat('%',#{description}),'%')
+        </if>
+        <if test="level != null">
+            AND fd_level = #{level}
+        </if>
+        <if test="sourceId != null">
+            AND source_id = #{sourceId}
+        </if>
+        <if test="params != null">
+            AND (
+            name LIKE concat(concat('%',#{params}),'%') OR
+            description LIKE concat(concat('%',#{params}),'%') OR
+            status LIKE concat(concat('%',#{params}),'%')
+            )
+        </if>
+        order by case status
+            when 'ENABLE' then 1
+            when 'FINISHED' then 2
+            when 'DISABLE' then 3
+        end, id desc
+    </select>
+
+    <select id="selectTaskById" resultType="io.choerodon.asgard.api.vo.QuartzTaskDetail">
+        SELECT
+            aqt.id,
+            aqt.execute_params AS params,
+            aqt.name,
+            aqt.description,
+            aqt.start_time,
+            aqt.execute_strategy,
+            aqt.end_time,
+            aqt.trigger_type,
+            aqt.simple_repeat_count,
+            aqt.simple_repeat_interval,
+            aqt.simple_repeat_interval_unit,
+            aqt.cron_expression,
+            aqm.service AS serviceName,
+            aqt.execute_method AS methodCode
+        FROM
+            asgard_quartz_task aqt
+        LEFT JOIN asgard_quartz_method aqm
+        ON aqt.execute_method = aqm.code
+        WHERE aqt.id = #{id}
+    </select>
+</mapper>

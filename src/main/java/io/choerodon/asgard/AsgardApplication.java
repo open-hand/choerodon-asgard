@@ -3,11 +3,13 @@ package io.choerodon.asgard;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceHandler;
 import io.choerodon.asgard.infra.config.AsgardProperties;
+import io.choerodon.resource.annoation.EnableChoerodonResourceServer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -20,10 +22,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableDiscoveryClient
 @EnableConfigurationProperties(AsgardProperties.class)
 @SpringBootApplication
+@EnableChoerodonResourceServer
 public class AsgardApplication {
 
     public static void main(String[] args) {
-//        EurekaEventHandler.getInstance().init();
         SpringApplication.run(AsgardApplication.class, args);
     }
 
