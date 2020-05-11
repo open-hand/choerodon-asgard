@@ -9,7 +9,7 @@ preJob:
     enabled: true
     datasource:
       # 初始化数据库更新数据的时候忽略的表或列
-      exclusion: iam_user.hash_password,oauth_client.web_server_redirect_uri,oauth_ldap.server_address,oauth_ldap.object_class,iam_role.is_enabled,fd_organization.name
+      exclusion: ""
       # 本服务数据库相关信息
       url: jdbc:mysql://localhost:3306/hzero_asgard?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=Asia/Shanghai
       username: username
@@ -57,7 +57,7 @@ env:
     MANAGEMENT_SERVER_PORT: 8041
 
     # 是否启用配置中心
-    SPRING_CLOUD_CONFIG_ENABLED: true
+    SPRING_CLOUD_CONFIG_ENABLED: false
     # 配置中心地址
     SPRING_CLOUD_CONFIG_URI: http://register-server:8000
 
@@ -78,17 +78,13 @@ env:
     # 注册服务地址
     EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://hzero-register.c7ncd-staging:8000/eureka/
 
-    # 忽略jwt的url
-    CHOERODON_RESOURCE_JWT_IGNORE: /favicon.ico
+    ## Skywalking 配置参数
+    # SKYWALKING_OPTS: >-
+    #   -javaagent:/agent/skywalking-agent.jar
+    #   -Dskywalking.agent.application_code=asgard-service
+    #   -Dskywalking.agent.sample_n_per_3_secs=-1
+    #   -Dskywalking.collector.backend_service=oap.skywalking:11800
 
-    # 清理permission表中的旧接口和role_permission表中角色和权限层级不匹配的脏数据
-    CHOERODON_CLEANPERMISSION: false
-
-    # 网关地址
-    CHOERODON_GATEWAY_URL: http://api.example.com
-
-    #用户默认密码
-    CHOERODON_USER_DEFAULT_PASSWORD: abcd1234
 
 ## Liveness 和 Readiness 探针相关配置
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
