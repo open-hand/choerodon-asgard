@@ -60,6 +60,8 @@ env:
     SPRING_CLOUD_CONFIG_ENABLED: false
     # 配置中心地址
     SPRING_CLOUD_CONFIG_URI: http://register-server:8000
+    # 注册服务地址
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://hzero-register.c7ncd-staging:8000/eureka/
 
     # Redis 主机地址
     SPRING_REDIS_HOST: localhost
@@ -74,9 +76,6 @@ env:
     SPRING_DATASOURCE_USERNAME: choerodon
     # 数据库密码
     SPRING_DATASOURCE_PASSWORD: password
-
-    # 注册服务地址
-    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://hzero-register.c7ncd-staging:8000/eureka/
 
     ## Skywalking 配置参数
     # SKYWALKING_OPTS: >-
