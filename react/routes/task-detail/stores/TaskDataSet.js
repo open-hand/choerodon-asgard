@@ -19,27 +19,27 @@ export default ({ id = 0, levelType, intl, intlPrefix }) => {
       meaning: intl.formatMessage({ id: 'finished' }),
     }],
   });
-  
+
   return {
     autoQuery: true,
     selection: false,
     transport: {
       read: {
-        url: `asgard/v1/schedules${levelType}/tasks`,
+        url: `hagd/v1/schedules${levelType}/tasks`,
         method: 'get',
       },
     },
     fields: [
       { name: 'name', type: 'string', label: name },
       { name: 'description', type: 'string', label: description },
-      { name: 'lastExecTime', type: 'string', label: lastExecTime },      
-      { name: 'nextExecTime', type: 'string', label: nextExecTime },      
-      { name: 'status', type: 'string', label: status },  
-    ],    
+      { name: 'lastExecTime', type: 'string', label: lastExecTime },
+      { name: 'nextExecTime', type: 'string', label: nextExecTime },
+      { name: 'status', type: 'string', label: status },
+    ],
     queryFields: [
       { name: 'name', type: 'string', label: name },
       { name: 'description', type: 'string', label: description },
-      { name: 'status', type: 'string', label: status, options: statusDataSet },     
+      { name: 'status', type: 'string', label: status, options: statusDataSet },
     ],
   };
 };

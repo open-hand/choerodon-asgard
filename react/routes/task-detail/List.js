@@ -57,8 +57,8 @@ const List = observer(() => {
     const id = record.get('id');
     const objectVersionNumber = record.get('objectVersionNumber');
     const status = record.get('status') === 'ENABLE' ? 'disable' : 'enable';
-    
-    axios.put(`/asgard/v1/schedules${getLevelType(taskdetail.type, taskdetail.id)}/tasks/${id}/${status}?objectVersionNumber=${objectVersionNumber}`).then((data) => {
+
+    axios.put(`/hagd/v1/schedules${getLevelType(taskdetail.type, taskdetail.id)}/tasks/${id}/${status}?objectVersionNumber=${objectVersionNumber}`).then((data) => {
       if (data.failed) {
         Choerodon.prompt(data.message);
       } else {
@@ -100,14 +100,14 @@ const List = observer(() => {
    * 删除任务
    * @param record 表格行数据
    */
-  const handleDelete = (record) => { 
+  const handleDelete = (record) => {
     const { type, id } = taskdetail;
     Modal.confirm({
       className: 'c7n-iam-confirm-modal',
       title: intl.formatMessage({ id: `${intlPrefix}.delete.title` }),
       children: intl.formatMessage({ id: `${intlPrefix}.delete.content` }, { name: record.get('name') }),
-      
-      onOk: () => axios.delete(`/asgard/v1/schedules${getLevelType(type, id)}/tasks/${record.get('id')}`).then(({ failed, message }) => {
+
+      onOk: () => axios.delete(`/hagd/v1/schedules${getLevelType(type, id)}/tasks/${record.get('id')}`).then(({ failed, message }) => {
         if (failed) {
           Choerodon.prompt(message);
         } else {
@@ -155,7 +155,7 @@ const List = observer(() => {
    */
   const openDetail = async (record) => {
     const id = record.get('id');
-    const info = await axios.get(`/asgard/v1/schedules${levelType}/tasks/${id}`);
+    const info = await axios.get(`/hagd/v1/schedules${levelType}/tasks/${id}`);
     Modal.open({
       drawer: true,
       style: {
@@ -261,7 +261,7 @@ const List = observer(() => {
               <MouseOverWrapper text={text} width={0.2} className="c7n-asgard-table-cell">
                 {text}
               </MouseOverWrapper>
-            )} 
+            )}
           />
           <Column name="lastExecTime" className="c7n-asgard-table-cell" />
           <Column name="nextExecTime" className="c7n-asgard-table-cell" />

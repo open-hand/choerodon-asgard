@@ -8,19 +8,19 @@ export default ({ intl, intlPrefix }) => {
     selection: false,
     transport: {
       read: {
-        url: '/asgard/v1/sagas',
+        url: '/hagd/v1/sagas',
         method: 'get',
       },
     },
     fields: [
       { name: 'code', type: 'string', label: code },
       { name: 'service', type: 'string', label: service },
-      { name: 'description', type: 'string', label: description },      
+      { name: 'description', type: 'string', label: description },
     ],
     queryFields: [
       { name: 'code', type: 'string', label: code },
       { name: 'service', type: 'string', label: service },
-      { name: 'description', type: 'string', label: description },      
+      { name: 'description', type: 'string', label: description },
     ],
   };
 };

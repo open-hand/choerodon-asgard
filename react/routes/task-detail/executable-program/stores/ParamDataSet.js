@@ -6,7 +6,7 @@ export default function ({ methodDataSet, levelType }) {
     dataKey: 'paramsList',
     transport: {
       read: () => ({
-        url: `/asgard/v1/schedules${levelType}/methods/${methodDataSet.current && methodDataSet.current.get('id')}`,
+        url: `/hagd/v1/schedules${levelType}/methods/${methodDataSet.current && methodDataSet.current.get('id')}`,
         method: 'get',
       }),
     },

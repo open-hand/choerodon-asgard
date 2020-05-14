@@ -14,7 +14,7 @@ export default Store;
 export const StoreProvider = injectIntl(inject('AppState')(
   (props) => {
     const { AppState: { currentMenuType: { type, id, organizationId } }, intl, children } = props;
-    let apiGetway = `/asgard/v1/sagas/${type}s/${id}/`;
+    let apiGetway = `/hagd/v1/sagas/${type}s/${id}/`;
     let codePrefix;
     switch (type) {
       case 'organization':
@@ -25,7 +25,7 @@ export const StoreProvider = injectIntl(inject('AppState')(
         break;
       case 'site':
         codePrefix = 'global';
-        apiGetway = '/asgard/v1/sagas/';
+        apiGetway = '/hagd/v1/sagas/';
         break;
       default:
         break;
@@ -42,11 +42,11 @@ export const StoreProvider = injectIntl(inject('AppState')(
     function retry(id) {
       switch (type) {
         case 'organization':
-          return axios.put(`/base/v1/organization/${organizationId}/${id}/org/retry`);
+          return axios.put(`/iam/choerodon/v1/organization/${organizationId}/${id}/org/retry`);
         case 'project':
           return axios.put(`${apiGetway}tasks/instances/${id}/retry`);
         case 'site':
-          return axios.put(`/base/v1/site/0/${id}/site/retry`);
+          return axios.put(`/iam/choerodon/v1/site/0/${id}/site/retry`);
         default:
           break;
       }

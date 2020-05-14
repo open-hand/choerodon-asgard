@@ -15,7 +15,7 @@ const Saga = observer(() => {
   const { dataSet, intlPrefix, loadDetailData } = useContext(Store);
   const openDetail = async (id) => {
     try {
-      const data = await axios.get(`/asgard/v1/sagas/${id}`);
+      const data = await axios.get(`/hagd/v1/sagas/${id}`);
       Modal.open({
         key,
         drawer: true,
