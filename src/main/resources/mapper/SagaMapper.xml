@@ -28,7 +28,6 @@
             description LIKE concat(concat('%',#{params}),'%')
             )
         </if>
-        order by id desc
     </select>
 
 </mapper>
