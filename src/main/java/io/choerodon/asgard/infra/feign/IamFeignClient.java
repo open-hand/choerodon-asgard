@@ -1,9 +1,9 @@
 package io.choerodon.asgard.infra.feign;
 
-import com.github.pagehelper.PageInfo;
+
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.feign.fallback.IamFeignClientFallback;
-import io.choerodon.core.notify.NoticeSendDTO;
+//import io.choerodon.core.notify.NoticeSendDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,22 +22,22 @@ public interface IamFeignClient {
     @GetMapping(value = "/projects/{project_id}")
     ResponseEntity<Project> queryProject(@PathVariable(name = "project_id") Long id);
 
-    @PostMapping(value = "/site/role_members/users")
-    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnSiteLevel(
-            @RequestParam(value = "role_id") Long roleId,
-            @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
-
-    @PostMapping(value = "/organizations/{organization_id}/role_members/users")
-    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnOrganizationLevel(
-            @RequestParam(value = "role_id") Long roleId,
-            @PathVariable(name = "organization_id") Long sourceId,
-            @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
-
-    @PostMapping(value = "/projects/{project_id}/role_members/users")
-    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnProjectLevel(
-            @RequestParam(value = "role_id") Long roleId,
-            @PathVariable(name = "project_id") Long sourceId,
-            @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
+//    @PostMapping(value = "/site/role_members/users")
+//    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnSiteLevel(
+//            @RequestParam(value = "role_id") Long roleId,
+//            @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
+//
+//    @PostMapping(value = "/organizations/{organization_id}/role_members/users")
+//    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnOrganizationLevel(
+//            @RequestParam(value = "role_id") Long roleId,
+//            @PathVariable(name = "organization_id") Long sourceId,
+//            @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
+//
+//    @PostMapping(value = "/projects/{project_id}/role_members/users")
+//    ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnProjectLevel(
+//            @RequestParam(value = "role_id") Long roleId,
+//            @PathVariable(name = "project_id") Long sourceId,
+//            @RequestParam(value = "doPage", defaultValue = "false") boolean doPage);
 
     @GetMapping(value = "/roles")
     ResponseEntity<Role> queryByCode(@RequestParam(value = "code") String code);

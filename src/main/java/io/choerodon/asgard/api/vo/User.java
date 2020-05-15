@@ -1,6 +1,6 @@
 package io.choerodon.asgard.api.vo;
 
-import io.choerodon.core.notify.NoticeSendDTO;
+//import io.choerodon.core.notify.NoticeSendDTO;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,13 +51,13 @@ public class User {
         this.email = email;
     }
 
-    public static List<NoticeSendDTO.User> covertNotifyUser(List<User> users) {
-        if (users == null) return Collections.emptyList();
-        return users.stream().map(userDTO -> {
-            NoticeSendDTO.User user = new NoticeSendDTO.User();
-            user.setId(userDTO.getId());
-            user.setEmail(userDTO.getEmail());
-            return user;
-        }).collect(Collectors.toList());
-    }
+//    public static List<NoticeSendDTO.User> covertNotifyUser(List<User> users) {
+//        if (users == null) return Collections.emptyList();
+//        return users.stream().map(userDTO -> {
+//            NoticeSendDTO.User user = new NoticeSendDTO.User();
+//            user.setId(userDTO.getId());
+//            user.setEmail(userDTO.getEmail());
+//            return user;
+//        }).collect(Collectors.toList());
+//    }
 }

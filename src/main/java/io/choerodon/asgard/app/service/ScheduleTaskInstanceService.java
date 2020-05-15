@@ -1,6 +1,6 @@
 package io.choerodon.asgard.app.service;
 
-import com.github.pagehelper.PageInfo;
+
 import io.choerodon.asgard.api.vo.PollScheduleTaskInstance;
 import io.choerodon.asgard.api.vo.ScheduleTaskInstance;
 import io.choerodon.asgard.api.vo.ScheduleTaskInstanceLog;

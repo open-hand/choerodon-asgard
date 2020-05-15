@@ -8,7 +8,7 @@ import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceStatus;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.service.JsonDataService;
-import io.choerodon.asgard.app.service.NoticeService;
+//import io.choerodon.asgard.app.service.NoticeService;
 import io.choerodon.asgard.app.service.SagaTaskInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskDTO;
@@ -66,7 +66,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     private SagaInstanceMapper instanceMapper;
     private JsonDataMapper jsonDataMapper;
     private DataSourceTransactionManager transactionManager;
-    private NoticeService noticeService;
+//    private NoticeService noticeService;
     private JsonDataService jsonDataService;
     private SagaTaskMapper sagaTaskMapper;
     private SagaInstanceEventPublisher sagaInstanceEventPublisher;
@@ -75,7 +75,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                                        SagaInstanceMapper instanceMapper,
                                        JsonDataMapper jsonDataMapper,
                                        DataSourceTransactionManager transactionManager,
-                                       NoticeService noticeService,
+//                                       NoticeService noticeService,
                                        SagaTaskMapper sagaTaskMapper,
                                        JsonDataService jsonDataService,
                                        SagaInstanceEventPublisher sagaInstanceEventPublisher) {
@@ -83,7 +83,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         this.instanceMapper = instanceMapper;
         this.jsonDataMapper = jsonDataMapper;
         this.transactionManager = transactionManager;
-        this.noticeService = noticeService;
+//        this.noticeService = noticeService;
         this.jsonDataService = jsonDataService;
         this.sagaTaskMapper = sagaTaskMapper;
         this.sagaInstanceEventPublisher = sagaInstanceEventPublisher;
@@ -211,10 +211,10 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             instance.setEndTime(new Date());
             instanceMapper.updateByPrimaryKeySelective(instance);
             if (instance.getSagaCode().equalsIgnoreCase(ORG_REGISTER)) {
-                noticeService.registerOrgFailNotice(taskInstance, instance);
+//                noticeService.registerOrgFailNotice(taskInstance, instance);
             }
             if (instance.getCreatedBy() != 0) {
-                noticeService.sendSagaFailNotice(instance);
+//                noticeService.sendSagaFailNotice(instance);
             }
             //如果已重试次数 < 最大重试次数，则增加重试次数
         } else {
