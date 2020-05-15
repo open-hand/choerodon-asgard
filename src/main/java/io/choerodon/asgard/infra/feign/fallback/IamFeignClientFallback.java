@@ -1,10 +1,10 @@
 package io.choerodon.asgard.infra.feign.fallback;
 
-import com.github.pagehelper.PageInfo;
+
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.core.exception.FeignException;
-import io.choerodon.core.notify.NoticeSendDTO;
+//import io.choerodon.core.notify.NoticeSendDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -25,20 +25,20 @@ public class IamFeignClientFallback implements IamFeignClient {
         throw new FeignException("error.iam.queryProject");
     }
 
-    @Override
-    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnSiteLevel(Long roleId, boolean doPage) {
-        throw new FeignException("error.feign.iam.queryUsersSite");
-    }
-
-    @Override
-    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnOrganizationLevel(Long roleId, Long sourceId, boolean doPage) {
-        throw new FeignException("error.feign.iam.queryUserOrganization");
-    }
-
-    @Override
-    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnProjectLevel(Long roleId, Long sourceId, boolean doPage) {
-        throw new FeignException("error.feign.iam.queryUsersProject");
-    }
+//    @Override
+//    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnSiteLevel(Long roleId, boolean doPage) {
+//        throw new FeignException("error.feign.iam.queryUsersSite");
+//    }
+//
+//    @Override
+//    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnOrganizationLevel(Long roleId, Long sourceId, boolean doPage) {
+//        throw new FeignException("error.feign.iam.queryUserOrganization");
+//    }
+//
+//    @Override
+//    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnProjectLevel(Long roleId, Long sourceId, boolean doPage) {
+//        throw new FeignException("error.feign.iam.queryUsersProject");
+//    }
 
     @Override
     public ResponseEntity<Role> queryByCode(String code) {

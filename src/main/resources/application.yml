@@ -2,9 +2,9 @@ spring:
   application:
     name: hzero-asgard
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://db.hzero.org:3306/groovy.hzero_asgard?useUnicode=true&characterEncoding=utf-8&useSSL=false}
-    username: ${SPRING_DATASOURCE_USERNAME:hzero}
-    password: ${SPRING_DATASOURCE_PASSWORD:hzero}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://192.168.16.214:3306/hzero_asgard?useUnicode=true&characterEncoding=utf-8&useSSL=false}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:handhand}
     hikari:
       # 连接池最小空闲连接数
       minimum-idle: ${SPRING_DATASOURCE_MINIMUM_IDLE:20}
