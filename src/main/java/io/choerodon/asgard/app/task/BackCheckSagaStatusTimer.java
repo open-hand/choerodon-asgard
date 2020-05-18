@@ -1,6 +1,7 @@
 package io.choerodon.asgard.app.task;
 
 import feign.Client;
+import feign.RequestInterceptor;
 import feign.hystrix.HystrixFeign;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.config.AsgardProperties;
@@ -9,7 +10,8 @@ import io.choerodon.asgard.infra.feign.StatusQueryFeign;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.utils.JsonDecoder;
 import io.choerodon.asgard.saga.dto.SagaStatusQueryDTO;
-import io.choerodon.feign.FeignRequestInterceptor;
+
+import org.hzero.feign.interceptor.AccessTokenInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,7 +34,7 @@ public class BackCheckSagaStatusTimer {
 
     private AsgardProperties asgardProperties;
 
-    private FeignRequestInterceptor feignRequestInterceptor;
+    private AccessTokenInterceptor accessTokenInterceptor;
 
     private Client client;
 
@@ -43,13 +45,13 @@ public class BackCheckSagaStatusTimer {
     public BackCheckSagaStatusTimer(@Qualifier("backCheckSagaStatusTimer") ScheduledExecutorService service,
                                     SagaInstanceMapper instanceMapper,
                                     AsgardProperties asgardProperties,
-                                    FeignRequestInterceptor feignRequestInterceptor,
+                                    AccessTokenInterceptor accessTokenInterceptor,
                                     Client client,
                                     SagaInstanceService sagaInstanceService) {
         this.scheduledExecutorService = service;
         this.instanceMapper = instanceMapper;
         this.asgardProperties = asgardProperties;
-        this.feignRequestInterceptor = feignRequestInterceptor;
+        this.accessTokenInterceptor = accessTokenInterceptor;
         this.client = client;
         this.sagaInstanceService = sagaInstanceService;
     }
@@ -70,7 +72,7 @@ public class BackCheckSagaStatusTimer {
         StatusQueryFeign query = HystrixFeign
                 .builder()
                 .client(client)
-                .requestInterceptor(feignRequestInterceptor)
+                .requestInterceptor((RequestInterceptor) accessTokenInterceptor)
                 .decoder(jsonDecoder)
                 .target(StatusQueryFeign.class, "http://" + sagaInstance.getCreatedOn());
         SagaStatusQueryDTO status = query.getEventRecord(sagaInstance.getUuid());
