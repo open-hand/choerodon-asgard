@@ -9,6 +9,7 @@ import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -28,6 +29,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @RestController
 @RequestMapping("/v1/ext/sagas/tasks/instances")
 public class SagaTaskInstanceV2Controller {
+    @Value("${choerodon.asgard.time-out:60000}")
+    private Long timeOut;
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaTaskInstanceV2Controller.class);
     private SagaTaskInstanceService sagaTaskInstanceService;
     private SagaInstanceHandler sagaInstanceHandler;
@@ -50,7 +53,7 @@ public class SagaTaskInstanceV2Controller {
         if (pollBatchDTO.getMaxPollSize() == null) {
             pollBatchDTO.setMaxPollSize(500);
         }
-        DeferredResult<ResponseEntity<Set<SagaTaskInstance>>> deferredResult = new DeferredResult<>(60000l);
+        DeferredResult<ResponseEntity<Set<SagaTaskInstance>>> deferredResult = new DeferredResult<>(timeOut);
         deferredResult.onTimeout(() -> {
                     deferredResult.setResult(new ResponseEntity<>(ConcurrentHashMap.newKeySet(), HttpStatus.OK));
                     sagaInstanceHandler.removeDeferredResult(SagaInstanceEventPublisher.TAST_INSTANCE_PREFIX,pollBatchDTO.getService(), deferredResult);

@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
@@ -29,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/v1/ext/schedules/tasks/instances")
 @Api("全局层定时任务实例接口")
 public class ScheduleTaskInstanceSiteV2Controller {
+    @Value("${choerodon.asgard.time-out:60000}")
+    private Long timeOut;
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleTaskInstanceSiteV2Controller.class);
 
     private ScheduleTaskInstanceService scheduleTaskInstanceService;
@@ -51,7 +54,7 @@ public class ScheduleTaskInstanceSiteV2Controller {
     public DeferredResult<ResponseEntity<Set<PollScheduleTaskInstance>>> pollBatch(@RequestBody PollScheduleInstanceDTO dto) {
         LOGGER.info("poll ScheduleTaskInstance from {}",dto.getService());
 
-        DeferredResult<ResponseEntity<Set<PollScheduleTaskInstance>>> deferredResult = new DeferredResult<>(60000l);
+        DeferredResult<ResponseEntity<Set<PollScheduleTaskInstance>>> deferredResult = new DeferredResult<>(timeOut);
         deferredResult.onTimeout(() -> {
                     deferredResult.setResult(new ResponseEntity<>(ConcurrentHashMap.newKeySet(), HttpStatus.OK));
                     sagaInstanceHandler.removeDeferredResult(SagaInstanceEventPublisher.QUARTZ_INSTANCE_PREFIX,dto.getService(), deferredResult);
