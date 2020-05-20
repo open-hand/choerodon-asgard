@@ -418,7 +418,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 }
                 quartzTaskList.add(new QuartzTask(q.getId(), q.getName(), q.getDescription(), lastStartTime, nextStartTime, q.getStatus(), q.getObjectVersionNumber()));
             });
-            resultPage.addAll(quartzTaskList);
+            resultPage.setContent(quartzTaskList);
             return new ResponseEntity<>(resultPage, HttpStatus.OK);
         } catch (Exception e) {
             throw new CommonException("error.query",e);
