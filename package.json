@@ -8,15 +8,17 @@
     "lib"
   ],
   "peerDependencies": {
-    "@choerodon/boot": "0.21.2",
+    "@choerodon/boot": "0.21.0",
     "@choerodon/master": "0.22.0-hzero"
   },
   "dependencies": {
+    "choerodon-ui": "^0.8.x",
+    "mobx-react-lite": "^1.4.1",
     "js-beautify": "^1.10.2",
     "react-codemirror": "^1.0.0"
   },
   "devDependencies": {
-    "@choerodon/boot": "0.21.2",
+    "@choerodon/boot": "0.21.0",
     "@choerodon/master": "0.22.0-hzero",
     "babel-preset-env": "^1.7.0",
     "gulp": "^3.9.1",
@@ -28,7 +30,8 @@
     "dist": "choerodon-front-boot dist --config ./react/config.js",
     "lint-staged": "lint-staged",
     "lint-staged:es": "eslint",
-    "compile": "choerodon-front-boot compile"
+    "compile": "choerodon-front-boot compile",
+    "clean-install": "rm -rf node_modules && rm package-lock.json && npm i --registry https://nexus.choerodon.com.cn/repository/choerodon-npm && chmod -R u+x node_modules"
   },
   "author": "",
   "license": "ISC",
