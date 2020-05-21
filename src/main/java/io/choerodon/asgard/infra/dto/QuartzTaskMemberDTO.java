@@ -15,7 +15,7 @@ import java.util.Objects;
 @Table(name = "ASGARD_QUARTZ_TASK_MEMBER")
 public class QuartzTaskMemberDTO extends AuditDomain {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private Long taskId;
     private String memberType;
