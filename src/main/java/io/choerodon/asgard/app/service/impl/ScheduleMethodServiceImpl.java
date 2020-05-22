@@ -66,7 +66,7 @@ public class ScheduleMethodServiceImpl implements ScheduleMethodService {
                                 discoveryClient.getInstances(r.getService()).size(), r.getLevel())));
         Page<ScheduleMethodInfo> pageResult = new Page<>();
         pageResult.setTotalElements(pageInfo.getTotalElements());
-        pageResult.addAll(scheduleMethodInfos);
+        pageResult.setContent(scheduleMethodInfos);
         return new ResponseEntity<>(pageResult, HttpStatus.OK);
     }
 
