@@ -317,15 +317,15 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         SagaInstanceDTO uuidQuery = new SagaInstanceDTO();
         uuidQuery.setUuid(uuid);
         SagaInstanceDTO dbInstance = instanceMapper.selectOne(uuidQuery);
-//        if (dbInstance == null) {
-//            throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
-//        }
-//        List<PageSagaTaskInstance> taskInstanceList = taskInstanceMapper.selectAllBySagaInstanceId(dbInstance.getId());
-//        if (CollectionUtils.isEmpty(taskInstanceList)) {
-//            instanceMapper.deleteByPrimaryKey(dbInstance.getId());
-//        } else {
-//            throw new CommonException("error.cancel.saga.instance");
-//        }
+        if (dbInstance == null) {
+            throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
+        }
+        List<PageSagaTaskInstance> taskInstanceList = taskInstanceMapper.selectAllBySagaInstanceId(dbInstance.getId());
+        if (CollectionUtils.isEmpty(taskInstanceList)) {
+            instanceMapper.deleteByPrimaryKey(dbInstance.getId());
+        } else {
+            throw new CommonException("error.cancel.saga.instance");
+        }
     }
 
     private Date getTime(Date date, Integer num) {
