@@ -318,7 +318,8 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         uuidQuery.setUuid(uuid);
         SagaInstanceDTO dbInstance = instanceMapper.selectOne(uuidQuery);
         if (dbInstance == null) {
-            throw new FeignException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
+            LOGGER.warn("sagaInstance is notExist,uuid:{}", uuid);
+            return;
         }
         List<PageSagaTaskInstance> taskInstanceList = taskInstanceMapper.selectAllBySagaInstanceId(dbInstance.getId());
         if (CollectionUtils.isEmpty(taskInstanceList)) {
