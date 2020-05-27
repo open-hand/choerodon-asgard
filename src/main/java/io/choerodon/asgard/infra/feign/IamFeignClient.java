@@ -3,18 +3,20 @@ package io.choerodon.asgard.infra.feign;
 
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.feign.fallback.IamFeignClientFallback;
-//import io.choerodon.core.notify.NoticeSendDTO;
+import org.hzero.common.HZeroService;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//import io.choerodon.core.notify.NoticeSendDTO;
+
 
 /**
  * @author dengyouquan
  **/
-@FeignClient(value = "base-service", path = "/v1", fallback = IamFeignClientFallback.class)
+@FeignClient(value = HZeroService.Iam.NAME, path = "/v1", fallback = IamFeignClientFallback.class)
 public interface IamFeignClient {
     @GetMapping(value = "/organizations/{organization_id}")
     ResponseEntity<Organization> queryOrganization(@PathVariable(name = "organization_id") Long id);
