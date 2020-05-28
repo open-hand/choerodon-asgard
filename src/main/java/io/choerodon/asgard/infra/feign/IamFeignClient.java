@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author dengyouquan
  **/
-@FeignClient(value = HZeroService.Iam.NAME, path = "/v1", fallback = IamFeignClientFallback.class)
+@FeignClient(value = HZeroService.Iam.NAME, path = "/choerodon/v1", fallback = IamFeignClientFallback.class)
 public interface IamFeignClient {
     @GetMapping(value = "/organizations/{organization_id}")
     ResponseEntity<Organization> queryOrganization(@PathVariable(name = "organization_id") Long id);
