@@ -127,7 +127,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             }
             QuartzTaskDTO db = taskMapper.selectByPrimaryKey(quartzTask.getId());
             //插入通知对象失败需要回滚
-            List<QuartzTaskMemberDTO> noticeMembers = insertNoticeMember(dto, level, quartzTask);
+//            List<QuartzTaskMemberDTO> noticeMembers = insertNoticeMember(dto, level, quartzTask);
             //发送通知失败不需要回滚,已捕获异常
 //            noticeService.sendNotice(quartzTask, noticeMembers, "启用");
             quartzJobService.addJob(db);
