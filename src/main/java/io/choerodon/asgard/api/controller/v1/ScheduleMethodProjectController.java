@@ -36,7 +36,7 @@ public class ScheduleMethodProjectController {
         this.scheduleMethodService = scheduleMethodService;
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping
     @ApiOperation(value = "项目层分页查询执行方法列表")
     @ResponseBody
@@ -52,7 +52,7 @@ public class ScheduleMethodProjectController {
         return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, ResourceLevel.PROJECT.value());
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层根据服务名获取方法")
     @GetMapping("/service")
     public ResponseEntity<List<ScheduleMethod>> getMethodByService(@PathVariable("project_id") long projectId,
@@ -60,7 +60,7 @@ public class ScheduleMethodProjectController {
         return new ResponseEntity<>(scheduleMethodService.getMethodByService(service, ResourceLevel.PROJECT.value()), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping("/{id}")
     @ApiOperation(value = "项目层查看可执行程序详情")
     public ResponseEntity<ScheduleMethodParams> getParams(@PathVariable("project_id") long projectId,
@@ -69,7 +69,7 @@ public class ScheduleMethodProjectController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层搜索有可执行任务的服务名")
     @GetMapping("/services")
     public ResponseEntity<List<String>> getServices(@PathVariable("project_id") long projectId) {

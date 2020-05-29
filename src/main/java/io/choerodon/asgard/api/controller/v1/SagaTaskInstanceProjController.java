@@ -32,14 +32,14 @@ public class SagaTaskInstanceProjController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation(value = "项目层去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
     public void unlockById(@PathVariable("project_id") long projectId, @PathVariable long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation(value = "项目层强制失败SagaTask")
     @PutMapping("/{id}/failed")
     public void forceFailed(@PathVariable("project_id") long projectId, @PathVariable long id) {
@@ -47,7 +47,7 @@ public class SagaTaskInstanceProjController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation(value = "项目层根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
     public void unlockByInstance(@PathVariable("project_id") long projectId, @RequestParam(value = "instance", required = false) String instance) {
@@ -57,14 +57,14 @@ public class SagaTaskInstanceProjController {
         sagaTaskInstanceService.unlockByInstance(instance);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation(value = "项目层手动重试SagaTask")
     @PutMapping("/{id}/retry")
     public void retry(@PathVariable("project_id") long projectId, @PathVariable long id) {
         sagaTaskInstanceService.retry(id);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @GetMapping
     @ApiOperation(value = "项目层分页查询SagaTask实例列表")
     @ResponseBody

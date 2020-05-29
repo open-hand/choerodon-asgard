@@ -33,7 +33,7 @@ public class ScheduleTaskInstanceProjectController {
         this.scheduleTaskInstanceService = scheduleTaskInstanceService;
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping
     @ApiOperation(value = "项目层分页查询任务实例列表")
     @ResponseBody
@@ -48,7 +48,7 @@ public class ScheduleTaskInstanceProjectController {
         return scheduleTaskInstanceService.pageQuery(pageRequest, status, taskName, exceptionMessage, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping("/{taskId}")
     @ApiOperation(value = "项目层分页查询任务日志")
     @ResponseBody
