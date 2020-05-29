@@ -16,17 +16,22 @@ import Executable from './executable-program';
 // 页面权限
 function getPermission(AppState) {
   const { type } = AppState.currentMenuType;
-  let createService = ['asgard-service.schedule-task-site.create'];
-  let enableService = ['asgard-service.schedule-task-site.enable'];
-  let disableService = ['asgard-service.schedule-task-site.disable'];
-  let deleteService = ['asgard-service.schedule-task-site.delete'];
-  let detailService = ['asgard-service.schedule-task-site.getTaskDetail'];
+  debugger;
+  let methodService = ['choerodon.code.site.manager.task-detail.ps.schedules-methods'];
+  let normalService = ['choerodon.code.site.manager.task-detail.ps.default'];
+  let createService = ['choerodon.code.site.manager.task-detail.ps.create'];
+  let enableService = ['choerodon.code.site.manager.task-detail.ps.enabled'];
+  let disableService = ['choerodon.code.site.manager.task-detail.ps.disabled'];
+  let deleteService = ['choerodon.code.site.manager.task-detail.ps.delete'];
+  let detailService = ['choerodon.code.site.manager.task-detail.ps.task-detail'];
   if (type === 'organization') {
-    createService = ['asgard-service.schedule-task-org.create'];
-    enableService = ['asgard-service.schedule-task-org.enable'];
-    disableService = ['asgard-service.schedule-task-org.disable'];
-    deleteService = ['asgard-service.schedule-task-org.delete'];
-    detailService = ['asgard-service.schedule-task-org.getTaskDetail'];
+    methodService = ['choerodon.code.organization.manager.task.ps.methods'];
+    normalService = ['choerodon.code.organization.manager.task.ps.default'];
+    createService = ['choerodon.code.organization.manager.task.ps.create'];
+    enableService = ['choerodon.code.organization.manager.task.ps.enabled'];
+    disableService = ['choerodon.code.organization.manager.task.ps.disabled'];
+    deleteService = ['choerodon.code.organization.manager.task.ps.delete'];
+    detailService = ['choerodon.code.organization.manager.task.ps.detail'];
   } else if (type === 'project') {
     createService = ['asgard-service.schedule-task-project.create'];
     enableService = ['asgard-service.schedule-task-project.enable'];
@@ -35,17 +40,19 @@ function getPermission(AppState) {
     detailService = ['asgard-service.schedule-task-project.getTaskDetail'];
   }
   return {
+    methodService,
     createService,
     enableService,
     disableService,
     deleteService,
     detailService,
+    normalService,
   };
 }
 const { Column } = Table;
 const List = observer(() => {
   const { AppState, intl, intlPrefix, taskDataSet, taskdetail, levelType } = useContext(Store);
-  const { deleteService, detailService, createService, disableService, enableService } = getPermission(AppState);
+  const { deleteService, detailService, createService, disableService, enableService, normalService, methodService } = getPermission(AppState);
   function getLevelType(type, id) {
     return (type === 'site' ? '' : `/${type}s/${id}`);
   }
@@ -199,31 +206,7 @@ const List = observer(() => {
   );
   return (
     <Page
-      service={[
-        'asgard-service.schedule-task-site.pagingQuery',
-        'asgard-service.schedule-task-org.pagingQuery',
-        'asgard-service.schedule-task-project.pagingQuery',
-        'asgard-service.schedule-task-site.create',
-        'asgard-service.schedule-task-org.create',
-        'asgard-service.schedule-task-project.create',
-        'asgard-service.schedule-task-site.enable',
-        'asgard-service.schedule-task-org.enable',
-        'asgard-service.schedule-task-project.enable',
-        'asgard-service.schedule-task-site.disable',
-        'asgard-service.schedule-task-org.disable',
-        'asgard-service.schedule-task-project.disable',
-        'asgard-service.schedule-task-site.delete',
-        'asgard-service.schedule-task-org.delete',
-        'asgard-service.schedule-task-project.delete',
-        'asgard-service.schedule-task-site.getTaskDetail',
-        'asgard-service.schedule-task-org.getTaskDetail',
-        'asgard-service.schedule-task-project.getTaskDetail',
-        'asgard-service.schedule-task-instance-site.pagingQueryByTaskId',
-        'asgard-service.schedule-task-instance-org.pagingQueryByTaskId',
-        'asgard-service.schedule-task-instance-project.pagingQueryByTaskId',
-        'asgard-service.schedule-method-site.pagingQuery',
-        'asgard-service.schedule-method-site.getParams',
-      ]}
+      service={normalService}
     >
       <Header
         title={<FormattedMessage id={`${intlPrefix}.header.title`} />}
@@ -236,11 +219,7 @@ const List = observer(() => {
             <FormattedMessage id={`${intlPrefix}.create`} />
           </Button>
         </Permission>
-        <Permission service={[
-          'asgard-service.schedule-method-site.pagingQuery',
-          'asgard-service.schedule-method-site.getParams',
-        ]}
-        >
+        <Permission service={methodService}>
           <Button
             icon="classname"
             onClick={openExecutableProgram}

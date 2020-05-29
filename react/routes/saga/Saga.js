@@ -50,8 +50,7 @@ const Saga = observer(() => {
     <Page
       className="c7n-saga"
       service={[
-        'asgard-service.saga.pagingQuery',
-        'asgard-service.saga.query',
+        'choerodon.code.site.manager.saga-manager.saga.ps.default',
       ]}
     >
       <Breadcrumb />
