@@ -40,7 +40,7 @@ public class ScheduleTaskProjectController {
         this.scheduleTaskService = scheduleTaskService;
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTaskDTO> create(@PathVariable("project_id") long projectId,
@@ -49,7 +49,7 @@ public class ScheduleTaskProjectController {
         return new ResponseEntity<>(scheduleTaskService.create(dto, ResourceLevel.PROJECT.value(), projectId), HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层启用任务")
     @PutMapping("/{id}/enable")
     public void enable(@PathVariable("project_id") long projectId,
@@ -57,7 +57,7 @@ public class ScheduleTaskProjectController {
         scheduleTaskService.enable(id, objectVersionNumber, ResourceLevel.PROJECT.value(), projectId);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层停用任务")
     @PutMapping("/{id}/disable")
     public void disable(@PathVariable("project_id") long projectId,
@@ -66,7 +66,7 @@ public class ScheduleTaskProjectController {
         scheduleTaskService.disable(id, objectVersionNumber, false);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层删除任务")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("project_id") long projectId,
@@ -74,7 +74,7 @@ public class ScheduleTaskProjectController {
         scheduleTaskService.delete(id, ResourceLevel.PROJECT.value(), projectId);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @PostMapping("/list")
     @ApiOperation(value = "项目层分页查询定时任务")
     @CustomPageRequest
@@ -89,7 +89,7 @@ public class ScheduleTaskProjectController {
         return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @GetMapping("/{id}")
     @ApiOperation(value = "项目层查看任务详情")
     public ResponseEntity<ScheduleTaskDetail> getTaskDetail(@PathVariable("project_id") long projectId,
@@ -106,7 +106,7 @@ public class ScheduleTaskProjectController {
     }
 
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity check(@PathVariable("project_id") long projectId,
@@ -115,7 +115,7 @@ public class ScheduleTaskProjectController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(@PathVariable("project_id") long projectId,
