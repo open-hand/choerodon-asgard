@@ -19,6 +19,9 @@ public class User {
 
     private String email;
 
+    private String phone;
+
+    private Long organizationId;
     public Long getId() {
         return id;
     }
@@ -51,7 +54,23 @@ public class User {
         this.email = email;
     }
 
-//    public static List<NoticeSendDTO.User> covertNotifyUser(List<User> users) {
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    //    public static List<NoticeSendDTO.User> covertNotifyUser(List<User> users) {
 //        if (users == null) return Collections.emptyList();
 //        return users.stream().map(userDTO -> {
 //            NoticeSendDTO.User user = new NoticeSendDTO.User();
