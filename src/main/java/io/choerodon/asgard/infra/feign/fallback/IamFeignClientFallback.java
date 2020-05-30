@@ -25,20 +25,20 @@ public class IamFeignClientFallback implements IamFeignClient {
         throw new FeignException("error.iam.queryProject");
     }
 
-//    @Override
-//    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnSiteLevel(Long roleId, boolean doPage) {
-//        throw new FeignException("error.feign.iam.queryUsersSite");
-//    }
-//
-//    @Override
-//    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnOrganizationLevel(Long roleId, Long sourceId, boolean doPage) {
-//        throw new FeignException("error.feign.iam.queryUserOrganization");
-//    }
-//
-//    @Override
-//    public ResponseEntity<PageInfo<NoticeSendDTO.User>> pagingQueryUsersByRoleIdOnProjectLevel(Long roleId, Long sourceId, boolean doPage) {
-//        throw new FeignException("error.feign.iam.queryUsersProject");
-//    }
+    @Override
+    public ResponseEntity<List<UserDTO>> pagingQueryUsersByRoleIdOnSiteLevel(Long roleId) {
+        throw new FeignException("error.feign.iam.queryUsersSite");
+    }
+
+    @Override
+    public ResponseEntity<List<UserDTO>> pagingQueryUsersByRoleIdOnOrganizationLevel(Long roleId, Long sourceId) {
+        throw new FeignException("error.feign.iam.queryUserOrganization");
+    }
+
+    @Override
+    public ResponseEntity<List<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(Long roleId, Long sourceId) {
+        throw new FeignException("error.feign.iam.queryUsersProject");
+    }
 
     @Override
     public ResponseEntity<Role> queryByCode(String code) {
@@ -48,6 +48,11 @@ public class IamFeignClientFallback implements IamFeignClient {
     @Override
     public ResponseEntity<List<User>> listUsersByIds(Long[] ids) {
         throw new FeignException("error.feign.iam.listUsersByIds");
+    }
+
+    @Override
+    public ResponseEntity<User> queryInfo(Long id) {
+        throw new FeignException("error.feign.iam.queryInfo");
     }
 
 

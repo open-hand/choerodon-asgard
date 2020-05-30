@@ -3,7 +3,7 @@ package io.choerodon.asgard.app.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.api.vo.*;
-//import io.choerodon.asgard.app.service.NoticeService;
+import io.choerodon.asgard.app.service.NoticeService;
 import io.choerodon.asgard.app.service.QuartzJobService;
 import io.choerodon.asgard.app.service.ScheduleTaskService;
 import io.choerodon.asgard.infra.dto.QuartzMethodDTO;
@@ -73,7 +73,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private IamFeignClient iamFeignClient;
 
-//    private NoticeService noticeService;
+    private NoticeService noticeService;
 
     private QuartzTaskMemberMapper quartzTaskMemberMapper;
 
@@ -83,16 +83,15 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                                    QuartzJobService quartzJobService,
                                    QuartzTaskInstanceMapper instanceMapper,
                                    QuartzTaskMemberMapper quartzTaskMemberMapper,
-                                   IamFeignClient iamFeignClient
-//                                   NoticeService noticeService
- ) {
+                                   IamFeignClient iamFeignClient,
+                                   NoticeService noticeService) {
         this.methodMapper = methodMapper;
         this.taskMapper = taskMapper;
         this.quartzJobService = quartzJobService;
         this.instanceMapper = instanceMapper;
         this.quartzTaskMemberMapper = quartzTaskMemberMapper;
         this.iamFeignClient = iamFeignClient;
-//        this.noticeService = noticeService;
+        this.noticeService = noticeService;
     }
 
     @Override
@@ -126,10 +125,11 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 throw new CommonException("error.scheduleTask.create");
             }
             QuartzTaskDTO db = taskMapper.selectByPrimaryKey(quartzTask.getId());
+
             //插入通知对象失败需要回滚
-//            List<QuartzTaskMemberDTO> noticeMembers = insertNoticeMember(dto, level, quartzTask);
+            List<QuartzTaskMemberDTO> noticeMembers = insertNoticeMember(dto, level, quartzTask);
             //发送通知失败不需要回滚,已捕获异常
-//            noticeService.sendNotice(quartzTask, noticeMembers, "启用");
+            noticeService.sendNotice(quartzTask, noticeMembers, "启用");
             quartzJobService.addJob(db);
             LOGGER.info("create job: {}", quartzTask);
             return db;
@@ -307,7 +307,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             }
             quartzJobService.resumeJob(id);
             List<QuartzTaskMemberDTO> noticeMembers = getQuartzTaskMembersByTaskId(quartzTask.getId());
-//            noticeService.sendNotice(quartzTask, noticeMembers, "启用");
+            noticeService.sendNotice(quartzTask, noticeMembers, "启用");
             LOGGER.info("enable job: {}", quartzTask);
         }
     }
@@ -363,7 +363,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             }
             quartzJobService.pauseJob(id);
             List<QuartzTaskMemberDTO> noticeMembers = getQuartzTaskMembersByTaskId(quartzTask.getId());
-//            noticeService.sendNotice(quartzTask, noticeMembers, "禁用");
+            noticeService.sendNotice(quartzTask, noticeMembers, "禁用");
             LOGGER.info("disable job: {}", quartzTask);
         }
     }
@@ -438,7 +438,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 LOGGER.error("finish job error, updateStatus failed : {}", quartzTask);
             }
             List<QuartzTaskMemberDTO> noticeMembers = getQuartzTaskMembersByTaskId(quartzTask.getId());
-//            noticeService.sendNotice(quartzTask, noticeMembers, "结束");
+            noticeService.sendNotice(quartzTask, noticeMembers, "结束");
         }
     }
 
