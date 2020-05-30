@@ -23,6 +23,7 @@ import io.choerodon.asgard.infra.dto.payload.WebHookUser;
 import io.choerodon.asgard.infra.enums.BusinessTypeCode;
 import io.choerodon.asgard.infra.enums.MemberType;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
+import io.choerodon.core.enums.MessageAdditionalType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 
@@ -112,52 +113,52 @@ public class NoticeServiceImpl implements NoticeService {
         //发送组织层和项目层消息时必填 当前组织id
         objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), sourceId);
         messageSender.setAdditionalInformation(objectMap);
-        messageClient.async().sendMessage(messageSender);
+        return messageSender;
     }
 
     @Override
     public void sendSagaFailNotice(SagaInstanceDTO instance) {
         //捕获异常，以免影响saga一致性
         try {
+            // 构建消息对象
+            MessageSender messageSender = new MessageSender();
+            // 消息code
+            messageSender.setMessageCode("sagaInstanceFail");
+            // 默认为0L,都填0L,可不填写
+            messageSender.setTenantId(0L);
 
+            // 消息参数 消息模板中${projectName}
+            Map<String, String> argsMap = new HashMap<>();
+            argsMap.put("sagaInstanceId", instance.getId().toString());
+            argsMap.put("sagaCode", instance.getSagaCode());
+            argsMap.put("level", instance.getLevel());
+            User user = iamFeignClient.queryInfo(instance.getCreatedBy()).getBody();
+
+            // 接收者
+            List<Receiver> receiverList = new ArrayList<>();
+            Receiver receiver = new Receiver();
+            receiver.setUserId(user.getId());
+            // 发送邮件消息时 必填
+            receiver.setEmail(user.getEmail());
+            // 发送短信消息 必填
+            receiver.setPhone(user.getPhone());
+            // 必填
+            receiver.setTargetUserTenantId(user.getOrganizationId());
+            receiverList.add(receiver);
+
+            messageSender.setReceiverAddressList(receiverList);
+            messageSender.setArgs(argsMap);
+
+            //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
+            Map<String, Object> objectMap = new HashMap<>();
+            //发送组织层和项目层消息时必填 当前组织id
+            objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), instance.getSourceId());
+            messageSender.setAdditionalInformation(objectMap);
+            messageClient.async().sendMessage(messageSender);
         } catch (Exception e) {
             LOGGER.info("saga instance fail send notice fail, msg: {}", e.getMessage());
         }
-        // 构建消息对象
-        MessageSender messageSender = new MessageSender();
-        // 消息code
-        messageSender.setMessageCode("sagaInstanceFail");
-        // 默认为0L,都填0L,可不填写
-        messageSender.setTenantId(0L);
 
-        // 消息参数 消息模板中${projectName}
-        Map<String, String> argsMap = new HashMap<>();
-        argsMap.put("sagaInstanceId", instance.getId().toString());
-        argsMap.put("sagaCode", instance.getSagaCode());
-        argsMap.put("level", instance.getLevel());
-        User user = iamFeignClient.queryInfo(instance.getCreatedBy()).getBody();
-
-        // 接收者
-        List<Receiver> receiverList = new ArrayList<>();
-        Receiver receiver = new Receiver();
-        receiver.setUserId(user.getId());
-        // 发送邮件消息时 必填
-        receiver.setEmail(user.getEmail());
-        // 发送短信消息 必填
-        receiver.setPhone(user.getPhone());
-        // 必填
-        receiver.setTargetUserTenantId(user.getOrganizationId());
-        receiverList.add(receiver);
-
-        messageSender.setReceiverAddressList(receiverList);
-        messageSender.setArgs(argsMap);
-
-        //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
-        Map<String, Object> objectMap = new HashMap<>();
-        //发送组织层和项目层消息时必填 当前组织id
-        objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), instance.getSourceId());
-        messageSender.setAdditionalInformation(objectMap);
-        messageClient.async().sendMessage(messageSender);
     }
 
 
@@ -213,49 +214,53 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void registerOrgFailNotice(SagaTaskInstanceDTO sagaTaskInstance, SagaInstanceDTO sagaInstance) {
-        //feign查询负责人及其组织
-        RegistrantInfo registrantInfo = iamFeignClient.queryRegistrantAndAdminId(sagaInstance.getRefId()).getBody();
-        LOGGER.info("register failed,ref id:{},registrant info：{}", sagaInstance.getRefId(), registrantInfo);
+        try {
+            //feign查询负责人及其组织
+            RegistrantInfo registrantInfo = iamFeignClient.queryRegistrantAndAdminId(sagaInstance.getRefId()).getBody();
+            LOGGER.info("register failed,ref id:{},registrant info：{}", sagaInstance.getRefId(), registrantInfo);
 
-        // 构建消息对象
-        MessageSender messageSender = new MessageSender();
-        // 消息code
-        messageSender.setMessageCode(REGISTER_ABNORMAL_TEMPLATE);
-        // 默认为0L,都填0L,可不填写
-        messageSender.setTenantId(0L);
+            // 构建消息对象
+            MessageSender messageSender = new MessageSender();
+            // 消息code
+            messageSender.setMessageCode(REGISTER_ABNORMAL_TEMPLATE);
+            // 默认为0L,都填0L,可不填写
+            messageSender.setTenantId(0L);
 
 
-        // 消息参数 消息模板中${projectName}
-        Map<String, String> argsMap = new HashMap<>();
-        argsMap.put("registrant", registrantInfo.getRealName());
-        argsMap.put("organizationId", registrantInfo.getOrganizationId().toString());
-        argsMap.put("organizationName", registrantInfo.getOrganizationName());
-        argsMap.put("sagaInstanceId", sagaInstance.getSagaCode() + ":" + sagaInstance.getId());
-        argsMap.put("sagaTaskInstanceId", sagaTaskInstance.getTaskCode() + ":" + sagaTaskInstance.getId());
+            // 消息参数 消息模板中${projectName}
+            Map<String, String> argsMap = new HashMap<>();
+            argsMap.put("registrant", registrantInfo.getRealName());
+            argsMap.put("organizationId", registrantInfo.getOrganizationId().toString());
+            argsMap.put("organizationName", registrantInfo.getOrganizationName());
+            argsMap.put("sagaInstanceId", sagaInstance.getSagaCode() + ":" + sagaInstance.getId());
+            argsMap.put("sagaTaskInstanceId", sagaTaskInstance.getTaskCode() + ":" + sagaTaskInstance.getId());
 
-        User user = iamFeignClient.queryInfo(registrantInfo.getAdminId()).getBody();
+            User user = iamFeignClient.queryInfo(registrantInfo.getAdminId()).getBody();
 
-        // 接收者
-        List<Receiver> receiverList = new ArrayList<>();
-        Receiver receiver = new Receiver();
-        receiver.setUserId(user.getId());
-        // 发送邮件消息时 必填
-        receiver.setEmail(user.getEmail());
-        // 发送短信消息 必填
-        receiver.setPhone(user.getPhone());
-        // 必填
-        receiver.setTargetUserTenantId(user.getOrganizationId());
-        receiverList.add(receiver);
+            // 接收者
+            List<Receiver> receiverList = new ArrayList<>();
+            Receiver receiver = new Receiver();
+            receiver.setUserId(user.getId());
+            // 发送邮件消息时 必填
+            receiver.setEmail(user.getEmail());
+            // 发送短信消息 必填
+            receiver.setPhone(user.getPhone());
+            // 必填
+            receiver.setTargetUserTenantId(user.getOrganizationId());
+            receiverList.add(receiver);
 
-        messageSender.setReceiverAddressList(receiverList);
-        messageSender.setArgs(argsMap);
+            messageSender.setReceiverAddressList(receiverList);
+            messageSender.setArgs(argsMap);
 
-        //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
-        Map<String, Object> objectMap = new HashMap<>();
-        //发送组织层和项目层消息时必填 当前组织id
-        objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), registrantInfo.getOrganizationId());
-        messageSender.setAdditionalInformation(objectMap);
-        messageClient.async().sendMessage(messageSender);
+            //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
+            Map<String, Object> objectMap = new HashMap<>();
+            //发送组织层和项目层消息时必填 当前组织id
+            objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), registrantInfo.getOrganizationId());
+            messageSender.setAdditionalInformation(objectMap);
+            messageClient.async().sendMessage(messageSender);
+        } catch (Exception e) {
+            LOGGER.info("Send register Org Fail msg failed");
+        }
 
     }
 
