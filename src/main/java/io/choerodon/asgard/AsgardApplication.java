@@ -73,6 +73,8 @@ public class AsgardApplication {
     private StringRedisSerializer stringRedisSerializer() {
         return new StringRedisSerializer();
     }
-
+    
+    
+    
 
 }
