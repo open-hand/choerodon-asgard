@@ -6,10 +6,8 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz.groovy') {
 //          plsql drop 分隔符是/，create statement的分隔符是; 所以分两个文件
             sqlFile(path: './quartz_oracle_drop.sql', relativeToChangelogFile: true, stripComments: true, endDelimiter: '/')
             sqlFile(path: './quartz_oracle_create.sql', relativeToChangelogFile: true, stripComments: true)
-        } else if (helper.isSqlServer()){
-            sqlFile(path: './quartz_mssql.sql', relativeToChangelogFile: true, stripComments: true)
         } else {
-            sqlFile(path: './quartz_mysql.sql', relativeToChangelogFile: true, stripComments: true)
+            sqlFile(path: './quartz.sql', relativeToChangelogFile: true, stripComments: true)
         }
     }
 }
