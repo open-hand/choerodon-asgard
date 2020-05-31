@@ -6,7 +6,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
             createSequence(sequenceName: 'ASGARD_QUARTZ_METHOD_S', startValue:"1")
         }
         createTable(tableName: "ASGARD_QUARTZ_METHOD") {
-            column(name: 'ID', type: 'BIGINT', remarks: 'ID', autoIncrement: true) {
+            column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_METHOD')
             }
             column(name: 'METHOD', type: 'VARCHAR(128)', remarks: '方法名') {
@@ -15,7 +15,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
             column(name: 'SERVICE', type: 'VARCHAR(64)', remarks: '方法所在服务') {
                 constraints(nullable: false)
             }
-            column(name: 'MAX_RETRY_COUNT', type: 'INT', defaultValue: "0", remarks: '最大重试次数') {
+            column(name: 'MAX_RETRY_COUNT', type: 'INT(7) UNSIGNED', defaultValue: "0", remarks: '最大重试次数') {
                 constraints(nullable: false)
             }
             column(name: 'PARAMS', type: 'TEXT', remarks: '方法参数列表的json形式') {
@@ -36,8 +36,6 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
             column(name: "CODE", type: "VARCHAR(64)", remarks: '方法标志') {
                 constraints(nullable: false)
             }
-        }
-        addColumn(tableName: 'ASGARD_QUARTZ_METHOD') {
             column(name: "DESCRIPTION", type: "VARCHAR(255)", remarks: '方法描述')
         }
     }
