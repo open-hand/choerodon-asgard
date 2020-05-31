@@ -9,7 +9,7 @@
     </schema-merge>
     <service name="hzero_platform" filename="hzero_platform" schema="hzero_platform" description="平台服务"/>
     <service name="hzero_admin" filename="hzero_admin" schema="hzero_admin" description="平台治理服务"/>
-    <service name="hzero_asgard" filename="hzero_asgard" schema="hzero_asgard" description="事务服务"/>
+    <service name="asgard_service" filename="asgard_service" schema="asgard_service" description="事务服务"/>
     <service name="hzero_file" filename="hzero_file" schema="hzero_file" description="文件服务"/>
     <service name="hzero_message" filename="hzero_message" schema="hzero_message" description="消息服务"/>
     <service name="hzero_scheduler" filename="hzero_scheduler" schema="hzero_scheduler" description="调度服务"/>
