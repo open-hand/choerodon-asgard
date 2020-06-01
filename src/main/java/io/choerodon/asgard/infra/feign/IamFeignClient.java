@@ -22,7 +22,7 @@ public interface IamFeignClient {
     ResponseEntity<Organization> queryOrganization(@PathVariable(name = "organization_id") Long id);
 
     @GetMapping(value = "/projects/{project_id}")
-    ResponseEntity<Project> queryProject(@PathVariable(name = "project_id") Long id);
+    ResponseEntity<ProjectDTO> queryProject(@PathVariable(name = "project_id") Long id);
 
     @PostMapping(value = "/site/role_members/users")
     ResponseEntity<List<UserDTO>> pagingQueryUsersByRoleIdOnSiteLevel(@RequestParam(value = "role_id") Long roleId);
@@ -37,8 +37,12 @@ public interface IamFeignClient {
             @RequestParam(value = "role_id") Long roleId,
             @PathVariable(name = "project_id") Long sourceId);
 
-    @GetMapping(value = "/roles")
-    ResponseEntity<Role> queryByCode(@RequestParam(value = "code") String code);
+    @GetMapping(value = "/roles/site/search_by_code")
+    ResponseEntity<Role> getSiteRoleByCode(@RequestParam(value = "code") String code);
+
+    @GetMapping(value = "/roles/search_by_label")
+    ResponseEntity<List<Role>> listByLabelName(@RequestParam(value = "tenantId") Long tenantId,
+                                               @RequestParam String labelName);
 
     @PostMapping("/users/ids")
     ResponseEntity<List<User>> listUsersByIds(@RequestBody Long[] ids);
