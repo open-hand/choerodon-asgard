@@ -12,6 +12,7 @@ import io.choerodon.asgard.infra.dto.QuartzTaskInstanceDTO;
 import io.choerodon.asgard.infra.dto.QuartzTaskMemberDTO;
 import io.choerodon.asgard.infra.enums.DefaultAutowiredField;
 import io.choerodon.asgard.infra.enums.MemberType;
+import io.choerodon.asgard.infra.enums.RoleLabelEnum;
 import io.choerodon.asgard.infra.enums.TriggerType;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
 import io.choerodon.asgard.infra.mapper.QuartzMethodMapper;
@@ -154,7 +155,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         //判断是否为空，为了单测
         Long currentUserId = DetailsHelper.getUserDetails() != null ? DetailsHelper.getUserDetails().getUserId() : null;
         if (dto.getNotifyUser().getAdministrator()) {
-            Role role = getAdministratorRoleByLevel(level);
+            Role role = getAdministratorRoleBySourceIdAndLevel(quartzTask.getSourceId(), level);
             quartzTaskMembers.add(insertMember(quartzTask.getId(), MemberType.ROLE, role.getId()));
         }
         if (dto.getNotifyUser().getCreator()) {
@@ -189,16 +190,20 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
      * @param level
      * @return
      */
-    private Role getAdministratorRoleByLevel(String level) {
+    private Role getAdministratorRoleBySourceIdAndLevel(Long sourceId, String level) {
         Role role = new Role();
         if (ResourceLevel.SITE.value().equals(level)) {
-            role = iamFeignClient.queryByCode(InitRoleCode.SITE_ADMINISTRATOR).getBody();
+            role = iamFeignClient.getSiteRoleByCode(InitRoleCode.SITE_ADMINISTRATOR).getBody();
         }
         if (ResourceLevel.ORGANIZATION.value().equals(level)) {
-            role = iamFeignClient.queryByCode(InitRoleCode.ORGANIZATION_ADMINISTRATOR).getBody();
+            role = iamFeignClient.listByLabelName(sourceId, RoleLabelEnum.TENANT_ADMIN.value()).getBody().get(0);
         }
         if (ResourceLevel.PROJECT.value().equals(level)) {
-            role = iamFeignClient.queryByCode(InitRoleCode.PROJECT_ADMINISTRATOR).getBody();
+            ProjectDTO project = iamFeignClient.queryProject(sourceId).getBody();
+            if (project == null) {
+                throw new CommonException("error.query.project");
+            }
+            role = iamFeignClient.listByLabelName(project.getOrganizationId(), RoleLabelEnum.PROJECT_ADMIN.value()).getBody().get(0);
         }
         return role;
     }
@@ -219,7 +224,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         }
         if (ResourceLevel.PROJECT.value().equals(level)
                 && Arrays.stream(DefaultAutowiredField.projectDefaultField()).anyMatch(jobParamsName::contains)) {
-            Project project = iamFeignClient.queryProject(sourceId).getBody();
+            ProjectDTO project = iamFeignClient.queryProject(sourceId).getBody();
             params.put(DefaultAutowiredField.PROJECT_ID, project.getId());
             params.put(DefaultAutowiredField.PROJECT_NAME, project.getName());
             params.put(DefaultAutowiredField.PROJECT_CODE, project.getCode());

@@ -21,7 +21,7 @@ public class IamFeignClientFallback implements IamFeignClient {
     }
 
     @Override
-    public ResponseEntity<Project> queryProject(Long id) {
+    public ResponseEntity<ProjectDTO> queryProject(Long id) {
         throw new FeignException("error.iam.queryProject");
     }
 
@@ -41,8 +41,13 @@ public class IamFeignClientFallback implements IamFeignClient {
     }
 
     @Override
-    public ResponseEntity<Role> queryByCode(String code) {
-        throw new FeignException("error.feign.iam.queryByCode");
+    public ResponseEntity<Role> getSiteRoleByCode(String code) {
+        throw new FeignException("error.feign.iam.getSiteRoleByCode");
+    }
+
+    @Override
+    public ResponseEntity<List<Role>> listByLabelName(Long tenantId, String labelName) {
+        throw new FeignException("error.feign.iam.listByLabelName");
     }
 
     @Override
