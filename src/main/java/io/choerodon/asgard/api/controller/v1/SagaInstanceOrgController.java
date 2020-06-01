@@ -47,10 +47,10 @@ public class SagaInstanceOrgController {
                                                                  @PathVariable("organization_id") long orgId,
                                                                  @RequestParam(required = false) String sagaCode,
                                                                  @RequestParam(required = false) String status,
-                                                                 @RequestParam(required = false) String reflevel,
+                                                                 @RequestParam(required = false) String refType,
                                                                  @RequestParam(required = false) String refId,
                                                                  @RequestParam(required = false) String params) {
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, reflevel, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
+        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})

@@ -5,10 +5,10 @@ import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -41,12 +41,12 @@ public class SagaInstanceProjectController {
     public ResponseEntity<Page<SagaInstanceDetails>> pagingQuery(@PathVariable("project_id") long projectId,
                                                                  @RequestParam(required = false) String sagaCode,
                                                                  @RequestParam(required = false) String status,
-                                                                 @RequestParam(required = false) String reflevel,
+                                                                 @RequestParam(required = false) String refType,
                                                                  @RequestParam(required = false) String refId,
                                                                  @RequestParam(required = false) String params,
                                                                  @ApiIgnore
-                                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, reflevel, refId, params, ResourceLevel.PROJECT.value(), projectId);
+                                                                 @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
