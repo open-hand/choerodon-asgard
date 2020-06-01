@@ -10,16 +10,15 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -100,13 +99,13 @@ public class SagaInstanceController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<SagaInstanceDetails>> pagingQuery(@ApiIgnore
-                                                                     @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest,
+                                                                 @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest,
                                                                  @RequestParam(required = false) String sagaCode,
                                                                  @RequestParam(required = false) String status,
-                                                                 @RequestParam(required = false) String reflevel,
+                                                                 @RequestParam(required = false) String refType,
                                                                  @RequestParam(required = false) String refId,
                                                                  @RequestParam(required = false) String params) {
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, reflevel, refId, params, null, null);
+        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, null, null);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
@@ -142,8 +141,8 @@ public class SagaInstanceController {
     @CustomPageRequest
     @ApiOperation(value = "统计平台下失败实例情况详情")
     public ResponseEntity<Page<SagaInstanceDTO>> statisticsFailureList(@ApiIgnore
-                                                                           @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest PageRequest,
-                                                                           @RequestParam("date") Integer date) {
+                                                                       @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest PageRequest,
+                                                                       @RequestParam("date") Integer date) {
         return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.SITE.value(), null, date, PageRequest), HttpStatus.OK);
     }
 
