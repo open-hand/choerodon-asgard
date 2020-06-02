@@ -21,7 +21,6 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
         record.set('cronTime', observable(['请输入正确的cron表达式']));
         return intl.formatMessage({ id: res.message });
       } else {
-        debugger;
         record.set('cronTime', observable(['最近3次运行时间：'].concat(res)));
       }
     } catch (err) {

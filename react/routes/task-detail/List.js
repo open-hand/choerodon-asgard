@@ -16,7 +16,6 @@ import Executable from './executable-program';
 // 页面权限
 function getPermission(AppState) {
   const { type } = AppState.currentMenuType;
-  debugger;
   let methodService = ['choerodon.code.site.manager.task-detail.ps.schedules-methods'];
   let normalService = ['choerodon.code.site.manager.task-detail.ps.default'];
   let createService = ['choerodon.code.site.manager.task-detail.ps.create'];
@@ -244,7 +243,7 @@ const List = observer(() => {
           />
           <Column name="lastExecTime" className="c7n-asgard-table-cell" />
           <Column name="nextExecTime" className="c7n-asgard-table-cell" />
-          <Column name="status" renderer={renderStatus} />
+          <Column name="status" renderer={renderStatus} width={100} />
         </Table>
       </Content>
     </Page>
