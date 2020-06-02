@@ -1,9 +1,13 @@
 package io.choerodon.asgard.infra.dto;
 
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.*;
 
+@VersionAudit
+@ModifyAudit
 @Table(name = "ASGARD_QUARTZ_METHOD")
 public class QuartzMethodDTO extends AuditDomain {
 

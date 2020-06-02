@@ -1,5 +1,7 @@
 package io.choerodon.asgard.infra.dto;
 
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.GeneratedValue;
@@ -7,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@VersionAudit
+@ModifyAudit
 @Table(name = "ASGARD_ORCH_SAGA_TASK")
 public class SagaTaskDTO extends AuditDomain {
 

@@ -1,6 +1,8 @@
 package io.choerodon.asgard.infra.dto;
 
 
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.GeneratedValue;
@@ -12,6 +14,8 @@ import java.util.Objects;
 /**
  * @author dengyouquan
  **/
+@VersionAudit
+@ModifyAudit
 @Table(name = "ASGARD_QUARTZ_TASK_MEMBER")
 public class QuartzTaskMemberDTO extends AuditDomain {
     @Id
