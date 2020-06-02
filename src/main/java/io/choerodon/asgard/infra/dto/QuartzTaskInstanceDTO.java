@@ -1,12 +1,15 @@
 package io.choerodon.asgard.infra.dto;
 
+import io.choerodon.mybatis.annotation.ModifyAudit;
+import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 
-
+@VersionAudit
+@ModifyAudit
 @Table(name = "ASGARD_QUARTZ_TASK_INSTANCE")
 public class QuartzTaskInstanceDTO extends AuditDomain {
 
