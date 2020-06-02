@@ -6,7 +6,7 @@ function noop() { }
 export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, executeStrategy, notifyUser, intl }) {
   async function checkTaskName(value, name, record) {
     try {
-      const res = await axios.post(`/asgard/v1/schedules${levelType}/tasks/check`, value);
+      const res = await axios.post(`/hagd/v1/schedules${levelType}/tasks/check`, value);
       if (res.failed) {
         return res.message;
       }
@@ -16,12 +16,11 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
   }
   async function checkCronExpression(value, name, record) {
     try {
-      const res = await axios.post(`/asgard/v1/schedules${levelType}/tasks/cron`, value);
+      const res = await axios.post(`/hagd/v1/schedules${levelType}/tasks/cron`, value);
       if (res.failed) {
         record.set('cronTime', observable(['请输入正确的cron表达式']));
         return intl.formatMessage({ id: res.message });
       } else {
-        debugger;
         record.set('cronTime', observable(['最近3次运行时间：'].concat(res)));
       }
     } catch (err) {
@@ -56,7 +55,7 @@ export default function ({ levelType, triggerType, simpleRepeatIntervalUnit, exe
         data.notifyUser = tmpObj;
         // [data.startTime, data.endTime] = data.time.map((moment) => moment.format('YYYY-MM-DD HH:mm:ss'));
         return {
-          url: `/asgard/v1/schedules${levelType}/tasks`,
+          url: `/hagd/v1/schedules${levelType}/tasks`,
           method: 'post',
           data,
         };

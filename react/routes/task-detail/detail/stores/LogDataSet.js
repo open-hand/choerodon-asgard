@@ -18,26 +18,26 @@ export default ({ id = 0, taskId, levelType, intl, intlPrefix }) => {
       value: 'COMPLETED',
       meaning: '完成',
     }],
-  }); 
-  
+  });
+
   return {
     autoQuery: true,
     selection: false,
     transport: {
       read: {
-        url: `/asgard/v1/schedules${levelType}/tasks/instances/${taskId}`,
+        url: `/hagd/v1/schedules${levelType}/tasks/instances/${taskId}`,
         method: 'get',
       },
     },
     fields: [
-      { name: 'status', type: 'string', label: status },  
+      { name: 'status', type: 'string', label: status },
       { name: 'serviceInstanceId', type: 'string', label: serviceInstanceId },
       { name: 'plannedStartTime', type: 'string', label: plannedStartTime },
-      { name: 'actualStartTime', type: 'string', label: actualStartTime }, 
-    ],    
+      { name: 'actualStartTime', type: 'string', label: actualStartTime },
+    ],
     queryFields: [
-      { name: 'status', type: 'string', label: status, options: statusDataSet },     
-      { name: 'serviceInstanceId', type: 'string', label: serviceInstanceId },      
+      { name: 'status', type: 'string', label: status, options: statusDataSet },
+      { name: 'serviceInstanceId', type: 'string', label: serviceInstanceId },
     ],
   };
 };

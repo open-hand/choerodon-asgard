@@ -15,7 +15,7 @@ const Saga = observer(() => {
   const { dataSet, intlPrefix, loadDetailData } = useContext(Store);
   const openDetail = async (id) => {
     try {
-      const data = await axios.get(`/asgard/v1/sagas/${id}`);
+      const data = await axios.get(`/hagd/v1/sagas/${id}`);
       Modal.open({
         key,
         drawer: true,
@@ -50,8 +50,7 @@ const Saga = observer(() => {
     <Page
       className="c7n-saga"
       service={[
-        'asgard-service.saga.pagingQuery',
-        'asgard-service.saga.query',
+        'choerodon.code.site.manager.saga-manager.saga.ps.default',
       ]}
     >
       <Breadcrumb />

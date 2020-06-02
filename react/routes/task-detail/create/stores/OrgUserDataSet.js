@@ -2,9 +2,9 @@ export default ({ id = 0, type }) => {
   function getQueryUrl() {
     switch (type) {
       case 'site':
-        return '/base/v1/site/enableUsers';
+        return '/iam/choerodon/v1/site/enableUsers';
       default:
-        return `/base/v1/organizations/${id}/enableUsers`;
+        return `/iam/choerodon/v1/organizations/${id}/enableUsers`;
     }
   }
   return {

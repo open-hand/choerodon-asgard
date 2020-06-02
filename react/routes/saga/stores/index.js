@@ -19,7 +19,7 @@ export const StoreProvider = injectIntl(
     * 详情页数据
     * @param id
     */
-    const loadDetailData = (id) => axios.get(`/asgard/v1/sagas/${id}`);
+    const loadDetailData = (id) => axios.get(`/hagd/v1/sagas/${id}`);
     const value = {
       ...props,
       dataSet,

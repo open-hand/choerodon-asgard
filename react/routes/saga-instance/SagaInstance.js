@@ -15,7 +15,7 @@ import SagaImg from '../saga/SagaImg';
 const { Column } = Table;
 const modalKey = Modal.key();
 const SagaInstance = withRouter(observer((props) => {
-  const { instanceDataSet, intl, taskDataSet, intlPrefix, apiGetway, abort, unLock, retry, loadDetailData } = useContext(Store);
+  const { instanceDataSet, intl, taskDataSet, intlPrefix, apiGetway, abort, unLock, retry, loadDetailData, AppState } = useContext(Store);
   const [activeTab, setActiveTab] = useState('instance');
   const [statistics, setStatistics] = useState({
     COMPLETED_COUNT: 0,
@@ -254,23 +254,17 @@ const SagaInstance = withRouter(observer((props) => {
   };
 
   const istStatusType = ['COMPLETED', 'RUNNING', 'FAILED'];
+  const { type } = AppState.currentMenuType;
+  let services = ['choerodon.code.site.manager.saga-manager.saga-instance.ps.default'];
+  if (type === 'organization') {
+    services = ['choerodon.code.organization.manager.saga-instance.ps.default'];
+  } else {
+    services = ['choerodon.code.project.operation.saga-instance.ps.default'];
+  }
   return (
     <Page
       className="c7n-saga-instance"
-      service={[
-        'asgard-service.saga-instance.pagingQuery',
-        'asgard-service.saga-instance.query',
-        'asgard-service.saga-instance.statistics',
-        'asgard-service.saga-instance.queryDetails',
-        'asgard-service.saga-instance-org.pagingQuery',
-        'asgard-service.saga-instance-org.statistics',
-        'asgard-service.saga-instance-org.query',
-        'asgard-service.saga-instance-org.queryDetails',
-        'asgard-service.saga-instance-project.pagingQuery',
-        'asgard-service.saga-instance-project.statistics',
-        'asgard-service.saga-instance-project.query',
-        'asgard-service.saga-instance-project.queryDetails',
-      ]}
+      service={services}
     >
       <div className="c7n-saga-instance-title">
         <Breadcrumb />
