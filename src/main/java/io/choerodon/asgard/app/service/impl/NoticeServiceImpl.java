@@ -45,7 +45,6 @@ public class NoticeServiceImpl implements NoticeService {
     private IamFeignClient iamFeignClient;
 
 
-    public static final String REGISTER_ABNORMAL_TEMPLATE = "registerOrganization-abnormal";
 
 
     @Override
@@ -65,7 +64,7 @@ public class NoticeServiceImpl implements NoticeService {
         // 构建消息对象
         MessageSender messageSender = new MessageSender();
         // 消息code
-        messageSender.setMessageCode(BusinessTypeCode.getValueByLevel(level).value());
+        messageSender.setMessageCode(BusinessTypeCode.getValueByLevel(level.toUpperCase()).value());
         // 默认为0L,都填0L,可不填写
         messageSender.setTenantId(0L);
 
@@ -123,7 +122,7 @@ public class NoticeServiceImpl implements NoticeService {
             // 构建消息对象
             MessageSender messageSender = new MessageSender();
             // 消息code
-            messageSender.setMessageCode("sagaInstanceFail");
+            messageSender.setMessageCode(BusinessTypeCode.SAGA_INSTANCE_FAIL.value());
             // 默认为0L,都填0L,可不填写
             messageSender.setTenantId(0L);
 
@@ -222,7 +221,7 @@ public class NoticeServiceImpl implements NoticeService {
             // 构建消息对象
             MessageSender messageSender = new MessageSender();
             // 消息code
-            messageSender.setMessageCode(REGISTER_ABNORMAL_TEMPLATE);
+            messageSender.setMessageCode(BusinessTypeCode.REGISTERORGANIZATION_ABNORMAL.value());
             // 默认为0L,都填0L,可不填写
             messageSender.setTenantId(0L);
 
