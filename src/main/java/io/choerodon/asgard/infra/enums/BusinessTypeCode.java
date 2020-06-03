@@ -7,9 +7,11 @@ import io.choerodon.core.iam.ResourceLevel;
  * @author dengyouquan
  **/
 public enum BusinessTypeCode {
-    JOB_STATUS_SITE("jobStatusSite"),
-    JOB_STATUS_ORGANIZATION("jobStatusOrganization"),
-    JOB_STATUS_PROJECT("jobStatusProject");
+    JOB_STATUS_SITE("JOBSTATUSSITE"),
+    JOB_STATUS_ORGANIZATION("JOBSTATUSORGANIZATION"),
+    REGISTERORGANIZATION_ABNORMAL("registerOrganization-abnormal"),
+    SAGA_INSTANCE_FAIL("sagaInstanceFail"),
+    JOB_STATUS_PROJECT("JOBSTATUSPROJECT");
     private String value;
 
     public String value() {
