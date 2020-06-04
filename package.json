@@ -1,15 +1,15 @@
 {
   "name": "@choerodon/asgard",
   "routeName": "asgard",
-  "version": "0.22.0-hzero",
+  "version": "0.22.0",
   "description": "",
   "main": "./lib/index.js",
   "files": [
     "lib"
   ],
   "peerDependencies": {
-    "@choerodon/boot": "0.21.0",
-    "@choerodon/master": "0.22.0-hzero"
+    "@choerodon/boot": "0.21.2",
+    "@choerodon/master": "0.22.0"
   },
   "dependencies": {
     "choerodon-ui": "^0.8.x",
@@ -18,8 +18,8 @@
     "react-codemirror": "^1.0.0"
   },
   "devDependencies": {
-    "@choerodon/boot": "0.21.0",
-    "@choerodon/master": "0.22.0-hzero",
+    "@choerodon/boot": "0.21.2",
+    "@choerodon/master": "0.22.0",
     "babel-preset-env": "^1.7.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^7.0.1",
