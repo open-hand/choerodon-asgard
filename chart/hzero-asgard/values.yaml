@@ -74,6 +74,10 @@ env:
     # 数据库密码
     SPRING_DATASOURCE_PASSWORD: password
 
+    # JVM参数
+    JAVA_OPTS: >-
+      -Xms1024m
+      -Xmx1536m
     ## Skywalking 配置参数
     # SKYWALKING_OPTS: >-
     #   -javaagent:/agent/skywalking-agent.jar
