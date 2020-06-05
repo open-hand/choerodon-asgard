@@ -3,7 +3,7 @@ preJob:
   # job 超时时间
   timeout: 1200
   # 工具 jar 包镜像库地址
-  image: registry.staging.saas.hand-china.com/choerodon-tools/dbtool:0.6.8
+  image: registry.cn-shanghai.aliyuncs.com/c7n/dbtool:0.7.0
   preInitDB:
     # 是否初始化base_service数据库
     enabled: true
@@ -11,7 +11,7 @@ preJob:
       # 初始化数据库更新数据的时候忽略的表或列
       exclusion: ""
       # 本服务数据库相关信息
-      url: jdbc:mysql://localhost:3306/hzero_asgard?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://localhost:3306/?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=Asia/Shanghai
       username: username
       password: password
       driver: com.mysql.jdbc.Driver
@@ -64,7 +64,7 @@ env:
     # Redis 端口
     SPRING_REDIS_PORT: 6379
     # Redis db
-    SPRING_REDIS_DATABASE: 12
+    SPRING_REDIS_DATABASE: 7
 
     CHOERODON_ASGARD_TIME-OUT: 20000
     # 数据库连接地址
@@ -74,10 +74,15 @@ env:
     # 数据库密码
     SPRING_DATASOURCE_PASSWORD: password
 
+    # 是否启用配置中心
+    SPRING_CLOUD_CONFIG_ENABLED: false
+    # 配置中心地址
+    SPRING_CLOUD_CONFIG_URI: http://dev.hzero.org:8010/
+
     # JVM参数
-    JAVA_OPTS: >-
-      -Xms1024m
-      -Xmx1536m
+#    JAVA_OPTS: >-
+#      -Xms1024m
+#      -Xmx1536m
     ## Skywalking 配置参数
     # SKYWALKING_OPTS: >-
     #   -javaagent:/agent/skywalking-agent.jar
@@ -134,18 +139,18 @@ service:
     # 服务端口
     http: 
       port: 8040
-      nodePort: 30092
+      nodePort: 30114
     # 管理端口
     actuator: 
       port: 8041
-      nodePort: 30093
+      nodePort: 30115
   ## externalIPs 设置
   # externalIPs:
   #   - externalIp1
   annotations: {}
     # prometheus.io/scrape: 'true'
     # prometheus.io/path: '/actuator/prometheus'
-    # prometheus.io/port: '8031'
+    # prometheus.io/port: '8041'
 
 ## 指标收集
 metrics:
