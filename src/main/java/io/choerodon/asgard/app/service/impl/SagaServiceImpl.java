@@ -23,6 +23,7 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,7 @@ public class SagaServiceImpl implements SagaService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public SagaServiceImpl(SagaMapper sagaMapper, SagaTaskMapper sagaTaskMapper, DiscoveryClient discoveryClient, RegisterInstanceService registerInstanceService) {
+    public SagaServiceImpl(SagaMapper sagaMapper, SagaTaskMapper sagaTaskMapper, DiscoveryClient discoveryClient, @Lazy RegisterInstanceService registerInstanceService) {
         this.sagaMapper = sagaMapper;
         this.sagaTaskMapper = sagaTaskMapper;
         this.discoveryClient = discoveryClient;
