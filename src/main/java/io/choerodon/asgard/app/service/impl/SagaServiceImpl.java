@@ -5,6 +5,7 @@ import io.choerodon.asgard.api.vo.JsonMerge;
 import io.choerodon.asgard.api.vo.Saga;
 import io.choerodon.asgard.api.vo.SagaTask;
 import io.choerodon.asgard.api.vo.SagaWithTask;
+import io.choerodon.asgard.app.service.RegisterInstanceService;
 import io.choerodon.asgard.app.service.SagaService;
 import io.choerodon.asgard.infra.dto.SagaDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskDTO;
@@ -18,6 +19,10 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,18 +39,25 @@ import static java.util.stream.Collectors.groupingBy;
 public class SagaServiceImpl implements SagaService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaService.class);
+    private static final String NULL_VERSION = "null_version";
+    private static final String METADATA_VERSION = "VERSION";
+
+    private DiscoveryClient discoveryClient;
 
     private SagaMapper sagaMapper;
 
     private SagaTaskMapper sagaTaskMapper;
+    private RegisterInstanceService registerInstanceService;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public SagaServiceImpl(SagaMapper sagaMapper, SagaTaskMapper sagaTaskMapper) {
+    public SagaServiceImpl(SagaMapper sagaMapper, SagaTaskMapper sagaTaskMapper, DiscoveryClient discoveryClient, RegisterInstanceService registerInstanceService) {
         this.sagaMapper = sagaMapper;
         this.sagaTaskMapper = sagaTaskMapper;
+        this.discoveryClient = discoveryClient;
+        this.registerInstanceService = registerInstanceService;
     }
 
     public void setSagaMapper(SagaMapper sagaMapper) {
@@ -128,5 +140,33 @@ public class SagaServiceImpl implements SagaService {
             throw new CommonException("error.saga.deleteWhenTaskExist");
         }
         sagaMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public void refresh(String serviceName) {
+        ServiceInstance instance = getInstanceByNameAndVersion(serviceName, NULL_VERSION);
+        if (instance == null) {
+            LOGGER.warn("service instance not running, serviceName=[{}]", serviceName);
+            throw new CommonException("asgard.warn.permission.instanceNotRunning");
+        }
+        registerInstanceService.updateConsumer(instance);
+    }
+
+    private ServiceInstance getInstanceByNameAndVersion(String serviceName, String metaVersion) {
+        List<ServiceInstance> instances = discoveryClient.getInstances(serviceName);
+        for (ServiceInstance instance : instances) {
+            String mdVersion = instance.getMetadata().get(METADATA_VERSION);
+            if (org.apache.commons.lang.StringUtils.isEmpty(mdVersion)) {
+                mdVersion = NULL_VERSION;
+            }
+            if (metaVersion.equals(mdVersion)) {
+                return instance;
+            }
+        }
+        if (NULL_VERSION.equalsIgnoreCase(metaVersion)) {
+            LOGGER.info("The first service instance is used directly without entering the service version.");
+            return instances.stream().findFirst().orElse(null);
+        }
+        return null;
     }
 }
