@@ -17,4 +17,6 @@ public interface SagaService {
 
     void delete(Long id);
 
+    void refresh(String serviceName);
+
 }

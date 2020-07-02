@@ -75,15 +75,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
         if (payload.getServiceInstance() == null) {
             LOGGER.error("[InstanceAddedEvent=" + payload + "] has no ServiceInstance");
         } else {
-            ServiceInstance instance = payload.getServiceInstance();
-            String address = instance.getHost() + ":" + instance.getPort();
-            Map<String, String> metadata = instance.getMetadata();
-            PropertyData propertyData = fetchPropertyData(address);
-            if (propertyData == null) {
-                throw new RemoteAccessException("error.instanceUpConsumer.fetchPropertyData");
-            } else {
-                propertyDataConsume(propertyData, metadata.get(VERSION));
-            }
+            updateConsumer(payload.getServiceInstance());
         }
 
 
@@ -93,6 +85,18 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
 //        } else {
 //            propertyDataConsume(propertyData, payload.getServiceInstance().getMetadata().get("VERSION"));
 //        }
+    }
+
+    @Override
+    public void updateConsumer(ServiceInstance instance) {
+        String address = instance.getHost() + ":" + instance.getPort();
+        Map<String, String> metadata = instance.getMetadata();
+        PropertyData propertyData = fetchPropertyData(address);
+        if (propertyData == null) {
+            throw new RemoteAccessException("error.instanceUpConsumer.fetchPropertyData");
+        } else {
+            propertyDataConsume(propertyData, metadata.get(VERSION));
+        }
     }
 
     /**
