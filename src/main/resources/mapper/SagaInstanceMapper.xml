@@ -130,7 +130,7 @@
         WHERE
         1=1
         <if test="sourceId != null">
-            AND asi.FD_LEVEL = 'organization'
+            AND asi.FD_LEVEL = #{level}
             AND asi.SOURCE_ID = #{sourceId}
         </if>
         AND asi.CREATION_DATE &gt; #{startTime}

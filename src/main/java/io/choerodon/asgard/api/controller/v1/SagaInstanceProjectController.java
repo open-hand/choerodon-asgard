@@ -1,6 +1,7 @@
 package io.choerodon.asgard.api.controller.v1;
 
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
+import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
@@ -9,6 +10,7 @@ import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -74,5 +77,15 @@ public class SagaInstanceProjectController {
         return new ResponseEntity<>(sagaInstanceService.statistics(ResourceLevel.PROJECT.value(), projectId), HttpStatus.OK);
     }
 
+    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @GetMapping(value = "/statistics/failure")
+    @ApiOperation(value = "统计项目下失败实例情况")
+    public ResponseEntity<List<SagaInstanceFailureVO>> statisticsFailure(
+            @ApiParam(value = "项目id", required = true)
+            @PathVariable("project_id") Long projectId,
+            @ApiParam(value = "时间范围", required = true)
+            @RequestParam("date") Integer date) {
+        return new ResponseEntity<>(sagaInstanceService.statisticsFailure(ResourceLevel.PROJECT.value(), projectId, date), HttpStatus.OK);
+    }
 
 }
