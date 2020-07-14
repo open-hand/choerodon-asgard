@@ -2,6 +2,7 @@ package io.choerodon.asgard.app.service.impl;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.choerodon.asgard.api.vo.PageSagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
@@ -25,11 +26,14 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -46,7 +50,9 @@ import java.util.stream.Collectors;
 
 import static io.choerodon.asgard.app.service.impl.SagaInstanceServiceImpl.DB_ERROR;
 import static io.choerodon.asgard.app.service.impl.SagaInstanceServiceImpl.ERROR_CODE_SAGA_INSTANCE_NOT_EXIST;
+
 import static java.util.stream.Collectors.groupingBy;
+
 import static org.springframework.transaction.TransactionDefinition.ISOLATION_READ_UNCOMMITTED;
 
 @Service
@@ -171,6 +177,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
 
     @Override
     public void updateStatus(final SagaTaskInstanceStatus statusDTO) {
+        LOGGER.info("<<<<<<<<<<<<<<<<<<<<<<<<<<更新执行状态>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         SagaTaskInstanceDTO taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (taskInstance == null) {
             throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
@@ -186,8 +193,10 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
             if (SagaDefinition.TaskInstanceStatus.COMPLETED.name().equalsIgnoreCase(statusDTO.getStatus())) {
+                LOGGER.info("<<<<<<<<<<<<<<<<<<<<<<<<<<执行状态：{}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", SagaDefinition.TaskInstanceStatus.COMPLETED.name());
                 updateStatusCompleted(taskInstance, statusDTO.getOutput(), instance);
             } else if (SagaDefinition.TaskInstanceStatus.FAILED.name().equalsIgnoreCase(statusDTO.getStatus())) {
+                LOGGER.info("<<<<<<<<<<<<<<<<<<<<<<<<<<执行状态：{}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", SagaDefinition.TaskInstanceStatus.FAILED.name());
                 updateStatusFailed(taskInstance, instance, statusDTO.getExceptionMessage(), false);
             }
             transactionManager.commit(status);
@@ -272,7 +281,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
                 sagaTaskInstance.setStatus(SagaDefinition.TaskInstanceStatus.WAIT_TO_BE_PULLED.name());
                 if (taskInstanceMapper.insertSelective(sagaTaskInstance) != 1) {
                     throw new FeignException(DB_ERROR);
-                }else{
+                } else {
                     //通知相应的服务来立即拉取信息
                     sagaInstanceEventPublisher.sagaTaskInstanceEvent(t.getService());
                 }
