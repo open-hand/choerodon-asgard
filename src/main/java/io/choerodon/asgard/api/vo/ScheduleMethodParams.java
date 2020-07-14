@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.core.exception.CommonException;
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 public class ScheduleMethodParams {
+    @Encrypt
     @ApiModelProperty(value = "主键ID")
     private Long id;
     @ApiModelProperty(value = "参数MAP列表格式")

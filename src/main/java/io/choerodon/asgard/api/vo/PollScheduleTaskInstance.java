@@ -1,12 +1,14 @@
 package io.choerodon.asgard.api.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hzero.starter.keyencrypt.core.Encrypt;
+
 import io.choerodon.core.oauth.CustomUserDetails;
 
 import java.util.Objects;
 
 public class PollScheduleTaskInstance {
-
+    @Encrypt
     private Long id;
 
     private String method;

@@ -12,9 +12,13 @@ import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -51,14 +55,14 @@ public class ScheduleTaskSiteController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层启用任务")
     @PutMapping("/{id}/enable")
-    public void enable(@PathVariable long id, @RequestParam long objectVersionNumber) {
+    public void enable(@Encrypt @PathVariable Long id, @RequestParam Long objectVersionNumber) {
         scheduleTaskService.enable(id, objectVersionNumber, ResourceLevel.SITE.value(), 0L);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层停用任务")
     @PutMapping("/{id}/disable")
-    public void disable(@PathVariable long id, @RequestParam long objectVersionNumber) {
+    public void disable(@Encrypt @PathVariable Long id, @RequestParam Long objectVersionNumber) {
         scheduleTaskService.getQuartzTask(id, ResourceLevel.SITE.value(), 0L);
         scheduleTaskService.disable(id, objectVersionNumber, false);
     }
@@ -66,7 +70,7 @@ public class ScheduleTaskSiteController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层删除任务")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable long id) {
+    public void delete(@Encrypt @PathVariable Long id) {
         scheduleTaskService.delete(id, ResourceLevel.SITE.value(), 0L);
     }
 
@@ -75,19 +79,20 @@ public class ScheduleTaskSiteController {
     @ApiOperation(value = "全局层分页查询定时任务")
     @CustomPageRequest
     @ResponseBody
-    public ResponseEntity<Page<QuartzTask>> pagingQuery(@ApiIgnore
-                                                            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
-                                                        @RequestParam(required = false) String status,
-                                                        @RequestParam(required = false) String name,
-                                                        @RequestParam(required = false) String description,
-                                                        @RequestParam(required = false) String params) {
+    public ResponseEntity<Page<QuartzTask>> pagingQuery(
+            @ApiIgnore
+            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String params) {
         return scheduleTaskService.pageQuery(pageRequest, status, name, description, params, ResourceLevel.SITE.value(), 0L);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
     @ApiOperation(value = "全局层查看任务详情")
-    public ResponseEntity<ScheduleTaskDetail> getTaskDetail(@PathVariable long id) {
+    public ResponseEntity<ScheduleTaskDetail> getTaskDetail(@Encrypt @PathVariable Long id) {
         return new ResponseEntity<>(scheduleTaskService.getTaskDetail(id, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
 
     }
@@ -95,9 +100,9 @@ public class ScheduleTaskSiteController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "全局层任务名校验")
     @PostMapping(value = "/check")
-    public ResponseEntity check(@RequestBody String name) {
+    public ResponseEntity<Void> check(@RequestBody String name) {
         scheduleTaskService.checkNameAllLevel(name);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

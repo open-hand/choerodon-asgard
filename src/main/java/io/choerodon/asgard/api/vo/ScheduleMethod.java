@@ -6,12 +6,13 @@ import io.choerodon.asgard.infra.dto.QuartzMethodDTO;
 import io.choerodon.asgard.property.PropertyJobParam;
 import io.choerodon.core.exception.CommonException;
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 import java.io.IOException;
 import java.util.List;
 
 public class ScheduleMethod {
-
+    @Encrypt
     @ApiModelProperty(value = "方法id")
     private Long id;
 

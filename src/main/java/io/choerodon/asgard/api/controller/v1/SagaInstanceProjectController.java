@@ -9,8 +9,10 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -41,22 +43,27 @@ public class SagaInstanceProjectController {
     @ApiOperation(value = "项目层查询事务实例列表")
     @ResponseBody
     @CustomPageRequest
-    public ResponseEntity<Page<SagaInstanceDetails>> pagingQuery(@PathVariable("project_id") long projectId,
-                                                                 @RequestParam(required = false) String sagaCode,
-                                                                 @RequestParam(required = false) String status,
-                                                                 @RequestParam(required = false) String refType,
-                                                                 @RequestParam(required = false) String refId,
-                                                                 @RequestParam(required = false) String params,
-                                                                 @ApiIgnore
-                                                                 @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+    public ResponseEntity<Page<SagaInstanceDetails>> pagingQuery(
+            @Encrypt
+            @PathVariable("project_id") long projectId,
+            @RequestParam(required = false) String sagaCode,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String refType,
+            @RequestParam(required = false) String refId,
+            @RequestParam(required = false) String params,
+            @ApiIgnore
+            @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, ResourceLevel.PROJECT.value(), projectId);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "项目层查询某个事务实例运行详情")
-    public ResponseEntity<String> query(@PathVariable("project_id") long projectId,
-                                        @PathVariable("id") Long id) {
+    public ResponseEntity<String> query(
+            @Encrypt
+            @PathVariable("project_id") long projectId,
+            @Encrypt
+            @PathVariable("id") Long id) {
         return sagaInstanceService.query(id);
     }
 
@@ -64,8 +71,11 @@ public class SagaInstanceProjectController {
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @GetMapping(value = "/{id}/details", produces = "application/json")
     @ApiOperation(value = "项目层查询事务实例的具体信息")
-    public ResponseEntity<SagaInstanceDetails> queryDetails(@PathVariable("project_id") long projectId,
-                                                            @PathVariable("id") Long id) {
+    public ResponseEntity<SagaInstanceDetails> queryDetails(
+            @Encrypt
+            @PathVariable("project_id") long projectId,
+            @Encrypt
+            @PathVariable("id") Long id) {
         return new ResponseEntity<>(sagaInstanceService.queryDetails(id), HttpStatus.OK);
     }
 
@@ -73,7 +83,9 @@ public class SagaInstanceProjectController {
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @GetMapping(value = "/statistics", produces = "application/json")
     @ApiOperation(value = "统计项目下各个事务实例状态下的实例个数")
-    public ResponseEntity<Map> statistics(@PathVariable("project_id") long projectId) {
+    public ResponseEntity<Map<String, Integer>> statistics(
+            @Encrypt
+            @PathVariable("project_id") long projectId) {
         return new ResponseEntity<>(sagaInstanceService.statistics(ResourceLevel.PROJECT.value(), projectId), HttpStatus.OK);
     }
 
@@ -81,6 +93,7 @@ public class SagaInstanceProjectController {
     @GetMapping(value = "/statistics/failure")
     @ApiOperation(value = "统计项目下失败实例情况")
     public ResponseEntity<List<SagaInstanceFailureVO>> statisticsFailure(
+            @Encrypt
             @ApiParam(value = "项目id", required = true)
             @PathVariable("project_id") Long projectId,
             @ApiParam(value = "时间范围", required = true)

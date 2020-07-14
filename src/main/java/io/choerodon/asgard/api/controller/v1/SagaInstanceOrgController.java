@@ -10,8 +10,12 @@ import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.ApiOperation;
+
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -42,37 +46,45 @@ public class SagaInstanceOrgController {
     @ApiOperation(value = "组织层查询事务实例列表")
     @ResponseBody
     @CustomPageRequest
-    public ResponseEntity<Page<SagaInstanceDetails>> pagingQuery(@ApiIgnore
-                                                                     @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
-                                                                 @PathVariable("organization_id") long orgId,
-                                                                 @RequestParam(required = false) String sagaCode,
-                                                                 @RequestParam(required = false) String status,
-                                                                 @RequestParam(required = false) String refType,
-                                                                 @RequestParam(required = false) String refId,
-                                                                 @RequestParam(required = false) String params) {
+    public ResponseEntity<Page<SagaInstanceDetails>> pagingQuery(
+            @ApiIgnore
+            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+            @Encrypt
+            @PathVariable("organization_id") long orgId,
+            @RequestParam(required = false) String sagaCode,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String refType,
+            @RequestParam(required = false) String refId,
+            @RequestParam(required = false) String params) {
         return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "组织层查询某个事务实例运行详情")
-    public ResponseEntity<String> query(@PathVariable("organization_id") long orgId,
-                                        @PathVariable("id") Long id) {
+    public ResponseEntity<String> query(
+            @Encrypt
+            @PathVariable("organization_id") long orgId,
+            @Encrypt
+            @PathVariable("id") Long id) {
         return sagaInstanceService.query(id);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/{id}/details", produces = "application/json")
     @ApiOperation(value = "组织层查询事务实例的具体信息")
-    public ResponseEntity<SagaInstanceDetails> queryDetails(@PathVariable("organization_id") long orgId,
-                                                            @PathVariable("id") Long id) {
+    public ResponseEntity<SagaInstanceDetails> queryDetails(
+            @Encrypt
+            @PathVariable("organization_id") long orgId,
+            @Encrypt
+            @PathVariable("id") Long id) {
         return new ResponseEntity<>(sagaInstanceService.queryDetails(id), HttpStatus.OK);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/statistics", produces = "application/json")
     @ApiOperation(value = "统计组织下各个事务实例状态下的实例个数")
-    public ResponseEntity<Map> statistics(@PathVariable("organization_id") long orgId) {
+    public ResponseEntity<Map<String, Integer>> statistics(@Encrypt @PathVariable("organization_id") long orgId) {
         return new ResponseEntity<>(sagaInstanceService.statistics(ResourceLevel.ORGANIZATION.value(), orgId), HttpStatus.OK);
     }
 
@@ -80,8 +92,10 @@ public class SagaInstanceOrgController {
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/statistics/failure")
     @ApiOperation(value = "统计组织下失败实例情况")
-    public ResponseEntity<List<SagaInstanceFailureVO>> statisticsFailure(@PathVariable("organization_id") long orgId,
-                                                                         @RequestParam("date") Integer date) {
+    public ResponseEntity<List<SagaInstanceFailureVO>> statisticsFailure(
+            @Encrypt
+            @PathVariable("organization_id") long orgId,
+            @RequestParam("date") Integer date) {
         return new ResponseEntity<>(sagaInstanceService.statisticsFailure(ResourceLevel.ORGANIZATION.value(), orgId, date), HttpStatus.OK);
     }
 
@@ -89,11 +103,13 @@ public class SagaInstanceOrgController {
     @GetMapping(value = "/statistics/failure/list")
     @CustomPageRequest
     @ApiOperation(value = "统计组织下失败实例情况详情")
-    public ResponseEntity<Page<SagaInstanceDTO>> statisticsFailureList(@ApiIgnore
-                                                                       @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest PageRequest,
-                                                                           @PathVariable("organization_id") long orgId,
-                                                                           @RequestParam("date") Integer date) {
-        return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.ORGANIZATION.value(), orgId, date,PageRequest), HttpStatus.OK);
+    public ResponseEntity<Page<SagaInstanceDTO>> statisticsFailureList(
+            @ApiIgnore
+            @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest PageRequest,
+            @Encrypt
+            @PathVariable("organization_id") long orgId,
+            @RequestParam("date") Integer date) {
+        return new ResponseEntity<>(sagaInstanceService.statisticsFailureList(ResourceLevel.ORGANIZATION.value(), orgId, date, PageRequest), HttpStatus.OK);
     }
 
 }

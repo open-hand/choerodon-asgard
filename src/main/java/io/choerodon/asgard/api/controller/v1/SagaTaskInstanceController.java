@@ -13,6 +13,8 @@ import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -51,7 +53,10 @@ public class SagaTaskInstanceController {
     @PutMapping("/{id}/status")
     @ApiOperation(value = "内部接口。更新任务的执行状态")
     @Permission(permissionWithin = true)
-    public void updateStatus(@PathVariable Long id, @RequestBody @Valid SagaTaskInstanceStatus statusDTO) {
+    public void updateStatus(
+            @Encrypt
+            @PathVariable Long id,
+            @RequestBody @Valid SagaTaskInstanceStatus statusDTO) {
         statusDTO.setId(id);
         sagaTaskInstanceService.updateStatus(statusDTO);
     }
@@ -59,21 +64,21 @@ public class SagaTaskInstanceController {
     @GetMapping("/{id}")
     @ApiOperation(value = "内部接口。查询任务状态")
     @Permission(permissionWithin = true)
-    public SagaTaskInstance query(@PathVariable long id) {
+    public SagaTaskInstance query(@Encrypt @PathVariable Long id) {
         return sagaTaskInstanceService.query(id);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层强制失败SagaTask")
     @PutMapping("/{id}/failed")
-    public void forceFailed(@PathVariable long id) {
+    public void forceFailed(@Encrypt @PathVariable Long id) {
         sagaTaskInstanceService.forceFailed(id);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
-    public void unlockById(@PathVariable long id) {
+    public void unlockById(@Encrypt @PathVariable Long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
@@ -90,7 +95,7 @@ public class SagaTaskInstanceController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @ApiOperation(value = "平台层手动重试SagaTask")
     @PutMapping("/{id}/retry")
-    public void retry(@PathVariable long id) {
+    public void retry(@Encrypt @PathVariable Long id) {
         sagaTaskInstanceService.retry(id);
     }
 

@@ -1,9 +1,12 @@
 package io.choerodon.asgard.api.vo;
 
+import org.hzero.starter.keyencrypt.core.Encrypt;
+
 /**
  * @author dengyouquan
  */
 public class Role {
+    @Encrypt
     private Long id;
 
     private String name;

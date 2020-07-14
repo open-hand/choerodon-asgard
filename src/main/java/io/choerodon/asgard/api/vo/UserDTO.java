@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 
 /**
@@ -12,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @since 2019-04-21
  */
 public class UserDTO {
-
+    @Encrypt
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "主键ID/非必填")
@@ -24,6 +25,7 @@ public class UserDTO {
     @ApiModelProperty(value = "邮箱/必填")
     private String email;
 
+    @Encrypt
     @ApiModelProperty(value = "组织ID/非必填")
     private Long organizationId;
     @Transient
@@ -91,6 +93,7 @@ public class UserDTO {
     @Column(name = "is_admin")
     private Boolean admin;
 
+    @Encrypt
     @Transient
     private Long sourceId;
 

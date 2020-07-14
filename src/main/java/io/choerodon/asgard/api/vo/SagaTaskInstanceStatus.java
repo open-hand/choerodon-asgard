@@ -1,11 +1,12 @@
 package io.choerodon.asgard.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 import javax.validation.constraints.NotEmpty;
 
 public class SagaTaskInstanceStatus {
-
+    @Encrypt
     @ApiModelProperty(value = "主键ID/必填")
     private Long id;
 
