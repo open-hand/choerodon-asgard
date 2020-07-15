@@ -17,7 +17,6 @@ public class RegistrantInfo {
     @ApiModelProperty(value = "注册人用户名")
     private String realName;
 
-    @Encrypt
     @ApiModelProperty(value = "注册组织ID")
     private Long organizationId;
 

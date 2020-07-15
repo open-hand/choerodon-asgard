@@ -44,7 +44,6 @@ public class SagaInstanceProjectController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<SagaInstanceDetails>> pagingQuery(
-            @Encrypt
             @PathVariable("project_id") long projectId,
             @RequestParam(required = false) String sagaCode,
             @RequestParam(required = false) String status,
@@ -60,7 +59,6 @@ public class SagaInstanceProjectController {
     @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "项目层查询某个事务实例运行详情")
     public ResponseEntity<String> query(
-            @Encrypt
             @PathVariable("project_id") long projectId,
             @Encrypt
             @PathVariable("id") Long id) {
@@ -72,7 +70,6 @@ public class SagaInstanceProjectController {
     @GetMapping(value = "/{id}/details", produces = "application/json")
     @ApiOperation(value = "项目层查询事务实例的具体信息")
     public ResponseEntity<SagaInstanceDetails> queryDetails(
-            @Encrypt
             @PathVariable("project_id") long projectId,
             @Encrypt
             @PathVariable("id") Long id) {
@@ -84,7 +81,6 @@ public class SagaInstanceProjectController {
     @GetMapping(value = "/statistics", produces = "application/json")
     @ApiOperation(value = "统计项目下各个事务实例状态下的实例个数")
     public ResponseEntity<Map<String, Integer>> statistics(
-            @Encrypt
             @PathVariable("project_id") long projectId) {
         return new ResponseEntity<>(sagaInstanceService.statistics(ResourceLevel.PROJECT.value(), projectId), HttpStatus.OK);
     }
@@ -93,7 +89,6 @@ public class SagaInstanceProjectController {
     @GetMapping(value = "/statistics/failure")
     @ApiOperation(value = "统计项目下失败实例情况")
     public ResponseEntity<List<SagaInstanceFailureVO>> statisticsFailure(
-            @Encrypt
             @ApiParam(value = "项目id", required = true)
             @PathVariable("project_id") Long projectId,
             @ApiParam(value = "时间范围", required = true)

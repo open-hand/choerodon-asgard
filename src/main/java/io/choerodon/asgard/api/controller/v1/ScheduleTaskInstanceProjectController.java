@@ -43,7 +43,6 @@ public class ScheduleTaskInstanceProjectController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<ScheduleTaskInstance>> pagingQuery(
-            @Encrypt
             @PathVariable("project_id") long projectId,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(name = "taskName", required = false) String taskName,
@@ -60,7 +59,6 @@ public class ScheduleTaskInstanceProjectController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<ScheduleTaskInstanceLog>> pagingQueryByTaskId(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @Encrypt
             @PathVariable Long taskId,

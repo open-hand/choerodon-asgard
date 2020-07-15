@@ -33,7 +33,6 @@ public class QuartzTaskDetail {
 
     private String level;
 
-    @Encrypt
     private Long sourceId;
 
     private String executeStrategy;

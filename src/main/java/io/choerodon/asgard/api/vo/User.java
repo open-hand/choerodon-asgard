@@ -17,7 +17,6 @@ public class User {
 
     private String phone;
 
-    @Encrypt
     private Long organizationId;
 
     public Long getId() {

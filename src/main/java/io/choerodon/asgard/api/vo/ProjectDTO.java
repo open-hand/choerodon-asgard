@@ -45,7 +45,6 @@ public class ProjectDTO extends AuditDomain {
     @Pattern(regexp = CODE_REGULAR_EXPRESSION, message = "error.project.code.illegal")
     private String code;
 
-    @Encrypt
     @ApiParam(name = "organization_id", value = "组织id")
     @ApiModelProperty(value = "组织ID/非必填")
     private Long organizationId;

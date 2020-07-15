@@ -40,7 +40,6 @@ public class SagaTaskInstanceProjController {
     @ApiOperation(value = "项目层去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
     public void unlockById(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @Encrypt
             @PathVariable Long id) {
@@ -51,7 +50,6 @@ public class SagaTaskInstanceProjController {
     @ApiOperation(value = "项目层强制失败SagaTask")
     @PutMapping("/{id}/failed")
     public void forceFailed(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @Encrypt
             @PathVariable Long id) {
@@ -63,7 +61,6 @@ public class SagaTaskInstanceProjController {
     @ApiOperation(value = "项目层根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
     public void unlockByInstance(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @RequestParam(value = "instance", required = false) String instance) {
         if (StringUtils.isEmpty(instance)) {
@@ -76,7 +73,6 @@ public class SagaTaskInstanceProjController {
     @ApiOperation(value = "项目层手动重试SagaTask")
     @PutMapping("/{id}/retry")
     public void retry(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @Encrypt
             @PathVariable Long id) {
@@ -89,7 +85,6 @@ public class SagaTaskInstanceProjController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<SagaTaskInstanceInfo>> pagingQuery(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @RequestParam(required = false) String taskInstanceCode,
             @RequestParam(required = false) String sagaInstanceCode,
