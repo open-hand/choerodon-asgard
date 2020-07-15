@@ -45,7 +45,6 @@ public class ScheduleMethodOrgController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<ScheduleMethodInfo>> pagingQuery(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @RequestParam(value = "code", required = false) String code,
             @RequestParam(name = "service", required = false) String service,
@@ -62,7 +61,6 @@ public class ScheduleMethodOrgController {
     @ApiOperation(value = "组织层根据服务名获取方法")
     @GetMapping("/service")
     public ResponseEntity<List<ScheduleMethod>> getMethodByService(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @RequestParam(value = "service") String service) {
         return new ResponseEntity<>(scheduleMethodService.getMethodByService(service, ResourceLevel.ORGANIZATION.value()), HttpStatus.OK);
@@ -72,7 +70,6 @@ public class ScheduleMethodOrgController {
     @GetMapping("/{id}")
     @ApiOperation(value = "组织层查看可执行程序详情")
     public ResponseEntity<ScheduleMethodParams> getParams(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @Encrypt
             @PathVariable Long id) {
@@ -83,7 +80,6 @@ public class ScheduleMethodOrgController {
     @ApiOperation(value = "组织层搜索有可执行任务的服务名")
     @GetMapping("/services")
     public ResponseEntity<List<String>> getServices(
-            @Encrypt
             @PathVariable("organization_id") Long orgId) {
         return new ResponseEntity<>(scheduleMethodService.getServices(ResourceLevel.ORGANIZATION.value()), HttpStatus.OK);
     }

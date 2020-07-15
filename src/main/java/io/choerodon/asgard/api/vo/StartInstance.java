@@ -25,7 +25,6 @@ public class StartInstance {
     @ApiModelProperty(value = "实例触发层级")
     private String level;
 
-    @Encrypt
     @ApiModelProperty(value = "实力触发的组织/项目Id")
     private Long sourceId;
 

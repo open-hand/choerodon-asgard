@@ -7,11 +7,9 @@ import org.hzero.starter.keyencrypt.core.Encrypt;
  * @since 2020-02-25
  */
 public class ProjectVO {
-    @Encrypt
     private Long id;
     private String name;
     private String code;
-    @Encrypt
     private Long organizationId;
     private String imageUrl;
     private Boolean enabled;

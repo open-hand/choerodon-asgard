@@ -46,7 +46,6 @@ public class ScheduleMethodProjectController {
     @ResponseBody
     @CustomPageRequest
     public ResponseEntity<Page<ScheduleMethodInfo>> pagingQuery(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @RequestParam(value = "code", required = false) String code,
             @RequestParam(name = "service", required = false) String service,
@@ -62,7 +61,6 @@ public class ScheduleMethodProjectController {
     @ApiOperation(value = "项目层根据服务名获取方法")
     @GetMapping("/service")
     public ResponseEntity<List<ScheduleMethod>> getMethodByService(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @RequestParam(value = "service") String service) {
         return new ResponseEntity<>(scheduleMethodService.getMethodByService(service, ResourceLevel.PROJECT.value()), HttpStatus.OK);
@@ -72,7 +70,6 @@ public class ScheduleMethodProjectController {
     @GetMapping("/{id}")
     @ApiOperation(value = "项目层查看可执行程序详情")
     public ResponseEntity<ScheduleMethodParams> getParams(
-            @Encrypt
             @PathVariable("project_id") Long projectId,
             @Encrypt
             @PathVariable Long id) {
@@ -83,7 +80,7 @@ public class ScheduleMethodProjectController {
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "项目层搜索有可执行任务的服务名")
     @GetMapping("/services")
-    public ResponseEntity<List<String>> getServices(@Encrypt @PathVariable("project_id") Long projectId) {
+    public ResponseEntity<List<String>> getServices(@PathVariable("project_id") Long projectId) {
         return new ResponseEntity<>(scheduleMethodService.getServices(ResourceLevel.PROJECT.value()), HttpStatus.OK);
     }
 }

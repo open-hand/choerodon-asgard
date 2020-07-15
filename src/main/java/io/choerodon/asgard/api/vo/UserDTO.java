@@ -25,7 +25,6 @@ public class UserDTO {
     @ApiModelProperty(value = "邮箱/必填")
     private String email;
 
-    @Encrypt
     @ApiModelProperty(value = "组织ID/非必填")
     private Long organizationId;
     @Transient
@@ -93,7 +92,6 @@ public class UserDTO {
     @Column(name = "is_admin")
     private Boolean admin;
 
-    @Encrypt
     @Transient
     private Long sourceId;
 

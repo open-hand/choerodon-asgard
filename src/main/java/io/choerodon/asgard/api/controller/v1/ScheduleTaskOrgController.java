@@ -47,7 +47,6 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层创建定时任务")
     @PostMapping
     public ResponseEntity<QuartzTaskDTO> create(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @RequestBody @Valid ScheduleTask dto) {
         ScheduleTaskValidator.validatorCreate(dto);
@@ -58,7 +57,6 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层启用任务")
     @PutMapping("/{id}/enable")
     public void enable(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @Encrypt
             @PathVariable Long id,
@@ -70,7 +68,6 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层停用任务")
     @PutMapping("/{id}/disable")
     public void disable(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @Encrypt
             @PathVariable Long id,
@@ -82,7 +79,7 @@ public class ScheduleTaskOrgController {
     @Permission(permissionWithin = true)
     @ApiOperation(value = "停用指定组织下所有任务")
     @PutMapping("/disable")
-    public void disableByOrganizationId(@Encrypt @PathVariable("organization_id") Long orgId) {
+    public void disableByOrganizationId(@PathVariable("organization_id") Long orgId) {
         scheduleTaskService.disableByLevelAndSourceId(ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
@@ -90,7 +87,6 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层删除任务")
     @DeleteMapping("/{id}")
     public void delete(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @Encrypt
             @PathVariable Long id) {
@@ -103,7 +99,6 @@ public class ScheduleTaskOrgController {
     @CustomPageRequest
     @ResponseBody
     public ResponseEntity<Page<QuartzTask>> pagingQuery(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String name,
@@ -118,7 +113,6 @@ public class ScheduleTaskOrgController {
     @GetMapping("/{id}")
     @ApiOperation(value = "组织层查看任务详情")
     public ResponseEntity<ScheduleTaskDetail> getTaskDetail(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @Encrypt
             @PathVariable Long id) {
@@ -130,7 +124,6 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层任务名校验")
     @PostMapping(value = "/check")
     public ResponseEntity<Void> check(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @RequestBody String name) {
         scheduleTaskService.checkNameAllLevel(name);
@@ -141,7 +134,6 @@ public class ScheduleTaskOrgController {
     @ApiOperation(value = "组织层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(
-            @Encrypt
             @PathVariable("organization_id") Long orgId,
             @RequestBody String cron) {
         return new ResponseEntity<>(TriggerUtils.getRecentThree(cron), HttpStatus.OK);
