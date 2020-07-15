@@ -1,6 +1,7 @@
 package io.choerodon.asgard.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -10,7 +11,7 @@ import java.util.Date;
 import java.util.Map;
 
 public class ScheduleTask {
-
+    @Encrypt
     @ApiModelProperty(value = "执行任务方法id")
     @NotNull(message = "error.scheduleTask.methodNull")
     private Long methodId;

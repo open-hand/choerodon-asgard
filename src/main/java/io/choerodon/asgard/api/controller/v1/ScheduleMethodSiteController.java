@@ -9,9 +9,13 @@ import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -48,7 +52,7 @@ public class ScheduleMethodSiteController {
                                                                 @RequestParam(name = "level", required = false) String level,
                                                                 @RequestParam(name = "params", required = false) String params,
                                                                 @ApiIgnore
-                                                                    @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+                                                                @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return scheduleMethodService.pageQuery(pageRequest, code, service, method, description, params, level);
     }
 
@@ -63,7 +67,7 @@ public class ScheduleMethodSiteController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
     @ApiOperation(value = "全局层查看可执行程序详情")
-    public ResponseEntity<ScheduleMethodParams> getParams(@PathVariable long id) {
+    public ResponseEntity<ScheduleMethodParams> getParams(@Encrypt @PathVariable Long id) {
         return new ResponseEntity<>(scheduleMethodService.getParams(id, ResourceLevel.SITE.value()), HttpStatus.OK);
     }
 
@@ -85,8 +89,8 @@ public class ScheduleMethodSiteController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_ADMINISTRATOR})
     @ApiOperation(value = "删除平台层可执行程序")
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@Encrypt @PathVariable Long id) {
         scheduleMethodService.delete(id);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

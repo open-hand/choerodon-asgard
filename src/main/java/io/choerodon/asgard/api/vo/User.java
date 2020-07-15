@@ -1,16 +1,12 @@
 package io.choerodon.asgard.api.vo;
 
-//import io.choerodon.core.notify.NoticeSendDTO;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 /**
  * @author dengyouquan
  */
 public class User {
-
+    @Encrypt
     private Long id;
 
     private String loginName;
@@ -21,7 +17,9 @@ public class User {
 
     private String phone;
 
+    @Encrypt
     private Long organizationId;
+
     public Long getId() {
         return id;
     }

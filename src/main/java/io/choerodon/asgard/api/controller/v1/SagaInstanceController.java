@@ -15,6 +15,7 @@ import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -111,21 +112,21 @@ public class SagaInstanceController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "平台层查询某个事务实例运行详情")
-    public ResponseEntity<String> query(@PathVariable("id") Long id) {
+    public ResponseEntity<String> query(@Encrypt @PathVariable("id") Long id) {
         return sagaInstanceService.query(id);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/{id}/details", produces = "application/json")
     @ApiOperation(value = "平台层查询事务实例的具体信息")
-    public ResponseEntity<SagaInstanceDetails> queryDetails(@PathVariable("id") Long id) {
+    public ResponseEntity<SagaInstanceDetails> queryDetails(@Encrypt @PathVariable("id") Long id) {
         return new ResponseEntity<>(sagaInstanceService.queryDetails(id), HttpStatus.OK);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/statistics", produces = "application/json")
     @ApiOperation(value = "统计全平台各个事务实例状态下的实例个数")
-    public ResponseEntity<Map> statistics() {
+    public ResponseEntity<Map<String, Integer>> statistics() {
         return new ResponseEntity<>(sagaInstanceService.statistics(null, null), HttpStatus.OK);
     }
 

@@ -3,12 +3,13 @@ package io.choerodon.asgard.api.vo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 import java.util.Date;
 import java.util.Objects;
 
 public class SagaTaskInstance {
-
+    @Encrypt
     @ApiModelProperty(value = "主键ID")
     private Long id;
 

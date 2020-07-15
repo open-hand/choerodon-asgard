@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.controller.v1;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.hzero.core.util.Results;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -50,7 +51,7 @@ public class SagaController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping("/{id}")
     @ApiOperation(value = "查询某个事务的定义详情")
-    public ResponseEntity<SagaWithTask> query(@PathVariable("id") Long id) {
+    public ResponseEntity<SagaWithTask> query(@Encrypt @PathVariable("id") Long id) {
         return sagaService.query(id);
     }
 
@@ -58,7 +59,7 @@ public class SagaController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @DeleteMapping("/{id}")
     @ApiOperation(value = "删除事务")
-    public void delete(@PathVariable("id") Long id) {
+    public void delete(@Encrypt @PathVariable("id") Long id) {
         sagaService.delete(id);
     }
 

@@ -2,11 +2,12 @@ package io.choerodon.asgard.api.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 import java.util.Date;
 
 public class SagaInstance {
-
+    @Encrypt
     @ApiModelProperty(value = "主键ID")
     private Long id;
 

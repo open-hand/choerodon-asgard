@@ -8,6 +8,8 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.*;
 import java.util.Date;
 
+import org.hzero.starter.keyencrypt.core.Encrypt;
+
 @VersionAudit
 @ModifyAudit
 @Table(name = "ASGARD_SAGA_INSTANCE")
@@ -15,7 +17,7 @@ public class SagaInstanceDTO extends AuditDomain {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-
+    @Encrypt
     private Long id;
 
     private String sagaCode;
@@ -26,17 +28,21 @@ public class SagaInstanceDTO extends AuditDomain {
 
     private Date endTime;
 
+    @Encrypt
     private Long inputDataId;
 
+    @Encrypt
     private Long outputDataId;
 
     private String refType;
 
+    @Encrypt
     private String refId;
 
     @Column(name = "FD_LEVEL")
     private String level;
 
+    @Encrypt
     private Long sourceId;
 
     private String userDetails;
