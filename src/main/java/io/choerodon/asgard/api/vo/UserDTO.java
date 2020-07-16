@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 
 /**
@@ -12,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @since 2019-04-21
  */
 public class UserDTO {
-
+    @Encrypt
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ApiModelProperty(value = "主键ID/非必填")

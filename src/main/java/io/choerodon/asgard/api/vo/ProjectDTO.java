@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
@@ -26,7 +27,7 @@ public class ProjectDTO extends AuditDomain {
     private static final String CODE_REGULAR_EXPRESSION = "^[a-z](([a-z0-9]|-(?!-))*[a-z0-9])*$";
 
     private static final String PROJECT_NAME_REG = "^[-—.\\w\\s\\u4e00-\\u9fa5]{1,32}$";
-
+    @Encrypt
     @Id
     @GeneratedValue
     @ApiModelProperty(value = "主键ID/非必填")
@@ -61,6 +62,7 @@ public class ProjectDTO extends AuditDomain {
     @ApiModelProperty(value = "项目类型（遗留旧字段，一对一）:AGILE(敏捷项目),GENERAL(普通应用项目),PROGRAM(普通项目群)")
     private String category;
 
+    @Encrypt
     @ApiModelProperty(value = "项目类型")
     @Transient
     private List<Long> categoryIds;

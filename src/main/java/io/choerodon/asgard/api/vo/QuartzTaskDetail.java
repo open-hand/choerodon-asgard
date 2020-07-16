@@ -2,7 +2,10 @@ package io.choerodon.asgard.api.vo;
 
 import java.util.Date;
 
+import org.hzero.starter.keyencrypt.core.Encrypt;
+
 public class QuartzTaskDetail {
+    @Encrypt
     private Long id;
     private String params;
 

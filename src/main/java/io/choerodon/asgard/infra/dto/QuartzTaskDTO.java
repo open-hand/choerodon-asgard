@@ -8,11 +8,13 @@ import io.choerodon.mybatis.domain.AuditDomain;
 import javax.persistence.*;
 import java.util.Date;
 
+import org.hzero.starter.keyencrypt.core.Encrypt;
+
 @VersionAudit
 @ModifyAudit
 @Table(name = "ASGARD_QUARTZ_TASK")
 public class QuartzTaskDTO extends AuditDomain {
-
+    @Encrypt
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -46,6 +48,7 @@ public class QuartzTaskDTO extends AuditDomain {
     @Column(name = "FD_LEVEL")
     private String level;
 
+    @Encrypt
     private Long sourceId;
 
     private String userDetails;

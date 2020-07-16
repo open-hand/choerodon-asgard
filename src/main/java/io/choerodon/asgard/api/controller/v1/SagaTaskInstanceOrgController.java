@@ -8,8 +8,12 @@ import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.ApiOperation;
+
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
@@ -34,21 +38,29 @@ public class SagaTaskInstanceOrgController {
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @ApiOperation(value = "组织层去除该消息的服务实例锁，让其他服务实例可以拉取到该消息")
     @PutMapping("/{id}/unlock")
-    public void unlockById(@PathVariable("organization_id") long orgId, @PathVariable long id) {
+    public void unlockById(
+            @PathVariable("organization_id") Long orgId,
+            @Encrypt
+            @PathVariable Long id) {
         sagaTaskInstanceService.unlockById(id);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @ApiOperation(value = "组织层强制失败SagaTask")
     @PutMapping("/{id}/failed")
-    public void forceFailed(@PathVariable("organization_id") long orgI, @PathVariable long id) {
+    public void forceFailed(
+            @PathVariable("organization_id") Long orgI,
+            @Encrypt
+            @PathVariable Long id) {
         sagaTaskInstanceService.forceFailed(id);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @ApiOperation(value = "组织层根据服务实例批量去除消息的服务实例锁")
     @PutMapping("/unlock_by_instance")
-    public void unlockByInstance(@PathVariable("organization_id") long orgId, @RequestParam(value = "instance", required = false) String instance) {
+    public void unlockByInstance(
+            @PathVariable("organization_id") Long orgId,
+            @RequestParam(value = "instance", required = false) String instance) {
         if (StringUtils.isEmpty(instance)) {
             throw new CommonException("error.unlockByInstance.instanceEmpty");
         }
@@ -58,7 +70,10 @@ public class SagaTaskInstanceOrgController {
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @ApiOperation(value = "组织层手动重试SagaTask")
     @PutMapping("/{id}/retry")
-    public void retry(@PathVariable("organization_id") long orgId, @PathVariable long id) {
+    public void retry(
+            @PathVariable("organization_id") Long orgId,
+            @Encrypt
+            @PathVariable Long id) {
         sagaTaskInstanceService.retry(id);
     }
 
@@ -68,13 +83,14 @@ public class SagaTaskInstanceOrgController {
     @ApiOperation(value = "组织层分页查询SagaTask实例列表")
     @ResponseBody
     @CustomPageRequest
-    public ResponseEntity<Page<SagaTaskInstanceInfo>> pagingQuery(@ApiIgnore
-                                                                      @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
-                                                                  @PathVariable("organization_id") long orgId,
-                                                                  @RequestParam(required = false) String taskInstanceCode,
-                                                                  @RequestParam(required = false) String sagaInstanceCode,
-                                                                  @RequestParam(required = false) String status,
-                                                                  @RequestParam(required = false) String params) {
+    public ResponseEntity<Page<SagaTaskInstanceInfo>> pagingQuery(
+            @ApiIgnore
+            @SortDefault(value = "id", direction = Sort.Direction.ASC) PageRequest pageRequest,
+            @PathVariable("organization_id") Long orgId,
+            @RequestParam(required = false) String taskInstanceCode,
+            @RequestParam(required = false) String sagaInstanceCode,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String params) {
         return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 }

@@ -1,8 +1,10 @@
 package io.choerodon.asgard.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
+import org.hzero.starter.keyencrypt.core.Encrypt;
 
 public class RegistrantInfo {
+    @Encrypt
     @ApiModelProperty(value = "注册人Id")
     private Long id;
 
@@ -21,6 +23,7 @@ public class RegistrantInfo {
     @ApiModelProperty(value = "注册组织名称")
     private String organizationName;
 
+    @Encrypt
     @ApiModelProperty(value = "adminId")
     private Long adminId;
 

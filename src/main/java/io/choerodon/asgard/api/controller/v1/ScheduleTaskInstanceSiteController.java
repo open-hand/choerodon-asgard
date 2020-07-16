@@ -11,9 +11,13 @@ import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
+import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
@@ -59,12 +63,14 @@ public class ScheduleTaskInstanceSiteController {
     @ApiOperation(value = "全局层分页查询任务日志")
     @ResponseBody
     @CustomPageRequest
-    public ResponseEntity<Page<ScheduleTaskInstanceLog>> pagingQueryByTaskId(@PathVariable long taskId,
-                                                                             @RequestParam(value = "status", required = false) String status,
-                                                                             @RequestParam(name = "serviceInstanceId", required = false) String serviceInstanceId,
-                                                                             @RequestParam(name = "params", required = false) String params,
-                                                                             @ApiIgnore
-                                                                             @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+    public ResponseEntity<Page<ScheduleTaskInstanceLog>> pagingQueryByTaskId(
+            @Encrypt
+            @PathVariable Long taskId,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(name = "serviceInstanceId", required = false) String serviceInstanceId,
+            @RequestParam(name = "params", required = false) String params,
+            @ApiIgnore
+            @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return new ResponseEntity<>(scheduleTaskInstanceService.pagingQueryByTaskId(pageRequest, taskId, status, serviceInstanceId, params, ResourceLevel.SITE.value(), 0L), HttpStatus.OK);
     }
 
@@ -78,7 +84,7 @@ public class ScheduleTaskInstanceSiteController {
     @PutMapping("/{id}/status")
     @ApiOperation(value = "内部接口。更新任务的执行状态")
     @Permission(permissionWithin = true)
-    public void updateStatus(@PathVariable long id, @RequestBody @Valid UpdateStatusDTO statusDTO) {
+    public void updateStatus(@PathVariable Long id, @RequestBody @Valid UpdateStatusDTO statusDTO) {
         statusDTO.setId(id);
         scheduleTaskInstanceService.updateStatus(statusDTO);
     }
