@@ -12,7 +12,6 @@ import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.feign.fallback.IamFeignClientFallback;
 
 
-
 /**
  * @author dengyouquan
  **/
@@ -42,7 +41,7 @@ public interface IamFeignClient {
 
     @GetMapping(value = "/roles/search_by_label")
     ResponseEntity<List<Role>> listByLabelName(@RequestParam(value = "tenantId") Long tenantId,
-                                               @RequestParam String labelName);
+                                               @RequestParam(value = "labelName") String labelName);
 
     @PostMapping("/users/ids")
     ResponseEntity<List<User>> listUsersByIds(@RequestBody Long[] ids);
