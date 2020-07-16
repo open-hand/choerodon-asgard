@@ -47,7 +47,7 @@ public interface IamFeignClient {
     @PostMapping("/users/ids")
     ResponseEntity<List<User>> listUsersByIds(@RequestBody Long[] ids);
 
-    @PostMapping("/users/{id}/info")
+    @GetMapping("/users/{id}/info")
     ResponseEntity<User> queryInfo(@PathVariable(name = "id") Long id);
 
     @GetMapping(value = "/users/registrant")

@@ -45,8 +45,6 @@ public class NoticeServiceImpl implements NoticeService {
     private IamFeignClient iamFeignClient;
 
 
-
-
     @Override
     @Async("notify-executor")
     public void sendNotice(QuartzTaskDTO quartzTask, List<QuartzTaskMemberDTO> noticeMember, String jobStatus) {
@@ -131,6 +129,7 @@ public class NoticeServiceImpl implements NoticeService {
             argsMap.put("sagaInstanceId", instance.getId().toString());
             argsMap.put("sagaCode", instance.getSagaCode());
             argsMap.put("level", instance.getLevel());
+
             User user = iamFeignClient.queryInfo(instance.getCreatedBy()).getBody();
 
             // 接收者
@@ -143,7 +142,9 @@ public class NoticeServiceImpl implements NoticeService {
             receiver.setPhone(user.getPhone());
             // 必填
             receiver.setTargetUserTenantId(user.getOrganizationId());
+            argsMap.put("userName", user.getRealName());
             receiverList.add(receiver);
+
 
             messageSender.setReceiverAddressList(receiverList);
             messageSender.setArgs(argsMap);
@@ -155,11 +156,10 @@ public class NoticeServiceImpl implements NoticeService {
             messageSender.setAdditionalInformation(objectMap);
             messageClient.async().sendMessage(messageSender);
         } catch (Exception e) {
-            LOGGER.info("saga instance fail send notice fail, msg: {}", e.getMessage());
+            LOGGER.error("saga instance fail send notice fail", e);
         }
 
     }
-
 
 
     /**

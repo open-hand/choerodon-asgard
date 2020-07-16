@@ -13,7 +13,7 @@ spring:
       # 等待连接池分配连接的最大时长（毫秒）
       connection-timeout: ${SPRING_DATASOURCE_CONNECTION_TIMEOUT:30000}
   redis:
-    host: ${SPRING_REDIS_HOST:localhost}
+    host: ${SPRING_REDIS_HOST:redis.hzero.org}
     port: ${SPRING_REDIS_PORT:6379}
     database: ${SPRING_REDIS_DATABASE:1}
     lettuce:
