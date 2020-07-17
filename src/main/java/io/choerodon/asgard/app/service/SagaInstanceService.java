@@ -1,9 +1,6 @@
 package io.choerodon.asgard.app.service;
 
-import io.choerodon.asgard.api.vo.SagaInstance;
-import io.choerodon.asgard.api.vo.SagaInstanceDetails;
-import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
-import io.choerodon.asgard.api.vo.StartInstance;
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
@@ -25,7 +22,7 @@ public interface SagaInstanceService {
 
     ResponseEntity<Page<SagaInstanceDetails>> pageQuery(PageRequest pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId);
 
-    ResponseEntity<String> query(Long id);
+    SagaWithTaskInstance query(Long id);
 
     SagaInstanceDetails queryDetails(Long id);
 

@@ -3,18 +3,16 @@ package io.choerodon.asgard.api.controller.v1;
 
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
 import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
+import io.choerodon.asgard.api.vo.SagaWithTaskInstance;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
+import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
-
 import io.swagger.annotations.ApiOperation;
-
-import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-
 import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -61,11 +59,11 @@ public class SagaInstanceOrgController {
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
     @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "组织层查询某个事务实例运行详情")
-    public ResponseEntity<String> query(
+    public ResponseEntity<SagaWithTaskInstance> query(
             @PathVariable("organization_id") long orgId,
             @Encrypt
             @PathVariable("id") Long id) {
-        return sagaInstanceService.query(id);
+        return new ResponseEntity<>(sagaInstanceService.query(id), HttpStatus.OK);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
