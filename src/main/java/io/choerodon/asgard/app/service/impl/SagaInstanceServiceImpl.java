@@ -1,7 +1,6 @@
 package io.choerodon.asgard.app.service.impl;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
@@ -26,7 +25,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -141,7 +139,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public ResponseEntity<String> query(Long id) {
+    public SagaWithTaskInstance query(Long id) {
         SagaInstanceDTO sagaInstance = instanceMapper.selectByPrimaryKey(id);
         if (sagaInstance == null) {
             throw new CommonException(ERROR_CODE_SAGA_INSTANCE_NOT_EXIST);
@@ -173,11 +171,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                     return o1.getSeq().compareTo(o2.getSeq());
                 }).collect(Collectors.toList());
         dto.setTasks(list);
-        try {
-            return new ResponseEntity<>(objectMapper.writeValueAsString(dto), HttpStatus.OK);
-        } catch (JsonProcessingException e) {
-            throw new CommonException("error.SagaInstanceService.IOException", e);
-        }
+        return dto;
     }
 
     @Override

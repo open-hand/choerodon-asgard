@@ -1,9 +1,6 @@
 package io.choerodon.asgard.api.controller.v1;
 
-import io.choerodon.asgard.api.vo.SagaInstance;
-import io.choerodon.asgard.api.vo.SagaInstanceDetails;
-import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
-import io.choerodon.asgard.api.vo.StartInstance;
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.core.domain.Page;
@@ -112,8 +109,8 @@ public class SagaInstanceController {
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "平台层查询某个事务实例运行详情")
-    public ResponseEntity<String> query(@Encrypt @PathVariable("id") Long id) {
-        return sagaInstanceService.query(id);
+    public ResponseEntity<SagaWithTaskInstance> query(@Encrypt @PathVariable("id") Long id) {
+        return new ResponseEntity<>(sagaInstanceService.query(id), HttpStatus.OK);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
