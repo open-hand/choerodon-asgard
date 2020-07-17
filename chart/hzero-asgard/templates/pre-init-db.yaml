@@ -46,8 +46,6 @@ spec:
           -Dinstaller.datasources.platform.driver-class-name={{ .Values.preJob.preInitDB.datasources.platform.driver }}
           -Dinstaller.jarPath=/choerodon/{{ .Chart.Name }}.jar
           -Dlogging.level.root=info
-          -Ddata.version=1.3.0.RELEASE
-          -Dinstaller.mapping=script/db/service-mapping.xml
           -jar /var/choerodon/choerodon-tool-liquibase.jar;
         volumeMounts:
         - mountPath: /var/choerodon
