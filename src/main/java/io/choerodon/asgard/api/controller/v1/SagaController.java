@@ -64,7 +64,7 @@ public class SagaController {
 
 
     @ApiOperation("手动刷新事务实例")
-    @Permission(permissionLogin = true)
+    @Permission(permissionPublic = true)
     @PostMapping(value = "/fresh")
     public ResponseEntity<Void> refresh(@RequestParam("serviceName") String serviceName) {
         sagaService.refresh(serviceName);
