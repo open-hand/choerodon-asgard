@@ -77,6 +77,7 @@ $ helm install c7n/hzero-asgard \
     --name hzero-asgard
 ```
 
+
 ## 验证部署
 ```bash
 curl -s $(kubectl get po -n c7n-system -l choerodon.io/release=hzero-asgard -o jsonpath="{.items[0].status.podIP}"):8063/actuator/health | jq -r .status
