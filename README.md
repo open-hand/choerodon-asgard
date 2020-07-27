@@ -120,7 +120,7 @@ Choerodon Asgard Service 是一个任务调度服务，通过`saga` 实现微服
 
 ## 环境需求
 
-- mysql 5.6+
+- mysql 5.7+
 - redis 3.0+
 - 该项目是一个 Eureka Client 项目，启动后需要注册到 `EurekaServer`，本地环境需要 `eureka-server`，线上环境需要使用 `go-register-server`
 
