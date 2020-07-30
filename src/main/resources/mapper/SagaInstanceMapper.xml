@@ -99,8 +99,14 @@
         order by asi.id desc
     </select>
 
+    <resultMap id="resultCount" type="map">
+        <result column="FAILED_COUNT" property="FAILED_COUNT" javaType="integer"/>
+        <result column="RUNNING_COUNT" property="RUNNING_COUNT" javaType="integer"/>
+        <result column="COMPLETED_COUNT" property="COMPLETED_COUNT" javaType="integer"/>
+        <result column="ROLLBACK_COUNT" property="ROLLBACK_COUNT" javaType="integer"/>
+    </resultMap>
 
-    <select id="statisticsByStatus" resultType="java.util.Map">
+    <select id="statisticsByStatus" resultMap="resultCount">
         select
         sum(case when STATUS='FAILED' then 1 else 0 end) as FAILED_COUNT,
         sum(case when STATUS='RUNNING' then 1 else 0 end) as RUNNING_COUNT,

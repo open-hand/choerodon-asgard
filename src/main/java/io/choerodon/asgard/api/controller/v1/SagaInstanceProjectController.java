@@ -2,6 +2,7 @@ package io.choerodon.asgard.api.controller.v1;
 
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
 import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
+import io.choerodon.asgard.api.vo.SagaWithTaskInstance;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
@@ -9,7 +10,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.hzero.starter.keyencrypt.core.Encrypt;
@@ -58,11 +58,11 @@ public class SagaInstanceProjectController {
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
     @GetMapping(value = "/{id}", produces = "application/json")
     @ApiOperation(value = "项目层查询某个事务实例运行详情")
-    public ResponseEntity<String> query(
+    public ResponseEntity<SagaWithTaskInstance> query(
             @PathVariable("project_id") long projectId,
             @Encrypt
             @PathVariable("id") Long id) {
-        return sagaInstanceService.query(id);
+        return new ResponseEntity<>(sagaInstanceService.query(id), HttpStatus.OK);
     }
 
 

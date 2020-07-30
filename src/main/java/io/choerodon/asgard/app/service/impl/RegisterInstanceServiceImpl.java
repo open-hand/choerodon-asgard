@@ -1,9 +1,9 @@
 package io.choerodon.asgard.app.service.impl;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.choerodon.asgard.app.service.*;
-import io.choerodon.asgard.infra.utils.ConvertUtils;
-import io.choerodon.asgard.property.PropertyData;
 import org.hzero.register.event.event.InstanceAddedEvent;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -15,8 +15,10 @@ import org.springframework.remoting.RemoteAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import io.choerodon.asgard.app.service.*;
+import io.choerodon.asgard.infra.utils.ConvertUtils;
+import io.choerodon.asgard.infra.utils.CustomContextUtil;
+import io.choerodon.asgard.property.PropertyData;
 
 @Service
 public class RegisterInstanceServiceImpl implements RegisterInstanceService {
@@ -104,6 +106,7 @@ public class RegisterInstanceServiceImpl implements RegisterInstanceService {
      * @return
      */
     private PropertyData fetchPropertyData(String address) {
+        CustomContextUtil.setUserContext(1L);
         ResponseEntity<PropertyData> response = restTemplate.getForEntity("http://"
                 + address + "/choerodon/asgard", PropertyData.class);
         if (response.getStatusCode() == HttpStatus.OK) {
