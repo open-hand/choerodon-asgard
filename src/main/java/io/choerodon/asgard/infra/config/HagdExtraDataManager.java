@@ -17,7 +17,7 @@ public class HagdExtraDataManager implements ExtraDataManager {
 
     public ExtraData getData() {
         ChoerodonRouteData choerodonRouteData = new ChoerodonRouteData();
-        choerodonRouteData.setName(this.environment.getProperty("hzero.service.current.name", "hzero-asgard"));
+        choerodonRouteData.setName(this.environment.getProperty("hzero.service.current.name", "hagd"));
         choerodonRouteData.setPath(this.environment.getProperty("hzero.service.current.path", "/hagd/**"));
         choerodonRouteData.setServiceId(this.environment.getProperty("hzero.service.current.service-name", "${hzero.service.iam.name:hzero-asgard}"));
         choerodonRouteData.setPackages("org.hzero.asgard");
