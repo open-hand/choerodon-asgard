@@ -62,4 +62,13 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
             column(name: 'SOURCE_ID', type: 'BIGINT UNSIGNED')
         }
     }
+
+    changeSet(author: 'lihao', id: '2020-08-03-modify-index') {
+        dropIndex(indexName: "IDX_SOURCE_ID", tableName: "ASGARD_SAGA_INSTANCE")
+
+        createIndex(indexName: "idx_asgard_saga_instace_source_id_fd_level", tableName: "ASGARD_SAGA_INSTANCE") {
+            column(name: "SOURCE_ID",type: 'BIGINT UNSIGNED')
+            column(name: "FD_LEVEL",type: 'VARCHAR(32)')
+        }
+    }
 }
