@@ -60,7 +60,7 @@ public class ConvertUtils {
         task.setSimpleRepeatInterval(timedTask.getRepeatInterval());
         task.setSimpleRepeatIntervalUnit(timedTask.getRepeatIntervalUnit());
         task.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
-        if (task.getTriggerType().equals(TriggerTypeEnum.simple_trigger.getType())) {
+        if (task.getTriggerType().equals(TriggerTypeEnum.SIMPLE_TRIGGER.getType())) {
             if (timedTask.getOneExecution()) {
                 task.setCronExpression("1");
             } else {
