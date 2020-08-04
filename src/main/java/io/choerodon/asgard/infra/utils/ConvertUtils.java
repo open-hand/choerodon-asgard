@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
+
 import io.choerodon.asgard.api.vo.JsonMerge;
 import io.choerodon.asgard.infra.dto.*;
 import io.choerodon.asgard.infra.mapper.JsonDataMapper;
@@ -14,7 +15,9 @@ import io.choerodon.asgard.property.PropertySaga;
 import io.choerodon.asgard.property.PropertySagaTask;
 import io.choerodon.asgard.property.PropertyTimedTask;
 import io.choerodon.asgard.schedule.QuartzDefinition;
+import io.choerodon.asgard.schedule.enums.TriggerTypeEnum;
 import io.choerodon.core.exception.CommonException;
+
 import org.modelmapper.ModelMapper;
 
 import java.io.IOException;
@@ -50,17 +53,19 @@ public class ConvertUtils {
         task.setName(timedTask.getName());
         task.setDescription(timedTask.getDescription());
         task.setExecuteMethod(timedTask.getMethodCode());
-        task.setTriggerType("simple-trigger");
+        task.setTriggerType(timedTask.getTriggerType());
         task.setStartTime(new Date());
+        task.setCronExpression(timedTask.getCronExpression());
         task.setSimpleRepeatCount(timedTask.getRepeatCount());
         task.setSimpleRepeatInterval(timedTask.getRepeatInterval());
         task.setSimpleRepeatIntervalUnit(timedTask.getRepeatIntervalUnit());
         task.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
-        //所有自定义定时任务皆为简单任务，此处借用此闲置属性放置是否是一次执行
-        if (timedTask.getOneExecution()) {
-            task.setCronExpression("1");
-        } else {
-            task.setCronExpression("0");
+        if (task.getTriggerType().equals(TriggerTypeEnum.simple_trigger.getType())) {
+            if (timedTask.getOneExecution()) {
+                task.setCronExpression("1");
+            } else {
+                task.setCronExpression("0");
+            }
         }
         try {
             String params = mapper.writeValueAsString(timedTask.getParams());
