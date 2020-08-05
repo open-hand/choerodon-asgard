@@ -6,6 +6,7 @@ import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
 import io.choerodon.asgard.api.vo.SagaWithTaskInstance;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
+import io.choerodon.asgard.infra.utils.KeyDecryptHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
@@ -19,6 +20,7 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -53,6 +55,12 @@ public class SagaInstanceOrgController {
             @RequestParam(required = false) String refType,
             @RequestParam(required = false) String refId,
             @RequestParam(required = false) String params) {
+        //sagaCode 中的id解密
+        if (!StringUtils.isEmpty(sagaCode)) {
+            String[] strings = org.apache.commons.lang.StringUtils.splitByWholeSeparatorPreserveAllTokens(sagaCode, "-=");
+            Long id = KeyDecryptHelper.decryptValue("=" + strings[1]);
+            sagaCode = strings[0] + "-" + id;
+        }
         return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
