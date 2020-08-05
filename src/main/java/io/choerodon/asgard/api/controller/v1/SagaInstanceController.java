@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.controller.v1;
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
+import io.choerodon.asgard.infra.utils.KeyDecryptHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -103,6 +104,12 @@ public class SagaInstanceController {
                                                                  @RequestParam(required = false) String refType,
                                                                  @RequestParam(required = false) String refId,
                                                                  @RequestParam(required = false) String params) {
+        //parms 中的id解密
+        if (!StringUtils.isEmpty(sagaCode)) {
+            String[] strings = org.apache.commons.lang.StringUtils.splitByWholeSeparatorPreserveAllTokens(sagaCode, "-=");
+            Long id = KeyDecryptHelper.decryptValue("=" + strings[1]);
+            sagaCode = strings[0] + "-" + id;
+        }
         return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, null, null);
     }
 
