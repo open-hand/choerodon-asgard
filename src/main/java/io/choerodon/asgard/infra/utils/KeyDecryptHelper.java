@@ -15,9 +15,11 @@ import org.hzero.core.util.TokenUtils;
 import org.hzero.starter.keyencrypt.core.EncryptContext;
 import org.hzero.starter.keyencrypt.core.IEncryptionService;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import io.choerodon.core.convertor.ApplicationContextHelper;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.mybatis.util.StringUtil;
 
 /**
  * @author zmf
@@ -305,5 +307,19 @@ public final class KeyDecryptHelper {
         } else {
             return object;
         }
+    }
+
+    //sagaCode 中的id解密
+    public static String decryptSagaCode(String sagaCode) {
+        if (!StringUtils.isEmpty(sagaCode)) {
+            String[] strings = org.apache.commons.lang.StringUtils.splitByWholeSeparatorPreserveAllTokens(sagaCode, "-=");
+            if (strings.length == 2) {
+                Long id = KeyDecryptHelper.decryptValue("=" + strings[1]);
+                return strings[0] + "-" + id;
+            } else {
+                return sagaCode;
+            }
+        }
+        return sagaCode;
     }
 }

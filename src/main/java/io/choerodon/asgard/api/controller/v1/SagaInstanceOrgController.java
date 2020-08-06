@@ -55,13 +55,7 @@ public class SagaInstanceOrgController {
             @RequestParam(required = false) String refType,
             @RequestParam(required = false) String refId,
             @RequestParam(required = false) String params) {
-        //sagaCode 中的id解密
-        if (!StringUtils.isEmpty(sagaCode)) {
-            String[] strings = org.apache.commons.lang.StringUtils.splitByWholeSeparatorPreserveAllTokens(sagaCode, "-=");
-            Long id = KeyDecryptHelper.decryptValue("=" + strings[1]);
-            sagaCode = strings[0] + "-" + id;
-        }
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
+        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
