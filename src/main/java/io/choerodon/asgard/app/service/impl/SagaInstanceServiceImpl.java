@@ -1,7 +1,9 @@
 package io.choerodon.asgard.app.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.service.JsonDataService;
@@ -15,12 +17,14 @@ import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.CommonUtils;
+import io.choerodon.asgard.infra.utils.KeyDecryptHelper;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -35,6 +39,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.util.StringUtils;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -46,6 +51,8 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     static final String DB_ERROR = "error.db.insertOrUpdate";
 
     static final String ERROR_CODE_SAGA_INSTANCE_NOT_EXIST = "error.sagaInstance.notExist";
+
+    private static final String SAGA_CODE = "sagaCode";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

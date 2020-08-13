@@ -3,6 +3,7 @@ package io.choerodon.asgard.api.controller.v1;
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
+import io.choerodon.asgard.infra.utils.KeyDecryptHelper;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.core.iam.InitRoleCode;
@@ -10,6 +11,7 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.hzero.starter.keyencrypt.core.Encrypt;
@@ -103,7 +105,7 @@ public class SagaInstanceController {
                                                                  @RequestParam(required = false) String refType,
                                                                  @RequestParam(required = false) String refId,
                                                                  @RequestParam(required = false) String params) {
-        return sagaInstanceService.pageQuery(pageRequest, sagaCode, status, refType, refId, params, null, null);
+        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, null, null);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})

@@ -57,6 +57,7 @@ public class ScheduleTask {
 
     private NotifyUser notifyUser;
 
+    @Encrypt
     private Long[] assignUserIds;
 
     @ApiModelProperty(value = "用于feign传递时间，相差8小时,以后若解决可删除")
