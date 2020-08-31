@@ -27,7 +27,7 @@ public class TaskConfig {
         //删除遗留的 saga Task
         SagaTaskDTO sagaTaskDTO = new SagaTaskDTO();
         sagaTaskDTO.setService("notify-service");
-        sagaTaskDTO.setSagaCode("message-delete-env");
+        sagaTaskDTO.setSagaCode("devops-delete-env");
         sagaTaskMapper.delete(sagaTaskDTO);
     }
 }
