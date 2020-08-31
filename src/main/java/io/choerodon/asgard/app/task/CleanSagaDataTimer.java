@@ -1,9 +1,14 @@
 package io.choerodon.asgard.app.task;
 
+import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
+import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
+import io.choerodon.asgard.schedule.QuartzDefinition;
 import io.choerodon.asgard.schedule.annotation.JobParam;
 import io.choerodon.asgard.schedule.annotation.JobTask;
+import io.choerodon.asgard.schedule.annotation.TimedTask;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +24,14 @@ public class CleanSagaDataTimer {
 
     private SagaTaskInstanceMapper taskInstanceMapper;
 
+    private SagaTaskMapper sagaTaskMapper;
+
     public CleanSagaDataTimer(SagaInstanceMapper instanceMapper,
-                              SagaTaskInstanceMapper taskInstanceMapper) {
+                              SagaTaskInstanceMapper taskInstanceMapper,
+                              SagaTaskMapper sagaTaskMapper) {
         this.instanceMapper = instanceMapper;
         this.taskInstanceMapper = taskInstanceMapper;
+        this.sagaTaskMapper = sagaTaskMapper;
     }
 
     @JobTask(code = "cleanCompetedSagaData", maxRetryCount = 0,
@@ -42,10 +51,22 @@ public class CleanSagaDataTimer {
         }
 
         List<Long> completedAndTimeOutTaskInstanceIds = taskInstanceMapper.selectCompletedIdByDate(fromNowSeconds, new Date());
-        if(!completedAndTimeOutTaskInstanceIds.isEmpty()) {
+        if (!completedAndTimeOutTaskInstanceIds.isEmpty()) {
             int taskInstanceNum = taskInstanceMapper.deleteBatchByIds(completedAndTimeOutTaskInstanceIds);
             LOGGER.info("delete out-of-date data from ASGARD_SAGA_TASK_INSTANCE, num: {}, ids : {}", taskInstanceNum, completedAndTimeOutTaskInstanceIds);
         }
+    }
+
+
+    @JobTask(maxRetryCount = 3, code = "fixSagaData", description = "清理saga遗留下来的旧数据")
+    @TimedTask(name = "fixSagaData", description = "清理saga遗留下来的旧数据", oneExecution = true,
+            repeatCount = 0, repeatInterval = 1, repeatIntervalUnit = QuartzDefinition.SimpleRepeatIntervalUnit.HOURS, params = {})
+    public void fixSagaDate(Map<String, Object> data) {
+        //删除遗留的 saga Task
+        SagaTaskDTO sagaTaskDTO = new SagaTaskDTO();
+        sagaTaskDTO.setService("notify-service");
+        sagaTaskDTO.setSagaCode("message-delete-env");
+        sagaTaskMapper.delete(sagaTaskDTO);
     }
 
 
