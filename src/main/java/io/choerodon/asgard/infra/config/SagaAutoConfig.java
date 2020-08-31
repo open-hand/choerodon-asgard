@@ -44,9 +44,8 @@ public class SagaAutoConfig {
 
     @Bean
     public CleanSagaDataTimer cleanSagaDataTimer(SagaInstanceMapper instanceMapper,
-                                                 SagaTaskInstanceMapper taskInstanceMapper,
-                                                 SagaTaskMapper sagaTaskMapper) {
-        return new CleanSagaDataTimer(instanceMapper, taskInstanceMapper,sagaTaskMapper);
+                                                 SagaTaskInstanceMapper taskInstanceMapper) {
+        return new CleanSagaDataTimer(instanceMapper, taskInstanceMapper);
     }
 
 
