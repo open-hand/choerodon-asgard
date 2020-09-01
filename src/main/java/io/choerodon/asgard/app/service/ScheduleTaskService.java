@@ -7,6 +7,7 @@ import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.property.PropertyTimedTask;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public interface ScheduleTaskService {
     void disableByLevelAndSourceId(String level, long sourceId);
 
     void delete(long id, String level, Long sourceId);
+
+    void deleteByName(String name, String level, Long sourceId);
 
     void finish(long id);
 

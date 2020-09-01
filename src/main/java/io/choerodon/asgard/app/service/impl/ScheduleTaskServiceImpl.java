@@ -1,7 +1,23 @@
 package io.choerodon.asgard.app.service.impl;
 
+import java.io.IOException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.NoticeService;
 import io.choerodon.asgard.app.service.QuartzJobService;
@@ -33,21 +49,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
@@ -345,6 +346,25 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         return quartzTask;
     }
 
+    private QuartzTaskDTO getQuartzTaskByName(String name, String level, Long sourceId) {
+        QuartzTaskDTO quartzTaskDTO = new QuartzTaskDTO();
+        quartzTaskDTO.setName(name);
+        quartzTaskDTO.setLevel(level);
+        quartzTaskDTO.setSourceId(sourceId);
+        QuartzTaskDTO quartzTask = taskMapper.selectOne(quartzTaskDTO);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
+        }
+        //不是当前源的任务
+        if (!sourceId.equals(quartzTask.getSourceId())) {
+            throw new CommonException(SOURCE_ID_NOT_MATCH);
+        }
+        if (!level.equals(quartzTask.getLevel())) {
+            throw new CommonException(LEVEL_NOT_MATCH);
+        }
+        return quartzTask;
+    }
+
     @Transactional
     @Override
     public void disable(long id, Long objectVersionNumber, boolean executeWithIn) {
@@ -393,6 +413,19 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         LOGGER.info("delete job: {}", quartzTask);
     }
 
+
+    @Transactional
+    @Override
+    public void deleteByName(String name, String level, Long sourceId) {
+        QuartzTaskDTO quartzTask = getQuartzTaskByName(name, level, sourceId);
+        if (taskMapper.deleteByPrimaryKey(quartzTask.getId()) != 1) {
+            throw new CommonException("error.scheduleTask.deleteTaskFailed.by.name");
+        }
+        quartzJobService.removeJob(quartzTask.getId());
+        LOGGER.info("delete job: {}", quartzTask);
+    }
+
+
     @Override
     public ResponseEntity<Page<QuartzTask>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params, String level, Long sourceId) {
         Page<QuartzTaskDTO> result = PageHelper
@@ -426,7 +459,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             resultPage.setContent(quartzTaskList);
             return new ResponseEntity<>(resultPage, HttpStatus.OK);
         } catch (Exception e) {
-            throw new CommonException("error.query",e);
+            throw new CommonException("error.query", e);
         }
     }
 

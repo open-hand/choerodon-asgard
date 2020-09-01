@@ -74,6 +74,13 @@ public class ScheduleTaskSiteController {
         scheduleTaskService.delete(id, ResourceLevel.SITE.value(), 0L);
     }
 
+    @Permission(level = ResourceLevel.SITE, permissionWithin = true)
+    @ApiOperation(value = "全局层删除任务")
+    @DeleteMapping("/name")
+    public void deleteByName(@RequestParam(value = "name") String name) {
+        scheduleTaskService.deleteByName(name, ResourceLevel.SITE.value(), 0L);
+    }
+
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
     @GetMapping
     @ApiOperation(value = "全局层分页查询定时任务")
