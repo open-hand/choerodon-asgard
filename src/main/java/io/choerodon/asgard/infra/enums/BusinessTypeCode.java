@@ -23,13 +23,13 @@ public enum BusinessTypeCode {
     }
 
     public static BusinessTypeCode getValueByLevel(String level) {
-        if (ResourceLevel.SITE.value().equals(level)) {
+        if (ResourceLevel.SITE == ResourceLevel.valueOf(level)) {
             return JOB_STATUS_SITE;
         }
-        if (ResourceLevel.ORGANIZATION.value().equals(level)) {
+        if (ResourceLevel.ORGANIZATION == ResourceLevel.valueOf(level)) {
             return JOB_STATUS_ORGANIZATION;
         }
-        if (ResourceLevel.PROJECT.value().equals(level)) {
+        if (ResourceLevel.PROJECT == ResourceLevel.valueOf(level)) {
             return JOB_STATUS_PROJECT;
         }
         throw new CommonException("error.level.mismatch");

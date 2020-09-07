@@ -37,7 +37,7 @@ public class NoticeServiceImpl implements NoticeService {
     private static final String JOB_NAME = "jobName";
     private static final String JOB_STATUS = "jobStatus";
     private static final String EVENT_NAME = "组织任务状态";
-    private static final String JOB_STATUS_ORGANIZATION = "jobStatusOrganization";
+    private static final String JOB_STATUS_ORGANIZATION = "JOBSTATUSORGANIZATION";
 
     @Autowired
     private MessageClient messageClient;
@@ -72,7 +72,7 @@ public class NoticeServiceImpl implements NoticeService {
         Map<String, String> argsMap = new HashMap<>();
         argsMap.put("JOB_NAME", jobName);
         argsMap.put("JOB_STATUS", jobStatus);
-        if (JOB_STATUS_ORGANIZATION.equals(BusinessTypeCode.getValueByLevel(level).value())) {
+        if (JOB_STATUS_ORGANIZATION.equals(BusinessTypeCode.getValueByLevel(level.toUpperCase()).value())) {
             argsMap.put("objectKind", BusinessTypeCode.getValueByLevel(level).value());
             argsMap.put("eventName", EVENT_NAME);
             argsMap.put("organizationId", sourceId.toString());

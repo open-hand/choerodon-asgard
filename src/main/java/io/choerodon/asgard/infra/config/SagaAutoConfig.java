@@ -7,6 +7,7 @@ import io.choerodon.asgard.app.task.BackCheckSagaStatusTimer;
 import io.choerodon.asgard.app.task.CleanSagaDataTimer;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
+import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 
 import org.hzero.feign.interceptor.AccessTokenInterceptor;
 

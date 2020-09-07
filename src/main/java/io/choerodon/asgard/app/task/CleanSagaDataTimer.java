@@ -2,8 +2,10 @@ package io.choerodon.asgard.app.task;
 
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
+import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.schedule.annotation.JobParam;
 import io.choerodon.asgard.schedule.annotation.JobTask;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ public class CleanSagaDataTimer {
     private SagaInstanceMapper instanceMapper;
 
     private SagaTaskInstanceMapper taskInstanceMapper;
+
 
     public CleanSagaDataTimer(SagaInstanceMapper instanceMapper,
                               SagaTaskInstanceMapper taskInstanceMapper) {
@@ -42,7 +45,7 @@ public class CleanSagaDataTimer {
         }
 
         List<Long> completedAndTimeOutTaskInstanceIds = taskInstanceMapper.selectCompletedIdByDate(fromNowSeconds, new Date());
-        if(!completedAndTimeOutTaskInstanceIds.isEmpty()) {
+        if (!completedAndTimeOutTaskInstanceIds.isEmpty()) {
             int taskInstanceNum = taskInstanceMapper.deleteBatchByIds(completedAndTimeOutTaskInstanceIds);
             LOGGER.info("delete out-of-date data from ASGARD_SAGA_TASK_INSTANCE, num: {}, ids : {}", taskInstanceNum, completedAndTimeOutTaskInstanceIds);
         }
