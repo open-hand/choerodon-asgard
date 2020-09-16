@@ -1,8 +1,23 @@
 package io.choerodon.asgard.app.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import static java.util.stream.Collectors.groupingBy;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
@@ -17,31 +32,13 @@ import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 import io.choerodon.asgard.infra.utils.CommonUtils;
-import io.choerodon.asgard.infra.utils.KeyDecryptHelper;
+import io.choerodon.asgard.infra.utils.ParamUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-import org.springframework.util.StringUtils;
-
-import static java.util.stream.Collectors.groupingBy;
 
 @Service
 public class SagaInstanceServiceImpl implements SagaInstanceService {
@@ -140,9 +137,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public ResponseEntity<Page<SagaInstanceDetails>> pageQuery(PageRequest pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId) {
-        return new ResponseEntity<>(
-                PageHelper.doPageAndSort(pageable,
-                        () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
+        Page<SagaInstanceDetails> sagaInstanceDetailsPage = PageHelper.doPageAndSort(pageable,
+                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId));
+        sagaInstanceDetailsPage.getContent().forEach(i -> i.setViewId(ParamUtils.handId(i.getId())));
+        return new ResponseEntity<>(sagaInstanceDetailsPage, HttpStatus.OK);
     }
 
     @Override
