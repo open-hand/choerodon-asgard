@@ -1,14 +1,15 @@
 package io.choerodon.asgard.infra.mapper;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
 import io.choerodon.asgard.api.vo.SagaInstanceDetails;
 import io.choerodon.asgard.api.vo.SagaInstanceFailureVO;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.mybatis.common.BaseMapper;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 public interface SagaInstanceMapper extends BaseMapper<SagaInstanceDTO> {
 
@@ -43,4 +44,6 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstanceDTO> {
     List<Long> selectCompletedIdByDate(@Param("fromNowSeconds") long fromNowSeconds, @Param("now") Date now);
 
     int deleteBatchByIds(@Param("ids") List<Long> ids);
+
+    int deleteByOptions(@Param("time") Date time, @Param("retainFailed") boolean retainFailed);
 }

@@ -208,4 +208,15 @@
         </foreach>
     </delete>
 
+    <delete id="deleteByOptions">
+        DELETE
+        FROM asgard_saga_task_instance
+        <where>
+            CREATION_DATE <![CDATA[<]]> #{time}
+            <if test="retainFailed">
+                AND `status` != 'FAILED'
+            </if>
+        </where>
+    </delete>
+
 </mapper>

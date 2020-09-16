@@ -4,10 +4,9 @@ import feign.Client;
 
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.app.task.BackCheckSagaStatusTimer;
-import io.choerodon.asgard.app.task.CleanSagaDataTimer;
+import io.choerodon.asgard.app.task.CleanSagaInstanceTimer;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
-import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
 
 import org.hzero.feign.interceptor.AccessTokenInterceptor;
 
@@ -41,12 +40,5 @@ public class SagaAutoConfig {
         return new BackCheckSagaStatusTimer(backCheckSagaStatusTimerThread(), instanceMapper, asgardProperties,
                 accessTokenInterceptor, client, sagaInstanceService);
     }
-
-    @Bean
-    public CleanSagaDataTimer cleanSagaDataTimer(SagaInstanceMapper instanceMapper,
-                                                 SagaTaskInstanceMapper taskInstanceMapper) {
-        return new CleanSagaDataTimer(instanceMapper, taskInstanceMapper);
-    }
-
 
 }
