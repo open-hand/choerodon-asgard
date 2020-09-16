@@ -67,4 +67,6 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstanceDTO> 
     List<Long> selectCompletedIdByDate(@Param("fromNowSeconds") long fromNowSeconds, @Param("now") Date now);
 
     int deleteBatchByIds(@Param("ids") List<Long> ids);
+
+    int deleteByOptions(@Param("time") Date time, @Param("retainFailed") boolean retainFailed);
 }
