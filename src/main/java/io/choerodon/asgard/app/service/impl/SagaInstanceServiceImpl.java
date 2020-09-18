@@ -215,15 +215,21 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     public Page<SagaInstanceDTO> statisticsFailureList(String level, Long sourceId, Integer date, PageRequest pageable) {
         String endTime = getTimeStr(null, 1);
         String startTime = getTimeStr(null, date * (-1));
-
+        Page<SagaInstanceDTO> pageInfo = new Page<>();
         if (level != null && !level.equals("site")) {
-            return PageHelper.doPageAndSort(pageable, () -> instanceMapper.statisticsFailureList(level, sourceId, startTime, endTime));
+            pageInfo = PageHelper.doPageAndSort(pageable, () -> instanceMapper.statisticsFailureList(level, sourceId, startTime, endTime));
 
         } else {
-            return PageHelper
+            pageInfo = PageHelper
                     .doPageAndSort(pageable,
                             () -> instanceMapper.statisticsFailureList(level, null, startTime, endTime));
         }
+
+        pageInfo.getContent().forEach(i -> {
+            i.setViewId(ParamUtils.handId(i.getId()));
+        });
+
+        return pageInfo;
     }
 
     @Override
