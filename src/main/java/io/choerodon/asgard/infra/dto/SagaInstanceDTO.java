@@ -51,6 +51,7 @@ public class SagaInstanceDTO extends AuditDomain {
 
     private String createdOn;
 
+    @Transient
     private String viewId;
 
     public SagaInstanceDTO() {
