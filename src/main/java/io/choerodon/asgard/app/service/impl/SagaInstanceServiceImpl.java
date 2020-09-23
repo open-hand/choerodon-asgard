@@ -336,7 +336,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public List<SagaInstanceDetails> queryByRefTypeAndRefIds(String refType, List<Long> refIds) {
+    public List<SagaInstanceDetails> queryByRefTypeAndRefIds(String refType, List<String> refIds) {
         if (StringUtils.isEmpty(refType) || CollectionUtils.isEmpty(refIds)) {
             return Collections.EMPTY_LIST;
         }

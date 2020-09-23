@@ -163,7 +163,7 @@ public class SagaInstanceController {
     @ApiOperation(value = "根据业务类型，业务id查询实例")
     @GetMapping("/ref/business/instance")
     public ResponseEntity<List<SagaInstanceDetails>> queryByRefTypeAndRefIds(@RequestParam(value = "refType", required = true) String refType,
-                                                                             @RequestParam(value = "refIds", required = true) List<Long> refIds) {
+                                                                             @RequestParam(value = "refIds", required = true) List<String> refIds) {
         return ResponseEntity.ok(sagaInstanceService.queryByRefTypeAndRefIds(refType, refIds));
 
     }
