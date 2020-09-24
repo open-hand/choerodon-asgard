@@ -47,5 +47,5 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstanceDTO> {
 
     int deleteByOptions(@Param("time") Date time, @Param("retainFailed") boolean retainFailed);
 
-    List<SagaInstanceDetails> queryByRefTypeAndRefIds(@Param("refType") String refType, @Param("refIds") List<String> refIds);
+    List<SagaInstanceDetails> queryByRefTypeAndRefIds(@Param("refType") String refType, @Param("refIds") List<String> refIds, @Param("sagaCode") String sagaCode);
 }

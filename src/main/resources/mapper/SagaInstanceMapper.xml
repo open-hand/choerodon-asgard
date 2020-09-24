@@ -267,6 +267,7 @@
           CODE LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
         WHERE
           asi.ref_type LIKE concat(concat('%',#{refType}),'%')
+        AND asi.saga_code LIKE concat(concat('%',#{sagaCode}),'%')
         AND asi.ref_id IN
           <foreach item="id" collection="refIds" open="(" close=")" separator=",">
               #{id}
