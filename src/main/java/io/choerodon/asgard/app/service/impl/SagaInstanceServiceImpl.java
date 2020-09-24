@@ -336,12 +336,12 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     }
 
     @Override
-    public List<SagaInstanceDetails> queryByRefTypeAndRefIds(String refType, List<String> refIds) {
+    public List<SagaInstanceDetails> queryByRefTypeAndRefIds(String refType, List<String> refIds, String sagaCode) {
         if (StringUtils.isEmpty(refType) || CollectionUtils.isEmpty(refIds)) {
             return Collections.EMPTY_LIST;
         }
         //如果业务一样，取最新的
-        List<SagaInstanceDetails> instanceDetails = instanceMapper.queryByRefTypeAndRefIds(refType, refIds);
+        List<SagaInstanceDetails> instanceDetails = instanceMapper.queryByRefTypeAndRefIds(refType, refIds, sagaCode);
         if (CollectionUtils.isEmpty(instanceDetails)) {
             return Collections.EMPTY_LIST;
         }
@@ -356,6 +356,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         }
         return sagaInstanceDetails;
     }
+
     private Date getTime(Date date, Integer num) {
         date = date == null ? new Date() : date;
         Calendar calStart = Calendar.getInstance();
