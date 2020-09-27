@@ -7,9 +7,9 @@
         <artifactId>choerodon-framework-parent</artifactId>
         <version>0.17.1.RELEASE</version>
     </parent>
-    <artifactId>hzero-asgard</artifactId>
-    <version>0.23.2.RELEASE</version>
-    <name>hzero-asgard</name>
+    <artifactId>choerodon-asgard</artifactId>
+    <version>0.23.3-SNAPSHOT</version>
+    <name>choerodon-asgard</name>
     <description>Asgard-Service For Choerodon</description>
 
     <properties>
