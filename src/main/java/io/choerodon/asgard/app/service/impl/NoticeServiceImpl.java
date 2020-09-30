@@ -76,7 +76,7 @@ public class NoticeServiceImpl implements NoticeService {
         argsMap.put("JOB_NAME", jobName);
         argsMap.put("JOB_STATUS", jobStatus);
 
-        argsMap.put("objectKind", BusinessTypeCode.getValueByLevel(level).value());
+        argsMap.put("objectKind", BusinessTypeCode.getValueByLevel(level.toUpperCase()).value());
         argsMap.put("organizationId", sourceId.toString());
         argsMap.put("jobName", jobName);
         argsMap.put("jobStatus", jobStatus);
@@ -192,15 +192,7 @@ public class NoticeServiceImpl implements NoticeService {
         Set<UserDTO> users = new HashSet<>();
         if (notifyMembers == null) return new ArrayList<>(users);
         for (QuartzTaskMemberDTO notifyMember : notifyMembers) {
-            if (MemberType.ASSIGNER.value().equals(notifyMember.getMemberType())
-                    || MemberType.CREATOR.value().equals(notifyMember.getMemberType())) {
-                UserDTO user = new UserDTO();
-                user.setId(notifyMember.getMemberId());
-                users.add(user);
-            }
-            if (MemberType.ROLE.value().equals(notifyMember.getMemberType())) {
                 users.addAll(getAdministratorUsers(level, sourceId, notifyMember.getMemberId()));
-            }
         }
         //去重
         return new ArrayList<>(users);
