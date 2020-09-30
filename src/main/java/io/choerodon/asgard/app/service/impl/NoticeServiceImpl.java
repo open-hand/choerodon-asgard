@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import io.choerodon.asgard.api.vo.RegistrantInfo;
 import io.choerodon.asgard.api.vo.User;
@@ -41,6 +42,11 @@ public class NoticeServiceImpl implements NoticeService {
     private static final String EVENT_NAME_SITE = "平台任务状态通知";
     private static final String JOB_STATUS_SITE = "JOBSTATUSSITE";
 
+    private static final String NO_SEND_WEBHOOK = "NoSendWebHook";
+    private static final String NO_SEND_WEB = "NoSendWeb";
+    private static final String NO_SEND_EMAIL = "NoSendEmail";
+    private static final String NO_SEND_SMS = "NoSendSms";
+
 
     @Autowired
     private MessageClient messageClient;
@@ -53,23 +59,72 @@ public class NoticeServiceImpl implements NoticeService {
     public void sendNotice(QuartzTaskDTO quartzTask, List<QuartzTaskMemberDTO> noticeMember, String jobStatus) {
         try {
             //发送通知失败不需要回滚
-            MessageSender messageSender = getMessageSender(noticeMember, quartzTask.getName(), quartzTask.getLevel(), quartzTask.getSourceId(), jobStatus, quartzTask);
-            messageClient.async().sendMessage(messageSender);
+            //获取通知对象
+            List<UserDTO> needSendNoticeUsers = getNeedSendNoticeUsers(noticeMember, quartzTask.getLevel(), quartzTask.getSourceId());
+            MessageSender baseMessageSender = getBaseMessageSender(quartzTask.getName(), quartzTask.getLevel(), quartzTask.getSourceId(), jobStatus, quartzTask);
+            if (!CollectionUtils.isEmpty(needSendNoticeUsers)) {
+                needSendNoticeUsers.forEach(userDTO -> {
+                    //除开webhook的类型的
+                    MessageSender otherSender = getOtherMessageSender(userDTO, baseMessageSender, quartzTask.getSourceId());
+                    messageClient.async().sendMessage(otherSender);
+                });
+
+            }
+            //发送webhook
+            MessageSender webhookSender = getWebHookMessageSender(baseMessageSender, quartzTask.getSourceId());
+            messageClient.async().sendMessage(webhookSender);
         } catch (CommonException e) {
             LOGGER.info("schedule job send notice fail!", e);
         }
     }
 
+    private MessageSender getWebHookMessageSender(MessageSender messageSender, Long sourceId) {
+        //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
+        Map<String, Object> objectMap = new HashMap<>();
+        //发送组织层和项目层消息时必填 当前组织id
+        objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), sourceId);
+        objectMap.put(NO_SEND_WEB, NO_SEND_WEB);
+        objectMap.put(NO_SEND_EMAIL, NO_SEND_EMAIL);
+        objectMap.put(NO_SEND_SMS, NO_SEND_SMS);
+        messageSender.setAdditionalInformation(objectMap);
+        return messageSender;
 
-    private MessageSender getMessageSender(List<QuartzTaskMemberDTO> notifyMembers, String jobName, String level, Long sourceId, String jobStatus, QuartzTaskDTO quartzTaskDTO) {
-        // 构建消息对象
+    }
+
+
+    private MessageSender getOtherMessageSender(UserDTO userDTO, MessageSender messageSender, Long sourceId) {
+        messageSender.getArgs().put("userName", userDTO.getRealName());
+        // 接收者
+        List<Receiver> receiverList = new ArrayList<>();
+
+        Receiver receiver = new Receiver();
+        receiver.setUserId(userDTO.getId());
+        // 发送邮件消息时 必填
+        receiver.setEmail(userDTO.getEmail());
+        // 发送短信消息 必填
+        receiver.setPhone(userDTO.getPhone());
+        // 必填
+        receiver.setTargetUserTenantId(userDTO.getOrganizationId());
+        receiverList.add(receiver);
+
+        messageSender.setReceiverAddressList(receiverList);
+
+        //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
+        Map<String, Object> objectMap = new HashMap<>();
+        //发送组织层和项目层消息时必填 当前组织id
+        objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), sourceId);
+        objectMap.put(NO_SEND_WEBHOOK, NO_SEND_WEBHOOK);
+        messageSender.setAdditionalInformation(objectMap);
+        return messageSender;
+    }
+
+    private MessageSender getBaseMessageSender(String jobName, String level, Long sourceId, String jobStatus, QuartzTaskDTO quartzTaskDTO) {
+
         MessageSender messageSender = new MessageSender();
         // 消息code
         messageSender.setMessageCode(BusinessTypeCode.getValueByLevel(level.toUpperCase()).value());
         // 默认为0L,都填0L,可不填写
         messageSender.setTenantId(0L);
-
-        List<UserDTO> needSendNoticeUsers = getNeedSendNoticeUsers(notifyMembers, level, sourceId);
 
         // 消息参数 消息模板中${projectName}
         Map<String, String> argsMap = new HashMap<>();
@@ -83,52 +138,15 @@ public class NoticeServiceImpl implements NoticeService {
         argsMap.put("startedAt", String.valueOf(quartzTaskDTO.getStartTime()));
         argsMap.put("finishedAt", String.valueOf(quartzTaskDTO.getLastUpdateDate()));
 
+
         if (JOB_STATUS_ORGANIZATION.equals(BusinessTypeCode.getValueByLevel(level.toUpperCase()).value())) {
             argsMap.put("eventName", EVENT_NAME);
         }
         if (JOB_STATUS_SITE.equals(BusinessTypeCode.getValueByLevel(level.toUpperCase()).value())) {
             argsMap.put("eventName", EVENT_NAME_SITE);
         }
-
-        // 接收者
-        List<Receiver> receiverList = new ArrayList<>();
-        List<WebHookUser> webHookUserList = new ArrayList<>();
-        needSendNoticeUsers.forEach(user -> {
-
-            WebHookUser webHookUser = new WebHookUser();
-            webHookUser.setLoginName(user.getLoginName());
-            webHookUser.setUserName(user.getRealName());
-            webHookUserList.add(webHookUser);
-
-            Receiver receiver = new Receiver();
-            receiver.setUserId(user.getId());
-            // 发送邮件消息时 必填
-            receiver.setEmail(user.getEmail());
-            // 发送短信消息 必填
-            receiver.setPhone(user.getPhone());
-            // 必填
-            receiver.setTargetUserTenantId(user.getOrganizationId());
-            receiverList.add(receiver);
-        });
-        messageSender.setReceiverAddressList(receiverList);
         messageSender.setArgs(argsMap);
-
-        //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
-        Map<String, Object> objectMap = new HashMap<>();
-        //发送组织层和项目层消息时必填 当前组织id
-        objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), sourceId);
-        messageSender.setAdditionalInformation(objectMap);
         return messageSender;
-    }
-
-    private void getArgs(String jobName, String level, String jobStatus, Map<String, String> argsMap, String eventName, String eventName2, String organizationId, String s, String jobName2, String jobStatus2, String startedAt, Date startTime, String finishedAt, String s2) {
-        argsMap.put("objectKind", BusinessTypeCode.getValueByLevel(level).value());
-        argsMap.put(eventName, eventName2);
-        argsMap.put(organizationId, s);
-        argsMap.put(jobName2, jobName);
-        argsMap.put(jobStatus2, jobStatus);
-        argsMap.put(startedAt, String.valueOf(startTime));
-        argsMap.put(finishedAt, s2);
     }
 
     @Override
@@ -192,7 +210,7 @@ public class NoticeServiceImpl implements NoticeService {
         Set<UserDTO> users = new HashSet<>();
         if (notifyMembers == null) return new ArrayList<>(users);
         for (QuartzTaskMemberDTO notifyMember : notifyMembers) {
-                users.addAll(getAdministratorUsers(level, sourceId, notifyMember.getMemberId()));
+            users.addAll(getAdministratorUsers(level, sourceId, notifyMember.getMemberId()));
         }
         //去重
         return new ArrayList<>(users);
