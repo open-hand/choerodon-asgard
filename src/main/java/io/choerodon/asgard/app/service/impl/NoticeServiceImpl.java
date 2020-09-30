@@ -38,6 +38,9 @@ public class NoticeServiceImpl implements NoticeService {
     private static final String JOB_STATUS = "jobStatus";
     private static final String EVENT_NAME = "组织任务状态";
     private static final String JOB_STATUS_ORGANIZATION = "JOBSTATUSORGANIZATION";
+    private static final String EVENT_NAME_SITE = "平台任务状态通知";
+    private static final String JOB_STATUS_SITE = "JOBSTATUSSITE";
+
 
     @Autowired
     private MessageClient messageClient;
@@ -72,14 +75,19 @@ public class NoticeServiceImpl implements NoticeService {
         Map<String, String> argsMap = new HashMap<>();
         argsMap.put("JOB_NAME", jobName);
         argsMap.put("JOB_STATUS", jobStatus);
+
+        argsMap.put("objectKind", BusinessTypeCode.getValueByLevel(level).value());
+        argsMap.put("organizationId", sourceId.toString());
+        argsMap.put("jobName", jobName);
+        argsMap.put("jobStatus", jobStatus);
+        argsMap.put("startedAt", String.valueOf(quartzTaskDTO.getStartTime()));
+        argsMap.put("finishedAt", String.valueOf(quartzTaskDTO.getLastUpdateDate()));
+
         if (JOB_STATUS_ORGANIZATION.equals(BusinessTypeCode.getValueByLevel(level.toUpperCase()).value())) {
-            argsMap.put("objectKind", BusinessTypeCode.getValueByLevel(level).value());
             argsMap.put("eventName", EVENT_NAME);
-            argsMap.put("organizationId", sourceId.toString());
-            argsMap.put("jobName", jobName);
-            argsMap.put("jobStatus", jobStatus);
-            argsMap.put("startedAt", String.valueOf(quartzTaskDTO.getStartTime()));
-            argsMap.put("finishedAt", String.valueOf(quartzTaskDTO.getLastUpdateDate()));
+        }
+        if (JOB_STATUS_SITE.equals(BusinessTypeCode.getValueByLevel(level.toUpperCase()).value())) {
+            argsMap.put("eventName", EVENT_NAME_SITE);
         }
 
         // 接收者
@@ -111,6 +119,16 @@ public class NoticeServiceImpl implements NoticeService {
         objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), sourceId);
         messageSender.setAdditionalInformation(objectMap);
         return messageSender;
+    }
+
+    private void getArgs(String jobName, String level, String jobStatus, Map<String, String> argsMap, String eventName, String eventName2, String organizationId, String s, String jobName2, String jobStatus2, String startedAt, Date startTime, String finishedAt, String s2) {
+        argsMap.put("objectKind", BusinessTypeCode.getValueByLevel(level).value());
+        argsMap.put(eventName, eventName2);
+        argsMap.put(organizationId, s);
+        argsMap.put(jobName2, jobName);
+        argsMap.put(jobStatus2, jobStatus);
+        argsMap.put(startedAt, String.valueOf(startTime));
+        argsMap.put(finishedAt, s2);
     }
 
     @Override
