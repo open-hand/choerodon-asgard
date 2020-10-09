@@ -53,4 +53,12 @@ public interface ScheduleTaskService {
      */
     QuartzTaskDTO getQuartzTask(long id, String level, Long sourceId);
 
+    /**
+     * 根据serviceCode和methodCode创建定时任务
+     * @param dto
+     * @param sourceLevel
+     * @param sourceId
+     * @return
+     */
+    QuartzTaskDTO createByServiceCodeAndMethodCode(ScheduleTask dto, String sourceLevel, Long sourceId);
 }
