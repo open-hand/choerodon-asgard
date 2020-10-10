@@ -141,9 +141,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public ResponseEntity<Page<SagaInstanceDetails>> pageQuery(PageRequest pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId) {
-        return new ResponseEntity<>(
-                PageHelper.doPageAndSort(pageable,
-                        () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId)), HttpStatus.OK);
+        Page<SagaInstanceDetails> sagaInstanceDetailsPage = PageHelper.doPageAndSort(pageable,
+                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId));
+        sagaInstanceDetailsPage.getContent().forEach(i -> i.setViewId(ParamUtils.handId(i.getId())));
+        return new ResponseEntity<>(sagaInstanceDetailsPage, HttpStatus.OK);
     }
 
     @Override

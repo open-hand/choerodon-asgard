@@ -51,6 +51,17 @@ public class SagaInstanceDetails {
     @ApiModelProperty(value = "实例下等待被拉取里的任务个数")
     private Integer waitToBePulledCount;
 
+    @ApiModelProperty("显示编码")
+    private String viewId;
+
+    public String getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(String viewId) {
+        this.viewId = viewId;
+    }
+
     public Long getId() {
         return id;
     }
