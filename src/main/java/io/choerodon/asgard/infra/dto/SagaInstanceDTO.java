@@ -54,6 +54,14 @@ public class SagaInstanceDTO extends AuditDomain {
     @Transient
     private String viewId;
 
+    public String getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(String viewId) {
+        this.viewId = viewId;
+    }
+
     public SagaInstanceDTO() {
     }
 
@@ -231,13 +239,4 @@ public class SagaInstanceDTO extends AuditDomain {
                 ", viewId='" + viewId + '\'' +
                 '}';
     }
-
-    public String getViewId() {
-        return viewId;
-    }
-
-    public void setViewId(String viewId) {
-        this.viewId = viewId;
-    }
-
 }
