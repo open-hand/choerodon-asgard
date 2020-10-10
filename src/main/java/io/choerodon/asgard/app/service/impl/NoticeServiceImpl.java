@@ -7,6 +7,7 @@ import org.hzero.boot.message.entity.MessageSender;
 import org.hzero.boot.message.entity.Receiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import io.choerodon.asgard.infra.dto.payload.WebHookUser;
 import io.choerodon.asgard.infra.enums.BusinessTypeCode;
 import io.choerodon.asgard.infra.enums.MemberType;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
+import io.choerodon.asgard.infra.feign.operator.BaseServiceClientOperator;
 import io.choerodon.core.enums.MessageAdditionalType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
@@ -52,6 +54,8 @@ public class NoticeServiceImpl implements NoticeService {
     private MessageClient messageClient;
     @Autowired
     private IamFeignClient iamFeignClient;
+    @Autowired
+    private BaseServiceClientOperator baseServiceClientOperator;
 
 
     @Override
@@ -209,8 +213,26 @@ public class NoticeServiceImpl implements NoticeService {
     private List<UserDTO> getNeedSendNoticeUsers(final List<QuartzTaskMemberDTO> notifyMembers, final String level, final Long sourceId) {
         Set<UserDTO> users = new HashSet<>();
         if (notifyMembers == null) return new ArrayList<>(users);
+        // 平台管理员 创建者 指定用户
+        Set<Long> userIds = new HashSet<>();
         for (QuartzTaskMemberDTO notifyMember : notifyMembers) {
-            users.addAll(getAdministratorUsers(level, sourceId, notifyMember.getMemberId()));
+            //指定用户或者创建者
+            if (MemberType.ASSIGNER.value().equals(notifyMember.getMemberType())
+                    || MemberType.CREATOR.value().equals(notifyMember.getMemberType())) {
+                userIds.add(notifyMember.getMemberId());
+            }
+            //平台管理员
+            if (MemberType.ROLE.value().equals(notifyMember.getMemberType())) {
+                users.addAll(getAdministratorUsers(level, sourceId, notifyMember.getMemberId()));
+            }
+        }
+        if (!CollectionUtils.isEmpty(userIds)) {
+            List<User> userList = baseServiceClientOperator.getUserByIds(userIds.toArray(new Long[userIds.size()]));
+            userList.forEach(user -> {
+                UserDTO userDTO = new UserDTO();
+                BeanUtils.copyProperties(user, userDTO);
+                users.add(userDTO);
+            });
         }
         //去重
         return new ArrayList<>(users);
