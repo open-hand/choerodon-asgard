@@ -2,7 +2,9 @@ package io.choerodon.asgard.api.vo;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.choerodon.core.exception.CommonException;
+
 import io.swagger.annotations.ApiModelProperty;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 
@@ -292,10 +294,35 @@ public class ScheduleTaskDetail {
     public static class User {
         private String loginName;
         private String realName;
-
+        private String email;
+        private Boolean ldap;
         public User(String loginName, String realName) {
             this.loginName = loginName;
             this.realName = realName;
+
+        }
+
+        public User(String loginName, String realName, Boolean ldap, String email) {
+            this.loginName = loginName;
+            this.realName = realName;
+            this.email = email;
+            this.ldap = ldap;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public Boolean getLdap() {
+            return ldap;
+        }
+
+        public void setLdap(Boolean ldap) {
+            this.ldap = ldap;
         }
 
         public String getLoginName() {

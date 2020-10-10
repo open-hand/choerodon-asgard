@@ -19,6 +19,16 @@ public class User {
 
     private Long organizationId;
 
+    private Boolean ldap;
+
+    public Boolean getLdap() {
+        return ldap;
+    }
+
+    public void setLdap(Boolean ldap) {
+        this.ldap = ldap;
+    }
+
     public Long getId() {
         return id;
     }
