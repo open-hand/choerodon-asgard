@@ -51,6 +51,17 @@ public class SagaInstanceDTO extends AuditDomain {
 
     private String createdOn;
 
+    @Transient
+    private String viewId;
+
+    public String getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(String viewId) {
+        this.viewId = viewId;
+    }
+
     public SagaInstanceDTO() {
     }
 
