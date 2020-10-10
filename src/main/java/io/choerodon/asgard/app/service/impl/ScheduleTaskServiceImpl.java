@@ -2,6 +2,7 @@ package io.choerodon.asgard.app.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.NoticeService;
 import io.choerodon.asgard.app.service.QuartzJobService;
@@ -33,6 +34,7 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -426,7 +428,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             resultPage.setContent(quartzTaskList);
             return new ResponseEntity<>(resultPage, HttpStatus.OK);
         } catch (Exception e) {
-            throw new CommonException("error.query",e);
+            throw new CommonException("error.query", e);
         }
     }
 
@@ -514,7 +516,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             List<User> users = iamFeignClient.listUsersByIds(idList.toArray(new Long[0])).getBody();
             for (int i = 0; i < users.size(); i++) {
                 User userDTO = users.get(i);
-                ScheduleTaskDetail.User user = new ScheduleTaskDetail.User(userDTO.getLoginName(), userDTO.getRealName());
+                ScheduleTaskDetail.User user = new ScheduleTaskDetail.User(userDTO.getLoginName(), userDTO.getRealName(), userDTO.getLdap(), userDTO.getEmail());
                 assigners.add(user);
             }
         }
