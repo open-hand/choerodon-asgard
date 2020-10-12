@@ -588,7 +588,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 List<User> users = iamFeignClient.listUsersByIds(creatorId).getBody();
                 if (!users.isEmpty()) {
                     User user = users.get(0);
-                    creator = new ScheduleTaskDetail.User(user.getLoginName(), user.getRealName());
+                    creator = new ScheduleTaskDetail.User(user.getLoginName(), user.getRealName(), user.getLdap(), user.getEmail());
                 }
             } else if (MemberType.ROLE.value().equals(member.getMemberType())) {
                 administrator = true;
@@ -598,7 +598,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
             List<User> users = iamFeignClient.listUsersByIds(idList.toArray(new Long[0])).getBody();
             for (int i = 0; i < users.size(); i++) {
                 User userDTO = users.get(i);
-                ScheduleTaskDetail.User user = new ScheduleTaskDetail.User(userDTO.getLoginName(), userDTO.getRealName());
+                ScheduleTaskDetail.User user = new ScheduleTaskDetail.User(userDTO.getLoginName(), userDTO.getRealName(), userDTO.getLdap(), userDTO.getEmail());
                 assigners.add(user);
             }
         }

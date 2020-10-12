@@ -18,7 +18,7 @@ replicaCount: 1
 
 ## 设置默认的 image、imageTag 和 imagePullPolicy。
 image:
-  repository: registry.hand-china.com/hzero-c7ncd/hzero-asgard
+  repository: registry.hand-china.com/hzero-c7ncd/choerodon-asgard
   tag: ~
   pullPolicy: Always
 
@@ -126,7 +126,7 @@ service:
   # 是否启用 service 暴露本服务
   enabled: true
   # Service 名称
-  name: hzero-asgard
+  name: choerodon-asgard
   # Service 类型
   type: ClusterIP
   # 指定 service 的 clusterIP
