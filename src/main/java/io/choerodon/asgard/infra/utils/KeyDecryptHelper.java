@@ -252,7 +252,7 @@ public final class KeyDecryptHelper {
         if (EncryptContext.isEncrypt()
                 && EncryptContext.isAllowedEncrypt()
                 && ENCRYPTION_SERVICE.isCipher(object)) {
-            return Long.valueOf(ENCRYPTION_SERVICE.decrypt(object, EMPTY, accessToken, ignoreUserConflict));
+            return Long.valueOf(ENCRYPTION_SERVICE.decrypt(object, EMPTY, accessToken));
         } else {
             return Long.valueOf(object);
         }
@@ -275,7 +275,7 @@ public final class KeyDecryptHelper {
         if (EncryptContext.isEncrypt()
                 && EncryptContext.isAllowedEncrypt()
                 && ENCRYPTION_SERVICE.isCipher(object)) {
-            return ENCRYPTION_SERVICE.decrypt(object, EMPTY, EMPTY, true);
+            return ENCRYPTION_SERVICE.decrypt(object, EMPTY, EMPTY);
         } else {
             return object;
         }
@@ -298,7 +298,7 @@ public final class KeyDecryptHelper {
         // websocket 的背景下, 不能判断当前用户上下文
         if (ENCRYPTION_SERVICE.isCipher(object)) {
             try {
-                return ENCRYPTION_SERVICE.decrypt(object, EMPTY, EMPTY, true);
+                return ENCRYPTION_SERVICE.decrypt(object, EMPTY, EMPTY);
             } catch (Exception ex) {
                 // 发生异常还是返回原值
                 return object;
