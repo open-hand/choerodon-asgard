@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 
 import io.choerodon.core.convertor.ApplicationContextHelper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.mybatis.util.StringUtil;
 
 /**
  * @author zmf
