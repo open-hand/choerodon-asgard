@@ -506,7 +506,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 List<User> users = iamFeignClient.listUsersByIds(creatorId).getBody();
                 if (!users.isEmpty()) {
                     User user = users.get(0);
-                    creator = new ScheduleTaskDetail.User(user.getLoginName(), user.getRealName());
+                    creator = new ScheduleTaskDetail.User(user.getLoginName(), user.getRealName(), user.getLdap(), user.getEmail());
                 }
             } else if (MemberType.ROLE.value().equals(member.getMemberType())) {
                 administrator = true;
