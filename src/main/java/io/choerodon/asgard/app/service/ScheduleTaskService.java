@@ -24,6 +24,8 @@ public interface ScheduleTaskService {
 
     void delete(long id, String level, Long sourceId);
 
+    void delete(long id);
+
     void deleteByName(String name, String level, Long sourceId);
 
     void finish(long id);
@@ -52,7 +54,7 @@ public interface ScheduleTaskService {
      * @return
      */
     QuartzTaskDTO getQuartzTask(long id, String level, Long sourceId);
-
+    QuartzTaskDTO getQuartzTask(long id);
     /**
      * 根据serviceCode和methodCode创建定时任务
      * @param dto
@@ -61,4 +63,12 @@ public interface ScheduleTaskService {
      * @return
      */
     QuartzTaskDTO createByServiceCodeAndMethodCode(ScheduleTask dto, String sourceLevel, Long sourceId);
+
+    /**
+     * 批量删除定时任务
+     * @param ids
+     * @return
+     */
+    void deleteByIds(List<Long> ids);
+
 }

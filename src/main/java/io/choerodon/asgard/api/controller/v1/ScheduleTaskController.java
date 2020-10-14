@@ -1,5 +1,6 @@
 package io.choerodon.asgard.api.controller.v1;
 
+import java.util.List;
 import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
@@ -39,5 +40,16 @@ public class ScheduleTaskController {
         ScheduleTaskValidator.validatorCreate(dto);
         return new ResponseEntity<>(scheduleTaskService.createByServiceCodeAndMethodCode(dto, sourceLevel, sourceId), HttpStatus.OK);
     }
+
+
+    @Permission(permissionWithin = true)
+    @ApiOperation(value = "根据ids删除定时任务 -- 内部接口")
+    @DeleteMapping("/delete/")
+    public ResponseEntity<Void> deleteByIds(
+            @RequestBody List<Long> ids) {
+        scheduleTaskService.deleteByIds(ids);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }
