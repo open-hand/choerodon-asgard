@@ -334,16 +334,22 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Override
     public QuartzTaskDTO getQuartzTask(long id, String level, Long sourceId) {
-        QuartzTaskDTO quartzTask = taskMapper.selectByPrimaryKey(id);
-        if (quartzTask == null) {
-            throw new CommonException(TASK_NOT_EXIST);
-        }
+        QuartzTaskDTO quartzTask = getQuartzTask(id);
         //不是当前源的任务
         if (!sourceId.equals(quartzTask.getSourceId())) {
             throw new CommonException(SOURCE_ID_NOT_MATCH);
         }
         if (!level.equals(quartzTask.getLevel())) {
             throw new CommonException(LEVEL_NOT_MATCH);
+        }
+        return quartzTask;
+    }
+
+    @Override
+    public QuartzTaskDTO getQuartzTask(long id) {
+        QuartzTaskDTO quartzTask = taskMapper.selectByPrimaryKey(id);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
         }
         return quartzTask;
     }
@@ -395,6 +401,16 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         } catch (IOException e) {
             throw new CommonException("error.scheduleTask.createJsonIOException", e);
         }
+    }
+
+    @Override
+    public void deleteByIds(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        ids.forEach(id -> {
+            delete(id);
+        });
     }
 
     private QuartzTaskDTO getQuartzTaskByName(String name, String level, Long sourceId) {
@@ -457,25 +473,30 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     @Override
     public void delete(long id, String level, Long sourceId) {
         QuartzTaskDTO quartzTask = getQuartzTask(id, level, sourceId);
-        if (taskMapper.deleteByPrimaryKey(id) != 1) {
-            throw new CommonException("error.scheduleTask.deleteTaskFailed");
-        }
-        quartzJobService.removeJob(id);
-        LOGGER.info("delete job: {}", quartzTask);
+        baseDelete(id, quartzTask, "error.scheduleTask.deleteTaskFailed");
     }
 
+
+    @Override
+    public void delete(long id) {
+        QuartzTaskDTO quartzTask = getQuartzTask(id);
+        baseDelete(id, quartzTask, "error.scheduleTask.deleteTaskFailed");
+    }
 
     @Transactional
     @Override
     public void deleteByName(String name, String level, Long sourceId) {
         QuartzTaskDTO quartzTask = getQuartzTaskByName(name, level, sourceId);
-        if (taskMapper.deleteByPrimaryKey(quartzTask.getId()) != 1) {
-            throw new CommonException("error.scheduleTask.deleteTaskFailed.by.name");
-        }
-        quartzJobService.removeJob(quartzTask.getId());
-        LOGGER.info("delete job: {}", quartzTask);
+        baseDelete(quartzTask.getId(), quartzTask, "error.scheduleTask.deleteTaskFailed.by.name");
     }
 
+    private void baseDelete(long id, QuartzTaskDTO quartzTask, String s) {
+        if (taskMapper.deleteByPrimaryKey(id) != 1) {
+            throw new CommonException(s);
+        }
+        quartzJobService.removeJob(id);
+        LOGGER.info("delete job: {}", quartzTask);
+    }
 
     @Override
     public ResponseEntity<Page<QuartzTask>> pageQuery(PageRequest pageRequest, String status, String name, String description, String params, String level, Long sourceId) {
