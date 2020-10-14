@@ -44,7 +44,7 @@ public class ScheduleTaskController {
 
     @Permission(permissionWithin = true)
     @ApiOperation(value = "根据ids删除定时任务 -- 内部接口")
-    @DeleteMapping("/delete/")
+    @DeleteMapping("/delete/job")
     public ResponseEntity<Void> deleteByIds(
             @RequestBody List<Long> ids) {
         scheduleTaskService.deleteByIds(ids);
