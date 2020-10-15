@@ -89,4 +89,18 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
             column(name: 'CONCURRENT_LIMIT_POLICY', type: 'VARCHAR(32)')
         }
     }
+
+    changeSet(id: '2020-10-15-fix-saga-instance-data', author: 'xiangwang04@hand-china.com') {
+        sql("""
+            DELETE FROM asgard_saga_task_instance WHERE  SERVICE like '%choerodon%';
+            UPDATE asgard_saga_task_instance asti SET asti.SERVICE=replace(asti.SERVICE,'hzero','choerodon');
+            
+            DELETE FROM asgard_saga_task_instance WHERE SERVICE like 'prod%';
+            DELETE FROM asgard_saga_task_instance WHERE SERVICE like 'doc%';
+            DELETE FROM asgard_saga_task_instance WHERE SERVICE like 'code%';
+            UPDATE asgard_saga_task_instance asti SET asti.SERVICE=replace(asti.SERVICE,'hrds-prod-repo','prod-repo-service');
+            UPDATE asgard_saga_task_instance asti SET asti.SERVICE=replace(asti.SERVICE,'hrds-doc-repo','doc-repo-service');
+            UPDATE asgard_saga_task_instance asti SET asti.SERVICE=replace(asti.SERVICE,'hrds-code-repo','code-repo-service')
+        """)
+    }
 }
