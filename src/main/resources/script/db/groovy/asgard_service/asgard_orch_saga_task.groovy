@@ -74,4 +74,18 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
         dropUniqueConstraint(constraintName: 'UK_ASGARD_ORCH_SAGA_TASK_U1', tableName: 'ASGARD_ORCH_SAGA_TASK')
         addUniqueConstraint(tableName: 'ASGARD_ORCH_SAGA_TASK', columnNames: 'SAGA_CODE,CODE,SERVICE', constraintName: "UK_ASGARD_ORCH_SAGA_TASK_U1")
     }
+
+    changeSet(id: '2020-10-15-fix-asgard-task-data', author: 'xiangwang04@hand-china.com') {
+        sql("""
+            DELETE FROM asgard_orch_saga_task WHERE SERVICE like '%choerodon%';
+            UPDATE asgard_orch_saga_task aost SET aost.SERVICE=replace(aost.SERVICE,'hzero','choerodon');
+            
+            DELETE FROM asgard_orch_saga_task WHERE SERVICE like 'prod%';
+            DELETE FROM asgard_orch_saga_task WHERE SERVICE like 'doc%';
+            DELETE FROM asgard_orch_saga_task WHERE SERVICE like 'code%';
+            UPDATE asgard_orch_saga_task aost SET aost.SERVICE=replace(aost.SERVICE,'hrds-prod-repo','prod-repo-service');
+            UPDATE asgard_orch_saga_task aost SET aost.SERVICE=replace(aost.SERVICE,'hrds-doc-repo','doc-repo-service');
+            UPDATE asgard_orch_saga_task aost SET aost.SERVICE=replace(aost.SERVICE,'hrds-code-repo','code-repo-service')
+        """)
+    }
 }
