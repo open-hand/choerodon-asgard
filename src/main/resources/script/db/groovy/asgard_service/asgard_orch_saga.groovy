@@ -2,8 +2,8 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_orch_saga.groovy') {
     changeSet(id: '2018-07-04-create-table-asgard_orch_saga', author: 'jcalaz@163.com') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'ASGARD_ORCH_SAGA_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'ASGARD_ORCH_SAGA_S', startValue: "1")
         }
         createTable(tableName: "ASGARD_ORCH_SAGA") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
@@ -32,5 +32,18 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga.groovy') {
                 constraints(nullable: false)
             }
         }
+    }
+    changeSet(id: '2020-10-15-fix-asgard-data', author: 'xiangwang04@hand-china.com') {
+        sql("""
+           DELETE FROM asgard_orch_saga WHERE SERVICE like '%choerodon%';
+           UPDATE asgard_orch_saga aos SET aos.SERVICE=replace(aos.SERVICE,'hzero','choerodon');
+           
+           DELETE FROM asgard_orch_saga WHERE SERVICE like 'prod%';
+           DELETE FROM asgard_orch_saga WHERE SERVICE like 'doc%';
+           DELETE FROM asgard_orch_saga WHERE SERVICE like 'code%';
+           UPDATE asgard_orch_saga aos SET aos.SERVICE=replace(aos.SERVICE,'hrds-prod-repo','prod-repo-service');
+           UPDATE asgard_orch_saga aos SET aos.SERVICE=replace(aos.SERVICE,'hrds-doc-repo','doc-repo-service');
+           UPDATE asgard_orch_saga aos SET aos.SERVICE=replace(aos.SERVICE,'hrds-code-repo','code-repo-service')
+        """)
     }
 }

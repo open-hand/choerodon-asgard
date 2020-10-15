@@ -45,4 +45,18 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
             column(name: "FD_LEVEL", type: "VARCHAR(32)", defaultValue: "site", remarks: '层级', afterColumn: 'PARAMS')
         }
     }
+
+    changeSet(id: '2020-10-15-fix-quartz-method-data', author: 'xiangwang04@hand-china.com') {
+        sql("""
+           DELETE FROM asgard_quartz_method WHERE SERVICE like '%choerodon%';
+           UPDATE asgard_quartz_method aqm SET aqm.SERVICE=replace(aqm.SERVICE,'hzero','choerodon');
+           
+           DELETE FROM asgard_quartz_method WHERE SERVICE like 'prod%';
+           DELETE FROM asgard_quartz_method WHERE SERVICE like 'doc%';
+           DELETE FROM asgard_quartz_method WHERE SERVICE like 'code%';
+           UPDATE asgard_quartz_method aqm SET aqm.SERVICE=replace(aqm.SERVICE,'hrds-prod-repo','prod-repo-service');
+           UPDATE asgard_quartz_method aqm SET aqm.SERVICE=replace(aqm.SERVICE,'hrds-doc-repo','doc-repo-service');
+           UPDATE asgard_quartz_method aqm SET aqm.SERVICE=replace(aqm.SERVICE,'hrds-code-repo','code-repo-service')
+        """)
+    }
 }

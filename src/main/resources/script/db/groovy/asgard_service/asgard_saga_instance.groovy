@@ -67,8 +67,26 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
         dropIndex(indexName: "IDX_SOURCE_ID", tableName: "ASGARD_SAGA_INSTANCE")
 
         createIndex(indexName: "idx_asgard_saga_instace_source_id_fd_level", tableName: "ASGARD_SAGA_INSTANCE") {
-            column(name: "SOURCE_ID",type: 'BIGINT UNSIGNED')
-            column(name: "FD_LEVEL",type: 'VARCHAR(32)')
+            column(name: "SOURCE_ID", type: 'BIGINT UNSIGNED')
+            column(name: "FD_LEVEL", type: 'VARCHAR(32)')
         }
     }
+
+    changeSet(id: '2020-10-15-fix-saga-instance-data', author: 'xiangwang04@hand-china.com') {
+        sql("""
+             DELETE FROM asgard_saga_instance WHERE created_on like '%choerodon%';
+             UPDATE asgard_saga_instance asi SET asi.created_on=replace(asi.created_on,'hzero','choerodon');
+             
+              
+             DELETE FROM asgard_saga_instance WHERE created_on like 'prod%';
+             DELETE FROM asgard_saga_instance WHERE created_on like 'doc%';
+             DELETE FROM asgard_saga_instance WHERE created_on like 'code%';
+             UPDATE asgard_saga_instance asi SET asi.created_on=replace(asi.created_on,'hrds-prod-repo','prod-repo-service');
+             UPDATE asgard_saga_instance asi SET asi.created_on=replace(asi.created_on,'hrds-doc-repo','doc-repo-service');
+             UPDATE asgard_saga_instance asi SET asi.created_on=replace(asi.created_on,'hrds-code-repo','code-repo-service')
+             
+        """)
+    }
+
+
 }
