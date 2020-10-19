@@ -69,4 +69,7 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstanceDTO> 
     int deleteBatchByIds(@Param("ids") List<Long> ids);
 
     int deleteByOptions(@Param("time") Date time, @Param("retainFailed") boolean retainFailed);
+
+    String getTaskInstanceStatus(@Param("sourceId") String sourceId, @Param("sagaInstanceCode") String sagaInstanceCode);
+
 }

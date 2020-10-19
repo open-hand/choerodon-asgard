@@ -57,4 +57,8 @@ public interface IamFeignClient {
 
     @GetMapping("/system/setting")
     SysSettingVO getSetting();
+
+    @GetMapping(value = "/organizations/{organization_id}/projects/by_code")
+    ResponseEntity<ProjectDTO> getProjectByOrgIdAndCode(@PathVariable(name = "organization_id") Long organizationId,
+                                                        @RequestParam(name = "code") String code);
 }

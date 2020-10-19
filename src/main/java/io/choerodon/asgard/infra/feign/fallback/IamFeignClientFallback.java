@@ -75,4 +75,9 @@ public class IamFeignClientFallback implements IamFeignClient {
     public SysSettingVO getSetting() {
         throw new FeignException("error.feign.iam.getSetting");
     }
+
+    @Override
+    public ResponseEntity<ProjectDTO> getProjectByOrgIdAndCode(Long organizationId, String code) {
+        throw new FeignException("error.iam.queryProject.by.code");
+    }
 }
