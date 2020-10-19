@@ -61,6 +61,17 @@ public class SagaInstanceDetails {
         this.viewId = viewId;
     }
 
+    @ApiModelProperty("显示编码")
+    private String viewId;
+
+    public String getViewId() {
+        return viewId;
+    }
+
+    public void setViewId(String viewId) {
+        this.viewId = viewId;
+    }
+
     public Long getId() {
         return id;
     }
