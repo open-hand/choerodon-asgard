@@ -24,7 +24,7 @@ public class SagaCheckStatusController {
     @Autowired
     private SagaCheckStatusService sagaCheckStatusService;
 
-    @Permission(level = ResourceLevel.ORGANIZATION)
+    @Permission(permissionLogin = true)
     @GetMapping(value = "/project/{tenant_id}")
     @ApiOperation(value = "校验创项目的事务有没有执行成功")
     public ResponseEntity<Boolean> pagingQuery(@PathVariable(value = "tenant_id") Long tenantId,
