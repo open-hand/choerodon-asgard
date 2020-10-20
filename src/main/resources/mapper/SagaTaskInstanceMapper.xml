@@ -208,4 +208,28 @@
         </foreach>
     </delete>
 
+    <delete id="deleteByOptions">
+        DELETE
+        FROM asgard_saga_task_instance
+        <where>
+            CREATION_DATE <![CDATA[<]]> #{time}
+            <if test="retainFailed">
+                AND `status` != 'FAILED'
+            </if>
+        </where>
+    </delete>
+
+    <select id="getTaskInstanceStatus" resultType="java.lang.String">
+        SELECT
+            asi.`STATUS`
+        FROM
+            asgard_saga_instance asi
+        WHERE
+            asi.REF_ID =  #{sourceId}
+            AND asi.SAGA_CODE LIKE concat(
+                    concat('%',  #{sagaInstanceCode}),
+                    '%'
+            )
+    </select>
+
 </mapper>

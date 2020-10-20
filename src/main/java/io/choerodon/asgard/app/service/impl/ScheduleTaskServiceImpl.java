@@ -1,7 +1,23 @@
 package io.choerodon.asgard.app.service.impl;
 
+import java.io.IOException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.NoticeService;
@@ -34,22 +50,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.pagehelper.PageHelper;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ScheduleTaskServiceImpl implements ScheduleTaskService {
@@ -100,6 +100,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public QuartzTaskDTO create(final ScheduleTask dto, String level, Long sourceId) {
+        Assert.notNull(dto.getMethodId(), "error.methodId.is.null");
         if (dto.getStartTime() == null && dto.getStartTimeStr() != null) {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             ParsePosition pos = new ParsePosition(0);
@@ -333,7 +334,91 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     @Override
     public QuartzTaskDTO getQuartzTask(long id, String level, Long sourceId) {
+        QuartzTaskDTO quartzTask = getQuartzTask(id);
+        //不是当前源的任务
+        if (!sourceId.equals(quartzTask.getSourceId())) {
+            throw new CommonException(SOURCE_ID_NOT_MATCH);
+        }
+        if (!level.equals(quartzTask.getLevel())) {
+            throw new CommonException(LEVEL_NOT_MATCH);
+        }
+        return quartzTask;
+    }
+
+    @Override
+    public QuartzTaskDTO getQuartzTask(long id) {
         QuartzTaskDTO quartzTask = taskMapper.selectByPrimaryKey(id);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
+        }
+        return quartzTask;
+    }
+
+    @Override
+    public QuartzTaskDTO createByServiceCodeAndMethodCode(ScheduleTask dto, String sourceLevel, Long sourceId) {
+        Assert.notNull(dto.getServiceCode(), "error.serviceCode.is.null");
+        Assert.notNull(dto.getMethodCode(), "error.methodCode.is.null");
+
+        if (dto.getStartTime() == null && dto.getStartTimeStr() != null) {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            ParsePosition pos = new ParsePosition(0);
+            Date strToDate = formatter.parse(dto.getStartTimeStr(), pos);
+            dto.setStartTime(strToDate);
+        }
+        QuartzTaskDTO quartzTask = modelMapper.map(dto, QuartzTaskDTO.class);
+        QuartzMethodDTO record = new QuartzMethodDTO();
+        record.setService(dto.getServiceCode());
+        record.setCode(dto.getMethodCode());
+        QuartzMethodDTO method = methodMapper.selectOne(record);
+        validatorLevelAndQuartzMethod(sourceLevel, method);
+        try {
+            List<PropertyJobParam> propertyJobParams = objectMapper.readValue(method.getParams(), new TypeReference<List<PropertyJobParam>>() {
+            });
+            putDefaultParameter(propertyJobParams, dto, sourceLevel, sourceId);
+            quartzTask.setUserDetails(CommonUtils.getUserDetailsJson(objectMapper));
+            quartzTask.setExecuteMethod(method.getCode());
+            quartzTask.setId(null);
+            if (quartzTask.getStatus() == null || quartzTask.getStatus().equals("")) {
+                quartzTask.setStatus(QuartzDefinition.TaskStatus.ENABLE.name());
+            }
+            quartzTask.setExecuteParams(objectMapper.writeValueAsString(dto.getParams()));
+            quartzTask.setLevel(sourceLevel);
+            quartzTask.setSourceId(sourceId);
+            quartzTask.setExecuteStrategy(dto.getExecuteStrategy());
+            validExecuteParams(dto.getParams(), propertyJobParams);
+            if (taskMapper.insertSelective(quartzTask) != 1) {
+                throw new CommonException("error.scheduleTask.create");
+            }
+            QuartzTaskDTO db = taskMapper.selectByPrimaryKey(quartzTask.getId());
+
+            //插入通知对象失败需要回滚
+            List<QuartzTaskMemberDTO> noticeMembers = insertNoticeMember(dto, sourceLevel, quartzTask);
+            //发送通知失败不需要回滚,已捕获异常
+            noticeService.sendNotice(quartzTask, noticeMembers, "启用");
+            quartzJobService.addJob(db);
+            LOGGER.info("create job: {}", quartzTask);
+            return db;
+        } catch (IOException e) {
+            throw new CommonException("error.scheduleTask.createJsonIOException", e);
+        }
+    }
+
+    @Override
+    public void deleteByIds(List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
+        ids.forEach(id -> {
+            delete(id);
+        });
+    }
+
+    private QuartzTaskDTO getQuartzTaskByName(String name, String level, Long sourceId) {
+        QuartzTaskDTO quartzTaskDTO = new QuartzTaskDTO();
+        quartzTaskDTO.setName(name);
+        quartzTaskDTO.setLevel(level);
+        quartzTaskDTO.setSourceId(sourceId);
+        QuartzTaskDTO quartzTask = taskMapper.selectOne(quartzTaskDTO);
         if (quartzTask == null) {
             throw new CommonException(TASK_NOT_EXIST);
         }
@@ -388,8 +473,26 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     @Override
     public void delete(long id, String level, Long sourceId) {
         QuartzTaskDTO quartzTask = getQuartzTask(id, level, sourceId);
+        baseDelete(id, quartzTask, "error.scheduleTask.deleteTaskFailed");
+    }
+
+
+    @Override
+    public void delete(long id) {
+        QuartzTaskDTO quartzTask = getQuartzTask(id);
+        baseDelete(id, quartzTask, "error.scheduleTask.deleteTaskFailed");
+    }
+
+    @Transactional
+    @Override
+    public void deleteByName(String name, String level, Long sourceId) {
+        QuartzTaskDTO quartzTask = getQuartzTaskByName(name, level, sourceId);
+        baseDelete(quartzTask.getId(), quartzTask, "error.scheduleTask.deleteTaskFailed.by.name");
+    }
+
+    private void baseDelete(long id, QuartzTaskDTO quartzTask, String s) {
         if (taskMapper.deleteByPrimaryKey(id) != 1) {
-            throw new CommonException("error.scheduleTask.deleteTaskFailed");
+            throw new CommonException(s);
         }
         quartzJobService.removeJob(id);
         LOGGER.info("delete job: {}", quartzTask);

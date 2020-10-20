@@ -4,6 +4,7 @@ import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -33,4 +34,6 @@ public interface SagaInstanceService {
     Page<SagaInstanceDTO> statisticsFailureList(String level, Long sourceId, Integer date, PageRequest pageable);
 
     Map<String, Object> queryFailedByDate(String beginDate, String endDate);
+
+    List<SagaInstanceDetails> queryByRefTypeAndRefIds(String refType, List<String> refIds, String sagaCode);
 }

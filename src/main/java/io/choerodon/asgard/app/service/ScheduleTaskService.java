@@ -7,6 +7,7 @@ import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.property.PropertyTimedTask;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -22,6 +23,10 @@ public interface ScheduleTaskService {
     void disableByLevelAndSourceId(String level, long sourceId);
 
     void delete(long id, String level, Long sourceId);
+
+    void delete(long id);
+
+    void deleteByName(String name, String level, Long sourceId);
 
     void finish(long id);
 
@@ -49,5 +54,21 @@ public interface ScheduleTaskService {
      * @return
      */
     QuartzTaskDTO getQuartzTask(long id, String level, Long sourceId);
+    QuartzTaskDTO getQuartzTask(long id);
+    /**
+     * 根据serviceCode和methodCode创建定时任务
+     * @param dto
+     * @param sourceLevel
+     * @param sourceId
+     * @return
+     */
+    QuartzTaskDTO createByServiceCodeAndMethodCode(ScheduleTask dto, String sourceLevel, Long sourceId);
+
+    /**
+     * 批量删除定时任务
+     * @param ids
+     * @return
+     */
+    void deleteByIds(List<Long> ids);
 
 }

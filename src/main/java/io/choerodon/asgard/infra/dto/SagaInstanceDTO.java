@@ -1,14 +1,14 @@
 package io.choerodon.asgard.infra.dto;
 
 
+import java.util.Date;
+import javax.persistence.*;
+
+import org.hzero.starter.keyencrypt.core.Encrypt;
+
 import io.choerodon.mybatis.annotation.ModifyAudit;
 import io.choerodon.mybatis.annotation.VersionAudit;
 import io.choerodon.mybatis.domain.AuditDomain;
-
-import javax.persistence.*;
-import java.util.Date;
-
-import org.hzero.starter.keyencrypt.core.Encrypt;
 
 @VersionAudit
 @ModifyAudit
@@ -98,6 +98,7 @@ public class SagaInstanceDTO extends AuditDomain {
         this.status = status;
         this.startTime = startTime;
     }
+
     public SagaInstanceDTO(String sagaCode, String status, Date startTime, String level, Long sourceId) {
         this.sagaCode = sagaCode;
         this.status = status;
@@ -235,6 +236,7 @@ public class SagaInstanceDTO extends AuditDomain {
                 ", userDetails='" + userDetails + '\'' +
                 ", uuid='" + uuid + '\'' +
                 ", createdOn='" + createdOn + '\'' +
+                ", viewId='" + viewId + '\'' +
                 '}';
     }
 }

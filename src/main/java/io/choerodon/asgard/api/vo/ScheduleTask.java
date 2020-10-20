@@ -13,8 +13,13 @@ import java.util.Map;
 public class ScheduleTask {
     @Encrypt
     @ApiModelProperty(value = "执行任务方法id")
-    @NotNull(message = "error.scheduleTask.methodNull")
     private Long methodId;
+
+    @ApiModelProperty(value = "执行任务serviceCode")
+    private String serviceCode;
+
+    @ApiModelProperty(value = "执行任务methodCode")
+    private String methodCode;
 
     @ApiModelProperty(value = "输入参数的map形式")
     private Map<String, Object> params;
@@ -62,6 +67,22 @@ public class ScheduleTask {
 
     @ApiModelProperty(value = "用于feign传递时间，相差8小时,以后若解决可删除")
     private String startTimeStr;
+
+    public String getServiceCode() {
+        return serviceCode;
+    }
+
+    public void setServiceCode(String serviceCode) {
+        this.serviceCode = serviceCode;
+    }
+
+    public String getMethodCode() {
+        return methodCode;
+    }
+
+    public void setMethodCode(String methodCode) {
+        this.methodCode = methodCode;
+    }
 
     public NotifyUser getNotifyUser() {
         return notifyUser;
