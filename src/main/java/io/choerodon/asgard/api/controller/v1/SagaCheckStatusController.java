@@ -25,9 +25,9 @@ public class SagaCheckStatusController {
     private SagaCheckStatusService sagaCheckStatusService;
 
     @Permission(permissionLogin = true)
-    @GetMapping(value = "/project/{tenant_id}")
+    @GetMapping(value = "/project")
     @ApiOperation(value = "校验创项目的事务有没有执行成功")
-    public ResponseEntity<Boolean> pagingQuery(@PathVariable(value = "tenant_id") Long tenantId,
+    public ResponseEntity<Boolean> pagingQuery(@RequestParam(value = "tenant_id") Long tenantId,
                                                @RequestParam(value = "project_code") String projectCode) {
         return Results.success(sagaCheckStatusService.getCreateProjectSagaStatus(tenantId, projectCode));
     }
