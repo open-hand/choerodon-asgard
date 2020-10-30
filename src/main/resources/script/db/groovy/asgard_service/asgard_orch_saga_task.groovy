@@ -2,8 +2,8 @@ package script.db
 
 databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
     changeSet(id: '2018-07-04-create-table-asgard_orch_saga_task', author: 'jcalaz@163.com') {
-        if(helper.dbType().isSupportSequence()){
-            createSequence(sequenceName: 'ASGARD_ORCH_SAGA_TASK_S', startValue:"1")
+        if (helper.dbType().isSupportSequence()) {
+            createSequence(sequenceName: 'ASGARD_ORCH_SAGA_TASK_S', startValue: "1")
         }
         createTable(tableName: "ASGARD_ORCH_SAGA_TASK") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
@@ -15,7 +15,7 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
             column(name: 'CONCURRENT_LIMIT_NUM', type: 'INT UNSIGNED', remarks: '最大并发数', defaultValue: "1") {
                 constraints(nullable: false)
             }
-            column(name: 'CONCURRENT_LIMIT_POLICY', type: 'VARCHAR(32)', remarks: '并发策略。NONE,TYPE,TYPE_AND_ID', defaultValue: 'NONE'){
+            column(name: 'CONCURRENT_LIMIT_POLICY', type: 'VARCHAR(32)', remarks: '并发策略。NONE,TYPE,TYPE_AND_ID', defaultValue: 'NONE') {
                 constraints(nullable: false)
             }
             column(name: 'SAGA_CODE', type: 'VARCHAR(64)', remarks: 'saga标识') {
@@ -87,5 +87,11 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_saga_task.groovy') {
             UPDATE asgard_orch_saga_task aost SET aost.SERVICE=replace(aost.SERVICE,'hrds-doc-repo','doc-repo-service');
             UPDATE asgard_orch_saga_task aost SET aost.SERVICE=replace(aost.SERVICE,'hrds-code-repo','code-repo-service')
         """)
+    }
+
+    changeSet(id: '2020-10-30-add-failureCallbackMethod', author: 'scp') {
+        addColumn(tableName: 'ASGARD_ORCH_SAGA_TASK') {
+            column(name: "FAILURE_CALLBACK_METHOD", type: "VARCHAR(255)", defaultValue: "", remarks: '任务失败回调方法')
+        }
     }
 }

@@ -176,7 +176,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     }
 
     @Override
-    public void updateStatus(final SagaTaskInstanceStatus statusDTO) {
+    public String updateStatus(final SagaTaskInstanceStatus statusDTO) {
         LOGGER.info("<<<<<<<<<<<<<<<<<<<<<<<<<<更新执行状态>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         SagaTaskInstanceDTO taskInstance = taskInstanceMapper.selectByPrimaryKey(statusDTO.getId());
         if (taskInstance == null) {
@@ -204,6 +204,17 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             transactionManager.rollback(status);
             throw e;
         }
+        return taskInstance.getStatus();
+    }
+
+    @Override
+    public void updateStatusFailureCallback(Long sagaTaskInstanceId, String status) {
+        SagaTaskInstanceDTO taskInstance = taskInstanceMapper.selectByPrimaryKey(sagaTaskInstanceId);
+        if (taskInstance == null) {
+            throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
+        }
+        taskInstance.setFailureCallbackStatus(status);
+        taskInstanceMapper.updateByPrimaryKey(taskInstance);
     }
 
     private void updateStatusFailed(final SagaTaskInstanceDTO taskInstance, final SagaInstanceDTO instance, final String exeMsg, final boolean isForceFailed) {

@@ -40,6 +40,8 @@ public class SagaTaskDTO extends AuditDomain {
 
     private String outputSchemaSource;
 
+    private String failureCallbackMethod;
+
     public SagaTaskDTO(String code) {
         this.code = code;
     }
@@ -157,6 +159,14 @@ public class SagaTaskDTO extends AuditDomain {
         this.outputSchemaSource = outputSchemaSource;
     }
 
+    public String getFailureCallbackMethod() {
+        return failureCallbackMethod;
+    }
+
+    public void setFailureCallbackMethod(String failureCallbackMethod) {
+        this.failureCallbackMethod = failureCallbackMethod;
+    }
+
     @Override
     public String toString() {
         return "SagaTaskDTO{" +
@@ -172,6 +182,7 @@ public class SagaTaskDTO extends AuditDomain {
                 ", service='" + service + '\'' +
                 ", outputSchema='" + outputSchema + '\'' +
                 ", outputSchemaSource='" + outputSchemaSource + '\'' +
+                ", failureCallbackMethod='" + failureCallbackMethod + '\'' +
                 '}';
     }
 }

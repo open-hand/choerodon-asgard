@@ -103,4 +103,10 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_task_instance.groovy') {
             UPDATE asgard_saga_task_instance asti SET asti.SERVICE=replace(asti.SERVICE,'hrds-code-repo','code-repo-service')
         """)
     }
+
+    changeSet(id: '2020-10-30-add-column', author: 'scp') {
+        addColumn(tableName: 'ASGARD_SAGA_TASK_INSTANCE') {
+            column(name: 'FAILURE_CALLBACK_STATUS', type: 'VARCHAR(64)', remarks: '任务执行失败执行回调方法状态',defaultValue: "NONE")
+        }
+    }
 }
