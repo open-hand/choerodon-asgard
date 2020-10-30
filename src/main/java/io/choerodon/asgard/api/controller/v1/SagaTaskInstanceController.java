@@ -11,9 +11,12 @@ import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.ApiOperation;
+
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import org.hzero.core.util.Results;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -53,12 +56,22 @@ public class SagaTaskInstanceController {
     @PutMapping("/{id}/status")
     @ApiOperation(value = "内部接口。更新任务的执行状态")
     @Permission(permissionWithin = true)
-    public void updateStatus(
+    public ResponseEntity<String> updateStatus(
             @Encrypt
             @PathVariable Long id,
             @RequestBody @Valid SagaTaskInstanceStatus statusDTO) {
         statusDTO.setId(id);
-        sagaTaskInstanceService.updateStatus(statusDTO);
+        return Results.success(sagaTaskInstanceService.updateStatus(statusDTO));
+    }
+
+
+    @PutMapping("/{id}/status/failure_callback")
+    @ApiOperation(value = "内部接口。更新任务的执行状态 失败回调执行状态")
+    @Permission(permissionWithin = true)
+    public void updateStatusFailureCallback(
+            @PathVariable Long id,
+            @RequestParam String status) {
+         sagaTaskInstanceService.updateStatusFailureCallback(id, status);
     }
 
     @GetMapping("/{id}")
@@ -110,7 +123,7 @@ public class SagaTaskInstanceController {
                                                                   @RequestParam(required = false) String status,
                                                                   @RequestParam(required = false) String params,
                                                                   @ApiIgnore
-                                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
+                                                                  @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
         return sagaTaskInstanceService.pageQuery(pageRequest, taskInstanceCode, sagaInstanceCode, status, params, null, null);
     }
 }

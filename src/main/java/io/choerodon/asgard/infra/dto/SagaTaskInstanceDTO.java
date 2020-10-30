@@ -53,6 +53,8 @@ public class SagaTaskInstanceDTO extends AuditDomain {
 
     private String service;
 
+    private String failureCallbackStatus;
+
     public SagaTaskInstanceDTO(String taskCode, Long outputDataId) {
         this.taskCode = taskCode;
         this.outputDataId = outputDataId;
@@ -230,6 +232,14 @@ public class SagaTaskInstanceDTO extends AuditDomain {
     public SagaTaskInstanceDTO setService(String service) {
         this.service = service;
         return this;
+    }
+
+    public String getFailureCallbackStatus() {
+        return failureCallbackStatus;
+    }
+
+    public void setFailureCallbackStatus(String failureCallbackStatus) {
+        this.failureCallbackStatus = failureCallbackStatus;
     }
 
     @Override

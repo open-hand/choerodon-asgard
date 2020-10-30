@@ -7,6 +7,7 @@ import io.choerodon.asgard.api.vo.SagaTaskInstanceStatus;
 import io.choerodon.asgard.saga.dto.PollSagaTaskInstanceDTO;
 import io.choerodon.core.domain.Page;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
+
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -16,7 +17,9 @@ public interface SagaTaskInstanceService {
 
     Set<SagaTaskInstance> pollBatch(final PollSagaTaskInstanceDTO pollBatchDTO);
 
-    void updateStatus(SagaTaskInstanceStatus statusDTO);
+    String updateStatus(SagaTaskInstanceStatus statusDTO);
+
+    void updateStatusFailureCallback(Long sagaTaskInstanceId, String status);
 
     SagaTaskInstance query(long id);
 
