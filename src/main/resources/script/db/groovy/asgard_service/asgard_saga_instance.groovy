@@ -87,6 +87,10 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
              
         """)
     }
-
+    changeSet(id: '2020-10-15-add-index-asgard', author: 'xiangwang@hand-china.com') {
+        createIndex(tableName: "ASGARD_SAGA_INSTANCE", indexName: "IDX_SAGA_CODE") {
+            column(name: "SAGA_CODE", type: 'VARCHAR(64)')
+        }
+    }
 
 }
