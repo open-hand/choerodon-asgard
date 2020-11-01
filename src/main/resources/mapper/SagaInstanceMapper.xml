@@ -248,8 +248,6 @@
         SELECT
           asi.ID AS ID,
           any_value ( asi.SAGA_CODE ) AS SAGA_CODE,
-          any_value ( aos.DESCRIPTION ) AS DESCRIPTION,
-          any_value ( aos.SERVICE ) AS SERVICE,
           any_value ( asi.FD_LEVEL ) AS LEVEL,
           any_value ( asi.REF_TYPE ) AS REF_TYPE,
           any_value ( asi.REF_ID ) AS REF_ID,
@@ -263,11 +261,10 @@
           sum( CASE WHEN asti.STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END ) AS WAIT_TO_BE_PULLED_COUNT
         FROM
           asgard_saga_instance asi
-        LEFT JOIN asgard_orch_saga aos ON asi.SAGA_CODE = aos.
-          CODE LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
+        LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
         WHERE
-          asi.ref_type LIKE concat(concat('%',#{refType}),'%')
-        AND asi.saga_code LIKE concat(concat('%',#{sagaCode}),'%')
+          asi.ref_type= #{refType}
+        AND asi.saga_code= #{sagaCode}
         AND asi.ref_id IN
           <foreach item="id" collection="refIds" open="(" close=")" separator=",">
               #{id}
