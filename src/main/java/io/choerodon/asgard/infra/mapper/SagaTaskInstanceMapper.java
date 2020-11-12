@@ -5,6 +5,7 @@ import io.choerodon.asgard.api.vo.SagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstanceInfo;
 import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
 import io.choerodon.mybatis.common.BaseMapper;
+
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -71,5 +72,7 @@ public interface SagaTaskInstanceMapper extends BaseMapper<SagaTaskInstanceDTO> 
     int deleteByOptions(@Param("time") Date time, @Param("retainFailed") boolean retainFailed);
 
     String getTaskInstanceStatus(@Param("sourceId") String sourceId, @Param("sagaInstanceCode") String sagaInstanceCode);
+
+    List<SagaTaskInstanceDTO> queryLockedInstance(@Param("service") String service, @Param("instanceLock") String instanceLock);
 
 }

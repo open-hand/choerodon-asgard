@@ -49,6 +49,12 @@ public class SagaTaskInstanceV2Controller {
     @ApiOperation(value = "内部接口。拉取指定code的任务列表，并更新instance的值")
     public DeferredResult<ResponseEntity<Set<SagaTaskInstance>>> pollBatch(@RequestBody @Valid final PollSagaTaskInstanceDTO pollBatchDTO) {
         LOGGER.info("poll SagaTaskInstance from {}",pollBatchDTO.getService());
+        // 被锁住超过两小时的实例更新状态为失败
+        try {
+            sagaTaskInstanceService.failedLockedInstance(pollBatchDTO);
+        } catch (Exception e) {
+            LOGGER.warn("Failed to update the state of the locked execution timeout instance!!", e);
+        }
 
         if (pollBatchDTO.getMaxPollSize() == null) {
             pollBatchDTO.setMaxPollSize(500);

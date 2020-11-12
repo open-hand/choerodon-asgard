@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -390,5 +391,16 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     public List<PageSagaTaskInstance> queryByInstanceIdAndSeq(Long sagaInstanceId, Integer seq) {
         return taskInstanceMapper.selectAllBySagaInstanceId(sagaInstanceId).stream()
                 .filter(s -> s.getSeq().equals(seq)).collect(Collectors.toList());
+    }
+
+    @Override
+    public void failedLockedInstance(PollSagaTaskInstanceDTO pollBatchDTO) {
+        List<SagaTaskInstanceDTO> list = taskInstanceMapper.queryLockedInstance(pollBatchDTO.getService(), pollBatchDTO.getInstance());
+        if (!CollectionUtils.isEmpty(list)) {
+            list.forEach(t -> {
+                SagaTaskInstanceStatus statusDTO = new SagaTaskInstanceStatus(t.getId(), SagaDefinition.TaskInstanceStatus.FAILED.name(), null, "execution timeout");
+                updateStatus(statusDTO);
+            });
+        }
     }
 }

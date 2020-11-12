@@ -232,4 +232,19 @@
             )
     </select>
 
+    <select id="queryLockedInstance" resultType="io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO">
+        SELECT
+        asti.id,
+        asti.OBJECT_VERSION_NUMBER
+        FROM
+        asgard_saga_task_instance asti
+        WHERE
+        asti.SERVICE = #{service}
+        AND asti.instance_lock != #{instanceLock}
+        AND asti.`status` = 'RUNNING'
+        AND DATE_ADD(
+        asti.LAST_UPDATE_DATE,
+        INTERVAL 2 HOUR
+        ) &lt; NOW()
+    </select>
 </mapper>
