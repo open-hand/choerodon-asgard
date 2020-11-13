@@ -23,6 +23,9 @@ public class ScheduleTaskInstanceLog {
     @ApiModelProperty(value="实例Id")
     private String serviceInstanceId;
 
+    @ApiModelProperty(value="失败异常")
+    private String exceptionMessage;
+
     public Long getId() {
         return id;
     }
@@ -61,5 +64,13 @@ public class ScheduleTaskInstanceLog {
 
     public void setServiceInstanceId(String serviceInstanceId) {
         this.serviceInstanceId = serviceInstanceId;
+    }
+
+    public String getExceptionMessage() {
+        return exceptionMessage;
+    }
+
+    public void setExceptionMessage(String exceptionMessage) {
+        this.exceptionMessage = exceptionMessage;
     }
 }
