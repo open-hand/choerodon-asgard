@@ -399,6 +399,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         if (!CollectionUtils.isEmpty(list)) {
             list.forEach(t -> {
                 SagaTaskInstanceStatus statusDTO = new SagaTaskInstanceStatus(t.getId(), SagaDefinition.TaskInstanceStatus.FAILED.name(), null, "execution timeout");
+                statusDTO.setObjectVersionNumber(t.getObjectVersionNumber());
                 updateStatus(statusDTO);
             });
         }
