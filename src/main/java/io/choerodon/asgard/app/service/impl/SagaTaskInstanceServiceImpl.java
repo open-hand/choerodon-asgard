@@ -349,6 +349,10 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
 
     @Override
     public void forceFailed(long id) {
+        forceFailed(id, "manual force failed");
+    }
+
+    private void forceFailed(long id, String exeMsg) {
         SagaTaskInstanceDTO taskInstance = taskInstanceMapper.selectByPrimaryKey(id);
         if (taskInstance == null) {
             throw new FeignException(ERROR_CODE_TASK_INSTANCE_NOT_EXIST);
@@ -362,13 +366,14 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         TransactionStatus status = transactionManager.getTransaction(def);
         try {
-            updateStatusFailed(taskInstance, instance, "manual force failed", true);
+            updateStatusFailed(taskInstance, instance, exeMsg, true);
             transactionManager.commit(status);
         } catch (Exception e) {
             transactionManager.rollback(status);
             throw e;
         }
     }
+
 
     @Override
     public ResponseEntity<Page<SagaTaskInstanceInfo>> pageQuery(PageRequest pageable, String taskInstanceCode, String sagaInstanceCode, String status, String params, String level, Long sourceId) {
@@ -397,10 +402,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
     public void failedLockedInstance(PollSagaTaskInstanceDTO pollBatchDTO) {
         List<SagaTaskInstanceDTO> list = taskInstanceMapper.queryLockedInstance(pollBatchDTO.getService(), pollBatchDTO.getInstance());
         if (!CollectionUtils.isEmpty(list)) {
-            list.forEach(t -> {
-                SagaTaskInstanceStatus statusDTO = new SagaTaskInstanceStatus(t.getId(), SagaDefinition.TaskInstanceStatus.FAILED.name(), null, "execution timeout");
-                updateStatus(statusDTO);
-            });
+            list.forEach(t -> forceFailed(t.getId(), "execution timeout"));
         }
     }
 }
