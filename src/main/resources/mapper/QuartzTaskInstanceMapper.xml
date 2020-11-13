@@ -108,7 +108,8 @@
         concat(
         concat(tmp.SERVICE, ":"),
         aqti.INSTANCE_LOCK
-        ) AS serviceInstanceId
+        ) AS serviceInstanceId,
+        aqti.EXCEPTION_MESSAGE as exceptionMessage
         FROM
         asgard_quartz_task_instance aqti
         LEFT JOIN (
