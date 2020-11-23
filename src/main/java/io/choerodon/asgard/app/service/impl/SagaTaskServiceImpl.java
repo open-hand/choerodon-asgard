@@ -38,6 +38,7 @@ public class SagaTaskServiceImpl implements SagaTaskService {
                 if (sagaTaskMapper.insertSelective(i) != 1) {
                     LOGGER.error("insert saga task error: {}", i);
                 } else {
+                    dbTasks.add(i);
                     LOGGER.info("insert saga task: {}", i);
                 }
             } else {
