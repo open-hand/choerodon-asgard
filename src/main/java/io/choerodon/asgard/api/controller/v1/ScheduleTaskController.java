@@ -5,6 +5,7 @@ import javax.validation.Valid;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.hzero.core.util.Results;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,16 @@ public class ScheduleTaskController {
         return new ResponseEntity<>(scheduleTaskService.createByServiceCodeAndMethodCode(dto, sourceLevel, sourceId), HttpStatus.OK);
     }
 
+    @Permission(permissionWithin = true)
+    @ApiOperation(value = "根据name删除定时任务 -- 内部接口")
+    @DeleteMapping("/internal/delete")
+    public ResponseEntity deleteByTaskName(
+            @RequestParam("source_level") String sourceLevel,
+            @RequestParam("source_id") Long sourceId,
+            @RequestParam("task_name") String taskName) {
+        scheduleTaskService.deleteByTaskName(taskName, sourceLevel, sourceId);
+        return Results.success();
+    }
 
     @Permission(permissionWithin = true)
     @ApiOperation(value = "根据ids删除定时任务 -- 内部接口")
