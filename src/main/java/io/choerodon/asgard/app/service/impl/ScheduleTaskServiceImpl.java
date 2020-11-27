@@ -354,6 +354,19 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         return quartzTask;
     }
 
+    public QuartzTaskDTO getQuartzTask(String taskName, String level, Long sourceId) {
+        QuartzTaskDTO queryDTO = new QuartzTaskDTO();
+        queryDTO.setSourceId(sourceId);
+        queryDTO.setLevel(level);
+        queryDTO.setName(taskName);
+        QuartzTaskDTO quartzTask = taskMapper.selectOne(queryDTO);
+        if (quartzTask == null) {
+            throw new CommonException(TASK_NOT_EXIST);
+        }
+        return quartzTask;
+    }
+
+
     @Override
     public QuartzTaskDTO createByServiceCodeAndMethodCode(ScheduleTask dto, String sourceLevel, Long sourceId) {
         Assert.notNull(dto.getServiceCode(), "error.serviceCode.is.null");
@@ -481,6 +494,12 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     public void delete(long id) {
         QuartzTaskDTO quartzTask = getQuartzTask(id);
         baseDelete(id, quartzTask, "error.scheduleTask.deleteTaskFailed");
+    }
+
+    @Override
+    public void deleteByTaskName(String taskName, String level, Long sourceId) {
+        QuartzTaskDTO quartzTask = getQuartzTask(taskName, level, sourceId);
+        baseDelete(quartzTask.getId(), quartzTask, "error.scheduleTask.deleteTaskFailed");
     }
 
     @Transactional
