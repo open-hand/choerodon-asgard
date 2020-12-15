@@ -156,18 +156,4 @@ public class SagaInstanceController {
         return new ResponseEntity<>(sagaInstanceService.queryFailedByDate(beginDate, endDate), HttpStatus.OK);
     }
 
-    /**
-     * 内部接口，返回业务关联的id
-     */
-    @Permission(permissionWithin = true)
-    @ApiOperation(value = "根据业务类型，业务id查询实例")
-    @GetMapping("/ref/business/instance")
-    public ResponseEntity<List<SagaInstanceDetails>> queryByRefTypeAndRefIds(@RequestParam(value = "refType", required = true) String refType,
-                                                                             @RequestParam(value = "refIds", required = true) List<String> refIds,
-                                                                             @RequestParam(value = "sagaCode", required = true) String sagaCode) {
-        return ResponseEntity.ok(sagaInstanceService.queryByRefTypeAndRefIds(refType, refIds, sagaCode));
-
-    }
-
-
 }

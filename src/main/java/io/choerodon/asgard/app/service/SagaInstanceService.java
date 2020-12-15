@@ -35,5 +35,4 @@ public interface SagaInstanceService {
 
     Map<String, Object> queryFailedByDate(String beginDate, String endDate);
 
-    List<SagaInstanceDetails> queryByRefTypeAndRefIds(String refType, List<String> refIds, String sagaCode);
 }
