@@ -43,15 +43,29 @@
     <select id="fulltextSearchInstance" resultType="io.choerodon.asgard.api.vo.SagaInstanceDetails">
         SELECT
         asi.ID AS ID,
-        any_value(asi.SAGA_CODE) AS SAGA_CODE,
-        any_value(aos.DESCRIPTION) AS DESCRIPTION,
-        any_value(aos.SERVICE) AS SERVICE,
-        any_value(asi.FD_LEVEL) AS LEVEL,
-        any_value(asi.REF_TYPE) AS REF_TYPE,
-        any_value(asi.REF_ID) AS REF_ID,
-        any_value(asi.START_TIME) AS START_TIME,
-        any_value(asi.END_TIME) AS END_TIME,
-        any_value(asi.STATUS) AS STATUS,
+        asi.SAGA_CODE AS SAGA_CODE,
+        (
+        SELECT
+        aos.description
+        FROM
+        asgard_orch_saga aos
+        WHERE
+        aos. CODE = asi.SAGA_CODE
+        ) AS description,
+        (
+        SELECT
+        aos.service
+        FROM
+        asgard_orch_saga aos
+        WHERE
+        aos. CODE = asi.SAGA_CODE
+        ) AS service,
+        asi.FD_LEVEL AS LEVEL,
+        asi.REF_TYPE AS REF_TYPE,
+        asi.REF_ID AS REF_ID,
+        asi.START_TIME AS START_TIME,
+        asi.END_TIME AS END_TIME,
+        asi.STATUS AS STATUS,
         sum(CASE WHEN asti.STATUS = 'COMPLETED' THEN 1 ELSE 0 END) AS COMPLETED_COUNT,
         sum(CASE WHEN asti.STATUS = 'RUNNING' THEN 1 ELSE 0 END) AS RUNNING_COUNT,
         sum(CASE WHEN asti.STATUS = 'ROLLBACK' THEN 1 ELSE 0 END) AS ROLLBACK_COUNT,
@@ -59,7 +73,6 @@
         sum(CASE WHEN asti.STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END) AS WAIT_TO_BE_PULLED_COUNT
         FROM
         asgard_saga_instance asi
-        LEFT JOIN asgard_orch_saga aos ON asi.SAGA_CODE = aos. CODE
         LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
         WHERE 1 = 1
         <if test="level != null">
@@ -181,8 +194,22 @@
         SELECT
             asi.ID                                                             AS ID,
             asi.SAGA_CODE                                                      AS SAGA_CODE,
-            aos.DESCRIPTION                                                    AS DESCRIPTION,
-            aos.SERVICE                                                        as SERVICE,
+            (
+                SELECT
+                    aos.description
+                FROM
+                    asgard_orch_saga aos
+                WHERE
+                    aos. CODE = asi.SAGA_CODE
+            ) AS description,
+            (
+                SELECT
+                    aos.service
+                FROM
+                    asgard_orch_saga aos
+                WHERE
+                    aos. CODE = asi.SAGA_CODE
+            ) AS service,
             asi.FD_LEVEL                                                       AS LEVEL,
             asi.REF_TYPE                                                       AS REF_TYPE,
             asi.REF_ID                                                         AS REF_ID,
@@ -195,19 +222,10 @@
             sum(CASE WHEN asti.STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END) AS WAIT_TO_BE_PULLED_COUNT
         FROM
             asgard_saga_instance asi
-                LEFT JOIN asgard_orch_saga aos ON asi.SAGA_CODE = aos.CODE
                 LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
         WHERE asi.ID = #{id}
         GROUP BY
-            asi.id,
-            asi.SAGA_CODE,
-            aos.DESCRIPTION,
-            aos.SERVICE,
-            asi.FD_LEVEL,
-            asi.REF_TYPE,
-            asi.REF_ID,
-            asi.START_TIME,
-            asi.END_TIME
+            asi.id
     </select>
 
 
@@ -244,35 +262,5 @@
         </where>
     </delete>
 
-    <select id="queryByRefTypeAndRefIds" resultType="io.choerodon.asgard.api.vo.SagaInstanceDetails">
-        SELECT
-          asi.ID AS ID,
-          any_value ( asi.SAGA_CODE ) AS SAGA_CODE,
-          any_value ( asi.FD_LEVEL ) AS LEVEL,
-          any_value ( asi.REF_TYPE ) AS REF_TYPE,
-          any_value ( asi.REF_ID ) AS REF_ID,
-          any_value ( asi.START_TIME ) AS START_TIME,
-          any_value ( asi.END_TIME ) AS END_TIME,
-          any_value ( asi.STATUS ) AS STATUS,
-          sum( CASE WHEN asti.STATUS = 'COMPLETED' THEN 1 ELSE 0 END ) AS COMPLETED_COUNT,
-          sum( CASE WHEN asti.STATUS = 'RUNNING' THEN 1 ELSE 0 END ) AS RUNNING_COUNT,
-          sum( CASE WHEN asti.STATUS = 'ROLLBACK' THEN 1 ELSE 0 END ) AS ROLLBACK_COUNT,
-          sum( CASE WHEN asti.STATUS = 'FAILED' THEN 1 ELSE 0 END ) AS FAILED_COUNT,
-          sum( CASE WHEN asti.STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END ) AS WAIT_TO_BE_PULLED_COUNT
-        FROM
-          asgard_saga_instance asi
-        LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
-        WHERE
-          asi.ref_type= #{refType}
-        AND asi.saga_code= #{sagaCode}
-        AND asi.ref_id IN
-          <foreach item="id" collection="refIds" open="(" close=")" separator=",">
-              #{id}
-          </foreach>
-          GROUP BY
-          asi.id
-        ORDER BY
-          asi.id DESC
-    </select>
 
 </mapper>
