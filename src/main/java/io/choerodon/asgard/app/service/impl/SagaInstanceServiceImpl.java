@@ -238,6 +238,29 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         return instanceMapper.selectDetails(id);
     }
 
+
+    @Override
+    public List<SagaInstanceDetails> queryByRefTypeAndRefIds(String refType, List<String> refIds, String sagaCode) {
+        if (StringUtils.isEmpty(refType) || CollectionUtils.isEmpty(refIds)) {
+            return Collections.EMPTY_LIST;
+        }
+        //如果业务一样，取最新的
+        List<SagaInstanceDetails> instanceDetails = instanceMapper.queryByRefTypeAndRefIds(refType, refIds, sagaCode);
+        if (CollectionUtils.isEmpty(instanceDetails)) {
+            return Collections.EMPTY_LIST;
+        }
+        List<SagaInstanceDetails> sagaInstanceDetails = new ArrayList<>();
+        Map<String, List<SagaInstanceDetails>> listMap = instanceDetails.stream().collect(groupingBy(SagaInstanceDetails::getRefId));
+        for (Map.Entry<String, List<SagaInstanceDetails>> stringListEntry : listMap.entrySet()) {
+            if (stringListEntry.getValue().size() > 1) {
+                sagaInstanceDetails.add(stringListEntry.getValue().stream().sorted(Comparator.comparing(SagaInstanceDetails::getId).reversed()).collect(Collectors.toList()).get(0));
+            } else {
+                sagaInstanceDetails.add(stringListEntry.getValue().get(0));
+            }
+        }
+        return sagaInstanceDetails;
+    }
+
     @Override
     public Map<String, Object> queryFailedByDate(String beginDate, String endDate) {
         List<String> date = new ArrayList<>();
