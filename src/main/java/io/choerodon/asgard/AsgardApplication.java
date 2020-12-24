@@ -29,8 +29,7 @@ public class AsgardApplication {
         SpringApplication.run(AsgardApplication.class, args);
     }
 
-    @Bean
-    @Qualifier("notify-executor")
+    @Bean("notify-executor")
     public AsyncTaskExecutor asyncSendNoticeExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setThreadNamePrefix("notify-executor");

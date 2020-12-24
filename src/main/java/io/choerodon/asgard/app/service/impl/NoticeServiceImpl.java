@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import io.choerodon.asgard.api.vo.ProjectDTO;
 import io.choerodon.asgard.api.vo.RegistrantInfo;
 import io.choerodon.asgard.api.vo.User;
 import io.choerodon.asgard.api.vo.UserDTO;
@@ -21,7 +22,6 @@ import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.dto.QuartzTaskMemberDTO;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.infra.dto.payload.WebHookUser;
 import io.choerodon.asgard.infra.enums.BusinessTypeCode;
 import io.choerodon.asgard.infra.enums.MemberType;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
@@ -154,6 +154,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
+    @Async("notify-executor")
     public void sendSagaFailNotice(SagaInstanceDTO instance) {
         //捕获异常，以免影响saga一致性
         try {
@@ -189,11 +190,6 @@ public class NoticeServiceImpl implements NoticeService {
             messageSender.setReceiverAddressList(receiverList);
             messageSender.setArgs(argsMap);
 
-            //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
-            Map<String, Object> objectMap = new HashMap<>();
-            //发送组织层和项目层消息时必填 当前组织id
-            objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), instance.getSourceId());
-            messageSender.setAdditionalInformation(objectMap);
             messageClient.async().sendMessage(messageSender);
         } catch (Exception e) {
             LOGGER.error("saga instance fail send notice fail", e);
@@ -201,6 +197,40 @@ public class NoticeServiceImpl implements NoticeService {
 
     }
 
+    @Override
+    @Async("notify-executor")
+    public void sendSagaFailNoticeForTenant(SagaInstanceDTO instance) {
+        try {
+            if (!instance.getLevel().equals(ResourceLevel.SITE.value())) {
+                MessageSender messageSender = new MessageSender();
+                messageSender.setMessageCode(BusinessTypeCode.SAGA_INSTANCE_FAIL_ORG.value());
+                messageSender.setTenantId(0L);
+                Map<String, String> argsMap = new HashMap<>();
+                argsMap.put("sagaInstanceId", instance.getId().toString());
+                argsMap.put("sagaCode", instance.getSagaCode());
+                argsMap.put("level", instance.getLevel());
+                messageSender.setArgs(argsMap);
+                Map<String, Object> objectMap = new HashMap<>();
+                Long tenantId;
+                if (instance.getLevel().equals(ResourceLevel.ORGANIZATION.value())) {
+                    tenantId = instance.getSourceId();
+                } else {
+                    ProjectDTO projectDTO = iamFeignClient.queryProject(instance.getSourceId()).getBody();
+                    if (projectDTO == null) {
+                        return;
+                    }
+                    tenantId = projectDTO.getOrganizationId();
+                }
+                objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), tenantId);
+
+                messageSender.setAdditionalInformation(objectMap);
+                messageClient.async().sendMessage(messageSender);
+            }
+        } catch (Exception e) {
+            LOGGER.error("saga instance fail send notice fail for tenant", e);
+        }
+
+    }
 
     /**
      * 得到需要发送通知的所有用户
