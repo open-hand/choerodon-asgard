@@ -368,6 +368,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public QuartzTaskDTO createByServiceCodeAndMethodCode(ScheduleTask dto, String sourceLevel, Long sourceId) {
         Assert.notNull(dto.getServiceCode(), "error.serviceCode.is.null");
         Assert.notNull(dto.getMethodCode(), "error.methodCode.is.null");
@@ -511,7 +512,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     private void baseDelete(long id, QuartzTaskDTO quartzTask, String s) {
         if (taskMapper.deleteByPrimaryKey(id) != 1) {
-            LOGGER.warn("error.get.quartz.task:{}",id);
+            LOGGER.warn("error.get.quartz.task:{}", id);
         }
         quartzJobService.removeJob(id);
         LOGGER.info("delete job: {}", quartzTask);
