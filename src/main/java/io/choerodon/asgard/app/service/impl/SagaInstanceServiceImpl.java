@@ -249,6 +249,13 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         if (CollectionUtils.isEmpty(instanceDetails)) {
             return Collections.EMPTY_LIST;
         }
+        //填充sagaTask
+        instanceDetails.forEach(sagaInstanceDetails -> {
+            SagaTaskInstanceDTO sagaTaskInstanceDTO = new SagaTaskInstanceDTO();
+            sagaTaskInstanceDTO.setSagaInstanceId(sagaInstanceDetails.getId());
+            List<SagaTaskInstanceDTO> sagaTaskInstanceDTOS = taskInstanceMapper.select(sagaTaskInstanceDTO);
+            sagaInstanceDetails.setSagaTaskInstanceDTOS(sagaTaskInstanceDTOS);
+        });
         List<SagaInstanceDetails> sagaInstanceDetails = new ArrayList<>();
         Map<String, List<SagaInstanceDetails>> listMap = instanceDetails.stream().collect(groupingBy(SagaInstanceDetails::getRefId));
         for (Map.Entry<String, List<SagaInstanceDetails>> stringListEntry : listMap.entrySet()) {

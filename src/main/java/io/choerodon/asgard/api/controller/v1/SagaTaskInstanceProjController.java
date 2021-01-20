@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 
+import java.util.List;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -77,6 +78,15 @@ public class SagaTaskInstanceProjController {
             @Encrypt
             @PathVariable Long id) {
         sagaTaskInstanceService.retry(id);
+    }
+
+    @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
+    @ApiOperation(value = "重试失败的任务集合")
+    @PutMapping("/retry")
+    public void retrySagaTask(
+            @PathVariable("project_id") Long projectId,
+            @Encrypt @RequestBody List<Long> ids) {
+        sagaTaskInstanceService.retrySagaTask(projectId, ids);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})

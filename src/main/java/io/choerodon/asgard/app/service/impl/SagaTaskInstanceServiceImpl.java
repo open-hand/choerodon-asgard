@@ -405,4 +405,10 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             list.forEach(t -> forceFailed(t.getId(), "execution timeout"));
         }
     }
+
+    @Override
+    public void retrySagaTask(Long projectId, List<Long> ids) {
+        if (CollectionUtils.isEmpty(ids)) return;
+        ids.forEach(this::retry);
+    }
 }
