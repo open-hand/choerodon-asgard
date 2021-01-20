@@ -4,7 +4,10 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 import org.hzero.starter.keyencrypt.core.Encrypt;
+
+import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
 
 public class SagaInstanceDetails {
     @Encrypt
@@ -50,8 +53,13 @@ public class SagaInstanceDetails {
     private Integer failedCount;
     @ApiModelProperty(value = "实例下等待被拉取里的任务个数")
     private Integer waitToBePulledCount;
+    @ApiModelProperty(value = "实例下排队任务个数")
+    private Integer queueCount;
     @ApiModelProperty("显示编码")
     private String viewId;
+
+    @ApiModelProperty(value = "实例下的任务")
+    private List<SagaTaskInstanceDTO>  sagaTaskInstanceDTOS;
 
     public String getViewId() {
         return viewId;
@@ -179,5 +187,21 @@ public class SagaInstanceDetails {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getQueueCount() {
+        return queueCount;
+    }
+
+    public void setQueueCount(Integer queueCount) {
+        this.queueCount = queueCount;
+    }
+
+    public List<SagaTaskInstanceDTO> getSagaTaskInstanceDTOS() {
+        return sagaTaskInstanceDTOS;
+    }
+
+    public void setSagaTaskInstanceDTOS(List<SagaTaskInstanceDTO> sagaTaskInstanceDTOS) {
+        this.sagaTaskInstanceDTOS = sagaTaskInstanceDTOS;
     }
 }

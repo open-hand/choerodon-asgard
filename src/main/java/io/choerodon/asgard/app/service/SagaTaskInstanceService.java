@@ -43,7 +43,10 @@ public interface SagaTaskInstanceService {
 
     /**
      * 被锁住超过两小时的实例更新状态为失败
+     *
      * @param pollBatchDTO
      */
     void failedLockedInstance(PollSagaTaskInstanceDTO pollBatchDTO);
+
+    void retrySagaTask(Long projectId, List<Long> ids);
 }
