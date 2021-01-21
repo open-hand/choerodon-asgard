@@ -93,4 +93,7 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
         }
     }
 
+    changeSet(author: 'scp', id: '2021-01-20-modify-index') {
+        dropIndex(indexName: "IDX_CREATION_DATE", tableName: "ASGARD_SAGA_INSTANCE")
+    }
 }
