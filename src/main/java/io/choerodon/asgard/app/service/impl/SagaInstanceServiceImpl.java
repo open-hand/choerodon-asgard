@@ -13,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,14 +25,9 @@ import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.service.JsonDataService;
 import io.choerodon.asgard.app.service.SagaInstanceService;
-import io.choerodon.asgard.infra.dto.JsonDataDTO;
-import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
-import io.choerodon.asgard.infra.dto.SagaTaskDTO;
-import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
-import io.choerodon.asgard.infra.mapper.JsonDataMapper;
-import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
-import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
-import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
+import io.choerodon.asgard.app.service.SagaService;
+import io.choerodon.asgard.infra.dto.*;
+import io.choerodon.asgard.infra.mapper.*;
 import io.choerodon.asgard.infra.utils.CommonUtils;
 import io.choerodon.asgard.infra.utils.ParamUtils;
 import io.choerodon.asgard.saga.SagaDefinition;
@@ -62,6 +58,11 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
     private JsonDataMapper jsonDataMapper;
     private JsonDataService jsonDataService;
     private SagaInstanceEventPublisher sagaInstanceEventPublisher;
+
+    @Autowired
+    private SagaService sagaService;
+    @Autowired
+    private SagaMapper sagaMapper;
 
     public SagaInstanceServiceImpl(SagaTaskMapper taskMapper,
                                    SagaInstanceMapper instanceMapper,
@@ -249,12 +250,23 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         if (CollectionUtils.isEmpty(instanceDetails)) {
             return Collections.EMPTY_LIST;
         }
+        //填充saga的定义步骤流程
+        SagaDTO sagaDTO = new SagaDTO();
+        sagaDTO.setCode(sagaCode);
+        SagaDTO dto = sagaMapper.selectOne(sagaDTO);
+        if (Objects.isNull(dto)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        SagaWithTask sagaWithTask = sagaService.query(dto.getId()).getBody();
+
         //填充sagaTask
         instanceDetails.forEach(sagaInstanceDetails -> {
             SagaTaskInstanceDTO sagaTaskInstanceDTO = new SagaTaskInstanceDTO();
             sagaTaskInstanceDTO.setSagaInstanceId(sagaInstanceDetails.getId());
             List<SagaTaskInstanceDTO> sagaTaskInstanceDTOS = taskInstanceMapper.select(sagaTaskInstanceDTO);
             sagaInstanceDetails.setSagaTaskInstanceDTOS(sagaTaskInstanceDTOS);
+            sagaInstanceDetails.setAllTask(!Objects.isNull(sagaWithTask) && !CollectionUtils.isEmpty(sagaWithTask.getTasks()) ? sagaWithTask.getTasks().size() : 0);
         });
         List<SagaInstanceDetails> sagaInstanceDetails = new ArrayList<>();
         Map<String, List<SagaInstanceDetails>> listMap = instanceDetails.stream().collect(groupingBy(SagaInstanceDetails::getRefId));
