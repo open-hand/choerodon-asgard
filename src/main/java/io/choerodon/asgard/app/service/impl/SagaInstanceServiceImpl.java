@@ -266,7 +266,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             sagaTaskInstanceDTO.setSagaInstanceId(sagaInstanceDetails.getId());
             List<SagaTaskInstanceDTO> sagaTaskInstanceDTOS = taskInstanceMapper.select(sagaTaskInstanceDTO);
             sagaInstanceDetails.setSagaTaskInstanceDTOS(sagaTaskInstanceDTOS);
-            sagaInstanceDetails.setAllTask(!Objects.isNull(sagaWithTask) && !CollectionUtils.isEmpty(sagaWithTask.getTasks()) ? sagaWithTask.getTasks().size() : 0);
+            sagaInstanceDetails.setAllTask(getAllTask(sagaWithTask));
         });
         List<SagaInstanceDetails> sagaInstanceDetails = new ArrayList<>();
         Map<String, List<SagaInstanceDetails>> listMap = instanceDetails.stream().collect(groupingBy(SagaInstanceDetails::getRefId));
@@ -278,6 +278,13 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             }
         }
         return sagaInstanceDetails;
+    }
+
+    private Integer getAllTask(SagaWithTask sagaWithTask) {
+        if (Objects.isNull(sagaWithTask) || CollectionUtils.isEmpty(sagaWithTask.getTasks())) {
+            return 0;
+        }
+        return sagaWithTask.getTasks().stream().map(List::size).reduce((integer, integer2) -> integer + integer2).orElseGet(() -> 0);
     }
 
     @Override
