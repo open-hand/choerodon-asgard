@@ -257,16 +257,18 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         if (Objects.isNull(dto)) {
             return Collections.EMPTY_LIST;
         }
-
         SagaWithTask sagaWithTask = sagaService.query(dto.getId()).getBody();
 
-        //填充sagaTask
+        //铺平定义
+        List<String> sagaTaskList = getSagaTaskList(sagaWithTask).stream().map(SagaTask::getCode).collect(Collectors.toList());
         instanceDetails.forEach(sagaInstanceDetails -> {
             SagaTaskInstanceDTO sagaTaskInstanceDTO = new SagaTaskInstanceDTO();
             sagaTaskInstanceDTO.setSagaInstanceId(sagaInstanceDetails.getId());
             List<SagaTaskInstanceDTO> sagaTaskInstanceDTOS = taskInstanceMapper.select(sagaTaskInstanceDTO);
-            sagaInstanceDetails.setSagaTaskInstanceDTOS(sagaTaskInstanceDTOS);
-            sagaInstanceDetails.setAllTask(getAllTask(sagaWithTask));
+            //这里需要剔除定义里面查不到的code
+            List<SagaTaskInstanceDTO> taskInstanceDTOS = sagaTaskInstanceDTOS.stream().filter(sagaTaskInstanceDTO1 -> sagaTaskList.contains(sagaTaskInstanceDTO1.getTaskCode())).collect(Collectors.toList());
+            sagaInstanceDetails.setSagaTaskInstanceDTOS(taskInstanceDTOS);
+            sagaInstanceDetails.setAllTask(taskInstanceDTOS.size());
         });
         List<SagaInstanceDetails> sagaInstanceDetails = new ArrayList<>();
         Map<String, List<SagaInstanceDetails>> listMap = instanceDetails.stream().collect(groupingBy(SagaInstanceDetails::getRefId));
@@ -286,6 +288,19 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         }
         return sagaWithTask.getTasks().stream().map(List::size).reduce((integer, integer2) -> integer + integer2).orElseGet(() -> 0);
     }
+
+    private List<SagaTask> getSagaTaskList(SagaWithTask sagaWithTask) {
+        List<SagaTask> sagaTasks = new ArrayList<>();
+        if (Objects.isNull(sagaWithTask) || CollectionUtils.isEmpty(sagaWithTask.getTasks())) {
+            return Collections.EMPTY_LIST;
+        }
+
+        sagaWithTask.getTasks().forEach(tasks -> {
+            sagaTasks.addAll(tasks);
+        });
+        return sagaTasks;
+    }
+
 
     @Override
     public Map<String, Object> queryFailedByDate(String beginDate, String endDate) {
