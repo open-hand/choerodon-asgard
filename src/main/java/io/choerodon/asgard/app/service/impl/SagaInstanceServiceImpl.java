@@ -268,7 +268,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
             //这里需要剔除定义里面查不到的code
             List<SagaTaskInstanceDTO> taskInstanceDTOS = sagaTaskInstanceDTOS.stream().filter(sagaTaskInstanceDTO1 -> sagaTaskList.contains(sagaTaskInstanceDTO1.getTaskCode())).collect(Collectors.toList());
             sagaInstanceDetails.setSagaTaskInstanceDTOS(taskInstanceDTOS);
-            sagaInstanceDetails.setAllTask(taskInstanceDTOS.size());
+            sagaInstanceDetails.setAllTask(sagaTaskList.size());
         });
         List<SagaInstanceDetails> sagaInstanceDetails = new ArrayList<>();
         Map<String, List<SagaInstanceDetails>> listMap = instanceDetails.stream().collect(groupingBy(SagaInstanceDetails::getRefId));
