@@ -15,6 +15,8 @@ public interface NoticeService {
 
     void sendSagaFailNotice(final SagaInstanceDTO sagaInstance);
 
+    void sendSagaFailNoticeForTenant(final SagaInstanceDTO sagaInstance);
+
     void registerOrgFailNotice(final SagaTaskInstanceDTO sagaTaskInstance, final SagaInstanceDTO sagaInstance);
 
 }

@@ -237,6 +237,8 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             if (instance.getCreatedBy() != 0) {
                 noticeService.sendSagaFailNotice(instance);
             }
+            // 组织层webhook发送
+            noticeService.sendSagaFailNoticeForTenant(instance);
             //如果已重试次数 < 最大重试次数，则增加重试次数
         } else {
             taskInstanceMapper.increaseRetriedCount(taskInstance.getId());
