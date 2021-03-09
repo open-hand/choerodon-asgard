@@ -171,6 +171,7 @@
         </if>
         AND asi.CREATION_DATE &gt; #{startTime}
         AND asi.CREATION_DATE &lt;  #{endTime}
+        ORDER by asi.CREATION_DATE DESC
     </select>
 
     <select id="selectFailedTimes" resultType="java.util.Map">
