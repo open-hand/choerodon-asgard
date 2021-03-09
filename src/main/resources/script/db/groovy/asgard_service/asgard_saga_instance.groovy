@@ -96,4 +96,10 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
     changeSet(author: 'scp', id: '2021-01-20-modify-index') {
         dropIndex(indexName: "IDX_CREATION_DATE", tableName: "ASGARD_SAGA_INSTANCE")
     }
+
+    changeSet(id: '2021-03-09-create-index-IDX_CREATION_DATE', author: 'scp') {
+        createIndex(tableName: "ASGARD_SAGA_INSTANCE", indexName: "IDX_CREATION_DATE") {
+            column(name: "CREATION_DATE", type: "DATETIME")
+        }
+    }
 }
