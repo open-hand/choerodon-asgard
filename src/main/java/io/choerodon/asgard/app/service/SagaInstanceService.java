@@ -21,7 +21,7 @@ public interface SagaInstanceService {
     void cancel(String uuid);
 
 
-    ResponseEntity<Page<SagaInstanceDetails>> pageQuery(PageRequest pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId);
+    ResponseEntity<Page<SagaInstanceDetails>> pageQuery(PageRequest pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId, Long id);
 
     SagaWithTaskInstance query(Long id);
 

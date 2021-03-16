@@ -84,6 +84,9 @@
         <if test="sagaCode != null">
             AND concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{sagaCode}),'%')
         </if>
+        <if test="id != null and  id != 0">
+            AND asi.ID=#{id}
+        </if>
         <if test="status != null">
             <choose>
                 <when test="status == 'COMPLETED'">
