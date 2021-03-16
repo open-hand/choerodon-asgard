@@ -13,6 +13,7 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.choerodon.swagger.annotation.Permission;
+
 import io.swagger.annotations.ApiOperation;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
@@ -54,8 +55,9 @@ public class SagaInstanceOrgController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String refType,
             @RequestParam(required = false) String refId,
-            @RequestParam(required = false) String params) {
-        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId);
+            @RequestParam(required = false) String params,
+            @RequestParam(required = false) Long id) {
+        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId, id);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
