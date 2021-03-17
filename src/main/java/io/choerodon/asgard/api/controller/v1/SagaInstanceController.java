@@ -14,6 +14,7 @@ import io.choerodon.swagger.annotation.Permission;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import java.util.Optional;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -106,7 +107,11 @@ public class SagaInstanceController {
                                                                  @RequestParam(required = false) String refId,
                                                                  @RequestParam(required = false) String params,
                                                                  @RequestParam(required = false) String searchId) {
-        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, null, null, Long.valueOf(searchId));
+        Long searchIdNum = null;
+        if (!StringUtils.isEmpty(searchId)) {
+            searchIdNum = Long.valueOf(searchId);
+        }
+        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, null, null, searchIdNum);
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
