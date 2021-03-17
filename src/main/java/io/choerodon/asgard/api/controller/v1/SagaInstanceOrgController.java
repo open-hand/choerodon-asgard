@@ -56,8 +56,8 @@ public class SagaInstanceOrgController {
             @RequestParam(required = false) String refType,
             @RequestParam(required = false) String refId,
             @RequestParam(required = false) String params,
-            @RequestParam(required = false) Long id) {
-        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId, id);
+            @RequestParam(required = false) Long searchId) {
+        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, ResourceLevel.ORGANIZATION.value(), orgId, searchId);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR})
