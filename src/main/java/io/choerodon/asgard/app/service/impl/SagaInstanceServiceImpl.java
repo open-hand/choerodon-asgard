@@ -143,7 +143,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                 () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId, id));
         sagaInstanceDetailsPage.getContent().forEach(i -> {
             i.setViewId(ParamUtils.handId(i.getId()));
-            i.setSearchId(i.getId());
+            i.setSearchId(String.valueOf(i.getId()));
         });
         return new ResponseEntity<>(sagaInstanceDetailsPage, HttpStatus.OK);
     }
