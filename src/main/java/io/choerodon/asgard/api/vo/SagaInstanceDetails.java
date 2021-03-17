@@ -63,6 +63,18 @@ public class SagaInstanceDetails {
     @ApiModelProperty(value = "事务定义的任务")
     private Integer allTask;
 
+    @ApiModelProperty(value = "显示的编号id,可以检索，不加密")
+    private Long searchId;
+    
+
+    public Long getSearchId() {
+        return searchId;
+    }
+
+    public void setSearchId(Long searchId) {
+        this.searchId = searchId;
+    }
+
     public Integer getAllTask() {
         return allTask;
     }
