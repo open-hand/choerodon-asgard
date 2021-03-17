@@ -56,7 +56,11 @@ public class SagaInstanceProjectController {
             @RequestParam(required = false) String searchId,
             @ApiIgnore
             @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest) {
-        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, ResourceLevel.PROJECT.value(), projectId, Long.valueOf(searchId));
+        Long searchIdNum = null;
+        if (!StringUtils.isEmpty(searchId)) {
+            searchIdNum = Long.valueOf(searchId);
+        }
+        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, ResourceLevel.PROJECT.value(), projectId, searchIdNum);
     }
 
     @Permission(level = ResourceLevel.ORGANIZATION, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_ADMINISTRATOR, InitRoleCode.PROJECT_MEMBER})
