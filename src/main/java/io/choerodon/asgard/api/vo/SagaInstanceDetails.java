@@ -64,14 +64,14 @@ public class SagaInstanceDetails {
     private Integer allTask;
 
     @ApiModelProperty(value = "显示的编号id,可以检索，不加密")
-    private Long searchId;
-    
+    private String searchId;
 
-    public Long getSearchId() {
+
+    public String getSearchId() {
         return searchId;
     }
 
-    public void setSearchId(Long searchId) {
+    public void setSearchId(String searchId) {
         this.searchId = searchId;
     }
 

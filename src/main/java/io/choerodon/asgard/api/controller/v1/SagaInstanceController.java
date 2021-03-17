@@ -105,8 +105,8 @@ public class SagaInstanceController {
                                                                  @RequestParam(required = false) String refType,
                                                                  @RequestParam(required = false) String refId,
                                                                  @RequestParam(required = false) String params,
-                                                                 @RequestParam(required = false) Long searchId) {
-        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, null, null, searchId);
+                                                                 @RequestParam(required = false) String searchId) {
+        return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, null, null, Long.valueOf(searchId));
     }
 
     @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
