@@ -3,6 +3,7 @@ package io.choerodon.asgard.app.service.impl;
 import io.choerodon.asgard.app.service.SagaTaskService;
 import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class SagaTaskServiceImpl implements SagaTaskService {
         SagaTaskDTO serviceSagaTask = new SagaTaskDTO();
         serviceSagaTask.setService(service);
         List<SagaTaskDTO> dbTasks = sagaTaskMapper.select(serviceSagaTask);
+        List<SagaTaskDTO> updateDbTask = new ArrayList<>();
+        updateDbTask.addAll(dbTasks);
         sagaTaskList.forEach(i -> {
             if (StringUtils.isEmpty(i.getCode()) || StringUtils.isEmpty(i.getService()) || i.getSeq() == null) {
                 return;
@@ -50,7 +53,7 @@ public class SagaTaskServiceImpl implements SagaTaskService {
                 }
             }
         });
-        disableSagaTask(dbTasks, copyTaskList);
+        disableSagaTask(updateDbTask, copyTaskList);
     }
 
     private void disableSagaTask(final List<SagaTaskDTO> dbTasks, final List<SagaTaskDTO> sagaTaskList) {
