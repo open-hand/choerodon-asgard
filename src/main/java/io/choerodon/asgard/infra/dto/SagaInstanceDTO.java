@@ -53,6 +53,16 @@ public class SagaInstanceDTO extends AuditDomain {
 
     @Transient
     private String viewId;
+    @Transient
+    private Long searchId;
+
+    public Long getSearchId() {
+        return searchId;
+    }
+
+    public void setSearchId(Long searchId) {
+        this.searchId = searchId;
+    }
 
     public String getViewId() {
         return viewId;

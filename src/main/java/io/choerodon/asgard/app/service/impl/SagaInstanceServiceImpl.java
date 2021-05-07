@@ -232,6 +232,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
         pageInfo.getContent().forEach(i -> {
             i.setViewId(ParamUtils.handId(i.getId()));
+            i.setSearchId(i.getId());
         });
 
         return pageInfo;
