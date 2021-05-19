@@ -1,11 +1,11 @@
 package io.choerodon.asgard.app.service;
 
+import java.util.List;
+
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.dto.QuartzTaskMemberDTO;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
 import io.choerodon.asgard.infra.dto.SagaTaskInstanceDTO;
-
-import java.util.List;
 
 /**
  * @author dengyouquan
@@ -16,6 +16,8 @@ public interface NoticeService {
     void sendSagaFailNotice(final SagaInstanceDTO sagaInstance);
 
     void sendSagaFailNoticeForTenant(final SagaInstanceDTO sagaInstance);
+
+    void sendSagaFailNoticeForVindicator(SagaInstanceDTO instance);
 
     void registerOrgFailNotice(final SagaTaskInstanceDTO sagaTaskInstance, final SagaInstanceDTO sagaInstance);
 
