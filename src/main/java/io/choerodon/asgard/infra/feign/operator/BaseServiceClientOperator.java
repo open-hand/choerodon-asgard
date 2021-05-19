@@ -1,7 +1,7 @@
 package io.choerodon.asgard.infra.feign.operator;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.Gson;
+
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import io.choerodon.asgard.api.vo.Organization;
 import io.choerodon.asgard.api.vo.ProjectDTO;
 import io.choerodon.asgard.api.vo.User;
 import io.choerodon.asgard.infra.feign.IamFeignClient;
@@ -26,11 +27,21 @@ public class BaseServiceClientOperator {
 
 
     @Autowired
-    private IamFeignClient baseServiceClient;
+    private IamFeignClient iamFeignClient;
 
+    public Organization queryTenantById(Long tenantId) {
+        ResponseEntity<Organization> responseEntity = iamFeignClient.queryOrganization(tenantId);
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            Organization organization = responseEntity.getBody();
+            if (organization != null) {
+                return organization;
+            }
+        }
+        throw new CommonException("error.iam.query.tenant.by.id");
+    }
 
     public List<User> getUserByIds(Long[] userIds) {
-        ResponseEntity<List<User>> listUsersByIds = baseServiceClient.listUsersByIds(userIds);
+        ResponseEntity<List<User>> listUsersByIds = iamFeignClient.listUsersByIds(userIds);
         if (listUsersByIds.getStatusCode().is2xxSuccessful()) {
             List<User> users = listUsersByIds.getBody();
             if (users != null) {
@@ -44,7 +55,7 @@ public class BaseServiceClientOperator {
     }
 
     public ProjectDTO getProjectByOrgIdAndCode(Long organizationId, String code) {
-        ResponseEntity<ProjectDTO> projectDTORes = baseServiceClient.getProjectByOrgIdAndCode(organizationId, code);
+        ResponseEntity<ProjectDTO> projectDTORes = iamFeignClient.getProjectByOrgIdAndCode(organizationId, code);
         if (projectDTORes.getStatusCode().is2xxSuccessful()) {
             ProjectDTO projectDTO = projectDTORes.getBody();
             if (projectDTO != null) {

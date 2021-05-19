@@ -1,7 +1,30 @@
 package io.choerodon.asgard.app.service.impl;
 
+import static io.choerodon.asgard.app.service.impl.SagaInstanceServiceImpl.DB_ERROR;
+import static io.choerodon.asgard.app.service.impl.SagaInstanceServiceImpl.ERROR_CODE_SAGA_INSTANCE_NOT_EXIST;
+import static java.util.stream.Collectors.groupingBy;
+import static org.springframework.transaction.TransactionDefinition.ISOLATION_READ_UNCOMMITTED;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import io.choerodon.asgard.api.vo.PageSagaTaskInstance;
 import io.choerodon.asgard.api.vo.SagaTaskInstance;
@@ -26,35 +49,7 @@ import io.choerodon.core.domain.Page;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.exception.FeignException;
 import io.choerodon.mybatis.pagehelper.PageHelper;
-
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.choerodon.mybatis.pagehelper.domain.PageRequest;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import static io.choerodon.asgard.app.service.impl.SagaInstanceServiceImpl.DB_ERROR;
-import static io.choerodon.asgard.app.service.impl.SagaInstanceServiceImpl.ERROR_CODE_SAGA_INSTANCE_NOT_EXIST;
-
-import static java.util.stream.Collectors.groupingBy;
-
-import static org.springframework.transaction.TransactionDefinition.ISOLATION_READ_UNCOMMITTED;
 
 @Service
 public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
@@ -239,6 +234,7 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
             }
             // 组织层webhook发送
             noticeService.sendSagaFailNoticeForTenant(instance);
+            noticeService.sendSagaFailNoticeForVindicator(instance);
             //如果已重试次数 < 最大重试次数，则增加重试次数
         } else {
             taskInstanceMapper.increaseRetriedCount(taskInstance.getId());

@@ -1,5 +1,7 @@
 package io.choerodon.asgard.app.service.impl;
 
+import static io.choerodon.asgard.infra.enums.BusinessTypeCode.*;
+
 import java.util.*;
 
 import org.hzero.boot.message.MessageClient;
@@ -13,10 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import io.choerodon.asgard.api.vo.ProjectDTO;
-import io.choerodon.asgard.api.vo.RegistrantInfo;
-import io.choerodon.asgard.api.vo.User;
-import io.choerodon.asgard.api.vo.UserDTO;
+import io.choerodon.asgard.api.vo.*;
 import io.choerodon.asgard.app.service.NoticeService;
 import io.choerodon.asgard.infra.dto.QuartzTaskDTO;
 import io.choerodon.asgard.infra.dto.QuartzTaskMemberDTO;
@@ -48,6 +47,18 @@ public class NoticeServiceImpl implements NoticeService {
     private static final String NO_SEND_WEB = "NoSendWeb";
     private static final String NO_SEND_EMAIL = "NoSendEmail";
     private static final String NO_SEND_SMS = "NoSendSms";
+    private static final String IAM_CREATE_ORG_USER = "iam-create-org-user";
+    private static final String IAM_CREATE_USER = "iam-create-user";
+    private static final String ORG_CREATE_ORGANIZATION = "org-create-organization";
+    private static final String IAM_CREATE_PROJECT = "iam-create-project";
+    private static final Map<String, String> mapEvent = new HashMap<>();
+
+    static {
+        mapEvent.put(IAM_CREATE_ORG_USER, VINDICATOR_CREATE_USER_FAILED.value());
+        mapEvent.put(IAM_CREATE_USER, VINDICATOR_CREATE_USER_FAILED.value());
+        mapEvent.put(ORG_CREATE_ORGANIZATION, VINDICATOR_CREATE_ORGANIZATION_FAILED.value());
+        mapEvent.put(IAM_CREATE_PROJECT, VINDICATOR_CREATE_PROJECT_FAILED.value());
+    }
 
 
     @Autowired
@@ -228,6 +239,34 @@ public class NoticeServiceImpl implements NoticeService {
             }
         } catch (Exception e) {
             LOGGER.error("saga instance fail send notice fail for tenant", e);
+        }
+
+    }
+
+    @Override
+    @Async("notify-executor")
+    public void sendSagaFailNoticeForVindicator(SagaInstanceDTO instance) {
+        try {
+            if (mapEvent.containsKey(instance.getSagaCode())) {
+                Map<String, String> argsMap = new HashMap<>();
+                argsMap.put("instanceId", instance.getId().toString());
+                switch (instance.getSagaCode()) {
+                    case IAM_CREATE_ORG_USER:
+                    case IAM_CREATE_USER:
+                    case IAM_CREATE_PROJECT:
+                        Organization organization = baseServiceClientOperator.queryTenantById(instance.getSourceId());
+                        argsMap.put("organizationName", organization.getName());
+                        break;
+                    default:
+                }
+                MessageSender messageSender = new MessageSender();
+                messageSender.setArgs(argsMap);
+                messageSender.setMessageCode(mapEvent.get(instance.getSagaCode()));
+                messageSender.setTenantId(0L);
+                messageClient.async().sendMessage(messageSender);
+            }
+        } catch (Exception e) {
+            LOGGER.error("saga instance fail send notice fail for vindicator create event", e);
         }
 
     }
