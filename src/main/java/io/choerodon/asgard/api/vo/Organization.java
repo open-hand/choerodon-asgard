@@ -1,38 +1,36 @@
 package io.choerodon.asgard.api.vo;
 
-import org.hzero.starter.keyencrypt.core.Encrypt;
-
 /**
  * @author dengyouquan
  */
 public class Organization {
-    private Long id;
+    private Long tenantId;
 
-    private String name;
+    private String tenantName;
 
-    private String code;
+    private String tenantNum;
 
-    public Long getId() {
-        return id;
+    public Long getTenantId() {
+        return tenantId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
-    public String getName() {
-        return name;
+    public String getTenantName() {
+        return tenantName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
     }
 
-    public String getCode() {
-        return code;
+    public String getTenantNum() {
+        return tenantNum;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setTenantNum(String tenantNum) {
+        this.tenantNum = tenantNum;
     }
 }

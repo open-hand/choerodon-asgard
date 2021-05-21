@@ -221,9 +221,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
         if (ResourceLevel.ORGANIZATION.value().equals(level)
                 && Arrays.stream(DefaultAutowiredField.organizationDefaultField()).anyMatch(jobParamsName::contains)) {
             Organization organization = iamFeignClient.queryOrganization(sourceId).getBody();
-            params.put(DefaultAutowiredField.ORGANIZATION_ID, organization.getId());
-            params.put(DefaultAutowiredField.ORGANIZATION_NAME, organization.getName());
-            params.put(DefaultAutowiredField.ORGANIZATION_CODE, organization.getCode());
+            params.put(DefaultAutowiredField.ORGANIZATION_ID, organization.getTenantId());
+            params.put(DefaultAutowiredField.ORGANIZATION_NAME, organization.getTenantName());
+            params.put(DefaultAutowiredField.ORGANIZATION_CODE, organization.getTenantNum());
         }
         if (ResourceLevel.PROJECT.value().equals(level)
                 && Arrays.stream(DefaultAutowiredField.projectDefaultField()).anyMatch(jobParamsName::contains)) {

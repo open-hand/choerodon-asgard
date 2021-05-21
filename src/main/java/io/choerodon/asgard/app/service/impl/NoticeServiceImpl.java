@@ -258,7 +258,7 @@ public class NoticeServiceImpl implements NoticeService {
                         case IAM_CREATE_USER:
                         case IAM_CREATE_PROJECT:
                             Organization organization = baseServiceClientOperator.queryTenantById(instance.getSourceId());
-                            argsMap.put("organizationName", organization.getName());
+                            argsMap.put("organizationName", organization.getTenantName());
                             break;
                         default:
                     }
