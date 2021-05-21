@@ -1,9 +1,8 @@
 package io.choerodon.asgard.infra.feign.operator;
 
+import java.util.List;
+
 import com.alibaba.fastjson.JSONObject;
-
-import java.util.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +51,15 @@ public class BaseServiceClientOperator {
             }
         }
         throw new CommonException("error.user.get");
+    }
+
+    public List<User> listVindicators() {
+        ResponseEntity<List<User>> listVindicators = iamFeignClient.listVindicators();
+        if (listVindicators.getStatusCode().is2xxSuccessful()) {
+            return listVindicators.getBody();
+        } else {
+            throw new CommonException("error.list.vindicators");
+        }
     }
 
     public ProjectDTO getProjectByOrgIdAndCode(Long organizationId, String code) {

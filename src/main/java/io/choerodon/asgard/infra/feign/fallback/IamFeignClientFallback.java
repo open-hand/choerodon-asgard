@@ -31,6 +31,11 @@ public class IamFeignClientFallback implements IamFeignClient {
     }
 
     @Override
+    public ResponseEntity<List<User>> listVindicators() {
+        throw new FeignException("error.list.vindicators");
+    }
+
+    @Override
     public ResponseEntity<List<UserDTO>> pagingQueryUsersByRoleIdOnOrganizationLevel(Long roleId, Long sourceId) {
         throw new FeignException("error.feign.iam.queryUserOrganization");
     }
