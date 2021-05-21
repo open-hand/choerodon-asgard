@@ -3,6 +3,7 @@ package io.choerodon.asgard.app.service.impl;
 import static io.choerodon.asgard.infra.enums.BusinessTypeCode.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.hzero.boot.message.MessageClient;
 import org.hzero.boot.message.entity.MessageSender;
@@ -248,22 +249,34 @@ public class NoticeServiceImpl implements NoticeService {
     public void sendSagaFailNoticeForVindicator(SagaInstanceDTO instance) {
         try {
             if (mapEvent.containsKey(instance.getSagaCode())) {
-                Map<String, String> argsMap = new HashMap<>();
-                argsMap.put("instanceId", instance.getId().toString());
-                switch (instance.getSagaCode()) {
-                    case IAM_CREATE_ORG_USER:
-                    case IAM_CREATE_USER:
-                    case IAM_CREATE_PROJECT:
-                        Organization organization = baseServiceClientOperator.queryTenantById(instance.getSourceId());
-                        argsMap.put("organizationName", organization.getName());
-                        break;
-                    default:
+                List<User> userList = baseServiceClientOperator.listVindicators();
+                if (!CollectionUtils.isEmpty(userList)) {
+                    Map<String, String> argsMap = new HashMap<>();
+                    argsMap.put("instanceId", instance.getId().toString());
+                    switch (instance.getSagaCode()) {
+                        case IAM_CREATE_ORG_USER:
+                        case IAM_CREATE_USER:
+                        case IAM_CREATE_PROJECT:
+                            Organization organization = baseServiceClientOperator.queryTenantById(instance.getSourceId());
+                            argsMap.put("organizationName", organization.getName());
+                            break;
+                        default:
+                    }
+                    MessageSender messageSender = new MessageSender();
+                    messageSender.setArgs(argsMap);
+                    messageSender.setMessageCode(mapEvent.get(instance.getSagaCode()));
+                    messageSender.setTenantId(0L);
+                    List<Receiver> receiverList = userList.stream().map(t -> {
+                        Receiver receiver = new Receiver();
+                        receiver.setUserId(t.getId());
+                        receiver.setEmail(t.getEmail());
+                        receiver.setPhone(t.getPhone());
+                        receiver.setTargetUserTenantId(Objects.requireNonNull(t.getOrganizationId(), "receiver tenant id can't be null"));
+                        return receiver;
+                    }).collect(Collectors.toList());
+                    messageSender.setReceiverAddressList(receiverList);
+                    messageClient.async().sendMessage(messageSender);
                 }
-                MessageSender messageSender = new MessageSender();
-                messageSender.setArgs(argsMap);
-                messageSender.setMessageCode(mapEvent.get(instance.getSagaCode()));
-                messageSender.setTenantId(0L);
-                messageClient.async().sendMessage(messageSender);
             }
         } catch (Exception e) {
             LOGGER.error("saga instance fail send notice fail for vindicator create event", e);
