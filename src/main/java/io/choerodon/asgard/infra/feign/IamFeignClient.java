@@ -26,7 +26,7 @@ public interface IamFeignClient {
     @PostMapping(value = "/site/role_members/users")
     ResponseEntity<List<UserDTO>> pagingQueryUsersByRoleIdOnSiteLevel(@RequestParam(value = "role_id") Long roleId);
 
-    @PostMapping(value = "/list_vindicators")
+    @GetMapping(value = "/list_vindicators")
     ResponseEntity<List<User>> listVindicators();
 
     @PostMapping(value = "/organizations/{organization_id}/role_members/users")
