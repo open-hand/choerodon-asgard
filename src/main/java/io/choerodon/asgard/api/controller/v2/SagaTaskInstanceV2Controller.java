@@ -70,6 +70,7 @@ public class SagaTaskInstanceV2Controller {
             deferredResult.setResult(new ResponseEntity<>(pollBatch, HttpStatus.OK));
         } else {
             sagaInstanceHandler.addDeferredResult(SagaInstanceEventPublisher.TAST_INSTANCE_PREFIX,pollBatchDTO.getService(), deferredResult);
+            deferredResult.setResult(new ResponseEntity<>(ConcurrentHashMap.newKeySet(), HttpStatus.OK));
         }
         return deferredResult;
     }

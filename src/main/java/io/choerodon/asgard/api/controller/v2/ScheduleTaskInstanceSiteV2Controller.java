@@ -65,6 +65,7 @@ public class ScheduleTaskInstanceSiteV2Controller {
             deferredResult.setResult(new ResponseEntity<>(pollBatch, HttpStatus.OK));
         } else {
             sagaInstanceHandler.addDeferredResult(SagaInstanceEventPublisher.QUARTZ_INSTANCE_PREFIX,dto.getService(), deferredResult);
+            deferredResult.setResult(new ResponseEntity<>(ConcurrentHashMap.newKeySet(), HttpStatus.OK));
         }
         return deferredResult;
     }
