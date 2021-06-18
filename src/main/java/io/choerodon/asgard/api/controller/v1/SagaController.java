@@ -40,7 +40,7 @@ public class SagaController {
     @ApiOperation(value = "查询事务列表")
     @CustomPageRequest
     public ResponseEntity<Page<Saga>> pagingQuery(@ApiIgnore
-                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest,
+                                                  @SortDefault(value = "id", direction = Sort.Direction.DESC) PageRequest pageRequest,
                                                   @RequestParam(required = false) String code,
                                                   @RequestParam(required = false) String description,
                                                   @RequestParam(required = false) String service,
