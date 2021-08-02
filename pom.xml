@@ -5,10 +5,10 @@
     <parent>
         <groupId>io.choerodon</groupId>
         <artifactId>choerodon-framework-parent</artifactId>
-        <version>0.19.1.RELEASE</version>
+        <version>0.19.3.RELEASE</version>
     </parent>
     <artifactId>choerodon-asgard</artifactId>
-    <version>0.25.2.RELEASE</version>
+    <version>0.25.3.RELEASE</version>
     <name>choerodon-asgard</name>
     <description>Asgard-Service For Choerodon</description>
 
