@@ -146,7 +146,7 @@
                 )
             </if>
         </where>
-        order by asti.id desc
+        order by asi.id desc
     </select>
 
     <select id="fulltextSearchTaskInstance_COUNT" resultType="long">
