@@ -33,13 +33,6 @@ public interface SagaTaskInstanceService {
 
     ResponseEntity<Page<SagaTaskInstanceInfo>> pageQuery(PageRequest pageable, String taskInstanceCode, String sagaInstanceCode, String status, String params, String level, Long sourceId);
 
-    /**
-     * 根据事务实例Id查出某一seq下的全部任务实例
-     *
-     * @param sagaInatanceId 事务实例Id
-     * @param seq            序列号
-     */
-    List<PageSagaTaskInstance> queryByInstanceIdAndSeq(Long sagaInatanceId, Integer seq);
 
     /**
      * 被锁住超过两小时的实例更新状态为失败

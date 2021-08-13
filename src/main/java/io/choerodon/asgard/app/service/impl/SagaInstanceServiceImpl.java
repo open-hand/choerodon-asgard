@@ -173,7 +173,13 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
                 dto.setOutput(outputJsonData.getData());
             }
         }
-        List<List<PageSagaTaskInstance>> list = taskInstanceMapper.selectAllBySagaInstanceId(id)
+        List<PageSagaTaskInstance> pageSagaTaskInstances = taskInstanceMapper.selectAllBySagaInstanceId(id);
+        //output 跟input 单独填充
+        pageSagaTaskInstances.forEach(pageSagaTaskInstance -> {
+            pageSagaTaskInstance.setInput(Optional.ofNullable(jsonDataMapper.selectByPrimaryKey(pageSagaTaskInstance.getInputDataId()).getData()).orElseGet(() -> ""));
+            pageSagaTaskInstance.setOutput(Optional.ofNullable(jsonDataMapper.selectByPrimaryKey(pageSagaTaskInstance.getOutputDataId()).getData()).orElseGet(() -> ""));
+        });
+        List<List<PageSagaTaskInstance>> list = pageSagaTaskInstances
                 .stream()
                 .collect(groupingBy(PageSagaTaskInstance::getSeq)).values().stream().sorted((List<PageSagaTaskInstance> list1, List<PageSagaTaskInstance> list2) -> {
                     PageSagaTaskInstance o1 = list1.get(0);
