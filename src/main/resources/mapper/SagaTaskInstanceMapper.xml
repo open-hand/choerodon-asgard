@@ -82,22 +82,22 @@
     </update>
 
     <select id="selectAllBySagaInstanceId" resultType="io.choerodon.asgard.api.vo.PageSagaTaskInstance">
-                SELECT
-        asti.id, asti.saga_instance_id,
-        asti.task_code, asti.status,
-        asti.seq, asti.saga_code,
-        asi.ref_type, asi.ref_id,
-        asti.creation_date, asti.concurrent_limit_num,
-        asti.instance_lock, asti.concurrent_limit_policy,
-        asti.max_retry_count, asti.retried_count,
-        asti.exception_message, ojd.data AS output,
-        asti.actual_start_time,  asti.actual_end_time,
-        asti.planned_start_time, st.description,
-        st.service,ijd.data AS input
+        SELECT
+            asti.id, asti.saga_instance_id,
+            asti.task_code, asti.status,
+            asti.seq, asti.saga_code,
+            asi.ref_type, asi.ref_id,
+            asti.creation_date, asti.concurrent_limit_num,
+            asti.instance_lock, asti.concurrent_limit_policy,
+            asti.max_retry_count, asti.retried_count,
+            asti.exception_message,
+            asti.actual_start_time,  asti.actual_end_time,
+            asti.planned_start_time, st.description,
+            st.service,
+            asti.input_data_id,
+            asti.output_data_id
         FROM asgard_saga_task_instance asti
         INNER JOIN ASGARD_SAGA_INSTANCE asi ON asti.saga_instance_id = asi.id
-        LEFT JOIN asgard_orch_json_data ijd ON asti.input_data_id = ijd.id
-        LEFT JOIN asgard_orch_json_data ojd ON asti.output_data_id = ojd.id
         LEFT JOIN asgard_orch_saga_task st ON asti.task_code = st.code AND asti.saga_code = st.saga_code
         WHERE asti.saga_instance_id = #{sagaInstanceId}
     </select>

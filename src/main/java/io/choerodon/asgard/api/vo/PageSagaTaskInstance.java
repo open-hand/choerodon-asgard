@@ -77,6 +77,27 @@ public class PageSagaTaskInstance {
     @ApiModelProperty(value = "乐观锁版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "saga输入Id")
+    private Long inputDataId;
+
+    @ApiModelProperty(value = "saga输出Id")
+    private Long outputDataId;
+
+    public Long getInputDataId() {
+        return inputDataId;
+    }
+
+    public void setInputDataId(Long inputDataId) {
+        this.inputDataId = inputDataId;
+    }
+
+    public Long getOutputDataId() {
+        return outputDataId;
+    }
+
+    public void setOutputDataId(Long outputDataId) {
+        this.outputDataId = outputDataId;
+    }
 
     public Long getId() {
         return id;

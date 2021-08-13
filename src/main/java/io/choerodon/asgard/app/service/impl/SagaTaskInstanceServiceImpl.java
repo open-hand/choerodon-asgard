@@ -390,11 +390,6 @@ public class SagaTaskInstanceServiceImpl implements SagaTaskInstanceService {
         return modelMapper.map(sagaTaskInstance, SagaTaskInstance.class);
     }
 
-    @Override
-    public List<PageSagaTaskInstance> queryByInstanceIdAndSeq(Long sagaInstanceId, Integer seq) {
-        return taskInstanceMapper.selectAllBySagaInstanceId(sagaInstanceId).stream()
-                .filter(s -> s.getSeq().equals(seq)).collect(Collectors.toList());
-    }
 
     @Override
     public void failedLockedInstance(PollSagaTaskInstanceDTO pollBatchDTO) {
