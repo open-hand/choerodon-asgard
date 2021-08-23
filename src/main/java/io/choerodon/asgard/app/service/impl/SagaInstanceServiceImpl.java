@@ -150,7 +150,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         totalPages = (int) Math.ceil(totalElements * 1.0 / size);
 
         long offSet;
-        if (totalPages == page) {
+        if ((totalPages-1) == page) {
             offSet = totalElements - (totalElements % size);
             numberOfElements = (int) totalElements % size;
         } else {
