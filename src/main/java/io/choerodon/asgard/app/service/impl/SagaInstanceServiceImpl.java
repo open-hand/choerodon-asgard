@@ -139,12 +139,31 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
 
     @Override
     public ResponseEntity<Page<SagaInstanceDetails>> pageQuery(PageRequest pageable, String sagaCode, String status, String refType, String refId, String params, String level, Long sourceId, Long id) {
-        Page<SagaInstanceDetails> sagaInstanceDetailsPage = PageHelper.doPageAndSort(pageable,
-                () -> instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId, id));
-        sagaInstanceDetailsPage.getContent().forEach(i -> {
+        Page<SagaInstanceDetails> sagaInstanceDetailsPage = new Page<>();
+        //自己组装分页查询
+        int page = pageable.getPage();
+        int size = pageable.getSize();
+        int totalPages;
+        long totalElements;
+        int numberOfElements;
+        totalElements = instanceMapper.selectTotalElements(sagaCode, status, refType, refId, params, level, sourceId, id);
+        totalPages = (int) Math.ceil(totalElements / size);
+        numberOfElements = size;
+
+        List<SagaInstanceDetails> sagaInstanceDetails = instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId, id, page, size);
+        if (CollectionUtils.isEmpty(sagaInstanceDetails)) {
+            return new ResponseEntity<>(sagaInstanceDetailsPage, HttpStatus.OK);
+        }
+        sagaInstanceDetails.forEach(i -> {
             i.setViewId(ParamUtils.handId(i.getId()));
             i.setSearchId(String.valueOf(i.getId()));
         });
+        sagaInstanceDetailsPage.setContent(sagaInstanceDetails);
+        sagaInstanceDetailsPage.setTotalPages(totalPages);
+        sagaInstanceDetailsPage.setNumber(page);
+        sagaInstanceDetailsPage.setNumberOfElements(numberOfElements);
+        sagaInstanceDetailsPage.setTotalElements(totalElements);
+        sagaInstanceDetailsPage.setSize(size);
         return new ResponseEntity<>(sagaInstanceDetailsPage, HttpStatus.OK);
     }
 
