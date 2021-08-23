@@ -42,39 +42,83 @@
 
     <select id="fulltextSearchInstance" resultType="io.choerodon.asgard.api.vo.SagaInstanceDetails">
         SELECT
-        asi.ID AS ID,
-        asi.SAGA_CODE AS SAGA_CODE,
-        (
-        SELECT
-        aos.description
+            asi.ID AS ID,
+            asi.SAGA_CODE AS SAGA_CODE,
+            (
+            SELECT
+            aos.description
+            FROM
+            asgard_orch_saga aos
+            WHERE
+            aos. CODE = asi.SAGA_CODE
+            ) AS description,
+            (
+            SELECT
+            aos.service
+            FROM
+            asgard_orch_saga aos
+            WHERE
+            aos. CODE = asi.SAGA_CODE
+            ) AS service,
+            asi.FD_LEVEL AS LEVEL,
+            asi.REF_TYPE AS REF_TYPE,
+            asi.REF_ID AS REF_ID,
+            asi.START_TIME AS START_TIME,
+            asi.END_TIME AS END_TIME,
+            asi.STATUS AS STATUS,
+            sum(CASE WHEN asti.STATUS = 'COMPLETED' THEN 1 ELSE 0 END) AS COMPLETED_COUNT,
+            sum(CASE WHEN asti.STATUS = 'RUNNING' THEN 1 ELSE 0 END) AS RUNNING_COUNT,
+            sum(CASE WHEN asti.STATUS = 'ROLLBACK' THEN 1 ELSE 0 END) AS ROLLBACK_COUNT,
+            sum(CASE WHEN asti.STATUS = 'FAILED' THEN 1 ELSE 0 END) AS FAILED_COUNT,
+            sum(CASE WHEN asti.STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END) AS WAIT_TO_BE_PULLED_COUNT
         FROM
-        asgard_orch_saga aos
-        WHERE
-        aos. CODE = asi.SAGA_CODE
-        ) AS description,
-        (
-        SELECT
-        aos.service
-        FROM
-        asgard_orch_saga aos
-        WHERE
-        aos. CODE = asi.SAGA_CODE
-        ) AS service,
-        asi.FD_LEVEL AS LEVEL,
-        asi.REF_TYPE AS REF_TYPE,
-        asi.REF_ID AS REF_ID,
-        asi.START_TIME AS START_TIME,
-        asi.END_TIME AS END_TIME,
-        asi.STATUS AS STATUS,
-        sum(CASE WHEN asti.STATUS = 'COMPLETED' THEN 1 ELSE 0 END) AS COMPLETED_COUNT,
-        sum(CASE WHEN asti.STATUS = 'RUNNING' THEN 1 ELSE 0 END) AS RUNNING_COUNT,
-        sum(CASE WHEN asti.STATUS = 'ROLLBACK' THEN 1 ELSE 0 END) AS ROLLBACK_COUNT,
-        sum(CASE WHEN asti.STATUS = 'FAILED' THEN 1 ELSE 0 END) AS FAILED_COUNT,
-        sum(CASE WHEN asti.STATUS = 'WAIT_TO_BE_PULLED' THEN 1 ELSE 0 END) AS WAIT_TO_BE_PULLED_COUNT
-        FROM
-        asgard_saga_instance asi
+            asgard_saga_instance asi
         LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
         WHERE 1 = 1
+        AND  asi.ID >=(
+           SELECT
+              asi.ID AS ID
+           FROM
+              asgard_saga_instance asi
+           LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
+           WHERE 1 = 1
+              <if test="level != null">
+                  AND asi.FD_LEVEL=#{level}
+              </if>
+              <if test="sourceId != null">
+                  AND asi.SOURCE_ID=#{sourceId}
+              </if>
+              <if test="sagaCode != null">
+                  AND concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{sagaCode}),'%')
+              </if>
+              <if test="id != null and  id != 0">
+                  AND asi.ID=#{id}
+              </if>
+              <if test="status != null">
+                  <choose>
+                      <when test="status == 'COMPLETED'">
+                          AND (asi.status = #{status} OR asi.status = 'NON_CONSUMER')
+                      </when>
+                      <otherwise>
+                          AND asi.status = #{status}
+                      </otherwise>
+                  </choose>
+              </if>
+              <if test="refType != null">
+                  AND asi.ref_type LIKE concat(concat('%',#{refType}),'%')
+              </if>
+              <if test="refId != null">
+                  AND asi.ref_id LIKE concat(concat('%',#{refId}),'%')
+              </if>
+              <if test="params != null">
+                  AND (
+                  concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{params}),'%') OR
+                  asi.ref_type LIKE concat(concat('%',#{params}),'%') OR
+                  asi.ref_id LIKE concat(concat('%',#{params}),'%')
+                  )
+              </if>
+              LIMIT #{page,jdbcType=INTEGER},1
+        )
         <if test="level != null">
             AND asi.FD_LEVEL=#{level}
         </if>
@@ -113,6 +157,7 @@
         GROUP BY
         asi.id
         order by asi.id desc
+        LIMIT  #{size,jdbcType=INTEGER}
     </select>
 
     <resultMap id="resultCount" type="map">
@@ -296,6 +341,52 @@
         asi.id
         ORDER BY
         asi.id DESC
+    </select>
+
+    <select id="selectTotalElements" resultType="java.lang.Long">
+        SELECT
+           count(asi.ID)
+        FROM
+           asgard_saga_instance asi
+        LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
+        WHERE
+           1 = 1
+        <if test="level != null">
+            AND asi.FD_LEVEL=#{level}
+        </if>
+        <if test="sourceId != null">
+            AND asi.SOURCE_ID=#{sourceId}
+        </if>
+        <if test="sagaCode != null">
+            AND concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{sagaCode}),'%')
+        </if>
+        <if test="id != null and  id != 0">
+            AND asi.ID=#{id}
+        </if>
+        <if test="status != null">
+            <choose>
+                <when test="status == 'COMPLETED'">
+                    AND (asi.status = #{status} OR asi.status = 'NON_CONSUMER')
+                </when>
+                <otherwise>
+                    AND asi.status = #{status}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="refType != null">
+            AND asi.ref_type LIKE concat(concat('%',#{refType}),'%')
+        </if>
+        <if test="refId != null">
+            AND asi.ref_id LIKE concat(concat('%',#{refId}),'%')
+        </if>
+        <if test="params != null">
+            AND (
+            concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{params}),'%') OR
+            asi.ref_type LIKE concat(concat('%',#{params}),'%') OR
+            asi.ref_id LIKE concat(concat('%',#{params}),'%')
+            )
+        </if>
+
     </select>
 
 

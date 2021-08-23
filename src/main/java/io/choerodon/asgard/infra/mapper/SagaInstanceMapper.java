@@ -20,7 +20,9 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstanceDTO> {
                                                      @Param("params") String params,
                                                      @Param("level") String level,
                                                      @Param("sourceId") Long sourceId,
-                                                     @Param("id") Long id);
+                                                     @Param("id") Long id,
+                                                     @Param("page") Integer page,
+                                                     @Param("size") Integer size);
 
     Map<String, Integer> statisticsByStatus(@Param("level") String level,
                                             @Param("sourceId") Long sourceId);
@@ -49,4 +51,15 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstanceDTO> {
     int deleteByOptions(@Param("time") Date time, @Param("retainFailed") boolean retainFailed);
 
     List<SagaInstanceDetails> queryByRefTypeAndRefIds(@Param("refType") String refType, @Param("refIds") List<String> refIds, @Param("sagaCode") String sagaCode);
+
+    long selectTotalElements(@Param("sagaCode") String sagaCode,
+                             @Param("status") String status,
+                             @Param("refType") String refType,
+                             @Param("refId") String refId,
+                             @Param("params") String params,
+                             @Param("level") String level,
+                             @Param("sourceId") Long sourceId,
+                             @Param("id") Long id);
+
+
 }
