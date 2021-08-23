@@ -80,7 +80,6 @@
               asi.ID AS ID
            FROM
               asgard_saga_instance asi
-           LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
            WHERE 1 = 1
               <if test="level != null">
                   AND asi.FD_LEVEL=#{level}
