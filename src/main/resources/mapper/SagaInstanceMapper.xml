@@ -75,7 +75,7 @@
             asgard_saga_instance asi
         LEFT OUTER JOIN asgard_saga_task_instance asti ON asi.ID = asti.SAGA_INSTANCE_ID
         WHERE 1 = 1
-        AND  asi.ID >=(
+        AND  asi.ID <![CDATA[ <= ]]> (
            SELECT
               asi.ID AS ID
            FROM
@@ -117,7 +117,8 @@
                   asi.ref_id LIKE concat(concat('%',#{params}),'%')
                   )
               </if>
-              LIMIT #{page,jdbcType=INTEGER},1
+              order by asi.id desc
+              LIMIT #{offSet,jdbcType=INTEGER},1
         )
         <if test="level != null">
             AND asi.FD_LEVEL=#{level}
