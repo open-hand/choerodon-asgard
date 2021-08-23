@@ -149,8 +149,9 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         totalElements = instanceMapper.selectTotalElements(sagaCode, status, refType, refId, params, level, sourceId, id);
         totalPages = (int) Math.ceil(totalElements / size);
         numberOfElements = size;
+        long offSet = page * size;
 
-        List<SagaInstanceDetails> sagaInstanceDetails = instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId, id, page, size);
+        List<SagaInstanceDetails> sagaInstanceDetails = instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId, id, offSet, size);
         if (CollectionUtils.isEmpty(sagaInstanceDetails)) {
             return new ResponseEntity<>(sagaInstanceDetailsPage, HttpStatus.OK);
         }
