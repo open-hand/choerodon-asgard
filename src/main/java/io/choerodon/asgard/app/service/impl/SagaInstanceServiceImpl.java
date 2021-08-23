@@ -147,13 +147,15 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         long totalElements;
         int numberOfElements;
         totalElements = instanceMapper.selectTotalElements(sagaCode, status, refType, refId, params, level, sourceId, id);
-        totalPages = (int) Math.ceil(totalElements * 1.0 / size);
-        numberOfElements = size;
+        totalPages = (int) Math.ceil(totalElements * 1.0 / size) + 1;
+
         long offSet;
         if (totalPages == page) {
             offSet = totalElements - (totalElements % size);
+            numberOfElements = (int) totalElements % size;
         } else {
             offSet = page * size;
+            numberOfElements = size;
         }
 
 
@@ -167,7 +169,9 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         });
         sagaInstanceDetailsPage.setContent(sagaInstanceDetails);
         sagaInstanceDetailsPage.setTotalPages(totalPages);
-        sagaInstanceDetailsPage.setNumber(0);
+        //当前页数
+        sagaInstanceDetailsPage.setNumber(page);
+        //当前页的数据
         sagaInstanceDetailsPage.setNumberOfElements(numberOfElements);
         sagaInstanceDetailsPage.setTotalElements(totalElements);
         sagaInstanceDetailsPage.setSize(size);
