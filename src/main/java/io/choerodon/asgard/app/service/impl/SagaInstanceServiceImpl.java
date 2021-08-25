@@ -150,7 +150,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         totalPages = (int) Math.ceil(totalElements * 1.0 / size);
 
         long offSet;
-        if ((totalPages-1) == page) {
+        if ((totalPages - 1) == page) {
             offSet = totalElements - (totalElements % size);
             numberOfElements = (int) totalElements % size;
         } else {
@@ -206,8 +206,10 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         List<PageSagaTaskInstance> pageSagaTaskInstances = taskInstanceMapper.selectAllBySagaInstanceId(id);
         //output 跟input 单独填充
         pageSagaTaskInstances.forEach(pageSagaTaskInstance -> {
-            pageSagaTaskInstance.setInput(Optional.ofNullable(jsonDataMapper.selectByPrimaryKey(pageSagaTaskInstance.getInputDataId()).getData()).orElseGet(() -> ""));
-            pageSagaTaskInstance.setOutput(Optional.ofNullable(jsonDataMapper.selectByPrimaryKey(pageSagaTaskInstance.getOutputDataId()).getData()).orElseGet(() -> ""));
+            JsonDataDTO inputData = jsonDataMapper.selectByPrimaryKey(pageSagaTaskInstance.getInputDataId());
+            JsonDataDTO outputData = jsonDataMapper.selectByPrimaryKey(pageSagaTaskInstance.getOutputDataId());
+            pageSagaTaskInstance.setInput(Objects.isNull(inputData) ? "" : inputData.getData());
+            pageSagaTaskInstance.setOutput(Objects.isNull(outputData) ? "" : outputData.getData());
         });
         List<List<PageSagaTaskInstance>> list = pageSagaTaskInstances
                 .stream()
