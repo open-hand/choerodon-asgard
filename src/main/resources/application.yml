@@ -48,7 +48,7 @@ server:
 
 choerodon:
   asgard:
-    time-out: 20000
+    time-out: ${CHOERODON_ASGARD_TIME_OUT:20000}
     quartz:
       auto-startup: true
       overwrite-existing-jobs: true
