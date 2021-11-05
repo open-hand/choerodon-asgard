@@ -91,6 +91,7 @@ public class QuartzJobServiceImpl implements QuartzJobService {
     public void resumeJob(final long taskId) {
         try {
             scheduler.resumeJob(new JobKey(JOB_PREFIX + taskId));
+            scheduler.resumeTrigger(TriggerKey.triggerKey(TRIGGER_PREFIX + taskId));
         } catch (SchedulerException e) {
             throw new CommonException("error.scheduleTask.enableTaskFailed", e);
         }
