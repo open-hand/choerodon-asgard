@@ -2,9 +2,9 @@ spring:
   application:
     name: choerodon-asgard
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/asgard_service?useUnicode=true&characterEncoding=utf-8&useSSL=false}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:handhand}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://172.23.40.21:3306/asgard_service?useUnicode=true&characterEncoding=utf-8&useSSL=false}
+    username: ${SPRING_DATASOURCE_USERNAME:choerodon}
+    password: ${SPRING_DATASOURCE_PASSWORD:Uc9Cw6gDyJPL}
     hikari:
       # 连接池最小空闲连接数
       minimum-idle: ${SPRING_DATASOURCE_MINIMUM_IDLE:20}
@@ -13,7 +13,7 @@ spring:
       # 等待连接池分配连接的最大时长（毫秒）
       connection-timeout: ${SPRING_DATASOURCE_CONNECTION_TIMEOUT:30000}
   redis:
-    host: ${SPRING_REDIS_HOST:redis.hzero.org}
+    host: ${SPRING_REDIS_HOST:localhost}
     port: ${SPRING_REDIS_PORT:6379}
     database: ${SPRING_REDIS_DATABASE:1}
     lettuce:
@@ -66,7 +66,7 @@ choerodon:
       enabled: false
   schedule:
     consumer:
-      enabled: true
+      enabled: false
   eureka:
     event:
       max-cache-size: 300 # 存储的最大失败数量
@@ -151,7 +151,7 @@ mybatis:
 
 logging:
   level:
-    org.apache.ibatis: ${LOG_LEVEL:info}
-    io.choerodon: ${LOG_LEVEL:info}
-    org.hzero: ${LOG_LEVEL:info}
-    org.hzero.iam.infra.feign: ${LOG_LEVEL:info}
+    org.apache.ibatis: ${LOG_LEVEL:debug}
+    io.choerodon: ${LOG_LEVEL:debug}
+    org.hzero: ${LOG_LEVEL:debug}
+    org.hzero.iam.infra.feign: ${LOG_LEVEL:debug}

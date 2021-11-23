@@ -22,7 +22,8 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstanceDTO> {
                                                      @Param("sourceId") Long sourceId,
                                                      @Param("id") Long id,
                                                      @Param("offSet") Long offSet,
-                                                     @Param("size") Integer size);
+                                                     @Param("size") Integer size,
+                                                     @Param("searchId") String searchId);
 
     Map<String, Integer> statisticsByStatus(@Param("level") String level,
                                             @Param("sourceId") Long sourceId);
@@ -59,7 +60,8 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstanceDTO> {
                              @Param("params") String params,
                              @Param("level") String level,
                              @Param("sourceId") Long sourceId,
-                             @Param("id") Long id);
+                             @Param("id") Long id,
+                             @Param("searchId") String searchId);
 
 
 }
