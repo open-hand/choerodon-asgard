@@ -3,10 +3,10 @@ package io.choerodon.asgard.app.service.impl;
 import io.choerodon.asgard.app.service.SagaTaskService;
 import io.choerodon.asgard.infra.dto.SagaTaskDTO;
 import io.choerodon.asgard.infra.mapper.SagaTaskMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -25,6 +25,10 @@ public class SagaTaskServiceImpl implements SagaTaskService {
 
     @Override
     public void createSagaTaskList(final List<SagaTaskDTO> sagaTaskList, final String service) {
+        if (CollectionUtils.isEmpty(sagaTaskList) || StringUtils.isEmpty(service)) {
+            LOGGER.info("No Saga Task event for service:{}", service);
+            return;
+        }
         List<SagaTaskDTO> copyTaskList = new ArrayList<>(sagaTaskList);
         SagaTaskDTO serviceSagaTask = new SagaTaskDTO();
         serviceSagaTask.setService(service);
