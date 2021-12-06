@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hzero.core.base.BaseConstants;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
@@ -146,7 +147,28 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         int totalPages;
         long totalElements;
         int numberOfElements;
-        totalElements = instanceMapper.selectTotalElements(sagaCode, status, refType, refId, params, level, sourceId, id);
+        // devops-pod-ready-801408
+        String code = null;
+        String searchId = null;
+        if (!StringUtils.isEmpty(sagaCode)) {
+            boolean contains = sagaCode.contains(BaseConstants.Symbol.MIDDLE_LINE);
+            if (contains) {
+                int indexOf = sagaCode.lastIndexOf("-");
+                code = sagaCode.substring(0, indexOf);
+                String substring = sagaCode.substring(indexOf + 1);
+                try {
+                    long parseLong = Long.parseLong(substring);
+                    searchId = String.valueOf(parseLong);
+                } catch (NumberFormatException numberFormatException) {
+                    LOGGER.trace("Number Format", numberFormatException.getCause());
+                }
+            } else {
+                code = sagaCode;
+            }
+
+        }
+
+        totalElements = instanceMapper.selectTotalElements(code, status, refType, refId, params, level, sourceId, id, searchId);
         totalPages = (int) Math.ceil(totalElements * 1.0 / size);
 
         long offSet;
@@ -159,7 +181,7 @@ public class SagaInstanceServiceImpl implements SagaInstanceService {
         }
 
 
-        List<SagaInstanceDetails> sagaInstanceDetails = instanceMapper.fulltextSearchInstance(sagaCode, status, refType, refId, params, level, sourceId, id, offSet, size);
+        List<SagaInstanceDetails> sagaInstanceDetails = instanceMapper.fulltextSearchInstance(code, status, refType, refId, params, level, sourceId, id, offSet, size, searchId);
         if (CollectionUtils.isEmpty(sagaInstanceDetails)) {
             return new ResponseEntity<>(sagaInstanceDetailsPage, HttpStatus.OK);
         }

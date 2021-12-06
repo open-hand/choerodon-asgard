@@ -88,7 +88,10 @@
                   AND asi.SOURCE_ID=#{sourceId}
               </if>
               <if test="sagaCode != null">
-                  AND concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{sagaCode}),'%')
+                  AND asi.saga_code  LIKE concat('%',#{sagaCode},'%')
+              </if>
+              <if test="searchId != null and searchId != ''">
+                  AND asi.id  like concat( '%', #{searchId,jdbcType=VARCHAR})
               </if>
               <if test="id != null and  id != 0">
                   AND asi.ID=#{id}
@@ -126,7 +129,10 @@
             AND asi.SOURCE_ID=#{sourceId}
         </if>
         <if test="sagaCode != null">
-            AND concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{sagaCode}),'%')
+            AND asi.saga_code  LIKE concat('%',#{sagaCode},'%')
+        </if>
+        <if test="searchId != null and searchId != ''">
+            AND asi.id  like concat( '%', #{searchId,jdbcType=VARCHAR})
         </if>
         <if test="id != null and  id != 0">
             AND asi.ID=#{id}
@@ -357,7 +363,10 @@
             AND asi.SOURCE_ID=#{sourceId}
         </if>
         <if test="sagaCode != null">
-            AND concat(concat(asi.saga_code, '-'), asi.id) LIKE concat(concat('%',#{sagaCode}),'%')
+            AND asi.saga_code LIKE concat('%',#{sagaCode},'%')
+        </if>
+        <if test="searchId != null and searchId != ''">
+            AND asi.id  like concat( '%', #{searchId,jdbcType=VARCHAR})
         </if>
         <if test="id != null and  id != 0">
             AND asi.ID=#{id}
