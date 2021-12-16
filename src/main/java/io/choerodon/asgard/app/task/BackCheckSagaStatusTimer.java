@@ -2,7 +2,6 @@ package io.choerodon.asgard.app.task;
 
 import feign.Client;
 import feign.RequestInterceptor;
-import feign.hystrix.HystrixFeign;
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.infra.config.AsgardProperties;
 import io.choerodon.asgard.infra.dto.SagaInstanceDTO;
@@ -10,10 +9,11 @@ import io.choerodon.asgard.infra.feign.StatusQueryFeign;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
 import io.choerodon.asgard.infra.utils.JsonDecoder;
 import io.choerodon.asgard.saga.dto.SagaStatusQueryDTO;
-
+import io.github.resilience4j.feign.Resilience4jFeign;
 import org.hzero.feign.interceptor.AccessTokenInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
@@ -39,6 +39,9 @@ public class BackCheckSagaStatusTimer {
     private Client client;
 
     private SagaInstanceService sagaInstanceService;
+    @Autowired
+    @Qualifier("resilience4jfeign")
+    private Resilience4jFeign.Builder builder;
 
     private final JsonDecoder jsonDecoder = new JsonDecoder();
 
@@ -69,8 +72,7 @@ public class BackCheckSagaStatusTimer {
             LOGGER.warn("error.sagaScheduledBackCheckStatus.sagaInstanceInvalid, sagaInstance: {}", sagaInstance);
             return;
         }
-        StatusQueryFeign query = HystrixFeign
-                .builder()
+        StatusQueryFeign query = builder
                 .client(client)
                 .requestInterceptor((RequestInterceptor) accessTokenInterceptor)
                 .decoder(jsonDecoder)

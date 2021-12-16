@@ -1,15 +1,10 @@
 package io.choerodon.asgard.infra.config;
 
 import feign.Client;
-
 import io.choerodon.asgard.app.service.SagaInstanceService;
 import io.choerodon.asgard.app.task.BackCheckSagaStatusTimer;
-import io.choerodon.asgard.app.task.CleanSagaInstanceTimer;
 import io.choerodon.asgard.infra.mapper.SagaInstanceMapper;
-import io.choerodon.asgard.infra.mapper.SagaTaskInstanceMapper;
-
 import org.hzero.feign.interceptor.AccessTokenInterceptor;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

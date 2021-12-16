@@ -4,6 +4,10 @@ import io.choerodon.asgard.app.eventhandler.SagaInstanceEventPublisher;
 import io.choerodon.asgard.app.eventhandler.SagaInstanceHandler;
 import io.choerodon.asgard.infra.config.AsgardProperties;
 import io.choerodon.resource.annoation.EnableChoerodonResourceServer;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.feign.FeignDecorators;
+import io.github.resilience4j.feign.Resilience4jFeign;
+import io.github.resilience4j.ratelimiter.RateLimiter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -67,6 +71,21 @@ public class AsgardApplication {
         StringRedisSerializer stringRedisSerializer = this.stringRedisSerializer();
         sagaInstanceAdapter.setSerializer(stringRedisSerializer);
         return sagaInstanceAdapter;
+    }
+
+    /**
+     * 注入Resilience4jFeign.Builder
+     * @return
+     */
+    @Bean("resilience4jfeign")
+    public Resilience4jFeign.Builder feignResilience4jBuilder() {
+        CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("backendName");
+        RateLimiter rateLimiter = RateLimiter.ofDefaults("backendName");
+        FeignDecorators decorators = FeignDecorators.builder()
+                .withRateLimiter(rateLimiter)
+                .withCircuitBreaker(circuitBreaker)
+                .build();
+        return Resilience4jFeign.builder(decorators);
     }
 
     private StringRedisSerializer stringRedisSerializer() {
