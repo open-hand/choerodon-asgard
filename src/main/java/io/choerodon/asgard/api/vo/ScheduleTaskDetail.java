@@ -241,7 +241,7 @@ public class ScheduleTaskDetail {
         this.nextExecTime = nextExecTime;
         this.params = new ArrayList<>();
         try {
-            Map<String, Object> paramsMap = objectMapper.readValue(quartzTaskDetail.getParams(), new TypeReference<Map<String, String>>() {
+            Map<String, Object> paramsMap = objectMapper.readValue(quartzTaskDetail.getParams(), new TypeReference<Map<String, Object>>() {
             });
             paramsMap.forEach((k, v) -> {
                 Map<String, Object> param = new HashMap<>();
