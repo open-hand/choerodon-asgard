@@ -62,8 +62,11 @@ env:
     SPRING_REDIS_PORT: 6379
     # Redis db
     SPRING_REDIS_DATABASE: 7
-
-    CHOERODON_ASGARD_TIME_OUT: 20000
+    # 连接超时
+    FEIGN_CLIENT_CONFIG_DEFAULT_CONNECT_TIMEOUT: 2000
+    # 读取超时
+    FEIGN_CLIENT_CONFIG_DEFAULT_READ_TIMEOUT: 5000
+    CHOERODON_ASGARD_TIME_OUT: 4000
     # 数据库连接地址
     SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/asgard_service?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=Asia/Shanghai
     # 数据库用户名
