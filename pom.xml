@@ -9,7 +9,7 @@
         <version>1.2.0.RELEASE</version>
     </parent>
     <artifactId>choerodon-asgard</artifactId>
-    <version>1.2.0-alpha.3-SNAPSHOT</version>
+    <version>1.2.0-alpha.3.REEASE</version>
     <name>choerodon-asgard</name>
     <description>Asgard-Service For Choerodon</description>
 
