@@ -69,4 +69,10 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
     changeSet(id: '2018-11-30-resize-column-task_name', author: 'longhe1996@icloud.com') {
         modifyDataType(columnName: "TASK_NAME", newDataType: "VARCHAR(255)", tableName: "ASGARD_QUARTZ_TASK_INSTANCE")
     }
+
+    changeSet(id: '2022-01-21-create-index', author: 'changping.shi@hand-china.com') {
+        createIndex(tableName: 'ASGARD_QUARTZ_TASK_INSTANCE', indexName: 'NK_ASGARD_QUARTZ_TASK_INSTANCE_N1', unique: false) {
+            column(name: 'EXECUTE_METHOD')
+        }
+    }
 }
