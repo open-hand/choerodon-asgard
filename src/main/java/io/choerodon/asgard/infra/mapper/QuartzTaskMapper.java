@@ -21,4 +21,6 @@ public interface QuartzTaskMapper extends BaseMapper<QuartzTaskDTO> {
                                        @Param("sourceId") Long sourceId);
 
     QuartzTaskDetail selectTaskById(@Param("id") Long id);
+
+    void deleteById(@Param("id") Long id);
 }

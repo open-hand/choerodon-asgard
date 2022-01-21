@@ -511,9 +511,8 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     private void baseDelete(long id, QuartzTaskDTO quartzTask, String s) {
-        if (taskMapper.deleteByPrimaryKey(id) != 1) {
-            LOGGER.warn("error.get.quartz.task:{}", id);
-        }
+        // 删除所有执行记录
+        taskMapper.deleteById(id);
         quartzJobService.removeJob(id);
         LOGGER.info("delete job: {}", quartzTask);
     }

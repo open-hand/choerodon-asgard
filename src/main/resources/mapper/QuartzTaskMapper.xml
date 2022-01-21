@@ -58,4 +58,16 @@
         ON aqt.execute_method = aqm.code
         WHERE aqt.id = #{id}
     </select>
+
+    <delete id="deleteById">
+        DELETE aqt,
+        aqti,
+        aqtm
+        FROM
+        asgard_quartz_task aqt
+        LEFT JOIN asgard_quartz_task_instance aqti ON aqti.task_id = aqt.id
+        LEFT JOIN asgard_quartz_task_member aqtm ON aqtm.task_id = aqt.id
+        WHERE
+        aqt.id =#{id}
+    </delete>
 </mapper>
