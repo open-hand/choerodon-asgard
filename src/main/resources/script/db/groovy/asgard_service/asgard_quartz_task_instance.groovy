@@ -73,6 +73,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_instance.groovy') {
     changeSet(id: '2022-01-21-create-index', author: 'changping.shi@hand-china.com') {
         createIndex(tableName: 'ASGARD_QUARTZ_TASK_INSTANCE', indexName: 'NK_ASGARD_QUARTZ_TASK_INSTANCE_N1', unique: false) {
             column(name: 'EXECUTE_METHOD')
+            column(name: 'STATUS')
         }
     }
 }
