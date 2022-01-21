@@ -307,12 +307,22 @@
     </delete>
 
     <delete id="deleteByOptions">
-        DELETE
-        FROM asgard_saga_instance
+        DELETE asi,
+        asti,
+        aojd,
+        aojd2,
+        aojd3
+        FROM
+        asgard_saga_instance asi
+        LEFT JOIN asgard_saga_task_instance asti ON asti.saga_instance_id = asi.id
+        LEFT JOIN asgard_orch_json_data aojd ON aojd.id = asti.input_data_id
+        LEFT JOIN asgard_orch_json_data aojd1 ON aojd1.id = asti.input_data_id
+        LEFT JOIN asgard_orch_json_data aojd2 ON aojd2.id = asi.input_data_id
+        LEFT JOIN asgard_orch_json_data aojd3 ON aojd3.id = asi.input_data_id
         <where>
-            CREATION_DATE <![CDATA[<]]> #{time}
+            asi.CREATION_DATE <![CDATA[<]]> #{time}
             <if test="retainFailed">
-                AND `status` != 'FAILED'
+                AND asi.`status` != 'FAILED'
             </if>
         </where>
     </delete>

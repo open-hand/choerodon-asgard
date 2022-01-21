@@ -58,10 +58,6 @@ public class CleanSagaInstanceTimer {
         time.add(Calendar.DAY_OF_MONTH, -setting.getAutoCleanSagaInstanceInterval());
         // 删除 saga instance
         instanceMapper.deleteByOptions(time.getTime(), Boolean.TRUE.equals(setting.getRetainFailedSagaInstance()));
-        // 删除 saga task instance
-        taskInstanceMapper.deleteByOptions(time.getTime(), Boolean.TRUE.equals(setting.getRetainFailedSagaInstance()));
-        // 删除 json data
-        jsonDataMapper.deleteByDate(time.getTime());
     }
 
 
