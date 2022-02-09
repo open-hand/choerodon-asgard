@@ -15,6 +15,8 @@ import io.choerodon.swagger.annotation.Permission;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import java.util.Optional;
+
+import org.apache.commons.lang3.ObjectUtils;
 import org.hzero.starter.keyencrypt.core.Encrypt;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -108,7 +110,7 @@ public class SagaInstanceController {
                                                                  @RequestParam(required = false) String params,
                                                                  @RequestParam(required = false) String searchId) {
         Long searchIdNum = null;
-        if (!StringUtils.isEmpty(searchId)) {
+        if (!ObjectUtils.isEmpty(searchId)) {
             searchIdNum = Long.valueOf(searchId);
         }
         return sagaInstanceService.pageQuery(pageRequest, KeyDecryptHelper.decryptSagaCode(sagaCode), status, refType, refId, params, null, null, searchIdNum);

@@ -40,11 +40,7 @@ public class CleanSagaInstanceTimer {
         this.iamFeignClient = iamFeignClient;
     }
 
-    @JobTask(code = "cleanSagaInstance", maxRetryCount = 0,
-            description = "清理已完成的saga实例和task实例")
-    @TimedTask(name = "cleanSagaInstance", description = "清理saga instance", oneExecution = false, params = {},
-            triggerType = TriggerTypeEnum.CRON_TRIGGER, cronExpression = "0 0 2 * * ? *")
-    public void cleanSagaInstance(Map<String, Object> data) {
+    public void cleanSagaInstance() {
 
         SysSettingVO setting = iamFeignClient.getSetting();
 
@@ -58,6 +54,14 @@ public class CleanSagaInstanceTimer {
         time.add(Calendar.DAY_OF_MONTH, -setting.getAutoCleanSagaInstanceInterval());
         // 删除 saga instance
         instanceMapper.deleteByOptions(time.getTime(), Boolean.TRUE.equals(setting.getRetainFailedSagaInstance()));
+    }
+
+    @JobTask(code = "cleanSagaInstance", maxRetryCount = 0,
+            description = "清理已完成的saga实例和task实例")
+    @TimedTask(name = "cleanSagaInstance", description = "清理saga instance", oneExecution = false, params = {},
+            triggerType = TriggerTypeEnum.CRON_TRIGGER, cronExpression = "0 0 2 * * ? *")
+    public void cleanSagaInstance(Map<String, Object> data) {
+        cleanSagaInstance();
     }
 
 
