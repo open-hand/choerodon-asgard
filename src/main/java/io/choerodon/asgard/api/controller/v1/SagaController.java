@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.hzero.core.util.Results;
 import org.hzero.starter.keyencrypt.core.Encrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -11,6 +12,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import io.choerodon.asgard.api.vo.Saga;
 import io.choerodon.asgard.api.vo.SagaWithTask;
 import io.choerodon.asgard.app.service.SagaService;
+import io.choerodon.asgard.app.task.CleanSagaInstanceTimer;
 import io.choerodon.core.domain.Page;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.core.iam.ResourceLevel;
@@ -25,6 +27,8 @@ import io.choerodon.swagger.annotation.Permission;
 @Api("saga定义接口")
 public class SagaController {
 
+    @Autowired
+    private CleanSagaInstanceTimer cleanSagaInstanceTimer;
     private SagaService sagaService;
 
     public SagaController(SagaService sagaService) {
@@ -72,4 +76,11 @@ public class SagaController {
         return Results.success();
     }
 
+    @ApiOperation("清理saga执行记录")
+    @Permission(permissionPublic = true)
+    @DeleteMapping(value = "/clean")
+    public ResponseEntity<Void> cleanRecord() {
+        cleanSagaInstanceTimer.cleanSagaInstance();
+        return Results.success();
+    }
 }
