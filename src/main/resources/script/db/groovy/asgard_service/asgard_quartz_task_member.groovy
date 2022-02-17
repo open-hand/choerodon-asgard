@@ -26,4 +26,10 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_member.groovy') {
         }
         addUniqueConstraint(tableName: 'ASGARD_QUARTZ_TASK_MEMBER', columnNames: 'TASK_ID, MEMBER_TYPE, MEMBER_ID', constraintName: 'UK_QUARTZ_TASK_MEMBER_U1')
     }
+
+    changeSet(id: '2022-01-21-delete-data', author: 'changping.shi@hand-china.com') {
+        sql("""
+            DELETE aqtm FROM asgard_quartz_task_member aqtm WHERE aqtm.task_id NOT IN ( SELECT id FROM asgard_quartz_task );
+        """)
+    }
 }
