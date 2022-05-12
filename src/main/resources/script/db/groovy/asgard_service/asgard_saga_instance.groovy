@@ -5,7 +5,7 @@ databaseChangeLog(logicalFilePath: 'asgard_saga_instance.groovy') {
         if (helper.dbType().isSupportSequence()) {
             createSequence(sequenceName: 'ASGARD_SAGA_INSTANCE_S', startValue: "1")
         }
-        createTable(tableName: "ASGARD_SAGA_INSTANCE") {
+        createTable(tableName: "ASGARD_SAGA_INSTANCE", remarks: "saga实例表") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_SAGA_INSTANCE')
             }

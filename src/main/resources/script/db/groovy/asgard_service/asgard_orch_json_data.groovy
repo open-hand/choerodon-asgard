@@ -5,7 +5,7 @@ databaseChangeLog(logicalFilePath: 'asgard_orch_json_data.groovy') {
         if (helper.dbType().isSupportSequence()) {
             createSequence(sequenceName: 'ASGARD_ORCH_JSON_DATA_S', startValue: "1")
         }
-        createTable(tableName: "ASGARD_ORCH_JSON_DATA") {
+        createTable(tableName: "ASGARD_ORCH_JSON_DATA", remarks: "saga消息数据表") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_ORCH_JSON_DATA')
             }

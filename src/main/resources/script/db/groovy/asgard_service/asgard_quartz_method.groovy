@@ -5,7 +5,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_method.groovy') {
         if(helper.dbType().isSupportSequence()){
             createSequence(sequenceName: 'ASGARD_QUARTZ_METHOD_S', startValue:"1")
         }
-        createTable(tableName: "ASGARD_QUARTZ_METHOD") {
+        createTable(tableName: "ASGARD_QUARTZ_METHOD", remarks: "quartz方法表") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_METHOD')
             }

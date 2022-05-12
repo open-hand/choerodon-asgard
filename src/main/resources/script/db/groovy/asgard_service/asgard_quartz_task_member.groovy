@@ -5,7 +5,7 @@ databaseChangeLog(logicalFilePath: 'asgard_quartz_task_member.groovy') {
         if (helper.dbType().isSupportSequence()) {
             createSequence(sequenceName: 'ASGARD_QUARTZ_TASK_MEMBER_S', startValue: "1")
         }
-        createTable(tableName: "ASGARD_QUARTZ_TASK_MEMBER") {
+        createTable(tableName: "ASGARD_QUARTZ_TASK_MEMBER", remarks: "任务通知对象表") {
             column(name: 'ID', type: 'BIGINT UNSIGNED', remarks: 'ID', autoIncrement: true) {
                 constraints(primaryKey: true, primaryKeyName: 'PK_ASGARD_QUARTZ_TASK_MEMBER')
             }
