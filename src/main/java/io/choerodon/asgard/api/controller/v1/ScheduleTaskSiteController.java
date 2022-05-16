@@ -112,7 +112,7 @@ public class ScheduleTaskSiteController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @Permission(level = ResourceLevel.SITE, roles = {InitRoleCode.SITE_DEVELOPER})
+    @Permission(permissionPublic = true)
     @ApiOperation(value = "全局层Cron表达式校验")
     @PostMapping(value = "/cron")
     public ResponseEntity<List<String>> cron(@RequestBody String cron) {
