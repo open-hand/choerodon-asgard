@@ -87,24 +87,33 @@ public class NoticeServiceImpl implements NoticeService {
 
             }
             //发送webhook
-            MessageSender webhookSender = getWebHookMessageSender(baseMessageSender, quartzTask.getSourceId());
-            messageClient.async().sendMessage(webhookSender);
+            Map<String, Object> objectMap = new HashMap<>();
+            //发送组织层和项目层消息时必填 当前组织id
+            addSourceId(objectMap, quartzTask.getLevel(), quartzTask.getSourceId());
+
+            objectMap.put(NO_SEND_WEB, NO_SEND_WEB);
+            objectMap.put(NO_SEND_EMAIL, NO_SEND_EMAIL);
+            objectMap.put(NO_SEND_SMS, NO_SEND_SMS);
+            baseMessageSender.setAdditionalInformation(objectMap);
+            messageClient.async().sendMessage(baseMessageSender);
         } catch (CommonException e) {
             LOGGER.info("schedule job send notice fail!", e);
         }
     }
 
-    private MessageSender getWebHookMessageSender(MessageSender messageSender, Long sourceId) {
-        //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
-        Map<String, Object> objectMap = new HashMap<>();
-        //发送组织层和项目层消息时必填 当前组织id
-        objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), sourceId);
-        objectMap.put(NO_SEND_WEB, NO_SEND_WEB);
-        objectMap.put(NO_SEND_EMAIL, NO_SEND_EMAIL);
-        objectMap.put(NO_SEND_SMS, NO_SEND_SMS);
-        messageSender.setAdditionalInformation(objectMap);
-        return messageSender;
-
+    private void addSourceId(Map<String, Object> objectMap, String level, Long sourceId) {
+        if (ResourceLevel.PROJECT.value().equals(level)) {
+            ProjectDTO projectDTO = iamFeignClient.queryProject(sourceId).getBody();
+            if (projectDTO == null) {
+                return;
+            }
+            objectMap.put(MessageAdditionalType.PARAM_PROJECT_ID.getTypeName(), sourceId);
+            objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), projectDTO.getOrganizationId());
+        } else if (ResourceLevel.ORGANIZATION.value().equals(level)) {
+            objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), sourceId);
+        } else {
+            objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), sourceId);
+        }
     }
 
 
@@ -201,6 +210,10 @@ public class NoticeServiceImpl implements NoticeService {
 
             messageSender.setReceiverAddressList(receiverList);
             messageSender.setArgs(argsMap);
+            Map<String, Object> objectMap = new HashMap<>();
+            //发送组织层和项目层消息时必填 当前组织id
+            addSourceId(objectMap, instance.getLevel(), instance.getSourceId());
+            messageSender.setAdditionalInformation(objectMap);
 
             messageClient.async().sendMessage(messageSender);
         } catch (Exception e) {
@@ -223,17 +236,8 @@ public class NoticeServiceImpl implements NoticeService {
                 argsMap.put("level", instance.getLevel());
                 messageSender.setArgs(argsMap);
                 Map<String, Object> objectMap = new HashMap<>();
-                Long tenantId;
-                if (instance.getLevel().equals(ResourceLevel.ORGANIZATION.value())) {
-                    tenantId = instance.getSourceId();
-                } else {
-                    ProjectDTO projectDTO = iamFeignClient.queryProject(instance.getSourceId()).getBody();
-                    if (projectDTO == null) {
-                        return;
-                    }
-                    tenantId = projectDTO.getOrganizationId();
-                }
-                objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), tenantId);
+
+                addSourceId(objectMap, instance.getLevel(), instance.getSourceId());
 
                 messageSender.setAdditionalInformation(objectMap);
                 messageClient.async().sendMessage(messageSender);
@@ -274,6 +278,11 @@ public class NoticeServiceImpl implements NoticeService {
                         receiver.setTargetUserTenantId(Objects.requireNonNull(t.getOrganizationId(), "receiver tenant id can't be null"));
                         return receiver;
                     }).collect(Collectors.toList());
+                    Map<String, Object> objectMap = new HashMap<>();
+                    //发送组织层和项目层消息时必填 当前组织id
+                    addSourceId(objectMap, instance.getLevel(), instance.getSourceId());
+                    messageSender.setAdditionalInformation(objectMap);
+
                     messageSender.setReceiverAddressList(receiverList);
                     messageClient.async().sendMessage(messageSender);
                 }
@@ -383,10 +392,11 @@ public class NoticeServiceImpl implements NoticeService {
             messageSender.setReceiverAddressList(receiverList);
             messageSender.setArgs(argsMap);
 
+
             //额外参数，用于逻辑过滤 包括项目id，环境id，devops的消息事件
             Map<String, Object> objectMap = new HashMap<>();
             //发送组织层和项目层消息时必填 当前组织id
-            objectMap.put(MessageAdditionalType.PARAM_TENANT_ID.getTypeName(), registrantInfo.getOrganizationId());
+            addSourceId(objectMap, sagaInstance.getLevel(), sagaInstance.getSourceId());
             messageSender.setAdditionalInformation(objectMap);
             messageClient.async().sendMessage(messageSender);
         } catch (Exception e) {
