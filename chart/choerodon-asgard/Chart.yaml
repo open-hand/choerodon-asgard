@@ -6,13 +6,13 @@ dependencies:
   - name: common
     repository: https://openchart.choerodon.com.cn/choerodon/c7n
     version: 1.x.x
-description: Gateway of Choerodon.
+description: Asgard of Choerodon.
 engine: gotpl
 home: https://github.com/open-hand/choerodon-asgard/tree/master/chart/choerodon-asgard
 icon: https://ui-avatars.com/api/?name=choerodon-asgard
 keywords:
   - choerodon
-  - gateway
+  - asgard
 maintainers:
   - email: zhuchiyu@vip.hand-china.com
     name: choerodon

@@ -1,6 +1,6 @@
 # choerodon-asgard
 
-Gateway of Choerodon.
+Asgard of Choerodon.
 
 ## Installing the Chart
 
