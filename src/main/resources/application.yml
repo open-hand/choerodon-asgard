@@ -158,7 +158,7 @@ mybatis:
 
 logging:
   level:
-    org.apache.ibatis: ${LOG_LEVEL:debug}
-    io.choerodon: ${LOG_LEVEL:debug}
-    org.hzero: ${LOG_LEVEL:debug}
-    org.hzero.iam.infra.feign: ${LOG_LEVEL:debug}
+    org.apache.ibatis: ${LOG_LEVEL:info}
+    io.choerodon: ${LOG_LEVEL:info}
+    org.hzero: ${LOG_LEVEL:info}
+    org.hzero.iam.infra.feign: ${LOG_LEVEL:info}
