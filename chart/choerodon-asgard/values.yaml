@@ -163,9 +163,8 @@ extraEnv:
   SPRING_CLOUD_CONFIG_ENABLED: false
   # 配置中心地址
   SPRING_CLOUD_CONFIG_URI: http://dev.hzero.org:8010/
-  # JAVA_OPTS: >-
-  #   -Xms1024m
-  #   -Xmx1536m
+  # 百分比使用物理内存，预留一部分用于堆外内存以及外部程序
+  JAVA_OPTS: -XX:MaxRAMPercentage=90.0
 
 # -- ConfigMap with extra environment variables
 ##
