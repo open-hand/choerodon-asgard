@@ -49,7 +49,7 @@ public interface SagaInstanceMapper extends BaseMapper<SagaInstanceDTO> {
 
     int deleteBatchByIds(@Param("ids") List<Long> ids);
 
-    int deleteByOptions(@Param("time") Date time, @Param("retainFailed") boolean retainFailed);
+    int deleteByOptions(@Param("endTime") Date endTime, @Param("interval") Integer interval, @Param("retainFailed") boolean retainFailed);
 
     List<SagaInstanceDetails> queryByRefTypeAndRefIds(@Param("refType") String refType, @Param("refIds") List<String> refIds, @Param("sagaCode") String sagaCode);
 

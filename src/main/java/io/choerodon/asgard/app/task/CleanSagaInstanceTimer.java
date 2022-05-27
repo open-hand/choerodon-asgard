@@ -52,8 +52,13 @@ public class CleanSagaInstanceTimer {
         }
         Calendar time = Calendar.getInstance();
         time.add(Calendar.DAY_OF_MONTH, -setting.getAutoCleanSagaInstanceInterval());
-        // 删除 saga instance
-        instanceMapper.deleteByOptions(time.getTime(), Boolean.TRUE.equals(setting.getRetainFailedSagaInstance()));
+        // 数据量太大 按天遍历删除
+        for (int i = 0; i < setting.getAutoCleanSagaInstanceInterval(); i++) {
+            LOGGER.info("=========clean saga instance on :{}", time.getTime());
+            instanceMapper.deleteByOptions(time.getTime(), 1, Boolean.TRUE.equals(true));
+            time.add(Calendar.DAY_OF_MONTH, -1);
+        }
+        instanceMapper.deleteByOptions(time.getTime(), null, Boolean.TRUE.equals(true));
     }
 
     @JobTask(code = "cleanSagaInstance", maxRetryCount = 0,

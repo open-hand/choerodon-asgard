@@ -320,7 +320,10 @@
         LEFT JOIN asgard_orch_json_data aojd2 ON aojd2.id = asi.input_data_id
         LEFT JOIN asgard_orch_json_data aojd3 ON aojd3.id = asi.input_data_id
         <where>
-            asi.CREATION_DATE <![CDATA[<]]> #{time}
+            asi.CREATION_DATE <![CDATA[<]]> #{endTime}
+            <if test="interval!=null">
+                AND asi.CREATION_DATE > DATE_SUB( #{endTime}, INTERVAL #{interval} DAY )
+            </if>
             <if test="retainFailed">
                 AND asi.`status` != 'FAILED'
             </if>
