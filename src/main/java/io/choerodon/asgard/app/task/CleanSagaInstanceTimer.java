@@ -57,7 +57,7 @@ public class CleanSagaInstanceTimer {
     }
 
     @JobTask(code = "cleanSagaInstance", maxRetryCount = 0,
-            description = "清理已完成的saga实例和task实例")
+            description = "清理已完成的saga实例和task实例", enableTransaction = false)
     @TimedTask(name = "cleanSagaInstance", description = "清理saga instance", oneExecution = false, params = {},
             triggerType = TriggerTypeEnum.CRON_TRIGGER, cronExpression = "0 0 2 * * ? *")
     public void cleanSagaInstance(Map<String, Object> data) {
